@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: vortestudio
+      POSTGRES_USER: vorte
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-vorte123}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5433:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U vorte -d vortestudio"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  gmaps-scraper:
+    image: gosom/google-maps-scraper:latest
+    ports:
+      - "8081:8080"
+    volumes:
+      - gmapsdata:/gmapsdata
+    command: >
+      -data-folder /gmapsdata
+      -dsn postgresql://vorte:${DB_PASSWORD:-vorte123}@postgres:5432/vortestudio
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+  gmapsdata:

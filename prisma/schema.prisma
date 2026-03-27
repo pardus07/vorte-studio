@@ -1,0 +1,267 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../app/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ── Kullanıcı ──
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  name      String
+  createdAt DateTime @default(now())
+}
+
+// ── Müşteri ──
+model Client {
+  id           String       @id @default(cuid())
+  name         String
+  company      String?
+  email        String?
+  phone        String?
+  sector       String?
+  status       ClientStatus @default(POTENTIAL)
+  notes        String?
+  totalRevenue Float        @default(0)
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+
+  projects    Project[]
+  quotes      Quote[]
+  maintenance Maintenance[]
+  activities  Activity[]
+}
+
+enum ClientStatus {
+  POTENTIAL
+  ACTIVE
+  MAINTENANCE
+  INACTIVE
+}
+
+// ── Lead ──
+model Lead {
+  id            String     @id @default(cuid())
+  name          String
+  company       String?
+  email         String?
+  phone         String?
+  website       String?
+  address       String?
+  sector        String?
+  source        LeadSource @default(MANUAL)
+  status        LeadStatus @default(COLD)
+  score         Int        @default(0)
+  budget        String?
+  notes         String?
+  googleRating  Float?
+  googleReviews Int?
+  googleMapsUrl String?
+  mobileScore   Int?
+  hasWebsite    Boolean    @default(false)
+  sslValid      Boolean    @default(false)
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+}
+
+enum LeadSource {
+  MAPS_SCRAPER
+  SITE_FORM
+  LINKEDIN
+  REFERRAL
+  MANUAL
+}
+
+enum LeadStatus {
+  COLD
+  CONTACTED
+  MEETING
+  QUOTED
+  WON
+  LOST
+}
+
+// ── Prospect (Maps Scraper sonuçları) ──
+model ProspectBatch {
+  id         String     @id @default(cuid())
+  query      String
+  city       String
+  category   String
+  totalFound Int        @default(0)
+  status     String     @default("pending")
+  createdAt  DateTime   @default(now())
+
+  prospects Prospect[]
+}
+
+model Prospect {
+  id            String        @id @default(cuid())
+  batchId       String
+  batch         ProspectBatch @relation(fields: [batchId], references: [id])
+  name          String
+  phone         String?
+  email         String?
+  website       String?
+  address       String?
+  googleRating  Float?
+  googleReviews Int?
+  googleMapsUrl String?
+  mobileScore   Int?
+  hasWebsite    Boolean       @default(false)
+  score         Int           @default(0)
+  issue         String?
+  addedToLeads  Boolean       @default(false)
+  createdAt     DateTime      @default(now())
+}
+
+// ── Proje ──
+model Project {
+  id        String        @id @default(cuid())
+  title     String
+  clientId  String
+  client    Client        @relation(fields: [clientId], references: [id])
+  type      ProjectType
+  status    ProjectStatus @default(DISCOVERY)
+  budget    Float
+  startDate DateTime?
+  deadline  DateTime?
+  progress  Int           @default(0)
+  techStack String[]
+  notes     String?
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  payments   Payment[]
+  milestones Milestone[]
+  activities Activity[]
+}
+
+enum ProjectType {
+  WEBSITE
+  ECOMMERCE
+  MOBILE_APP
+  REDESIGN
+  CUSTOM
+}
+
+enum ProjectStatus {
+  DISCOVERY
+  DESIGN
+  DEVELOPMENT
+  TESTING
+  DELIVERED
+  ARCHIVED
+}
+
+// ── Milestone ──
+model Milestone {
+  id          String    @id @default(cuid())
+  projectId   String
+  project     Project   @relation(fields: [projectId], references: [id])
+  title       String
+  completed   Boolean   @default(false)
+  dueDate     DateTime?
+  completedAt DateTime?
+}
+
+// ── Teklif ──
+model Quote {
+  id          String      @id @default(cuid())
+  clientId    String
+  client      Client      @relation(fields: [clientId], references: [id])
+  packageType String
+  basePrice   Float
+  addons      Json        @default("[]")
+  total       Float
+  status      QuoteStatus @default(DRAFT)
+  validUntil  DateTime?
+  sentAt      DateTime?
+  createdAt   DateTime    @default(now())
+}
+
+enum QuoteStatus {
+  DRAFT
+  SENT
+  VIEWED
+  ACCEPTED
+  REJECTED
+}
+
+// ── Ödeme ──
+model Payment {
+  id        String        @id @default(cuid())
+  projectId String
+  project   Project       @relation(fields: [projectId], references: [id])
+  amount    Float
+  type      PaymentType
+  dueDate   DateTime
+  paidAt    DateTime?
+  status    PaymentStatus @default(PENDING)
+  invoiceNo String?
+  notes     String?
+  createdAt DateTime      @default(now())
+}
+
+enum PaymentType {
+  DEPOSIT
+  MILESTONE
+  FINAL
+  MAINTENANCE
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  OVERDUE
+  CANCELLED
+}
+
+// ── Bakım Paketi ──
+model Maintenance {
+  id           String    @id @default(cuid())
+  clientId     String
+  client       Client    @relation(fields: [clientId], references: [id])
+  websiteUrl   String
+  monthlyFee   Float
+  startDate    DateTime
+  renewalDate  DateTime
+  domainExpiry DateTime?
+  sslExpiry    DateTime?
+  plan         String    @default("standard")
+  notes        String?
+  isActive     Boolean   @default(true)
+  createdAt    DateTime  @default(now())
+}
+
+// ── Portföy (public site) ──
+model PortfolioItem {
+  id          String   @id @default(cuid())
+  title       String
+  slug        String   @unique
+  description String?
+  thumbnail   String?
+  liveUrl     String?
+  techStack   String[]
+  featured    Boolean  @default(false)
+  order       Int      @default(0)
+  category    String?
+  caseStudy   String?
+  isPublished Boolean  @default(true)
+  createdAt   DateTime @default(now())
+}
+
+// ── Aktivite Logu ──
+model Activity {
+  id          String   @id @default(cuid())
+  clientId    String?
+  client      Client?  @relation(fields: [clientId], references: [id])
+  projectId   String?
+  project     Project? @relation(fields: [projectId], references: [id])
+  type        String
+  description String
+  createdAt   DateTime @default(now())
+}

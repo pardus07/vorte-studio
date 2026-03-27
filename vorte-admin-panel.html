@@ -1,0 +1,1247 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vorte Studio — Admin Panel</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0c0c0e;
+  --bg2: #111114;
+  --bg3: #18181c;
+  --bg4: #1f1f24;
+  --border: rgba(255,255,255,0.06);
+  --border2: rgba(255,255,255,0.1);
+  --text: #e8e8ea;
+  --muted: #6b6b72;
+  --muted2: #3a3a42;
+  --accent: #f97316;
+  --accent-dim: rgba(249,115,22,0.12);
+  --green: #22c55e;
+  --green-dim: rgba(34,197,94,0.12);
+  --red: #ef4444;
+  --red-dim: rgba(239,68,68,0.1);
+  --amber: #f59e0b;
+  --amber-dim: rgba(245,158,11,0.12);
+  --blue: #3b82f6;
+  --blue-dim: rgba(59,130,246,0.12);
+  --purple: #a855f7;
+  --purple-dim: rgba(168,85,247,0.1);
+  --sidebar-w: 220px;
+}
+
+*,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; }
+html,body { height: 100%; overflow: hidden; }
+
+body {
+  font-family: 'Geist', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 13px;
+  display: flex;
+}
+
+/* ── SIDEBAR ── */
+.sidebar {
+  width: var(--sidebar-w);
+  min-height: 100vh;
+  background: var(--bg2);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  overflow-y: auto;
+}
+
+.sidebar-logo {
+  padding: 20px 16px 16px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.logo-mark {
+  width: 28px; height: 28px;
+  background: var(--accent);
+  border-radius: 7px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 600; color: #fff;
+}
+.logo-text { font-size: 13px; font-weight: 600; letter-spacing: -0.02em; }
+.logo-text span { color: var(--accent); }
+
+.sidebar-section { padding: 16px 10px 6px; }
+.sidebar-section-label {
+  font-size: 10px; font-weight: 500;
+  color: var(--muted); letter-spacing: 0.08em;
+  text-transform: uppercase; padding: 0 6px; margin-bottom: 4px;
+}
+
+.nav-item {
+  display: flex; align-items: center; gap: 9px;
+  padding: 7px 10px; border-radius: 7px;
+  cursor: pointer; color: var(--muted);
+  font-size: 12.5px; font-weight: 400;
+  transition: all 0.15s; margin-bottom: 1px;
+  user-select: none;
+}
+.nav-item:hover { background: var(--bg3); color: var(--text); }
+.nav-item.active { background: var(--accent-dim); color: var(--accent); font-weight: 500; }
+.nav-icon { width: 15px; height: 15px; flex-shrink: 0; opacity: 0.7; }
+.nav-item.active .nav-icon { opacity: 1; }
+.nav-badge {
+  margin-left: auto; font-size: 10px; font-weight: 600;
+  background: var(--red); color: #fff;
+  padding: 1px 5px; border-radius: 10px; line-height: 1.4;
+}
+.nav-badge.amber { background: var(--amber); }
+
+.sidebar-bottom {
+  margin-top: auto; padding: 12px 10px;
+  border-top: 1px solid var(--border);
+}
+.user-row {
+  display: flex; align-items: center; gap: 9px;
+  padding: 8px 10px; border-radius: 7px; cursor: pointer;
+  transition: background 0.15s;
+}
+.user-row:hover { background: var(--bg3); }
+.avatar {
+  width: 28px; height: 28px; border-radius: 50%;
+  background: var(--accent-dim); border: 1px solid var(--accent);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 600; color: var(--accent);
+  flex-shrink: 0;
+}
+.user-name { font-size: 12px; font-weight: 500; }
+.user-role { font-size: 11px; color: var(--muted); }
+
+/* ── MAIN ── */
+.main {
+  flex: 1; display: flex; flex-direction: column;
+  overflow: hidden; min-width: 0;
+}
+
+.topbar {
+  height: 52px; border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 12px;
+  padding: 0 24px; background: var(--bg2); flex-shrink: 0;
+}
+.topbar-title { font-size: 14px; font-weight: 600; letter-spacing: -0.02em; }
+.topbar-spacer { flex: 1; }
+.topbar-btn {
+  display: flex; align-items: center; gap: 6px;
+  padding: 6px 12px; border-radius: 7px; border: 1px solid var(--border2);
+  background: transparent; color: var(--text); font-size: 12px;
+  cursor: pointer; transition: all 0.15s; font-family: inherit;
+}
+.topbar-btn:hover { background: var(--bg3); border-color: var(--border2); }
+.topbar-btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 500; }
+.topbar-btn.primary:hover { background: #ea6a0a; }
+
+.content {
+  flex: 1; overflow-y: auto; padding: 24px;
+}
+
+/* ── CARDS & GRIDS ── */
+.stats-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: 12px; margin-bottom: 20px;
+}
+.stat-card {
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: 10px; padding: 16px;
+  transition: border-color 0.15s;
+}
+.stat-card:hover { border-color: var(--border2); }
+.stat-label { font-size: 11px; color: var(--muted); margin-bottom: 8px; font-weight: 400; }
+.stat-value { font-size: 22px; font-weight: 600; letter-spacing: -0.03em; line-height: 1; }
+.stat-sub { font-size: 11px; color: var(--muted); margin-top: 6px; }
+.stat-sub.up { color: var(--green); }
+.stat-sub.warn { color: var(--amber); }
+
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+.grid3 { display: grid; grid-template-columns: 2fr 1fr; gap: 16px; }
+
+.panel-card {
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: 10px; overflow: hidden;
+}
+.panel-header {
+  padding: 14px 16px;
+  display: flex; align-items: center; justify-content: space-between;
+  border-bottom: 1px solid var(--border);
+}
+.panel-title { font-size: 13px; font-weight: 600; }
+.panel-action {
+  font-size: 11px; color: var(--accent); cursor: pointer;
+  padding: 4px 8px; border-radius: 5px; transition: background 0.15s;
+}
+.panel-action:hover { background: var(--accent-dim); }
+
+/* ── TABLE ── */
+.table { width: 100%; border-collapse: collapse; }
+.table th {
+  text-align: left; font-size: 11px; font-weight: 500;
+  color: var(--muted); padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg2); white-space: nowrap;
+}
+.table td { padding: 10px 14px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+.table tr:last-child td { border-bottom: none; }
+.table tr:hover td { background: var(--bg3); }
+
+/* ── BADGES ── */
+.badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: 10px; font-weight: 500; padding: 3px 7px;
+  border-radius: 20px; white-space: nowrap;
+}
+.badge-green { background: var(--green-dim); color: var(--green); }
+.badge-red { background: var(--red-dim); color: var(--red); }
+.badge-amber { background: var(--amber-dim); color: var(--amber); }
+.badge-blue { background: var(--blue-dim); color: var(--blue); }
+.badge-purple { background: var(--purple-dim); color: var(--purple); }
+.badge-gray { background: var(--bg3); color: var(--muted); border: 1px solid var(--border); }
+.badge-accent { background: var(--accent-dim); color: var(--accent); }
+
+/* ── PROGRESS ── */
+.progress { height: 4px; background: var(--bg4); border-radius: 2px; overflow: hidden; min-width: 80px; }
+.progress-fill { height: 100%; border-radius: 2px; background: var(--accent); transition: width 0.3s; }
+
+/* ── ALERT ITEMS ── */
+.alert-list { display: flex; flex-direction: column; gap: 0; }
+.alert-item {
+  display: flex; align-items: flex-start; gap: 10px;
+  padding: 12px 16px; border-bottom: 1px solid var(--border);
+  cursor: pointer; transition: background 0.15s;
+}
+.alert-item:last-child { border-bottom: none; }
+.alert-item:hover { background: var(--bg3); }
+.alert-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; margin-top: 4px; }
+.alert-body { flex: 1; min-width: 0; }
+.alert-title { font-size: 12.5px; font-weight: 500; margin-bottom: 2px; }
+.alert-meta { font-size: 11px; color: var(--muted); }
+
+/* ── PROSPECT ROWS ── */
+.prospect-score {
+  width: 34px; height: 34px; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 600; flex-shrink: 0;
+}
+.score-a { background: var(--green-dim); color: var(--green); }
+.score-b { background: var(--amber-dim); color: var(--amber); }
+.score-c { background: var(--bg4); color: var(--muted); }
+
+/* ── PAGE VIEWS ── */
+.page { display: none; }
+.page.active { display: block; }
+
+/* ── SEARCH FORM ── */
+.search-form {
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: 10px; padding: 16px; margin-bottom: 16px;
+}
+.form-row { display: flex; gap: 10px; align-items: flex-end; }
+.form-group { flex: 1; }
+.form-label { font-size: 11px; color: var(--muted); margin-bottom: 5px; display: block; }
+.form-select, .form-input {
+  width: 100%; background: var(--bg3); border: 1px solid var(--border);
+  border-radius: 7px; padding: 8px 10px; color: var(--text);
+  font-size: 12.5px; font-family: inherit; outline: none;
+  transition: border-color 0.15s; appearance: none;
+}
+.form-select:focus, .form-input:focus { border-color: var(--accent); }
+.run-btn {
+  background: var(--accent); border: none; color: #fff;
+  padding: 9px 18px; border-radius: 7px; font-size: 12.5px;
+  font-weight: 500; cursor: pointer; font-family: inherit;
+  transition: background 0.15s; white-space: nowrap;
+}
+.run-btn:hover { background: #ea6a0a; }
+
+/* ── KANBAN ── */
+.kanban { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 4px; }
+.kanban-col {
+  min-width: 200px; background: var(--bg2);
+  border: 1px solid var(--border); border-radius: 10px; overflow: hidden; flex-shrink: 0;
+}
+.kanban-col-header {
+  padding: 10px 12px; border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.kanban-col-title { font-size: 12px; font-weight: 500; }
+.kanban-count {
+  font-size: 10px; background: var(--bg4); padding: 2px 6px;
+  border-radius: 10px; color: var(--muted);
+}
+.kanban-items { padding: 8px; display: flex; flex-direction: column; gap: 6px; }
+.kanban-card {
+  background: var(--bg3); border: 1px solid var(--border);
+  border-radius: 7px; padding: 10px; cursor: pointer;
+  transition: border-color 0.15s;
+}
+.kanban-card:hover { border-color: var(--border2); }
+.kc-name { font-size: 12px; font-weight: 500; margin-bottom: 4px; }
+.kc-client { font-size: 11px; color: var(--muted); margin-bottom: 6px; }
+.kc-footer { display: flex; align-items: center; justify-content: space-between; }
+.kc-price { font-size: 11px; color: var(--accent); font-weight: 500; }
+
+/* ── SECTION HEADER ── */
+.section-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 14px;
+}
+.section-title { font-size: 13px; font-weight: 600; }
+
+/* ── ACTION BTNS ── */
+.action-btns { display: flex; gap: 6px; }
+.act-btn {
+  font-size: 11px; padding: 4px 9px; border-radius: 5px;
+  border: 1px solid var(--border); background: transparent;
+  color: var(--text); cursor: pointer; font-family: inherit;
+  transition: all 0.15s;
+}
+.act-btn:hover { background: var(--bg3); border-color: var(--border2); }
+.act-btn.primary { background: var(--accent-dim); border-color: var(--accent); color: var(--accent); }
+.act-btn.green { background: var(--green-dim); border-color: var(--green); color: var(--green); }
+
+/* ── FIN ROWS ── */
+.fin-row {
+  display: flex; align-items: center; gap: 12px;
+  padding: 11px 16px; border-bottom: 1px solid var(--border);
+}
+.fin-row:last-child { border-bottom: none; }
+.fin-icon { width: 30px; height: 30px; border-radius: 7px; display: flex; align-items: center; justify-content: center; font-size: 13px; flex-shrink: 0; }
+.fin-body { flex: 1; min-width: 0; }
+.fin-name { font-size: 12.5px; font-weight: 500; }
+.fin-meta { font-size: 11px; color: var(--muted); margin-top: 1px; }
+.fin-amount { font-size: 13px; font-weight: 600; }
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--muted2); border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-mark">V</div>
+    <div>
+      <div class="logo-text">VORTE<span>.</span>STUDIO</div>
+    </div>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-section-label">Genel</div>
+    <div class="nav-item active" onclick="navigate('dashboard', this)">
+      <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="1" width="6" height="6" rx="1.5"/><rect x="9" y="1" width="6" height="6" rx="1.5"/><rect x="1" y="9" width="6" height="6" rx="1.5"/><rect x="9" y="9" width="6" height="6" rx="1.5"/></svg>
+      Dashboard
+    </div>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-section-label">Müşteri & Satış</div>
+    <div class="nav-item" onclick="navigate('prospect', this)">
+      <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6.5"/><path d="M8 4v4l3 2"/></svg>
+      Müşteri Bul
+      <span class="nav-badge amber">2</span>
+    </div>
+    <div class="nav-item" onclick="navigate('crm', this)">
+      <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10 2H6C4.9 2 4 2.9 4 4v8c0 1.1.9 2 2 2h4c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/><path d="M6 6h4M6 9h4M6 12h2"/></svg>
+      CRM
+    </div>
+    <div class="nav-item" onclick="navigate('leads', this)">
+      <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 1L9.8 5.4L14.5 5.9L11 9.1L12 13.8L8 11.4L4 13.8L5 9.1L1.5 5.9L6.2 5.4L8 1z"/></svg>
+      Lead Pipeline
+      <span class="nav-badge">3</span>
+    </div>
+    <div class="nav-item" onclick="navigate('quotes', this)">
+      <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h8c.55 0 1-.45 1-1V3c0-.55-.45-1-1-1z"/><path d="M5 6h6M5 9h4"/></svg>
+      Teklif Üretici
+    </div>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-section-label">Projeler</div>
+    <div class="nav-item" onclick="navigate('projects', this)">
+      <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="3" width="14" height="10" rx="1.5"/><path d="M5 7h6M5 10h4"/></svg>
+      Projeler
+    </div>
+    <div class="nav-item" onclick="navigate('finance', this)">
+      <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 12V6l6-3.5L14 6v6l-6 3.5L2 12z"/></svg>
+      Finans
+    </div>
+    <div class="nav-item" onclick="navigate('maintenance', this)">
+      <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="2.5"/><path d="M8 1v2M8 13v2M1 8h2M13 8h2"/></svg>
+      Bakım Paketleri
+    </div>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-section-label">İçerik</div>
+    <div class="nav-item" onclick="navigate('portfolio', this)">
+      <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="4" width="14" height="9" rx="1.5"/><path d="M5 4V3a1 1 0 011-1h4a1 1 0 011 1v1"/></svg>
+      Portföy
+    </div>
+  </div>
+
+  <div class="sidebar-bottom">
+    <div class="user-row">
+      <div class="avatar">İA</div>
+      <div>
+        <div class="user-name">İbrahim Abi</div>
+        <div class="user-role">studio.vorte.com.tr</div>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN CONTENT -->
+<main class="main">
+
+  <!-- TOPBAR (dynamic) -->
+  <div class="topbar">
+    <div class="topbar-title" id="topbar-title">Dashboard</div>
+    <div class="topbar-spacer"></div>
+    <div id="topbar-actions"></div>
+  </div>
+
+  <!-- CONTENT AREA -->
+  <div class="content">
+
+    <!-- ═══ DASHBOARD ═══ -->
+    <div class="page active" id="page-dashboard">
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-label">Bu ay gelir</div>
+          <div class="stat-value" style="color:var(--green)">₺34.500</div>
+          <div class="stat-sub up">↑ +12% geçen aya göre</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Aktif proje</div>
+          <div class="stat-value">3</div>
+          <div class="stat-sub">1 bu hafta teslim</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Bakım geliri</div>
+          <div class="stat-value" style="color:var(--accent)">₺7.200</div>
+          <div class="stat-sub">4 aktif müşteri</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Bekleyen teklif</div>
+          <div class="stat-value" style="color:var(--amber)">3</div>
+          <div class="stat-sub warn">2 takip gerekiyor</div>
+        </div>
+      </div>
+
+      <div class="grid2">
+        <!-- Uyarılar -->
+        <div class="panel-card">
+          <div class="panel-header">
+            <div class="panel-title">⚡ Bugün yapılacaklar</div>
+            <div class="badge badge-red">4 uyarı</div>
+          </div>
+          <div class="alert-list">
+            <div class="alert-item">
+              <div class="alert-dot" style="background:var(--red)"></div>
+              <div class="alert-body">
+                <div class="alert-title">Güzellik Merkezi — Ödeme 5 gün gecikmeli</div>
+                <div class="alert-meta">Proje: Web Sitesi · ₺4.500 bekliyor</div>
+              </div>
+              <div class="act-btn primary" style="font-size:10px">WA</div>
+            </div>
+            <div class="alert-item">
+              <div class="alert-dot" style="background:var(--red)"></div>
+              <div class="alert-body">
+                <div class="alert-title">restocafe.com — SSL 7 gün içinde doluyor</div>
+                <div class="alert-meta">Bakım müşterisi · Otomatik yenile</div>
+              </div>
+              <div class="act-btn" style="font-size:10px">Yenile</div>
+            </div>
+            <div class="alert-item">
+              <div class="alert-dot" style="background:var(--amber)"></div>
+              <div class="alert-body">
+                <div class="alert-title">Sarıgül Otomotiv — Teklif 4 gündür yanıtsız</div>
+                <div class="alert-meta">₺18.000 · Gönderildi: 23 Mar</div>
+              </div>
+              <div class="act-btn primary" style="font-size:10px">Takip et</div>
+            </div>
+            <div class="alert-item">
+              <div class="alert-dot" style="background:var(--green)"></div>
+              <div class="alert-body">
+                <div class="alert-title">Anatolian Spa — Bu ay bakım yenileme</div>
+                <div class="alert-meta">₺2.000/ay · Nisan yenilemesi</div>
+              </div>
+              <div class="act-btn" style="font-size:10px">Teklif hazırla</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Aktif projeler -->
+        <div class="panel-card">
+          <div class="panel-header">
+            <div class="panel-title">🚀 Aktif projeler</div>
+            <div class="panel-action" onclick="navigate('projects', document.querySelector('[onclick*=projects]'))">Tümü →</div>
+          </div>
+          <div style="padding:0">
+            <div style="display:flex;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid var(--border)">
+              <div style="flex:1;min-width:0">
+                <div style="font-size:12.5px;font-weight:500;margin-bottom:2px">DisSağlık Dental</div>
+                <div style="font-size:11px;color:var(--muted)">Web Tasarım · Geliştirme</div>
+              </div>
+              <div style="text-align:right">
+                <div class="badge badge-blue" style="margin-bottom:4px">%65</div>
+                <div class="progress" style="width:80px"><div class="progress-fill" style="width:65%"></div></div>
+              </div>
+            </div>
+            <div style="display:flex;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid var(--border)">
+              <div style="flex:1;min-width:0">
+                <div style="font-size:12.5px;font-weight:500;margin-bottom:2px">FitZone Spor</div>
+                <div style="font-size:11px;color:var(--muted)">Android MVP · Tasarım onayı</div>
+              </div>
+              <div style="text-align:right">
+                <div class="badge badge-amber" style="margin-bottom:4px">%30</div>
+                <div class="progress" style="width:80px"><div class="progress-fill" style="width:30%;background:var(--amber)"></div></div>
+              </div>
+            </div>
+            <div style="display:flex;align-items:center;gap:12px;padding:12px 16px">
+              <div style="flex:1;min-width:0">
+                <div style="font-size:12.5px;font-weight:500;margin-bottom:2px">Lezzet Durağı</div>
+                <div style="font-size:11px;color:var(--muted)">E-Ticaret · Test aşaması</div>
+              </div>
+              <div style="text-align:right">
+                <div class="badge badge-green" style="margin-bottom:4px">%90</div>
+                <div class="progress" style="width:80px"><div class="progress-fill" style="width:90%;background:var(--green)"></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Son lead'ler -->
+      <div class="panel-card">
+        <div class="panel-header">
+          <div class="panel-title">🎯 Son gelen lead'ler</div>
+          <div class="panel-action" onclick="navigate('leads', document.querySelector('[onclick*=leads]'))">Pipeline →</div>
+        </div>
+        <table class="table">
+          <thead><tr>
+            <th>İşletme</th><th>Kaynak</th><th>Tür</th><th>Bütçe</th><th>Durum</th><th></th>
+          </tr></thead>
+          <tbody>
+            <tr>
+              <td><div style="font-weight:500">Güneş Diş Kliniği</div><div style="font-size:11px;color:var(--muted)">Muratpaşa, Antalya</div></td>
+              <td><span class="badge badge-accent">Maps Scraper</span></td>
+              <td>Web sitesi</td>
+              <td>₺12-18K</td>
+              <td><span class="badge badge-green">Yeni</span></td>
+              <td><div class="action-btns"><div class="act-btn primary">WA Gönder</div><div class="act-btn">Teklif</div></div></td>
+            </tr>
+            <tr>
+              <td><div style="font-weight:500">Koray Hukuk Bürosu</div><div style="font-size:11px;color:var(--muted)">Konyaaltı, Antalya</div></td>
+              <td><span class="badge badge-blue">Site formu</span></td>
+              <td>Kurumsal web</td>
+              <td>₺20-25K</td>
+              <td><span class="badge badge-amber">Görüşme</span></td>
+              <td><div class="action-btns"><div class="act-btn primary">Teklif Hazırla</div></div></td>
+            </tr>
+            <tr>
+              <td><div style="font-weight:500">Akdeniz Spor Kompleksi</div><div style="font-size:11px;color:var(--muted)">Kepez, Antalya</div></td>
+              <td><span class="badge badge-purple">LinkedIn</span></td>
+              <td>Mobil uygulama</td>
+              <td>₺60-80K</td>
+              <td><span class="badge badge-blue">Teklif gönderildi</span></td>
+              <td><div class="action-btns"><div class="act-btn">Takip</div></div></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ═══ MÜŞTERI BUL ═══ -->
+    <div class="page" id="page-prospect">
+      <div class="search-form">
+        <div style="font-size:12px;font-weight:500;margin-bottom:12px;color:var(--muted)">Google Maps'ten işletme ara — gosom/google-maps-scraper</div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Şehir / İlçe</label>
+            <select class="form-select">
+              <option>Antalya</option><option>Muratpaşa</option><option>Konyaaltı</option>
+              <option>Kepez</option><option>İstanbul</option><option>İzmir</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Sektör</label>
+            <select class="form-select">
+              <option>Diş Klinikleri</option><option>Spor / Fitness</option>
+              <option>Restoran / Kafe</option><option>Butik Otel</option>
+              <option>Oto Servis</option><option>Güzellik / SPA</option>
+              <option>Hukuk Bürosu</option><option>İnşaat Firması</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Filtre</label>
+            <select class="form-select">
+              <option>Tümü</option><option>Sitesi olmayanlar</option><option>Eski site (50↓ skor)</option>
+            </select>
+          </div>
+          <button class="run-btn" onclick="runSearch()">🔍 Ara</button>
+        </div>
+      </div>
+
+      <div class="panel-card" id="results-panel">
+        <div class="panel-header">
+          <div class="panel-title">Sonuçlar — Antalya / Diş Klinikleri</div>
+          <div style="display:flex;gap:8px;align-items:center">
+            <span style="font-size:11px;color:var(--muted)">12 işletme bulundu</span>
+            <div class="act-btn green">Tümünü Listeye Ekle</div>
+          </div>
+        </div>
+        <table class="table">
+          <thead><tr>
+            <th>Skor</th><th>İşletme</th><th>Telefon</th><th>Website</th><th>★ Yorum</th><th>Sorun</th><th></th>
+          </tr></thead>
+          <tbody>
+            <tr>
+              <td><div class="prospect-score score-a">92</div></td>
+              <td><div style="font-weight:500">Güneş Diş Kliniği</div><div style="font-size:11px;color:var(--muted)">📍 Muratpaşa</div></td>
+              <td style="font-family:'Geist Mono',monospace;font-size:11px">0242 XXX XX XX</td>
+              <td><span class="badge badge-red">Site yok</span></td>
+              <td><span style="font-size:12px">4.7★</span> <span style="color:var(--muted);font-size:11px">(89)</span></td>
+              <td><span class="badge badge-red">+40p</span></td>
+              <td><div class="action-btns"><div class="act-btn" onclick="openWA()">WA</div><div class="act-btn primary">Lead Ekle</div></div></td>
+            </tr>
+            <tr>
+              <td><div class="prospect-score score-a">85</div></td>
+              <td><div style="font-weight:500">Akdeniz Ağız Sağlığı</div><div style="font-size:11px;color:var(--muted)">📍 Kepez</div></td>
+              <td style="font-family:'Geist Mono',monospace;font-size:11px">0242 XXX XX XX</td>
+              <td><span class="badge badge-amber">Eski site</span></td>
+              <td><span style="font-size:12px">4.4★</span> <span style="color:var(--muted);font-size:11px">(52)</span></td>
+              <td><span class="badge badge-amber">Mobil 23/100</span></td>
+              <td><div class="action-btns"><div class="act-btn">Audit</div><div class="act-btn primary">Lead Ekle</div></div></td>
+            </tr>
+            <tr>
+              <td><div class="prospect-score score-a">78</div></td>
+              <td><div style="font-weight:500">Dr. Mehmet Yılmaz</div><div style="font-size:11px;color:var(--muted)">📍 Konyaaltı</div></td>
+              <td style="font-family:'Geist Mono',monospace;font-size:11px">0242 XXX XX XX</td>
+              <td><span class="badge badge-amber">Yavaş</span></td>
+              <td><span style="font-size:12px">4.6★</span> <span style="color:var(--muted);font-size:11px">(114)</span></td>
+              <td><span class="badge badge-amber">LCP 6.2sn</span></td>
+              <td><div class="action-btns"><div class="act-btn">Audit</div><div class="act-btn primary">Lead Ekle</div></div></td>
+            </tr>
+            <tr>
+              <td><div class="prospect-score score-b">62</div></td>
+              <td><div style="font-weight:500">Anadolu Dental</div><div style="font-size:11px;color:var(--muted)">📍 Lara</div></td>
+              <td style="font-family:'Geist Mono',monospace;font-size:11px">0242 XXX XX XX</td>
+              <td><span class="badge badge-red">Site yok</span></td>
+              <td><span style="font-size:12px">4.2★</span> <span style="color:var(--muted);font-size:11px">(31)</span></td>
+              <td><span class="badge badge-red">+40p</span></td>
+              <td><div class="action-btns"><div class="act-btn">WA</div><div class="act-btn primary">Lead Ekle</div></div></td>
+            </tr>
+            <tr style="opacity:0.4">
+              <td><div class="prospect-score score-c">24</div></td>
+              <td><div style="font-weight:500">Premium Smile</div><div style="font-size:11px;color:var(--muted)">📍 Konyaaltı</div></td>
+              <td style="font-family:'Geist Mono',monospace;font-size:11px">0242 XXX XX XX</td>
+              <td><span class="badge badge-green">İyi site</span></td>
+              <td><span style="font-size:12px">4.9★</span> <span style="color:var(--muted);font-size:11px">(203)</span></td>
+              <td><span class="badge badge-gray">Atla</span></td>
+              <td><div class="action-btns"><div class="act-btn">İleri Al</div></div></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ═══ CRM ═══ -->
+    <div class="page" id="page-crm">
+      <div class="section-header">
+        <div class="section-title">Tüm müşteriler (14)</div>
+        <div class="action-btns">
+          <select class="form-select" style="width:auto;padding:6px 10px;font-size:12px">
+            <option>Tümü</option><option>Aktif</option><option>Potansiyel</option><option>Bakım</option>
+          </select>
+          <div class="act-btn primary">+ Yeni Müşteri</div>
+        </div>
+      </div>
+      <div class="panel-card">
+        <table class="table">
+          <thead><tr>
+            <th>Müşteri</th><th>Sektör</th><th>Durum</th><th>Toplam Gelir</th><th>Son İletişim</th><th>Bakım</th><th></th>
+          </tr></thead>
+          <tbody>
+            <tr>
+              <td><div style="font-weight:500">DisSağlık Dental</div><div style="font-size:11px;color:var(--muted)">Dr. Ahmet Kara</div></td>
+              <td>Sağlık</td>
+              <td><span class="badge badge-blue">Aktif Proje</span></td>
+              <td style="font-weight:500">₺28.000</td>
+              <td style="color:var(--muted);font-size:11px">2 gün önce</td>
+              <td><span class="badge badge-green">₺2.000/ay</span></td>
+              <td><div class="action-btns"><div class="act-btn">Detay</div><div class="act-btn">WA</div></div></td>
+            </tr>
+            <tr>
+              <td><div style="font-weight:500">FitZone Spor</div><div style="font-size:11px;color:var(--muted)">Murat Demir</div></td>
+              <td>Spor</td>
+              <td><span class="badge badge-blue">Aktif Proje</span></td>
+              <td style="font-weight:500">₺65.000</td>
+              <td style="color:var(--muted);font-size:11px">5 gün önce</td>
+              <td><span class="badge badge-gray">Yok</span></td>
+              <td><div class="action-btns"><div class="act-btn">Detay</div><div class="act-btn">WA</div></div></td>
+            </tr>
+            <tr>
+              <td><div style="font-weight:500">Anatolian Spa</div><div style="font-size:11px;color:var(--muted)">Zeynep Arslan</div></td>
+              <td>Güzellik</td>
+              <td><span class="badge badge-green">Bakım</span></td>
+              <td style="font-weight:500">₺14.500</td>
+              <td style="color:var(--muted);font-size:11px">1 hafta önce</td>
+              <td><span class="badge badge-green">₺1.500/ay</span></td>
+              <td><div class="action-btns"><div class="act-btn">Detay</div><div class="act-btn">WA</div></div></td>
+            </tr>
+            <tr>
+              <td><div style="font-weight:500">Sarıgül Otomotiv</div><div style="font-size:11px;color:var(--muted)">Hasan Sarıgül</div></td>
+              <td>Otomotiv</td>
+              <td><span class="badge badge-amber">Teklif Gönderildi</span></td>
+              <td style="font-weight:500">₺0</td>
+              <td style="color:var(--amber);font-size:11px">4 gün önce</td>
+              <td><span class="badge badge-gray">Yok</span></td>
+              <td><div class="action-btns"><div class="act-btn primary">Takip Et</div></div></td>
+            </tr>
+            <tr>
+              <td><div style="font-weight:500">Güneş Turizm</div><div style="font-size:11px;color:var(--muted)">Kadir Güneş</div></td>
+              <td>Turizm</td>
+              <td><span class="badge badge-green">Bakım</span></td>
+              <td style="font-weight:500">₺32.000</td>
+              <td style="color:var(--muted);font-size:11px">3 gün önce</td>
+              <td><span class="badge badge-green">₺2.500/ay</span></td>
+              <td><div class="action-btns"><div class="act-btn">Detay</div><div class="act-btn">WA</div></div></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ═══ LEAD PIPELINE ═══ -->
+    <div class="page" id="page-leads">
+      <div class="section-header">
+        <div class="section-title">Pipeline</div>
+        <div class="act-btn primary">+ Yeni Lead</div>
+      </div>
+      <div class="kanban">
+        <div class="kanban-col">
+          <div class="kanban-col-header">
+            <div class="kanban-col-title">🔵 Soğuk Lead</div>
+            <div class="kanban-count">4</div>
+          </div>
+          <div class="kanban-items">
+            <div class="kanban-card">
+              <div class="kc-name">Güneş Diş Kliniği</div>
+              <div class="kc-client">Maps Scraper · Site yok</div>
+              <div class="kc-footer"><span class="badge badge-red">Site yok</span><span class="kc-price">₺12-18K</span></div>
+            </div>
+            <div class="kanban-card">
+              <div class="kc-name">Pamukkale Restoran</div>
+              <div class="kc-client">Maps Scraper · Eski site</div>
+              <div class="kc-footer"><span class="badge badge-amber">Eski</span><span class="kc-price">₺8-12K</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="kanban-col">
+          <div class="kanban-col-header">
+            <div class="kanban-col-title">📞 İletişim Kuruldu</div>
+            <div class="kanban-count">3</div>
+          </div>
+          <div class="kanban-items">
+            <div class="kanban-card">
+              <div class="kc-name">Koray Hukuk</div>
+              <div class="kc-client">Site formu · Kurumsal</div>
+              <div class="kc-footer"><span class="badge badge-blue">Görüşme</span><span class="kc-price">₺20-25K</span></div>
+            </div>
+            <div class="kanban-card">
+              <div class="kc-name">Sarıgül Otomotiv</div>
+              <div class="kc-client">LinkedIn · Web sitesi</div>
+              <div class="kc-footer"><span class="badge badge-blue">Toplantı</span><span class="kc-price">₺15-20K</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="kanban-col">
+          <div class="kanban-col-header">
+            <div class="kanban-col-title">📄 Teklif Gönderildi</div>
+            <div class="kanban-count">3</div>
+          </div>
+          <div class="kanban-items">
+            <div class="kanban-card" style="border-left:2px solid var(--amber)">
+              <div class="kc-name">Akdeniz Spor</div>
+              <div class="kc-client">Mobil uygulama · 4 gün</div>
+              <div class="kc-footer"><span class="badge badge-amber">Takip gerek</span><span class="kc-price">₺60-80K</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="kanban-col">
+          <div class="kanban-col-header">
+            <div class="kanban-col-title">✅ Onaylandı</div>
+            <div class="kanban-count">2</div>
+          </div>
+          <div class="kanban-items">
+            <div class="kanban-card" style="border-left:2px solid var(--green)">
+              <div class="kc-name">DisSağlık Dental</div>
+              <div class="kc-client">%40 peşinat alındı</div>
+              <div class="kc-footer"><span class="badge badge-green">Aktif</span><span class="kc-price">₺28.000</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="kanban-col">
+          <div class="kanban-col-header">
+            <div class="kanban-col-title">❌ Kapandı</div>
+            <div class="kanban-count">1</div>
+          </div>
+          <div class="kanban-items">
+            <div class="kanban-card" style="opacity:0.5">
+              <div class="kc-name">Anonim Kafe</div>
+              <div class="kc-client">Bütçe yok</div>
+              <div class="kc-footer"><span class="badge badge-gray">Reddedildi</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ TEKLİF ═══ -->
+    <div class="page" id="page-quotes">
+      <div class="section-header">
+        <div class="section-title">Teklif Üretici</div>
+        <div class="act-btn primary">+ Yeni Teklif</div>
+      </div>
+      <div class="grid2">
+        <div class="panel-card">
+          <div class="panel-header"><div class="panel-title">Hızlı Teklif Oluştur</div></div>
+          <div style="padding:16px;display:flex;flex-direction:column;gap:12px">
+            <div>
+              <label class="form-label">Müşteri</label>
+              <select class="form-select"><option>Koray Hukuk Bürosu</option><option>Sarıgül Otomotiv</option></select>
+            </div>
+            <div>
+              <label class="form-label">Paket</label>
+              <select class="form-select" id="pkg-select" onchange="updatePrice()">
+                <option value="12000">Temel Site — ₺12.000</option>
+                <option value="22000">Profesyonel Kurumsal — ₺22.000</option>
+                <option value="35000">E-Ticaret — ₺35.000</option>
+                <option value="55000">Android MVP — ₺55.000</option>
+              </select>
+            </div>
+            <div>
+              <label class="form-label">Eklentiler</label>
+              <div style="display:flex;flex-direction:column;gap:6px;margin-top:4px">
+                <label style="display:flex;align-items:center;gap:8px;font-size:12px;cursor:pointer">
+                  <input type="checkbox" onchange="updatePrice()"> SEO Setup (+₺3.000)
+                </label>
+                <label style="display:flex;align-items:center;gap:8px;font-size:12px;cursor:pointer">
+                  <input type="checkbox" onchange="updatePrice()"> Çoklu Dil (+₺8.000)
+                </label>
+                <label style="display:flex;align-items:center;gap:8px;font-size:12px;cursor:pointer">
+                  <input type="checkbox" onchange="updatePrice()"> E-ticaret Modülü (+₺12.000)
+                </label>
+                <label style="display:flex;align-items:center;gap:8px;font-size:12px;cursor:pointer">
+                  <input type="checkbox" onchange="updatePrice()"> 1 Yıl Bakım (+₺18.000)
+                </label>
+              </div>
+            </div>
+            <div style="background:var(--bg3);border-radius:8px;padding:12px;display:flex;justify-content:space-between;align-items:center">
+              <div style="font-size:12px;color:var(--muted)">Toplam (KDV hariç)</div>
+              <div style="font-size:20px;font-weight:600;color:var(--accent)" id="price-display">₺12.000</div>
+            </div>
+            <div style="background:var(--bg3);border-radius:8px;padding:10px 12px">
+              <div style="font-size:11px;color:var(--muted);margin-bottom:6px">Ödeme Takvimi (%40/%30/%30)</div>
+              <div style="display:flex;gap:8px" id="payment-plan">
+                <div style="flex:1;text-align:center;background:var(--bg4);border-radius:6px;padding:8px">
+                  <div style="font-size:10px;color:var(--muted)">Peşinat</div>
+                  <div style="font-size:13px;font-weight:600;color:var(--green)" id="pay1">₺4.800</div>
+                </div>
+                <div style="flex:1;text-align:center;background:var(--bg4);border-radius:6px;padding:8px">
+                  <div style="font-size:10px;color:var(--muted)">Ara Ödeme</div>
+                  <div style="font-size:13px;font-weight:600;color:var(--amber)" id="pay2">₺3.600</div>
+                </div>
+                <div style="flex:1;text-align:center;background:var(--bg4);border-radius:6px;padding:8px">
+                  <div style="font-size:10px;color:var(--muted)">Bakiye</div>
+                  <div style="font-size:13px;font-weight:600;color:var(--blue)" id="pay3">₺3.600</div>
+                </div>
+              </div>
+            </div>
+            <div style="display:flex;gap:8px">
+              <button class="run-btn" style="flex:1">📄 PDF Oluştur</button>
+              <button class="run-btn" style="flex:1;background:var(--bg3);color:var(--text)">📧 Maile Gönder</button>
+            </div>
+          </div>
+        </div>
+        <div class="panel-card">
+          <div class="panel-header"><div class="panel-title">Son Teklifler</div></div>
+          <div class="alert-list">
+            <div class="alert-item">
+              <div style="flex:1">
+                <div style="font-size:12.5px;font-weight:500">Akdeniz Spor — Android MVP</div>
+                <div style="font-size:11px;color:var(--muted)">₺65.000 · 23 Mar · 4 gün bekleniyor</div>
+              </div>
+              <span class="badge badge-amber">Yanıt bekliyor</span>
+            </div>
+            <div class="alert-item">
+              <div style="flex:1">
+                <div style="font-size:12.5px;font-weight:500">Sarıgül Otomotiv — Web Sitesi</div>
+                <div style="font-size:11px;color:var(--muted)">₺18.000 · 20 Mar</div>
+              </div>
+              <span class="badge badge-amber">Yanıt bekliyor</span>
+            </div>
+            <div class="alert-item">
+              <div style="flex:1">
+                <div style="font-size:12.5px;font-weight:500">DisSağlık Dental — Web + Bakım</div>
+                <div style="font-size:11px;color:var(--muted)">₺28.000 · 15 Mar</div>
+              </div>
+              <span class="badge badge-green">Onaylandı</span>
+            </div>
+            <div class="alert-item">
+              <div style="flex:1">
+                <div style="font-size:12.5px;font-weight:500">Güneş Turizm — E-Ticaret</div>
+                <div style="font-size:11px;color:var(--muted)">₺38.000 · 2 Mar</div>
+              </div>
+              <span class="badge badge-green">Onaylandı</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ PROJELER ═══ -->
+    <div class="page" id="page-projects">
+      <div class="section-header">
+        <div class="section-title">Aktif Projeler (3)</div>
+        <div class="act-btn primary">+ Yeni Proje</div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:12px">
+
+        <div class="panel-card">
+          <div class="panel-header">
+            <div style="display:flex;align-items:center;gap:10px">
+              <div class="panel-title">DisSağlık Dental Kliniği</div>
+              <span class="badge badge-blue">Geliştirme</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px">
+              <div style="font-size:12px;color:var(--muted)">Teslim: 12 May</div>
+              <div class="act-btn">Detay</div>
+            </div>
+          </div>
+          <div style="padding:14px 16px">
+            <div style="display:flex;gap:16px;margin-bottom:14px">
+              <div style="flex:1">
+                <div style="font-size:11px;color:var(--muted);margin-bottom:4px">İlerleme</div>
+                <div style="display:flex;align-items:center;gap:8px">
+                  <div class="progress" style="flex:1;height:6px"><div class="progress-fill" style="width:65%"></div></div>
+                  <div style="font-size:12px;font-weight:500">%65</div>
+                </div>
+              </div>
+              <div><div style="font-size:11px;color:var(--muted);margin-bottom:2px">Bütçe</div><div style="font-size:13px;font-weight:500">₺28.000</div></div>
+              <div><div style="font-size:11px;color:var(--muted);margin-bottom:2px">Teknoloji</div><div style="font-size:11px;color:var(--accent)">Next.js · Tailwind · Prisma</div></div>
+            </div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap">
+              <span class="badge badge-green">✓ Keşif</span>
+              <span class="badge badge-green">✓ Wireframe</span>
+              <span class="badge badge-green">✓ Tasarım</span>
+              <span class="badge badge-blue">⟳ Geliştirme</span>
+              <span class="badge badge-gray">Test</span>
+              <span class="badge badge-gray">Yayın</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel-card">
+          <div class="panel-header">
+            <div style="display:flex;align-items:center;gap:10px">
+              <div class="panel-title">FitZone Spor Merkezi — Android App</div>
+              <span class="badge badge-amber">Tasarım Onayı</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px">
+              <div style="font-size:12px;color:var(--muted)">Teslim: 30 Haz</div>
+              <div class="act-btn">Detay</div>
+            </div>
+          </div>
+          <div style="padding:14px 16px">
+            <div style="display:flex;gap:16px;margin-bottom:14px">
+              <div style="flex:1">
+                <div style="font-size:11px;color:var(--muted);margin-bottom:4px">İlerleme</div>
+                <div style="display:flex;align-items:center;gap:8px">
+                  <div class="progress" style="flex:1;height:6px"><div class="progress-fill" style="width:30%;background:var(--amber)"></div></div>
+                  <div style="font-size:12px;font-weight:500;color:var(--amber)">%30</div>
+                </div>
+              </div>
+              <div><div style="font-size:11px;color:var(--muted);margin-bottom:2px">Bütçe</div><div style="font-size:13px;font-weight:500">₺65.000</div></div>
+              <div><div style="font-size:11px;color:var(--muted);margin-bottom:2px">Teknoloji</div><div style="font-size:11px;color:var(--accent)">Kotlin · Jetpack Compose</div></div>
+            </div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap">
+              <span class="badge badge-green">✓ Keşif</span>
+              <span class="badge badge-amber">⟳ Tasarım Onayı bekleniyor</span>
+              <span class="badge badge-gray">Geliştirme</span>
+              <span class="badge badge-gray">Test</span>
+              <span class="badge badge-gray">Play Store</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel-card">
+          <div class="panel-header">
+            <div style="display:flex;align-items:center;gap:10px">
+              <div class="panel-title">Lezzet Durağı — E-Ticaret</div>
+              <span class="badge badge-green">Test Aşaması</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px">
+              <div style="font-size:12px;color:var(--muted)">Teslim: 5 May</div>
+              <div class="act-btn primary">Yayına Al</div>
+            </div>
+          </div>
+          <div style="padding:14px 16px">
+            <div style="display:flex;gap:16px;margin-bottom:14px">
+              <div style="flex:1">
+                <div style="font-size:11px;color:var(--muted);margin-bottom:4px">İlerleme</div>
+                <div style="display:flex;align-items:center;gap:8px">
+                  <div class="progress" style="flex:1;height:6px"><div class="progress-fill" style="width:90%;background:var(--green)"></div></div>
+                  <div style="font-size:12px;font-weight:500;color:var(--green)">%90</div>
+                </div>
+              </div>
+              <div><div style="font-size:11px;color:var(--muted);margin-bottom:2px">Bütçe</div><div style="font-size:13px;font-weight:500">₺35.000</div></div>
+              <div><div style="font-size:11px;color:var(--muted);margin-bottom:2px">Teknoloji</div><div style="font-size:11px;color:var(--accent)">Next.js · İyzico · PostgreSQL</div></div>
+            </div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap">
+              <span class="badge badge-green">✓ Keşif</span>
+              <span class="badge badge-green">✓ Tasarım</span>
+              <span class="badge badge-green">✓ Geliştirme</span>
+              <span class="badge badge-green">⟳ Test</span>
+              <span class="badge badge-gray">Yayın</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ FİNANS ═══ -->
+    <div class="page" id="page-finance">
+      <div class="stats-grid">
+        <div class="stat-card"><div class="stat-label">Nisan geliri</div><div class="stat-value" style="color:var(--green)">₺34.500</div><div class="stat-sub up">3 proje + 4 bakım</div></div>
+        <div class="stat-card"><div class="stat-label">Bekleyen ödemeler</div><div class="stat-value" style="color:var(--amber)">₺13.500</div><div class="stat-sub warn">2 işlem gecikmiş</div></div>
+        <div class="stat-card"><div class="stat-label">Yıllık projeksiyon</div><div class="stat-value">₺312.000</div><div class="stat-sub">Bakım dahil</div></div>
+        <div class="stat-card"><div class="stat-label">Aylık sabit gelir</div><div class="stat-value" style="color:var(--accent)">₺7.200</div><div class="stat-sub">4 bakım müşterisi</div></div>
+      </div>
+      <div class="grid2">
+        <div class="panel-card">
+          <div class="panel-header"><div class="panel-title">Bekleyen Ödemeler</div><div class="act-btn primary">+ Ödeme Ekle</div></div>
+          <div>
+            <div class="fin-row">
+              <div class="fin-icon" style="background:var(--red-dim)">⚠️</div>
+              <div class="fin-body">
+                <div class="fin-name">Güzellik Merkezi — Ara Ödeme</div>
+                <div class="fin-meta">Vadesi: 22 Mar · 5 gün gecikti</div>
+              </div>
+              <div><div class="fin-amount" style="color:var(--red)">₺4.500</div><div class="act-btn" style="font-size:10px;margin-top:4px">Hatırlat</div></div>
+            </div>
+            <div class="fin-row">
+              <div class="fin-icon" style="background:var(--amber-dim)">📅</div>
+              <div class="fin-body">
+                <div class="fin-name">FitZone Spor — Tasarım Onayı Ödemesi</div>
+                <div class="fin-meta">Vadesi: 1 May · 4 gün kaldı</div>
+              </div>
+              <div><div class="fin-amount" style="color:var(--amber)">₺9.000</div></div>
+            </div>
+            <div class="fin-row">
+              <div class="fin-icon" style="background:var(--green-dim)">✅</div>
+              <div class="fin-body">
+                <div class="fin-name">DisSağlık Dental — Peşinat</div>
+                <div class="fin-meta">Alındı: 17 Mar</div>
+              </div>
+              <div><div class="fin-amount" style="color:var(--green)">₺11.200</div></div>
+            </div>
+          </div>
+        </div>
+        <div class="panel-card">
+          <div class="panel-header"><div class="panel-title">Aylık Bakım Gelirleri</div></div>
+          <div>
+            <div class="fin-row">
+              <div class="fin-icon" style="background:var(--green-dim)">🔄</div>
+              <div class="fin-body"><div class="fin-name">Güneş Turizm</div><div class="fin-meta">Her ay 1'i · Aktif</div></div>
+              <div class="fin-amount" style="color:var(--green)">₺2.500</div>
+            </div>
+            <div class="fin-row">
+              <div class="fin-icon" style="background:var(--green-dim)">🔄</div>
+              <div class="fin-body"><div class="fin-name">DisSağlık Dental</div><div class="fin-meta">Her ay 5'i · Aktif</div></div>
+              <div class="fin-amount" style="color:var(--green)">₺2.000</div>
+            </div>
+            <div class="fin-row">
+              <div class="fin-icon" style="background:var(--green-dim)">🔄</div>
+              <div class="fin-body"><div class="fin-name">Anatolian Spa</div><div class="fin-meta">Her ay 10'u · Aktif</div></div>
+              <div class="fin-amount" style="color:var(--green)">₺1.500</div>
+            </div>
+            <div class="fin-row">
+              <div class="fin-icon" style="background:var(--amber-dim)">⚡</div>
+              <div class="fin-body"><div class="fin-name">Restocafe</div><div class="fin-meta">15 May yenileme · SSL uyarısı</div></div>
+              <div class="fin-amount" style="color:var(--amber)">₺1.200</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ BAKIM ═══ -->
+    <div class="page" id="page-maintenance">
+      <div class="section-header">
+        <div class="section-title">Aktif Bakım Paketleri (4)</div>
+        <div class="act-btn primary">+ Bakım Müşterisi</div>
+      </div>
+      <div class="panel-card">
+        <table class="table">
+          <thead><tr>
+            <th>Müşteri</th><th>Site</th><th>Aylık Ücret</th><th>Yenileme</th><th>Domain</th><th>SSL</th><th>Son Aksiyon</th><th></th>
+          </tr></thead>
+          <tbody>
+            <tr>
+              <td><div style="font-weight:500">Güneş Turizm</div></td>
+              <td style="font-size:11px;color:var(--blue)">gunesturizm.com.tr</td>
+              <td style="font-weight:500;color:var(--green)">₺2.500</td>
+              <td>1 May</td>
+              <td><span class="badge badge-green">211 gün</span></td>
+              <td><span class="badge badge-green">211 gün</span></td>
+              <td style="font-size:11px;color:var(--muted)">3 gün önce</td>
+              <td><div class="act-btn">Log</div></td>
+            </tr>
+            <tr>
+              <td><div style="font-weight:500">Anatolian Spa</div></td>
+              <td style="font-size:11px;color:var(--blue)">anatolianspa.com</td>
+              <td style="font-weight:500;color:var(--green)">₺1.500</td>
+              <td>10 May</td>
+              <td><span class="badge badge-green">180 gün</span></td>
+              <td><span class="badge badge-green">45 gün</span></td>
+              <td style="font-size:11px;color:var(--muted)">1 hafta</td>
+              <td><div class="act-btn">Log</div></td>
+            </tr>
+            <tr>
+              <td><div style="font-weight:500">Restocafe</div></td>
+              <td style="font-size:11px;color:var(--blue)">restocafe.com</td>
+              <td style="font-weight:500;color:var(--amber)">₺1.200</td>
+              <td>15 May</td>
+              <td><span class="badge badge-green">90 gün</span></td>
+              <td><span class="badge badge-red">7 gün ⚠️</span></td>
+              <td style="font-size:11px;color:var(--red)">SSL kritik!</td>
+              <td><div class="act-btn primary">SSL Yenile</div></td>
+            </tr>
+            <tr>
+              <td><div style="font-weight:500">DisSağlık Dental</div></td>
+              <td style="font-size:11px;color:var(--muted)">Proje devam ediyor</td>
+              <td style="font-weight:500;color:var(--green)">₺2.000</td>
+              <td>Proje bitti sonra</td>
+              <td><span class="badge badge-gray">—</span></td>
+              <td><span class="badge badge-gray">—</span></td>
+              <td style="font-size:11px;color:var(--muted)">—</td>
+              <td><div class="act-btn">Beklemede</div></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ═══ PORTFÖY ═══ -->
+    <div class="page" id="page-portfolio">
+      <div class="section-header">
+        <div class="section-title">Portföy Yönetimi</div>
+        <div class="act-btn primary">+ Yeni Proje Ekle</div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px">
+        <div class="panel-card">
+          <div style="aspect-ratio:16/9;background:linear-gradient(135deg,#0f0f12,#1a1a24);border-radius:6px 6px 0 0;display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:700;color:rgba(249,115,22,0.2)">VORTE</div>
+          <div style="padding:12px">
+            <div style="font-size:12.5px;font-weight:500;margin-bottom:4px">Vorte Tekstil E-Ticaret</div>
+            <div style="font-size:11px;color:var(--muted);margin-bottom:8px">Next.js · Prisma · İyzico</div>
+            <div style="display:flex;gap:6px">
+              <span class="badge badge-accent">Öne Çıkan</span>
+              <span class="badge badge-green">Yayında</span>
+            </div>
+            <div style="display:flex;gap:6px;margin-top:10px">
+              <div class="act-btn" style="flex:1;text-align:center">Düzenle</div>
+              <div class="act-btn primary" style="flex:1;text-align:center">Sitenin</div>
+            </div>
+          </div>
+        </div>
+        <div class="panel-card">
+          <div style="aspect-ratio:16/9;background:linear-gradient(135deg,#0a0f0a,#151f15);border-radius:6px 6px 0 0;display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:700;color:rgba(34,197,94,0.15)">KLN</div>
+          <div style="padding:12px">
+            <div style="font-size:12.5px;font-weight:500;margin-bottom:4px">KlineSage Dashboard</div>
+            <div style="font-size:11px;color:var(--muted);margin-bottom:8px">Next.js · Chart.js · API</div>
+            <div style="display:flex;gap:6px">
+              <span class="badge badge-green">Yayında</span>
+            </div>
+            <div style="display:flex;gap:6px;margin-top:10px">
+              <div class="act-btn" style="flex:1;text-align:center">Düzenle</div>
+              <div class="act-btn" style="flex:1;text-align:center">Görüntüle</div>
+            </div>
+          </div>
+        </div>
+        <div class="panel-card" style="border-style:dashed;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px;cursor:pointer;opacity:0.5;transition:opacity 0.15s" onmouseenter="this.style.opacity=1" onmouseleave="this.style.opacity=0.5">
+          <div style="font-size:28px;margin-bottom:8px">+</div>
+          <div style="font-size:12px;color:var(--muted)">Yeni proje ekle</div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</main>
+
+<script>
+const pages = {
+  dashboard: 'Dashboard',
+  prospect: 'Müşteri Bul — Google Maps',
+  crm: 'CRM — Müşteriler',
+  leads: 'Lead Pipeline',
+  quotes: 'Teklif Üretici',
+  projects: 'Projeler',
+  finance: 'Finans Takibi',
+  maintenance: 'Bakım Paketleri',
+  portfolio: 'Portföy Yönetimi',
+};
+
+function navigate(id, el) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  const page = document.getElementById('page-' + id);
+  if (page) page.classList.add('active');
+  if (el) el.classList.add('active');
+  document.getElementById('topbar-title').textContent = pages[id] || id;
+}
+
+function runSearch() {
+  const btn = document.querySelector('.run-btn');
+  btn.textContent = '⏳ Taranıyor...';
+  btn.disabled = true;
+  setTimeout(() => {
+    btn.textContent = '🔍 Ara';
+    btn.disabled = false;
+  }, 2000);
+}
+
+function openWA() {
+  alert('WhatsApp: +90 242 XXX XX XX\nMesaj şablonu kopyalandı!');
+}
+
+let basePrice = 12000;
+const extras = [3000, 8000, 12000, 18000];
+
+function updatePrice() {
+  const sel = document.getElementById('pkg-select');
+  basePrice = parseInt(sel.value);
+  const checkboxes = document.querySelectorAll('.panel-card input[type=checkbox]');
+  let total = basePrice;
+  checkboxes.forEach((cb, i) => { if (cb.checked) total += extras[i]; });
+  document.getElementById('price-display').textContent = '₺' + total.toLocaleString('tr-TR');
+  document.getElementById('pay1').textContent = '₺' + Math.round(total * 0.4).toLocaleString('tr-TR');
+  document.getElementById('pay2').textContent = '₺' + Math.round(total * 0.3).toLocaleString('tr-TR');
+  document.getElementById('pay3').textContent = '₺' + Math.round(total * 0.3).toLocaleString('tr-TR');
+}
+</script>
+</body>
+</html>

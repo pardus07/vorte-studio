@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  studio-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - DATABASE_URL=${DATABASE_URL}
+      - NEXTAUTH_SECRET=${NEXTAUTH_SECRET}
+      - NEXTAUTH_URL=${NEXTAUTH_URL}
+      - ADMIN_PASSWORD_HASH=${ADMIN_PASSWORD_HASH}
+      - SCRAPER_URL=http://gmaps-scraper:8080
+      - PAGESPEED_API_KEY=${PAGESPEED_API_KEY}
+      - RESEND_API_KEY=${RESEND_API_KEY}
+      - FROM_EMAIL=${FROM_EMAIL}
+      - NODE_ENV=production
+    ports:
+      - "3000:3000"
+    depends_on:
+      - gmaps-scraper
+    restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.studio.rule=Host(`studio.vorte.com.tr`)"
+      - "traefik.http.routers.studio.tls=true"
+      - "traefik.http.routers.studio.tls.certresolver=letsencrypt"
+      - "traefik.http.services.studio.loadbalancer.server.port=3000"
+
+  gmaps-scraper:
+    image: gosom/google-maps-scraper:latest
+    volumes:
+      - gmapsdata:/gmapsdata
+    command: >
+      -data-folder /gmapsdata
+      -dsn ${DATABASE_URL}
+    restart: unless-stopped
+
+volumes:
+  gmapsdata:
