@@ -6,6 +6,7 @@ COPY package*.json ./
 RUN npm ci --only=production
 
 FROM base AS builder
+ENV NODE_ENV=development
 COPY package*.json ./
 RUN npm ci
 COPY . .
