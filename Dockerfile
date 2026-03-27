@@ -1,16 +1,12 @@
 FROM node:20-alpine AS base
 WORKDIR /app
 
-FROM base AS deps
-COPY package*.json ./
-RUN npm ci --only=production
-
 FROM base AS builder
-ENV NODE_ENV=development
 COPY package*.json ./
-RUN npm ci
+RUN NODE_ENV=development npm ci
 COPY . .
 RUN npx prisma generate
+ENV NODE_ENV=production
 RUN npm run build
 
 FROM base AS runner
