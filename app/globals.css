@@ -17,11 +17,11 @@
   --color-admin-bg2: #111114;
   --color-admin-bg3: #18181c;
   --color-admin-bg4: #1f1f24;
-  --color-admin-border: rgba(255, 255, 255, 0.06);
-  --color-admin-border2: rgba(255, 255, 255, 0.1);
-  --color-admin-text: #e8e8ea;
-  --color-admin-muted: #6b6b72;
-  --color-admin-muted2: #3a3a42;
+  --color-admin-border: rgba(255, 255, 255, 0.09);
+  --color-admin-border2: rgba(255, 255, 255, 0.14);
+  --color-admin-text: #f0f0f2;
+  --color-admin-muted: #8f8f99;
+  --color-admin-muted2: #55555f;
   --color-admin-accent: #f97316;
   --color-admin-accent-dim: rgba(249, 115, 22, 0.12);
   --color-admin-green: #22c55e;
