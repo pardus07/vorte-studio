@@ -16,11 +16,38 @@ type Prospect = {
   googleReviews: number | null;
   googleMapsUrl: string | null;
   mobileScore: number | null;
+  sslValid: boolean;
   hasWebsite: boolean;
   score: number;
   issue: string | null;
   addedToLeads: boolean;
 };
+
+const STORAGE_KEY = "vorte_prospect_results";
+const STORAGE_QUERY_KEY = "vorte_prospect_query";
+
+function saveToStorage(prospects: Prospect[], query: string) {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(prospects));
+    localStorage.setItem(STORAGE_QUERY_KEY, query);
+  } catch { /* storage full or unavailable */ }
+}
+
+function loadFromStorage(): { prospects: Prospect[]; query: string } | null {
+  try {
+    const data = localStorage.getItem(STORAGE_KEY);
+    const query = localStorage.getItem(STORAGE_QUERY_KEY) || "";
+    if (data) return { prospects: JSON.parse(data), query };
+  } catch { /* parse error */ }
+  return null;
+}
+
+function clearStorage() {
+  try {
+    localStorage.removeItem(STORAGE_KEY);
+    localStorage.removeItem(STORAGE_QUERY_KEY);
+  } catch { /* ignore */ }
+}
 
 const filters = ["Tümü", "Sitesi olmayanlar", "Sitesi olanlar"];
 
@@ -53,13 +80,22 @@ export default function ProspectSearch({
   const [city, setCity] = useState("Antalya");
   const [sector, setSector] = useState("Diş Klinikleri");
   const [filter, setFilter] = useState("Tümü");
-  const [prospects, setProspects] = useState(initialProspects);
+  const [prospects, setProspects] = useState<Prospect[]>([]);
   const [searching, setSearching] = useState(false);
-  const [query, setQuery] = useState(batchInfo.query);
+  const [query, setQuery] = useState("");
   const [notification, setNotification] = useState<{ msg: string; type: "info" | "success" | "error" } | null>(null);
   const [existingLeads, setExistingLeads] = useState<Set<string>>(new Set());
 
+  // Sayfa yüklenince localStorage'dan sonuçları geri yükle + lead isimlerini al
   useEffect(() => {
+    const saved = loadFromStorage();
+    if (saved && saved.prospects.length > 0) {
+      setProspects(saved.prospects);
+      setQuery(saved.query);
+    } else if (initialProspects.length > 0) {
+      setProspects(initialProspects);
+      setQuery(batchInfo.query);
+    }
     getExistingLeadNames().then((names) => setExistingLeads(new Set(names)));
   }, []);
 
@@ -119,6 +155,7 @@ export default function ProspectSearch({
             googleReviews: r.reviews || null,
             googleMapsUrl: r.place_url || null,
             mobileScore: null,
+            sslValid: true,
             hasWebsite: !!r.website,
             score: r.website ? 10 : 45,
             issue: r.website ? "Analiz ediliyor..." : "Site yok",
@@ -126,6 +163,7 @@ export default function ProspectSearch({
           }));
 
           setProspects(rawProspects);
+          saveToStorage(rawProspects, searchQuery);
           setSearching(false);
 
           const withSite = rawProspects.filter((p) => p.website);
@@ -155,12 +193,13 @@ export default function ProspectSearch({
                   sslValid,
                 });
 
-                return { ...p, mobileScore, score, issue };
+                return { ...p, mobileScore, sslValid, score, issue };
               })
             );
 
             scoredProspects.sort((a, b) => b.score - a.score);
             setProspects(scoredProspects);
+            saveToStorage(scoredProspects, searchQuery);
             showNotification(`${scoredProspects.length} işletme analiz edildi.`, "success");
           } else {
             showNotification(`${rawProspects.length} işletme bulundu!`, "success");
@@ -228,7 +267,7 @@ export default function ProspectSearch({
     showNotification(skipped > 0 ? `${added} eklendi, ${skipped} zaten mevcut.` : `${added} prospect Soğuk Lead olarak eklendi.`, "success");
   }
 
-  function handleClear() { setProspects([]); setQuery(""); }
+  function handleClear() { setProspects([]); setQuery(""); clearStorage(); }
 
   const filtered = prospects.filter((p) => {
     if (filter === "Sitesi olmayanlar") return !p.hasWebsite;
@@ -315,6 +354,8 @@ export default function ProspectSearch({
                         <span className="rounded-full bg-admin-red-dim px-2 py-0.5 text-[10px] font-medium text-admin-red">Mobil {p.mobileScore}/100</span>
                       ) : p.mobileScore !== null && p.mobileScore < 70 ? (
                         <span className="rounded-full bg-admin-amber-dim px-2 py-0.5 text-[10px] font-medium text-admin-amber">Mobil {p.mobileScore}/100</span>
+                      ) : !p.sslValid ? (
+                        <span className="rounded-full bg-admin-amber-dim px-2 py-0.5 text-[10px] font-medium text-admin-amber">SSL yok</span>
                       ) : p.mobileScore !== null ? (
                         <span className="rounded-full bg-admin-green-dim px-2 py-0.5 text-[10px] font-medium text-admin-green">Mobil {p.mobileScore}/100</span>
                       ) : p.issue === "Analiz ediliyor..." ? (
