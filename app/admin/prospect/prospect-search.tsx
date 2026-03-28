@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { addRawProspectToLead } from "@/actions/prospect";
+import { createScraperJob, checkScraperJob, getScraperResults } from "@/actions/scraper";
+import { cities, sectors } from "@/lib/turkey-data";
 
 type Prospect = {
   id: string;
@@ -19,11 +21,6 @@ type Prospect = {
   addedToLeads: boolean;
 };
 
-const cities = ["Antalya", "Muratpaşa", "Konyaaltı", "Kepez", "İstanbul", "İzmir", "Ankara", "Bursa"];
-const sectors = [
-  "Diş Klinikleri", "Spor / Fitness", "Restoran / Kafe", "Butik Otel",
-  "Oto Servis", "Güzellik / SPA", "Hukuk Bürosu", "İnşaat Firması", "Muhasebeci",
-];
 const filters = ["Tümü", "Sitesi olmayanlar", "Eski site (50↓ skor)"];
 
 function mapsUrl(name: string, address: string | null) {
@@ -67,16 +64,73 @@ export default function ProspectSearch({
     setTimeout(() => setNotification(null), 4000);
   }
 
-  function handleSearch() {
+  async function handleSearch() {
     setSearching(true);
-    setQuery(`${sector} in ${city}`);
-    setTimeout(() => {
+    const searchQuery = `${sector} in ${city}`;
+    setQuery(searchQuery);
+
+    // Scraper API'ye iş gönder
+    const job = await createScraperJob(searchQuery);
+
+    if (!job.success || !job.jobId) {
       setSearching(false);
       showNotification(
-        "Scraper henüz yapılandırılmadı. Şu an demo verileri gösteriliyor.",
+        job.error || "Scraper servisine bağlanılamadı. Demo verileri gösteriliyor.",
         "info"
       );
-    }, 1500);
+      return;
+    }
+
+    showNotification("Arama başlatıldı, sonuçlar bekleniyor...", "info");
+
+    // Sonuçları bekle (polling — max 60sn)
+    let attempts = 0;
+    const maxAttempts = 30;
+    const pollInterval = 2000;
+
+    const poll = setInterval(async () => {
+      attempts++;
+      const status = await checkScraperJob(job.jobId!);
+
+      if (!status.success || attempts >= maxAttempts) {
+        clearInterval(poll);
+        setSearching(false);
+        if (attempts >= maxAttempts) {
+          showNotification("Arama zaman aşımına uğradı. Daha sonra tekrar deneyin.", "error");
+        }
+        return;
+      }
+
+      if (status.status === "completed" || status.status === "done") {
+        clearInterval(poll);
+        const results = await getScraperResults(job.jobId!);
+
+        if (results.success && results.results && results.results.length > 0) {
+          const newProspects: Prospect[] = results.results.map((r, i) => ({
+            id: `sr-${Date.now()}-${i}`,
+            name: r.title,
+            phone: r.phone || null,
+            website: r.website || null,
+            address: r.address || null,
+            googleRating: r.rating || null,
+            googleReviews: r.reviews || null,
+            googleMapsUrl: r.place_url || null,
+            mobileScore: null,
+            hasWebsite: !!r.website,
+            score: r.website ? 30 : 90,
+            issue: r.website ? "Mevcut site" : "Site yok",
+            addedToLeads: false,
+          }));
+
+          setProspects(newProspects);
+          showNotification(`${newProspects.length} işletme bulundu!`, "success");
+        } else {
+          showNotification("Sonuç bulunamadı.", "info");
+        }
+
+        setSearching(false);
+      }
+    }, pollInterval);
   }
 
   async function handleAddToLeads(id: string) {
