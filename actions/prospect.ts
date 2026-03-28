@@ -38,6 +38,14 @@ export async function getIssueLabel(item: {
   return "Düşük öncelik";
 }
 
+// Tek site PageSpeed audit — server action
+export async function auditSingleWebsite(
+  website: string
+): Promise<{ mobileScore: number | null; sslValid: boolean }> {
+  const { auditWebsite } = await import("@/lib/pagespeed");
+  return auditWebsite(website);
+}
+
 export async function startSearch(city: string, category: string) {
   const batch = await prisma.prospectBatch.create({
     data: {

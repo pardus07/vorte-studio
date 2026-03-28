@@ -1,9 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { addRawProspectToLead, getExistingLeadNames, calculateScore, getIssueLabel } from "@/actions/prospect";
+import { addRawProspectToLead, getExistingLeadNames, calculateScore, getIssueLabel, auditSingleWebsite } from "@/actions/prospect";
 import { createScraperJob, checkScraperJob, getScraperResults } from "@/actions/scraper";
-import { auditWebsites } from "@/lib/pagespeed";
 import { cities, sectors } from "@/lib/turkey-data";
 
 type Prospect = {
@@ -168,39 +167,39 @@ export default function ProspectSearch({
 
           const withSite = rawProspects.filter((p) => p.website);
           if (withSite.length > 0) {
-            showNotification(`${rawProspects.length} işletme bulundu! ${withSite.length} site analiz ediliyor...`, "success");
+            showNotification(`${rawProspects.length} işletme bulundu! ${withSite.length} site arka planda analiz ediliyor...`, "success");
 
-            const auditResults = await auditWebsites(
-              withSite.map((p) => ({ name: p.name, website: p.website! }))
-            );
-
-            const scoredProspects = await Promise.all(
-              rawProspects.map(async (p) => {
-                const audit = auditResults.get(p.name);
-                const mobileScore = audit?.mobileScore ?? null;
-                const sslValid = audit?.sslValid ?? true;
+            // Arka planda teker teker audit — her biri gelince satırı güncelle
+            for (const prospect of withSite) {
+              auditSingleWebsite(prospect.website!).then(async (audit) => {
+                const mobileScore = audit.mobileScore;
+                const sslValid = audit.sslValid;
 
                 const score = await calculateScore({
-                  website: p.website,
+                  website: prospect.website,
                   mobileScore,
                   sslValid,
-                  reviewsCount: p.googleReviews,
-                  phone: p.phone,
+                  reviewsCount: prospect.googleReviews,
+                  phone: prospect.phone,
                 });
                 const issue = await getIssueLabel({
-                  website: p.website,
+                  website: prospect.website,
                   mobileScore,
                   sslValid,
                 });
 
-                return { ...p, mobileScore, sslValid, score, issue };
-              })
-            );
-
-            scoredProspects.sort((a, b) => b.score - a.score);
-            setProspects(scoredProspects);
-            saveToStorage(scoredProspects, searchQuery);
-            showNotification(`${scoredProspects.length} işletme analiz edildi.`, "success");
+                setProspects((prev) => {
+                  const updated = prev.map((p) =>
+                    p.id === prospect.id ? { ...p, mobileScore, sslValid, score, issue } : p
+                  );
+                  updated.sort((a, b) => b.score - a.score);
+                  saveToStorage(updated, searchQuery);
+                  return updated;
+                });
+              }).catch(() => {
+                // Timeout veya hata — o satır "—" kalır, sorun değil
+              });
+            }
           } else {
             showNotification(`${rawProspects.length} işletme bulundu!`, "success");
           }
