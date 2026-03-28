@@ -6,23 +6,23 @@ import "./globals.css";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
-  subsets: ["latin"],
+  subsets: ["latin", "latin-ext"],
 });
 
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
-  subsets: ["latin"],
+  subsets: ["latin", "latin-ext"],
 });
 
 const syne = Syne({
   variable: "--font-syne",
-  subsets: ["latin"],
+  subsets: ["latin", "latin-ext"],
   weight: ["700", "800"],
 });
 
 const dmSans = DM_Sans({
   variable: "--font-dm-sans",
-  subsets: ["latin"],
+  subsets: ["latin", "latin-ext"],
   weight: ["300", "400", "500"],
 });
 
