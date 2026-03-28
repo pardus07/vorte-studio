@@ -2,25 +2,47 @@
 
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
+import { z } from "zod";
 
-export async function getLeads() {
-  return prisma.lead.findMany({
-    orderBy: { updatedAt: "desc" },
-  });
-}
+const LeadFormSchema = z.object({
+  name: z.string().min(2, "İşletme adı en az 2 karakter olmalı"),
+  company: z.string().optional(),
+  phone: z.string().optional(),
+  email: z.string().email("Geçerli e-posta girin").optional().or(z.literal("")),
+  sector: z.string().optional(),
+  source: z.enum(["MAPS_SCRAPER", "SITE_FORM", "LINKEDIN", "REFERRAL", "MANUAL"]),
+  budget: z.string().optional(),
+  notes: z.string().optional(),
+  status: z.enum(["COLD", "CONTACTED", "MEETING", "QUOTED", "WON", "LOST"]).optional(),
+});
 
-export async function createLead(data: {
-  name: string;
-  company?: string;
-  email?: string;
-  phone?: string;
-  website?: string;
-  sector?: string;
-  source: "MAPS_SCRAPER" | "SITE_FORM" | "LINKEDIN" | "REFERRAL" | "MANUAL";
-  budget?: string;
-  notes?: string;
-}) {
-  return prisma.lead.create({ data });
+export type LeadFormData = z.infer<typeof LeadFormSchema>;
+
+export async function createLeadAction(data: LeadFormData) {
+  try {
+    const parsed = LeadFormSchema.parse(data);
+    await prisma.lead.create({
+      data: {
+        name: parsed.name,
+        company: parsed.company || null,
+        phone: parsed.phone || null,
+        email: parsed.email || null,
+        sector: parsed.sector || null,
+        source: parsed.source,
+        budget: parsed.budget || null,
+        notes: parsed.notes || null,
+        status: parsed.status || "COLD",
+      },
+    });
+    revalidatePath("/admin/leads");
+    return { success: true };
+  } catch (err) {
+    if (err instanceof z.ZodError) {
+      return { success: false, error: err.issues[0].message };
+    }
+    console.error("Lead oluşturma hatası:", err);
+    return { success: false, error: "Lead oluşturulamadı." };
+  }
 }
 
 export async function updateLeadStatus(
@@ -33,6 +55,19 @@ export async function updateLeadStatus(
   });
   revalidatePath("/admin/leads");
   return lead;
+}
+
+export async function updateLeadNotes(id: string, notes: string) {
+  try {
+    await prisma.lead.update({
+      where: { id },
+      data: { notes },
+    });
+    revalidatePath("/admin/leads");
+    return { success: true };
+  } catch {
+    return { success: false, error: "Notlar kaydedilemedi." };
+  }
 }
 
 export async function convertLeadToClient(leadId: string) {
