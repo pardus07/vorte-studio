@@ -7,12 +7,12 @@ import {
   Font,
 } from "@react-pdf/renderer";
 
-// Türkçe destekli Inter fontu — public/fonts/ dizininden
+// Türkçe destekli Inter fontu (latin-ext subset — ş,ç,ö,ü,ğ,ı,İ,₺)
 Font.register({
   family: "Inter",
   fonts: [
-    { src: "/fonts/Inter-Regular.ttf", fontWeight: "normal" },
-    { src: "/fonts/Inter-Bold.ttf", fontWeight: "bold" },
+    { src: "/fonts/Inter-Regular.woff", fontWeight: "normal" },
+    { src: "/fonts/Inter-Bold.woff", fontWeight: "bold" },
   ],
 });
 
