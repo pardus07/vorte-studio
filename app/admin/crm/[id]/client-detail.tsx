@@ -249,7 +249,7 @@ export default function ClientDetailView({ client }: { client: ClientData }) {
             email: client.email || "",
             phone: client.phone || "",
             sector: client.sector || "",
-            status: client.status,
+            status: client.status as "POTENTIAL" | "ACTIVE" | "MAINTENANCE" | "INACTIVE",
             notes: client.notes || "",
           }}
         />
