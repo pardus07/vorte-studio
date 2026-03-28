@@ -1,8 +1,17 @@
 "use server";
 
-import { Resend } from "resend";
+import nodemailer from "nodemailer";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+const transporter = nodemailer.createTransport({
+  host: process.env.SMTP_HOST || "mail.vorte.com.tr",
+  port: Number(process.env.SMTP_PORT) || 587,
+  secure: false,
+  auth: {
+    user: process.env.SMTP_USER || "studio@vorte.com.tr",
+    pass: process.env.SMTP_PASS || "",
+  },
+  tls: { rejectUnauthorized: false },
+});
 
 type ContactData = {
   name: string;
@@ -18,13 +27,12 @@ export async function sendContactForm(data: ContactData) {
     return { success: false, error: "Ad ve mesaj zorunludur." };
   }
 
-  const toEmail = process.env.FROM_EMAIL || "studio@vorte.com.tr";
+  const studioEmail = process.env.SMTP_USER || "studio@vorte.com.tr";
 
   try {
-    // 1. Studio'ya bildirim maili
-    await resend.emails.send({
-      from: `Vorte Studio <${toEmail}>`,
-      to: toEmail,
+    await transporter.sendMail({
+      from: `Vorte Studio <${studioEmail}>`,
+      to: studioEmail,
       subject: `Yeni Proje Basvurusu — ${name}`,
       html: `
         <div style="font-family:sans-serif;max-width:560px;margin:0 auto;padding:24px">
@@ -42,14 +50,9 @@ export async function sendContactForm(data: ContactData) {
       `,
     });
 
-    // 2. Gonderene otomatik yanit
-    if (data.phone) {
-      // Telefon varsa WhatsApp linki de ekle
-    }
-
     return { success: true };
   } catch (err) {
-    console.error("Resend error:", err);
+    console.error("SMTP error:", err);
     return { success: false, error: "Mail gonderilemedi. Lutfen tekrar deneyin." };
   }
 }
