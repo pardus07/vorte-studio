@@ -30,6 +30,7 @@ async function getProspects() {
           googleReviews: p.googleReviews,
           googleMapsUrl: p.googleMapsUrl,
           mobileScore: p.mobileScore,
+          sslValid: true,
           hasWebsite: p.hasWebsite,
           score: p.score,
           issue: p.issue,
