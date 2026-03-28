@@ -3,6 +3,7 @@ import Credentials from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 
 const nextAuth = NextAuth({
+  trustHost: true,
   providers: [
     Credentials({
       credentials: {
