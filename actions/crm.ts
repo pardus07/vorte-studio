@@ -34,7 +34,7 @@ export async function createClient(data: ClientFormData) {
     return { success: true, id: client.id };
   } catch (err) {
     if (err instanceof z.ZodError) {
-      return { success: false, error: err.errors[0].message };
+      return { success: false, error: err.issues[0].message };
     }
     console.error("Müşteri oluşturma hatası:", err);
     return { success: false, error: "Müşteri oluşturulamadı." };
@@ -60,7 +60,7 @@ export async function updateClient(id: string, data: Partial<ClientFormData>) {
     return { success: true };
   } catch (err) {
     if (err instanceof z.ZodError) {
-      return { success: false, error: err.errors[0].message };
+      return { success: false, error: err.issues[0].message };
     }
     console.error("Müşteri güncelleme hatası:", err);
     return { success: false, error: "Müşteri güncellenemedi." };
