@@ -67,23 +67,88 @@ export async function sendQuoteMail(data: {
       tls: { rejectUnauthorized: false },
     });
 
+    const pay1 = Math.round(data.total * 0.4);
+    const pay2 = Math.round(data.total * 0.3);
+    const pay3 = data.total - pay1 - pay2;
+    const fmt = (n: number) => `₺${n.toLocaleString("tr-TR")}`;
+    const validDate = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toLocaleDateString("tr-TR");
+
     await transporter.sendMail({
       from: `Vorte Studio <${user}>`,
       to: data.clientEmail,
       subject: `Teklif: ${data.packageType} — ${data.quoteNumber}`,
       html: `
-        <div style="font-family:sans-serif;max-width:560px;margin:0 auto;padding:24px">
-          <h2 style="color:#f97316;margin-bottom:8px">Vorte Studio — Proje Teklifi</h2>
-          <p>Sayın ${data.clientName},</p>
-          <p>Aşağıdaki teklif tarafınıza hazırlanmıştır:</p>
-          <table style="width:100%;border-collapse:collapse;font-size:14px;margin:16px 0">
-            <tr><td style="padding:8px 0;color:#666">Paket</td><td style="padding:8px 0;font-weight:600">${data.packageType}</td></tr>
-            <tr><td style="padding:8px 0;color:#666">Toplam</td><td style="padding:8px 0;font-weight:600;color:#f97316">₺${data.total.toLocaleString("tr-TR")}</td></tr>
-            <tr><td style="padding:8px 0;color:#666">Teklif No</td><td style="padding:8px 0">${data.quoteNumber}</td></tr>
-            <tr><td style="padding:8px 0;color:#666">Geçerlilik</td><td style="padding:8px 0">30 gün</td></tr>
-          </table>
-          <p>Sorularınız için bize ulaşın.</p>
-          <p style="margin-top:24px;font-size:12px;color:#999">Vorte Studio · studio.vorte.com.tr</p>
+        <div style="font-family:'Inter',system-ui,sans-serif;max-width:600px;margin:0 auto;background:#ffffff">
+          <!-- Header -->
+          <div style="background:#1a1a1a;padding:24px 32px;border-bottom:3px solid #f97316">
+            <table style="width:100%"><tr>
+              <td><span style="font-size:20px;font-weight:800;color:#fff;letter-spacing:-0.5px">VORTE<span style="color:#f97316">.</span>STUDIO</span></td>
+              <td style="text-align:right;font-size:11px;color:#9ca3af;line-height:1.6">studio@vorte.com.tr<br>studio.vorte.com.tr</td>
+            </tr></table>
+          </div>
+
+          <!-- Body -->
+          <div style="padding:32px">
+            <p style="font-size:15px;color:#1a1a1a;margin:0 0 8px">Sayın <strong>${data.clientName}</strong>,</p>
+            <p style="font-size:14px;color:#6b7280;margin:0 0 24px;line-height:1.6">Aşağıdaki proje teklifi tarafınıza hazırlanmıştır. Detayları inceleyip bize dönüş yapmanızı rica ederiz.</p>
+
+            <!-- Info Bar -->
+            <table style="width:100%;background:#f3f4f6;border-radius:8px;margin-bottom:24px">
+              <tr>
+                <td style="padding:14px 16px"><span style="font-size:10px;color:#9ca3af;text-transform:uppercase;letter-spacing:0.5px">Teklif No</span><br><strong style="font-size:13px;color:#1a1a1a">${data.quoteNumber}</strong></td>
+                <td style="padding:14px 16px"><span style="font-size:10px;color:#9ca3af;text-transform:uppercase;letter-spacing:0.5px">Paket</span><br><strong style="font-size:13px;color:#1a1a1a">${data.packageType}</strong></td>
+                <td style="padding:14px 16px"><span style="font-size:10px;color:#9ca3af;text-transform:uppercase;letter-spacing:0.5px">Geçerlilik</span><br><strong style="font-size:13px;color:#1a1a1a">${validDate}</strong></td>
+              </tr>
+            </table>
+
+            <!-- Total -->
+            <div style="background:#1a1a1a;border-radius:8px;padding:16px 20px;margin-bottom:24px;display:flex;justify-content:space-between;align-items:center">
+              <table style="width:100%"><tr>
+                <td><span style="font-size:14px;font-weight:700;color:#fff">TOPLAM (KDV Hariç)</span></td>
+                <td style="text-align:right"><span style="font-size:22px;font-weight:800;color:#f97316">${fmt(data.total)}</span></td>
+              </tr></table>
+            </div>
+
+            <!-- Payment Schedule -->
+            <p style="font-size:13px;font-weight:700;color:#1a1a1a;margin:0 0 12px">Ödeme Takvimi</p>
+            <table style="width:100%;border-collapse:separate;border-spacing:8px 0;margin-bottom:24px">
+              <tr>
+                <td style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:12px;text-align:center;width:33%">
+                  <div style="font-size:9px;color:#16a34a;text-transform:uppercase;font-weight:700;letter-spacing:0.5px">Peşinat (%40)</div>
+                  <div style="font-size:16px;font-weight:700;color:#16a34a;margin:4px 0">${fmt(pay1)}</div>
+                  <div style="font-size:10px;color:#6b7280">Sözleşme imzalanınca</div>
+                </td>
+                <td style="background:#fffbeb;border:1px solid #fde68a;border-radius:8px;padding:12px;text-align:center;width:33%">
+                  <div style="font-size:9px;color:#d97706;text-transform:uppercase;font-weight:700;letter-spacing:0.5px">Ara Ödeme (%30)</div>
+                  <div style="font-size:16px;font-weight:700;color:#d97706;margin:4px 0">${fmt(pay2)}</div>
+                  <div style="font-size:10px;color:#6b7280">Tasarım onayında</div>
+                </td>
+                <td style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:12px;text-align:center;width:33%">
+                  <div style="font-size:9px;color:#2563eb;text-transform:uppercase;font-weight:700;letter-spacing:0.5px">Bakiye (%30)</div>
+                  <div style="font-size:16px;font-weight:700;color:#2563eb;margin:4px 0">${fmt(pay3)}</div>
+                  <div style="font-size:10px;color:#6b7280">Teslimatta</div>
+                </td>
+              </tr>
+            </table>
+
+            <!-- CTA -->
+            <div style="text-align:center;margin:32px 0 24px">
+              <a href="https://wa.me/905427313425" style="background:#f97316;color:#fff;padding:12px 32px;border-radius:8px;font-size:14px;font-weight:600;text-decoration:none;display:inline-block">Teklifi Görüşelim →</a>
+            </div>
+
+            <!-- Notes -->
+            <div style="background:#f9fafb;border-radius:8px;padding:16px;font-size:12px;color:#6b7280;line-height:1.8">
+              • Fiyatlar KDV hariçtir.<br>
+              • Bu teklif ${validDate} tarihine kadar geçerlidir.<br>
+              • Teklif kabul edildikten sonra peşinat ödemesi ile proje başlatılır.<br>
+              • Proje süresi paket tipine göre 2-6 hafta arasında değişmektedir.
+            </div>
+          </div>
+
+          <!-- Footer -->
+          <div style="background:#f3f4f6;padding:16px 32px;text-align:center;border-top:1px solid #e5e7eb">
+            <p style="font-size:11px;color:#9ca3af;margin:0">Vorte Studio — Dijital Deneyimler · <a href="https://studio.vorte.com.tr" style="color:#f97316;text-decoration:none">studio.vorte.com.tr</a></p>
+          </div>
         </div>
       `,
     });
