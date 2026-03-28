@@ -32,7 +32,7 @@ async function getProjects() {
           completed: m.completed,
         })),
       }));
-  } catch { /* fallback */ }
+  } catch (err) { console.error("Proje DB hatası:", err); }
   return seedProjects.map((p) => ({
     id: p.id,
     title: p.title,
