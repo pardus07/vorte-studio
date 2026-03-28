@@ -4,13 +4,13 @@ import { usePathname } from "next/navigation";
 
 const titles: Record<string, string> = {
   "/admin/dashboard": "Dashboard",
-  "/admin/prospect": "Musteri Bul",
+  "/admin/prospect": "Müşteri Bul",
   "/admin/crm": "CRM",
   "/admin/leads": "Lead Pipeline",
-  "/admin/quotes": "Teklif Uretici",
+  "/admin/quotes": "Teklif Üretici",
   "/admin/projects": "Projeler",
   "/admin/finance": "Finans",
-  "/admin/maintenance": "Bakim Paketleri",
+  "/admin/maintenance": "Bakım Paketleri",
   "/admin/portfolio": "Portfolyo",
 };
 

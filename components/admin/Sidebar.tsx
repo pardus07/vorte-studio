@@ -13,10 +13,10 @@ const sections = [
     ],
   },
   {
-    label: "Musteri & Satis",
+    label: "Müşteri & Satış",
     items: [
       {
-        name: "Musteri Bul",
+        name: "Müşteri Bul",
         href: "/admin/prospect",
         icon: ProspectIcon,
         badge: "2",
@@ -30,7 +30,7 @@ const sections = [
         badge: "3",
         badgeColor: "red" as const,
       },
-      { name: "Teklif Uretici", href: "/admin/quotes", icon: QuoteIcon },
+      { name: "Teklif Üretici", href: "/admin/quotes", icon: QuoteIcon },
     ],
   },
   {
@@ -39,14 +39,14 @@ const sections = [
       { name: "Projeler", href: "/admin/projects", icon: ProjectIcon },
       { name: "Finans", href: "/admin/finance", icon: FinanceIcon },
       {
-        name: "Bakim Paketleri",
+        name: "Bakım Paketleri",
         href: "/admin/maintenance",
         icon: MaintenanceIcon,
       },
     ],
   },
   {
-    label: "Icerik",
+    label: "İçerik",
     items: [
       { name: "Portfolyo", href: "/admin/portfolio", icon: PortfolioIcon },
     ],

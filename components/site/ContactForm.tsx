@@ -8,8 +8,8 @@ const projectTypes = [
   "E-Ticaret",
   "Mobil Uygulama",
   "Kurumsal Web",
-  "Yeniden Tasarim",
-  "Diger",
+  "Yeniden Tasarım",
+  "Diğer",
 ];
 
 export default function ContactForm({ onClose }: { onClose: () => void }) {
@@ -31,7 +31,7 @@ export default function ContactForm({ onClose }: { onClose: () => void }) {
     if (result.success) {
       setStatus("sent");
     } else {
-      setErrorMsg(result.error || "Bir hata olustu.");
+      setErrorMsg(result.error || "Bir hata oluştu.");
       setStatus("error");
     }
   }
@@ -72,11 +72,11 @@ export default function ContactForm({ onClose }: { onClose: () => void }) {
               color: "#e8e8ea",
             }}
           >
-            Basvurunuz Alindi!
+            Başvurunuz Alındı!
           </h3>
           <p style={{ fontSize: 14, color: "#6b6b72", lineHeight: 1.6 }}>
-            En kisa surede sizinle iletisime gececegiz. Genellikle 24 saat
-            icinde donus yapiyoruz.
+            En kısa sürede sizinle iletişime geçeceğiz. Genellikle 24 saat
+            içinde dönüş yapıyoruz.
           </p>
           <button
             onClick={onClose}
@@ -139,7 +139,7 @@ export default function ContactForm({ onClose }: { onClose: () => void }) {
               color: "#e8e8ea",
             }}
           >
-            Proje Basvurusu
+            Proje Başvurusu
           </h3>
           <button
             onClick={onClose}
@@ -175,7 +175,7 @@ export default function ContactForm({ onClose }: { onClose: () => void }) {
               required
               value={form.name}
               onChange={(e) => setForm((p) => ({ ...p, name: e.target.value }))}
-              placeholder="Adiniz Soyadiniz"
+              placeholder="Adınız Soyadınız"
               style={{
                 width: "100%",
                 background: "#18181c",
@@ -230,7 +230,7 @@ export default function ContactForm({ onClose }: { onClose: () => void }) {
                 marginBottom: 6,
               }}
             >
-              Proje Turu
+              Proje Türü
             </label>
             <select
               value={form.projectType}
@@ -267,7 +267,7 @@ export default function ContactForm({ onClose }: { onClose: () => void }) {
                 marginBottom: 6,
               }}
             >
-              Mesajiniz *
+              Mesajınız *
             </label>
             <textarea
               required
@@ -275,7 +275,7 @@ export default function ContactForm({ onClose }: { onClose: () => void }) {
               onChange={(e) =>
                 setForm((p) => ({ ...p, message: e.target.value }))
               }
-              placeholder="Projeniz hakkinda kisa bilgi verin..."
+              placeholder="Projeniz hakkında kısa bilgi verin..."
               rows={4}
               style={{
                 width: "100%",
@@ -312,7 +312,7 @@ export default function ContactForm({ onClose }: { onClose: () => void }) {
               marginTop: 4,
             }}
           >
-            {status === "sending" ? "Gonderiliyor..." : "Basvuru Gonder"}
+            {status === "sending" ? "Gönderiliyor..." : "Başvuru Gönder"}
           </button>
         </form>
       </div>

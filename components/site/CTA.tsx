@@ -27,7 +27,7 @@ export default function CTA() {
       <RevealSection>
         <div className="mb-6 flex items-center justify-center gap-2.5 text-[11px] font-medium uppercase tracking-[0.18em] text-accent">
           <span className="h-px w-8 bg-accent" />
-          Baslayalim
+          Başlayalım
           <span className="h-px w-8 bg-accent" />
         </div>
       </RevealSection>
@@ -36,13 +36,13 @@ export default function CTA() {
         <h2 className="font-[family-name:var(--font-syne)] text-[clamp(36px,5vw,72px)] font-extrabold leading-none tracking-[-0.04em]">
           Projenizi
           <br />
-          Hayata Gecirelim
+          Hayata Geçirelim
         </h2>
       </RevealSection>
 
       <RevealSection delay={200}>
         <p className="mt-5 text-base text-muted">
-          Ucretsiz kesif gorusmesi — taahhutsuz, butcesiz, sadece fikir.
+          Ücretsiz keşif görüşmesi — taahhütsüz, bütçesiz, sadece fikir.
         </p>
       </RevealSection>
 

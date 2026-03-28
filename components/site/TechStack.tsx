@@ -23,20 +23,20 @@ export default function TechStack() {
       <RevealSection>
         <div className="mb-3 flex items-center gap-2 text-[11px] font-medium uppercase tracking-[0.18em] text-accent">
           <span className="h-px w-6 bg-accent" />
-          Teknoloji Farki
+          Teknoloji Farkı
         </div>
       </RevealSection>
       <RevealSection delay={100}>
         <h2 className="font-[family-name:var(--font-syne)] text-[clamp(32px,4vw,52px)] font-bold leading-tight tracking-[-0.03em]">
-          WordPress degil<span style={{ color: "rgba(255,255,255,0.25)" }}>.</span>
+          WordPress değil<span style={{ color: "rgba(255,255,255,0.25)" }}>.</span>
           <br />
-          Gercek kod<span className="text-accent">.</span>
+          Gerçek kod<span className="text-accent">.</span>
         </h2>
       </RevealSection>
       <RevealSection delay={200}>
         <p className="mt-2 text-sm text-muted" style={{ fontStyle: "italic" }}>
-          Rakipler sablon kullanir. Biz Next.js, Kotlin ve modern stack ile
-          sifirdan, sizin icin kodlariz.
+          Rakipler şablon kullanır. Biz Next.js, Kotlin ve modern stack ile
+          sıfırdan, sizin için kodlarız.
         </p>
       </RevealSection>
 

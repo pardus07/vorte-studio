@@ -3,12 +3,12 @@
 import RevealSection from "./RevealSection";
 
 const steps = [
-  { num: "01", name: "Kesif", time: "2-3 gun" },
-  { num: "02", name: "Tasarim", time: "5-7 gun" },
-  { num: "03", name: "Gelistirme", time: "2-4 hafta" },
-  { num: "04", name: "Test", time: "3-5 gun" },
-  { num: "05", name: "Yayin", time: "1 gun" },
-  { num: "06", name: "Destek", time: "Surekli" },
+  { num: "01", name: "Keşif", time: "2-3 gün" },
+  { num: "02", name: "Tasarım", time: "5-7 gün" },
+  { num: "03", name: "Geliştirme", time: "2-4 hafta" },
+  { num: "04", name: "Test", time: "3-5 gün" },
+  { num: "05", name: "Yayın", time: "1 gün" },
+  { num: "06", name: "Destek", time: "Sürekli" },
 ];
 
 export default function Process() {
@@ -20,12 +20,12 @@ export default function Process() {
       <RevealSection>
         <div className="mb-3 flex items-center gap-2 text-[11px] font-medium uppercase tracking-[0.18em] text-accent">
           <span className="h-px w-6 bg-accent" />
-          Nasil Calisiriz
+          Nasıl Çalışırız
         </div>
       </RevealSection>
       <RevealSection delay={100}>
         <h2 className="font-[family-name:var(--font-syne)] text-[clamp(32px,4vw,52px)] font-bold leading-tight tracking-[-0.03em]">
-          Surec <span style={{ color: "rgba(255,255,255,0.25)" }}>&amp; Zaman</span>
+          Süreç <span style={{ color: "rgba(255,255,255,0.25)" }}>&amp; Zaman</span>
         </h2>
       </RevealSection>
 

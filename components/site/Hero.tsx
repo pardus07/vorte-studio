@@ -45,7 +45,7 @@ export default function Hero() {
         <span
           style={{ width: 32, height: 1, background: "var(--color-accent)" }}
         />
-        Dijital Studio
+        Dijital Stüdyo
       </p>
 
       {/* Title */}
@@ -60,7 +60,7 @@ export default function Hero() {
           maxWidth: 900,
         }}
       >
-        <span style={{ display: "block" }}>Dijital Dunyada</span>
+        <span style={{ display: "block" }}>Dijital Dünyada</span>
         <span
           style={{
             display: "block",
@@ -87,8 +87,8 @@ export default function Hero() {
         }}
       >
         Next.js, Kotlin ve modern teknolojilerle web siteleri ve mobil
-        uygulamalar gelistiriyoruz. WordPress degil — gercek kod, gercek hiz,
-        gercek sonuc.
+        uygulamalar geliştiriyoruz. WordPress değil — gerçek kod, gerçek hız,
+        gerçek sonuç.
       </p>
 
       {/* Actions */}
@@ -109,7 +109,7 @@ export default function Hero() {
             gap: 8,
           }}
         >
-          Projenizi Konusalim &rarr;
+          Projenizi Konuşalım &rarr;
         </a>
         <a
           href="#portfolyo"
@@ -122,7 +122,7 @@ export default function Hero() {
             gap: 6,
           }}
         >
-          Calismalarimiza Bakin &darr;
+          Çalışmalarımıza Bakın &darr;
         </a>
       </div>
 
@@ -157,7 +157,7 @@ export default function Hero() {
             transform: "rotate(180deg)",
           }}
         >
-          Kaydir
+          Kaydır
         </p>
       </div>
     </section>

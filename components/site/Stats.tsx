@@ -4,8 +4,8 @@ import { useEffect, useRef, useState } from "react";
 
 const stats = [
   { target: 48, suffix: "+", label: "Teslim Edilen\nProje" },
-  { target: 96, suffix: "%", label: "Musteri\nMemnuniyeti" },
-  { target: 3, suffix: " hafta", label: "Ort. Teslimat\nSuresi" },
+  { target: 96, suffix: "%", label: "Müşteri\nMemnuniyeti" },
+  { target: 3, suffix: " hafta", label: "Ort. Teslimat\nSüresi" },
   { target: 95, suffix: "+", label: "Lighthouse\nPerformans Skoru" },
 ];
 

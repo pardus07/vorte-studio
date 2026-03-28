@@ -61,7 +61,7 @@ export default function QuotePDF({
           <View style={s.contact}>
             <Text>studio@vorte.com.tr</Text>
             <Text>studio.vorte.com.tr</Text>
-            <Text>Antalya, Turkiye</Text>
+            <Text>Antalya, Türkiye</Text>
           </View>
         </View>
 
@@ -73,7 +73,7 @@ export default function QuotePDF({
 
         {/* Package Details */}
         <View style={s.section}>
-          <Text style={s.sectionTitle}>Paket Detayi</Text>
+          <Text style={s.sectionTitle}>Paket Detayı</Text>
           <View style={s.row}>
             <Text style={s.rowLabel}>{packageName}</Text>
             <Text style={s.rowValue}>{fmt(packagePrice)}</Text>
@@ -88,19 +88,19 @@ export default function QuotePDF({
             <Text style={s.totalLabel}>TOPLAM</Text>
             <Text style={s.totalValue}>{fmt(total)}</Text>
           </View>
-          <Text style={s.note}>* Fiyatlar KDV haric belirtilmistir.</Text>
+          <Text style={s.note}>* Fiyatlar KDV hariç belirtilmiştir.</Text>
         </View>
 
         {/* Payment Plan */}
         <View style={s.section}>
-          <Text style={s.sectionTitle}>Odeme Takvimi (%40 / %30 / %30)</Text>
+          <Text style={s.sectionTitle}>Ödeme Takvimi (%40 / %30 / %30)</Text>
           <View style={s.paymentGrid}>
             <View style={s.payBox}>
-              <Text style={s.payLabel}>Pesinat</Text>
+              <Text style={s.payLabel}>Peşinat</Text>
               <Text style={[s.payValue, { color: "#22c55e" }]}>{fmt(pay1)}</Text>
             </View>
             <View style={s.payBox}>
-              <Text style={s.payLabel}>Ara Odeme</Text>
+              <Text style={s.payLabel}>Ara Ödeme</Text>
               <Text style={[s.payValue, { color: "#f59e0b" }]}>{fmt(pay2)}</Text>
             </View>
             <View style={s.payBox}>
@@ -113,7 +113,7 @@ export default function QuotePDF({
         {/* Validity */}
         <View style={s.section}>
           <Text style={{ fontSize: 9, color: "#888" }}>
-            Bu teklif 30 gun gecerlidir. Teklif kabul edildikten sonra pesinat odemesi ile proje baslatilir.
+            Bu teklif 30 gün geçerlidir. Teklif kabul edildikten sonra peşinat ödemesi ile proje başlatılır.
           </Text>
         </View>
 

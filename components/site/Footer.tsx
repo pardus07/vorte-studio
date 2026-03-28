@@ -8,7 +8,7 @@ export default function Footer() {
         &copy; 2026 Vorte Studio &middot; studio.vorte.com.tr
       </div>
       <div className="text-xs text-muted2">
-        Turkiye geneli &middot; Uzaktan hizmet
+        Türkiye geneli &middot; Uzaktan hizmet
       </div>
     </footer>
   );

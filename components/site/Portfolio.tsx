@@ -33,7 +33,7 @@ const fallbackItems: PortfolioItemData[] = [
   },
   {
     id: "3",
-    title: "Android MVP Ornek",
+    title: "Android MVP Örnek",
     slug: "android-mvp",
     category: "Mobil Uygulama",
     techStack: ["Kotlin", "Jetpack Compose", "Room", "Hilt"],
@@ -63,7 +63,7 @@ export default function Portfolio({
       <RevealSection>
         <div className="mb-3 flex items-center gap-2 text-[11px] font-medium uppercase tracking-[0.18em] text-accent">
           <span className="h-px w-6 bg-accent" />
-          Secilen Calismalar
+          Seçilen Çalışmalar
         </div>
       </RevealSection>
       <RevealSection delay={100}>

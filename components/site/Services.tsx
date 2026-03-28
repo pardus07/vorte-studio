@@ -7,7 +7,7 @@ const services = [
     num: "01",
     icon: "🌐",
     title: "Web Sitesi & Uygulama",
-    desc: "Next.js ile statik hizinda dinamik siteler. WordPress'in bes kati hiz, SEO skoru 95+. Her pixel yerli yerinde.",
+    desc: "Next.js ile statik hızında dinamik siteler. WordPress'in beş katı hız, SEO skoru 95+. Her pixel yerli yerinde.",
     tags: ["Next.js 15", "Tailwind", "Framer Motion", "Prisma", "ISR / SSG"],
     large: true,
   },
@@ -15,7 +15,7 @@ const services = [
     num: "02",
     icon: "📱",
     title: "Mobil Uygulama",
-    desc: "Android native — Kotlin & Jetpack Compose. Play Store'da hazir. Smooth, fast, gercek.",
+    desc: "Android native — Kotlin & Jetpack Compose. Play Store'da hazır. Smooth, fast, gerçek.",
     tags: ["Kotlin", "Jetpack Compose", "Android"],
     large: false,
   },
@@ -23,16 +23,16 @@ const services = [
     num: "03",
     icon: "🛒",
     title: "E-Ticaret",
-    desc: "Iyzico entegrasyonu, siparis yonetimi, stok takibi. Satmak icin tasarlanmis altyapi.",
-    tags: ["Iyzico", "Odeme", "Admin panel"],
+    desc: "İyzico entegrasyonu, sipariş yönetimi, stok takibi. Satmak için tasarlanmış altyapı.",
+    tags: ["İyzico", "Ödeme", "Admin panel"],
     large: false,
   },
   {
     num: "04",
     icon: "🛡️",
-    title: "Bakim Paketi",
-    desc: "Siteniz yayinda kalsin, guvende kalsin. Hosting, yedekleme, guncellemeler. Aylik sabit ucret.",
-    tags: ["Hosting", "SSL", "7/24 Izleme"],
+    title: "Bakım Paketi",
+    desc: "Siteniz yayında kalsın, güvende kalsın. Hosting, yedekleme, güncellemeler. Aylık sabit ücret.",
+    tags: ["Hosting", "SSL", "7/24 İzleme"],
     large: false,
   },
 ];
@@ -49,7 +49,7 @@ export default function Services() {
         </RevealSection>
         <RevealSection delay={100}>
           <h2 className="font-[family-name:var(--font-syne)] text-[clamp(32px,4vw,52px)] font-bold leading-tight tracking-[-0.03em]">
-            Ne <span style={{ color: "rgba(255,255,255,0.25)" }}>Yapiyoruz?</span>
+            Ne <span style={{ color: "rgba(255,255,255,0.25)" }}>Yapıyoruz?</span>
           </h2>
         </RevealSection>
       </div>

@@ -28,7 +28,7 @@ export default function Navbar() {
       </Link>
 
       <ul className="hidden gap-9 md:flex">
-        {["Hizmetler", "Portfolyo", "Surec"].map((item) => (
+        {["Hizmetler", "Portfolyo", "Süreç"].map((item) => (
           <li key={item}>
             <a
               href={`#${item.toLowerCase()}`}
@@ -44,7 +44,7 @@ export default function Navbar() {
         href="#contact"
         className="rounded-md bg-accent px-5 py-2.5 text-sm font-medium text-white transition-all hover:-translate-y-0.5 hover:bg-accent2"
       >
-        Proje Baslat &rarr;
+        Proje Başlat &rarr;
       </a>
     </nav>
   );
