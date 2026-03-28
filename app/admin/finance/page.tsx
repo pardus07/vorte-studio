@@ -51,6 +51,7 @@ export default async function FinancePage() {
         ...p,
         projectId: "seed",
         projectTitle: p.projectTitle,
+        dueDate: p.dueDate instanceof Date ? p.dueDate.toISOString() : String(p.dueDate),
         paidAt: null,
       }))}
       maintenances={seedMaintenances}
