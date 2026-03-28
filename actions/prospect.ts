@@ -115,3 +115,41 @@ export async function getProspectsByBatch(batchId: string) {
     orderBy: { score: "desc" },
   });
 }
+
+// Mock prospect verisinden doğrudan lead oluşturma
+// DB'de prospect kaydı olmadan çalışır
+export async function addRawProspectToLead(data: {
+  name: string;
+  phone: string | null;
+  website: string | null;
+  address: string | null;
+  googleRating: number | null;
+  googleReviews: number | null;
+  score: number;
+  issue: string | null;
+  hasWebsite: boolean;
+  mobileScore: number | null;
+}) {
+  try {
+    await prisma.lead.create({
+      data: {
+        name: data.name,
+        company: data.name,
+        phone: data.phone,
+        website: data.website,
+        address: data.address,
+        googleRating: data.googleRating,
+        googleReviews: data.googleReviews,
+        mobileScore: data.mobileScore,
+        hasWebsite: data.hasWebsite,
+        score: data.score,
+        source: "MAPS_SCRAPER",
+        status: "COLD",
+      },
+    });
+    return { success: true };
+  } catch (err) {
+    console.error("Lead kayıt hatası:", err);
+    return { success: false, error: "Lead kaydedilemedi." };
+  }
+}

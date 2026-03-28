@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { addRawProspectToLead } from "@/actions/prospect";
 
 type Prospect = {
   id: string;
@@ -24,6 +25,11 @@ const sectors = [
   "Oto Servis", "Güzellik / SPA", "Hukuk Bürosu", "İnşaat Firması", "Muhasebeci",
 ];
 const filters = ["Tümü", "Sitesi olmayanlar", "Eski site (50↓ skor)"];
+
+function mapsUrl(name: string, address: string | null) {
+  const q = encodeURIComponent(`${name} ${address || ""}`);
+  return `https://www.google.com/maps/search/?api=1&query=${q}`;
+}
 
 function ScoreBadge({ score }: { score: number }) {
   const grade = score >= 70 ? "A" : score >= 40 ? "B" : "C";
@@ -54,20 +60,83 @@ export default function ProspectSearch({
   const [prospects, setProspects] = useState(initialProspects);
   const [searching, setSearching] = useState(false);
   const [query, setQuery] = useState(batchInfo.query);
+  const [notification, setNotification] = useState<{ msg: string; type: "info" | "success" | "error" } | null>(null);
+
+  function showNotification(msg: string, type: "info" | "success" | "error" = "info") {
+    setNotification({ msg, type });
+    setTimeout(() => setNotification(null), 4000);
+  }
 
   function handleSearch() {
     setSearching(true);
     setQuery(`${sector} in ${city}`);
-    // Mock: 2sn sonra sonuclari goster
     setTimeout(() => {
       setSearching(false);
-    }, 2000);
+      showNotification(
+        "Scraper henüz yapılandırılmadı. Şu an demo verileri gösteriliyor.",
+        "info"
+      );
+    }, 1500);
   }
 
-  function handleAddToLeads(id: string) {
-    setProspects((prev) =>
-      prev.map((p) => (p.id === id ? { ...p, addedToLeads: true } : p))
-    );
+  async function handleAddToLeads(id: string) {
+    const prospect = prospects.find((p) => p.id === id);
+    if (!prospect) return;
+
+    const result = await addRawProspectToLead({
+      name: prospect.name,
+      phone: prospect.phone,
+      website: prospect.website,
+      address: prospect.address,
+      googleRating: prospect.googleRating,
+      googleReviews: prospect.googleReviews,
+      score: prospect.score,
+      issue: prospect.issue,
+      hasWebsite: prospect.hasWebsite,
+      mobileScore: prospect.mobileScore,
+    });
+
+    if (result.success) {
+      setProspects((prev) =>
+        prev.map((p) => (p.id === id ? { ...p, addedToLeads: true } : p))
+      );
+      showNotification(`${prospect.name} lead olarak eklendi.`, "success");
+    } else {
+      showNotification(result.error || "Eklenemedi.", "error");
+    }
+  }
+
+  async function handleAddAll() {
+    const toAdd = filtered.filter((p) => !p.addedToLeads);
+    if (toAdd.length === 0) {
+      showNotification("Eklenecek yeni prospect yok.", "info");
+      return;
+    }
+
+    let added = 0;
+    for (const prospect of toAdd) {
+      const result = await addRawProspectToLead({
+        name: prospect.name,
+        phone: prospect.phone,
+        website: prospect.website,
+        address: prospect.address,
+        googleRating: prospect.googleRating,
+        googleReviews: prospect.googleReviews,
+        score: prospect.score,
+        issue: prospect.issue,
+        hasWebsite: prospect.hasWebsite,
+        mobileScore: prospect.mobileScore,
+      });
+      if (result.success) {
+        added++;
+        setProspects((prev) =>
+          prev.map((p) =>
+            p.id === prospect.id ? { ...p, addedToLeads: true } : p
+          )
+        );
+      }
+    }
+    showNotification(`${added}/${toAdd.length} prospect lead olarak eklendi.`, "success");
   }
 
   const filtered = prospects.filter((p) => {
@@ -77,8 +146,23 @@ export default function ProspectSearch({
     return true;
   });
 
+  const notifColors = {
+    info: "border-admin-blue bg-admin-blue-dim text-admin-blue",
+    success: "border-admin-green bg-admin-green-dim text-admin-green",
+    error: "border-admin-red bg-admin-red-dim text-admin-red",
+  };
+
   return (
     <div className="space-y-4">
+      {/* Notification */}
+      {notification && (
+        <div
+          className={`rounded-lg border px-4 py-2.5 text-[12px] font-medium transition-all ${notifColors[notification.type]}`}
+        >
+          {notification.msg}
+        </div>
+      )}
+
       {/* Search Form */}
       <div className="rounded-xl border border-admin-border bg-admin-bg2 p-4">
         <div className="mb-3 text-[12px] font-medium text-admin-muted">
@@ -149,7 +233,10 @@ export default function ProspectSearch({
             <span className="text-[11px] text-admin-muted">
               {filtered.length} işletme bulundu
             </span>
-            <button className="rounded bg-admin-green px-2.5 py-1 text-[10px] font-medium text-white">
+            <button
+              onClick={handleAddAll}
+              className="rounded bg-admin-green px-2.5 py-1 text-[10px] font-medium text-white hover:brightness-110 transition-colors"
+            >
               Tümünü Listeye Ekle
             </button>
           </div>
@@ -175,7 +262,14 @@ export default function ProspectSearch({
                     <ScoreBadge score={p.score} />
                   </td>
                   <td className="px-4 py-2.5">
-                    <div className="font-medium">{p.name}</div>
+                    <a
+                      href={mapsUrl(p.name, p.address)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="font-medium hover:text-admin-accent transition-colors"
+                    >
+                      {p.name}
+                    </a>
                     <div className="text-[11px] text-admin-muted">
                       📍 {p.address}
                     </div>
@@ -236,7 +330,7 @@ export default function ProspectSearch({
                           href={`https://wa.me/90${p.phone.replace(/\D/g, "").slice(-10)}`}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="rounded bg-admin-green px-2 py-1 text-[10px] font-medium text-white"
+                          className="rounded bg-admin-green px-2 py-1 text-[10px] font-medium text-white hover:brightness-110 transition-colors"
                         >
                           WA
                         </a>
@@ -248,7 +342,7 @@ export default function ProspectSearch({
                       ) : (
                         <button
                           onClick={() => handleAddToLeads(p.id)}
-                          className="rounded bg-admin-accent px-2 py-1 text-[10px] font-medium text-white"
+                          className="rounded bg-admin-accent px-2 py-1 text-[10px] font-medium text-white hover:brightness-110 transition-colors"
                         >
                           Lead Ekle
                         </button>
