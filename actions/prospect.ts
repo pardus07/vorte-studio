@@ -3,13 +3,13 @@
 import { prisma } from "@/lib/prisma";
 
 // Puanlama (0-100) — yüksek skor = daha iyi müşteri adayı
-export function calculateScore(item: {
+export async function calculateScore(item: {
   website?: string | null;
   mobileScore?: number | null;
   ssl?: boolean;
   reviewsCount?: number | null;
   phone?: string | null;
-}): number {
+}): Promise<number> {
   let score = 0;
   if (!item.website) score += 40;
   if (item.mobileScore && item.mobileScore < 50) score += 25;
@@ -19,11 +19,11 @@ export function calculateScore(item: {
   return Math.min(score, 100);
 }
 
-export function getIssueLabel(item: {
+export async function getIssueLabel(item: {
   website?: string | null;
   mobileScore?: number | null;
   ssl?: boolean;
-}): string {
+}): Promise<string> {
   if (!item.website) return "Site yok";
   if (item.mobileScore && item.mobileScore < 50)
     return `Mobil ${item.mobileScore}/100`;
