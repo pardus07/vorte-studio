@@ -1,6 +1,7 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
+import { auditWebsite } from "@/lib/pagespeed";
 
 // Puanlama (0-100) — yüksek skor = daha iyi müşteri adayı
 export async function calculateScore(item: {
@@ -42,7 +43,6 @@ export async function getIssueLabel(item: {
 export async function auditSingleWebsite(
   website: string
 ): Promise<{ mobileScore: number | null; sslValid: boolean }> {
-  const { auditWebsite } = await import("@/lib/pagespeed");
   return auditWebsite(website);
 }
 
