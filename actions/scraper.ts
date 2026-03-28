@@ -39,7 +39,7 @@ export async function createScraperJob(query: string, lang: string = "tr") {
     }
 
     const data = await res.json();
-    return { success: true, jobId: data.id || data.job_id };
+    return { success: true, jobId: data.id || data.ID || data.job_id };
   } catch (err) {
     console.error("Scraper bağlantı hatası:", err);
     return {
@@ -58,7 +58,7 @@ export async function checkScraperJob(jobId: string) {
     const data = await res.json();
     return {
       success: true,
-      status: data.status,
+      status: data.Status || data.status,
       totalFound: data.total || 0,
     };
   } catch {
@@ -78,28 +78,27 @@ export async function getScraperResults(jobId: string): Promise<{
 
     const text = await res.text();
 
-    // CSV parse — basit satır-tabanlı
-    const lines = text.trim().split("\n");
-    if (lines.length <= 1) return { success: true, results: [] };
+    // CSV parse — tırnakları ve JSON içeren sütunları destekler
+    const rows = parseCSV(text);
+    if (rows.length <= 1) return { success: true, results: [] };
 
-    const headers = lines[0].split(",").map((h) => h.trim().toLowerCase());
+    const headers = rows[0].map((h) => h.trim().toLowerCase());
     const results: ScraperResult[] = [];
 
-    for (let i = 1; i < lines.length; i++) {
-      const values = lines[i].split(",");
+    for (let i = 1; i < rows.length; i++) {
       const row: Record<string, string> = {};
       headers.forEach((h, j) => {
-        row[h] = values[j]?.trim() || "";
+        row[h] = rows[i][j]?.trim() || "";
       });
 
       results.push({
         title: row.title || row.name || "",
         phone: row.phone || "",
         website: row.website || "",
-        address: row.address || row.full_address || "",
-        rating: parseFloat(row.rating || row.google_rating || "0") || 0,
-        reviews: parseInt(row.reviews || row.reviews_count || "0") || 0,
-        place_url: row.place_url || row.google_maps_url || "",
+        address: row.address || row.complete_address || "",
+        rating: parseFloat(row.review_rating || row.rating || "0") || 0,
+        reviews: parseInt(row.review_count || row.reviews || "0") || 0,
+        place_url: row.link || row.place_url || "",
       });
     }
 
@@ -108,6 +107,39 @@ export async function getScraperResults(jobId: string): Promise<{
     console.error("Scraper sonuç hatası:", err);
     return { success: false, error: "Sonuçlar alınamadı." };
   }
+}
+
+// CSV parser — tırnak içindeki virgülleri ve JSON'ı doğru işler
+function parseCSV(text: string): string[][] {
+  const rows: string[][] = [];
+  const lines = text.split("\n");
+
+  for (const line of lines) {
+    if (!line.trim()) continue;
+    const cells: string[] = [];
+    let current = "";
+    let inQuotes = false;
+
+    for (let i = 0; i < line.length; i++) {
+      const ch = line[i];
+      if (ch === '"') {
+        if (inQuotes && line[i + 1] === '"') {
+          current += '"';
+          i++;
+        } else {
+          inQuotes = !inQuotes;
+        }
+      } else if (ch === "," && !inQuotes) {
+        cells.push(current);
+        current = "";
+      } else {
+        current += ch;
+      }
+    }
+    cells.push(current);
+    rows.push(cells);
+  }
+  return rows;
 }
 
 // Scraper sağlık kontrolü

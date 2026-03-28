@@ -101,7 +101,7 @@ export default function ProspectSearch({
         return;
       }
 
-      if (status.status === "completed" || status.status === "done") {
+      if (status.status === "ok" || status.status === "completed" || status.status === "done") {
         clearInterval(poll);
         const results = await getScraperResults(job.jobId!);
 
