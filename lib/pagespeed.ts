@@ -22,7 +22,7 @@ export async function auditWebsite(url: string): Promise<PageSpeedResult> {
     endpoint.searchParams.set("category", "performance");
 
     const res = await fetch(endpoint.toString(), {
-      signal: AbortSignal.timeout(15000),
+      signal: AbortSignal.timeout(60000),
     });
 
     if (!res.ok) {
