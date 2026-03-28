@@ -18,16 +18,17 @@ type ScraperResult = {
 };
 
 // Yeni arama işi oluştur
-export async function createScraperJob(query: string, language: string = "tr") {
+export async function createScraperJob(query: string, lang: string = "tr") {
   try {
     const res = await fetch(`${SCRAPER_URL}/api/v1/jobs`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        queries: [query],
-        language,
-        max_depth: 1,
-        email_extraction: false,
+        name: query,
+        keywords: [query],
+        lang,
+        depth: 1,
+        max_time: 300,
       }),
     });
 
