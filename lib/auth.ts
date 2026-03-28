@@ -11,8 +11,9 @@ const nextAuth = NextAuth({
         password: { label: "Sifre", type: "password" },
       },
       async authorize(credentials) {
-        const hash = process.env.ADMIN_PASSWORD_HASH;
-        if (!hash) return null;
+        // Coolify/Docker'da $ isareti hash'i bozuyor, bu yuzden hash dogrudan burada
+        const hash = process.env.ADMIN_PASSWORD_HASH
+          || "$2b$12$cNWNJYUP5b1c6pBwviaDmOd0.PXhThTtSpgDKGrvu2i/D3VeVZNnK";
         const valid = await bcrypt.compare(
           credentials.password as string,
           hash
