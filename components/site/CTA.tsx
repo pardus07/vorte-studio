@@ -1,8 +1,12 @@
 "use client";
 
+import { useState } from "react";
 import RevealSection from "./RevealSection";
+import ContactForm from "./ContactForm";
 
 export default function CTA() {
+  const [showForm, setShowForm] = useState(false);
+
   return (
     <section
       id="contact"
@@ -42,7 +46,10 @@ export default function CTA() {
         </p>
       </RevealSection>
 
-      <RevealSection delay={300} className="mt-12 flex flex-wrap items-center justify-center gap-4">
+      <RevealSection
+        delay={300}
+        className="mt-12 flex flex-wrap items-center justify-center gap-4"
+      >
         <a
           href="https://wa.me/90XXXXXXXXXX"
           className="inline-flex items-center gap-2 rounded-lg px-7 py-3.5 text-[15px] font-medium text-white transition-all hover:-translate-y-0.5"
@@ -58,13 +65,22 @@ export default function CTA() {
           </svg>
           WhatsApp ile Yaz
         </a>
+        <button
+          onClick={() => setShowForm(true)}
+          className="inline-flex items-center gap-2 rounded-lg px-7 py-3.5 text-[15px] font-medium text-white transition-all hover:-translate-y-0.5"
+          style={{ background: "#f97316" }}
+        >
+          Teklif Formu &rarr;
+        </button>
         <a
           href="mailto:studio@vorte.com.tr"
           className="inline-flex items-center gap-2 rounded-lg border border-border bg-transparent px-7 py-3.5 text-[15px] text-text transition-all hover:bg-bg2"
         >
-          ✉️ studio@vorte.com.tr
+          studio@vorte.com.tr
         </a>
       </RevealSection>
+
+      {showForm && <ContactForm onClose={() => setShowForm(false)} />}
     </section>
   );
 }
