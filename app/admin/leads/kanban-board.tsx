@@ -91,11 +91,11 @@ export default function KanbanBoard({ leads: initial }: { leads: Lead[] }) {
         </button>
       </div>
 
-      <div className="flex gap-3 overflow-x-auto pb-2">
+      <div className="flex gap-3 overflow-x-auto pb-2" style={{ minWidth: "max-content" }}>
         {columns.map((col) => {
           const colLeads = leads.filter((l) => l.status === col.key);
           return (
-            <div key={col.key} className="flex w-64 shrink-0 flex-col rounded-xl border border-admin-border bg-admin-bg2">
+            <div key={col.key} className="flex w-64 shrink-0 flex-col rounded-xl border border-admin-border bg-admin-bg2 max-h-[calc(100vh-200px)]">
               {/* Sütun başlığı */}
               <div className="border-b border-admin-border px-3 py-2.5">
                 <div className="flex items-center gap-2">
@@ -111,7 +111,7 @@ export default function KanbanBoard({ leads: initial }: { leads: Lead[] }) {
               </div>
 
               {/* Kartlar */}
-              <div className="flex flex-col gap-2 p-2" style={{ minHeight: 120 }}>
+              <div className="flex flex-1 flex-col gap-2 overflow-y-auto p-2" style={{ minHeight: 120 }}>
                 {colLeads.map((lead) => {
                   const daysAgo = Math.floor((Date.now() - new Date(lead.updatedAt).getTime()) / (1000 * 60 * 60 * 24));
                   const needsFollowup = daysAgo >= 3 && col.key !== "WON" && col.key !== "LOST";
