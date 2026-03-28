@@ -71,13 +71,16 @@ export async function getFinanceData() {
       .filter((p) => p.status === "PAID" && p.paidAt && p.paidAt >= thisMonthStart)
       .reduce((s, p) => s + p.amount, 0);
 
-    const pendingTotal = payments
-      .filter((p) => p.status === "PENDING" || (p.status === "PENDING" && p.dueDate < now))
-      .reduce((s, p) => s + p.amount, 0);
+    const pendingPayments = payments.filter((p) => {
+      const s = p.status as string;
+      return s === "PENDING" || s === "OVERDUE";
+    });
+    const pendingTotal = pendingPayments.reduce((s, p) => s + p.amount, 0);
 
-    const overdueCount = payments.filter(
-      (p) => p.status === "PENDING" && p.dueDate < now
-    ).length;
+    const overdueCount = payments.filter((p) => {
+      const s = p.status as string;
+      return s === "PENDING" && p.dueDate < now;
+    }).length;
 
     const maintenanceTotal = maintenances.reduce((s, m) => s + m.monthlyFee, 0);
 
