@@ -16,6 +16,8 @@ const statusOptions = [
   { value: "INACTIVE", label: "Eski" },
 ];
 
+type ClientStatus = "POTENTIAL" | "ACTIVE" | "MAINTENANCE" | "INACTIVE";
+
 type ClientData = {
   id?: string;
   name: string;
@@ -23,7 +25,7 @@ type ClientData = {
   email: string;
   phone: string;
   sector: string;
-  status: string;
+  status: ClientStatus;
   notes: string;
 };
 
@@ -40,7 +42,7 @@ export default function ClientFormModal({
   editData?: ClientData;
 }) {
   const isEdit = !!editData?.id;
-  const [form, setForm] = useState<ClientData>(editData || empty);
+  const [form, setForm] = useState<ClientData>(editData || { ...empty });
   const [status, setStatus] = useState<"idle" | "saving" | "error">("idle");
   const [error, setError] = useState("");
 
@@ -61,8 +63,13 @@ export default function ClientFormModal({
     }
   }
 
-  const set = (key: keyof ClientData, val: string) =>
-    setForm((p) => ({ ...p, [key]: val }));
+  function set(key: keyof ClientData, val: string) {
+    if (key === "status") {
+      setForm((p) => ({ ...p, status: val as ClientStatus }));
+    } else {
+      setForm((p) => ({ ...p, [key]: val }));
+    }
+  }
 
   const inputCls = "w-full rounded-lg border border-admin-border bg-admin-bg3 px-3 py-2 text-[12px] text-admin-text focus:border-admin-accent focus:outline-none";
   const labelCls = "mb-1 block text-[11px] font-medium text-admin-muted";
