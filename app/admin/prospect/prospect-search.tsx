@@ -333,7 +333,7 @@ export default function ProspectSearch({
               <thead>
                 <tr className="border-b border-admin-border text-left text-[11px] font-medium text-admin-muted">
                   <th className="px-4 py-2.5">Skor</th><th className="px-4 py-2.5">İşletme</th><th className="px-4 py-2.5">Telefon</th>
-                  <th className="px-4 py-2.5">Website</th><th className="px-4 py-2.5">★ Yorum</th><th className="px-4 py-2.5">Sorun</th><th className="px-4 py-2.5"></th>
+                  <th className="px-4 py-2.5">Website</th><th className="px-4 py-2.5">Mobil Skor</th><th className="px-4 py-2.5">★ Yorum</th><th className="px-4 py-2.5">Sorun</th><th className="px-4 py-2.5"></th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-admin-border">
@@ -350,18 +350,31 @@ export default function ProspectSearch({
                     <td className="px-4 py-2.5">
                       {!p.hasWebsite ? (
                         <span className="rounded-full bg-admin-red-dim px-2 py-0.5 text-[10px] font-medium text-admin-red">Site yok</span>
-                      ) : p.mobileScore !== null && p.mobileScore < 50 ? (
-                        <span className="rounded-full bg-admin-red-dim px-2 py-0.5 text-[10px] font-medium text-admin-red">Mobil {p.mobileScore}/100</span>
-                      ) : p.mobileScore !== null && p.mobileScore < 70 ? (
-                        <span className="rounded-full bg-admin-amber-dim px-2 py-0.5 text-[10px] font-medium text-admin-amber">Mobil {p.mobileScore}/100</span>
                       ) : !p.sslValid ? (
                         <span className="rounded-full bg-admin-amber-dim px-2 py-0.5 text-[10px] font-medium text-admin-amber">SSL yok</span>
-                      ) : p.mobileScore !== null ? (
-                        <span className="rounded-full bg-admin-green-dim px-2 py-0.5 text-[10px] font-medium text-admin-green">Mobil {p.mobileScore}/100</span>
-                      ) : p.issue === "Analiz ediliyor..." ? (
-                        <span className="rounded-full bg-admin-bg4 px-2 py-0.5 text-[10px] font-medium text-admin-muted">Analiz...</span>
                       ) : (
                         <span className="rounded-full bg-admin-green-dim px-2 py-0.5 text-[10px] font-medium text-admin-green">İyi</span>
+                      )}
+                    </td>
+                    <td className="px-4 py-2.5">
+                      {!p.hasWebsite ? (
+                        <span className="text-admin-muted2">—</span>
+                      ) : p.mobileScore !== null ? (
+                        <div className="flex items-center gap-1.5">
+                          <div className="h-1.5 w-12 overflow-hidden rounded-full bg-admin-bg4">
+                            <div className="h-full rounded-full" style={{
+                              width: `${p.mobileScore}%`,
+                              background: p.mobileScore < 50 ? "var(--color-admin-red)" : p.mobileScore < 70 ? "var(--color-admin-amber)" : "var(--color-admin-green)",
+                            }} />
+                          </div>
+                          <span className={`text-[11px] font-bold ${p.mobileScore < 50 ? "text-admin-red" : p.mobileScore < 70 ? "text-admin-amber" : "text-admin-green"}`}>
+                            {p.mobileScore}
+                          </span>
+                        </div>
+                      ) : p.issue === "Analiz ediliyor..." ? (
+                        <span className="text-[10px] text-admin-muted">Analiz...</span>
+                      ) : (
+                        <span className="text-admin-muted2">—</span>
                       )}
                     </td>
                     <td className="px-4 py-2.5">
