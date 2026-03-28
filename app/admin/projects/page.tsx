@@ -1,6 +1,8 @@
 import { prisma } from "@/lib/prisma";
 import { seedProjects } from "@/lib/seed-data";
 
+export const dynamic = "force-dynamic";
+
 const statusConfig: Record<string, { label: string; color: string }> = {
   DISCOVERY: { label: "Keşif", color: "bg-admin-purple-dim text-admin-purple" },
   DESIGN: { label: "Tasarım", color: "bg-admin-amber-dim text-admin-amber" },

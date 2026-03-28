@@ -1,5 +1,8 @@
 import { prisma } from "@/lib/prisma";
 import StatCard from "@/components/admin/StatCard";
+
+export const dynamic = "force-dynamic";
+
 import {
   seedAlerts,
   seedProjects,

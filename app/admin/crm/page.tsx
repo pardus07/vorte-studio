@@ -2,6 +2,8 @@ import { prisma } from "@/lib/prisma";
 import { seedClients } from "@/lib/seed-data";
 import CrmClientList from "./client-list";
 
+export const dynamic = "force-dynamic";
+
 async function getClients() {
   try {
     const clients = await prisma.client.findMany({
