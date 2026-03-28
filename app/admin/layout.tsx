@@ -7,7 +7,7 @@ export default function AdminLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex h-screen overflow-hidden bg-admin-bg font-[family-name:var(--font-geist)]">
+    <div className="flex h-screen overflow-hidden bg-admin-bg text-admin-text font-[family-name:var(--font-geist)]">
       <Sidebar />
       <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
         <Topbar />
