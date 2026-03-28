@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import StatCard from "@/components/admin/StatCard";
+import { AlertList, LeadTable } from "./dashboard-actions";
 
 export const dynamic = "force-dynamic";
 
@@ -11,14 +12,32 @@ import {
 
 async function getStats() {
   try {
-    const [projectCount, pendingQuotes] = await Promise.all([
+    const [projectCount, pendingQuotes, maintenanceCount, paidTotal] = await Promise.all([
       prisma.project.count({ where: { status: { in: ["DISCOVERY", "DESIGN", "DEVELOPMENT", "TESTING"] } } }),
       prisma.quote.count({ where: { status: "SENT" } }),
+      prisma.maintenance.count({ where: { isActive: true } }),
+      prisma.payment.aggregate({ where: { status: "PAID" }, _sum: { amount: true } }),
     ]);
-    return { projectCount, pendingQuotes, revenue: 34500, maintenanceRevenue: 7200 };
-  } catch {
-    return { projectCount: 3, pendingQuotes: 3, revenue: 34500, maintenanceRevenue: 7200 };
-  }
+
+    if (projectCount > 0 || pendingQuotes > 0) {
+      return {
+        projectCount,
+        pendingQuotes,
+        revenue: paidTotal._sum.amount ?? 0,
+        maintenanceRevenue: maintenanceCount * 2000,
+        maintenanceCount,
+      };
+    }
+  } catch { /* DB hatası — seed data kullan */ }
+
+  // Seed data'dan hesapla
+  return {
+    projectCount: seedProjects.length,
+    pendingQuotes: 3,
+    revenue: 34500,
+    maintenanceRevenue: 7200,
+    maintenanceCount: 4,
+  };
 }
 
 async function getActiveProjects() {
@@ -57,6 +76,7 @@ type DashboardLead = {
   sector?: string | null;
   budget?: string | null;
   type?: string;
+  phone?: string;
 };
 
 async function getRecentLeads(): Promise<DashboardLead[]> {
@@ -74,6 +94,7 @@ async function getRecentLeads(): Promise<DashboardLead[]> {
         sector: l.sector,
         budget: l.budget,
         address: l.address ?? undefined,
+        phone: l.phone ?? undefined,
       }));
   } catch { /* fallback */ }
   return seedLeads.map((l) => ({
@@ -87,45 +108,19 @@ async function getRecentLeads(): Promise<DashboardLead[]> {
   }));
 }
 
-const statusColors: Record<string, string> = {
-  COLD: "bg-admin-green-dim text-admin-green",
-  CONTACTED: "bg-admin-blue-dim text-admin-blue",
-  MEETING: "bg-admin-amber-dim text-admin-amber",
-  QUOTED: "bg-admin-blue-dim text-admin-blue",
-  WON: "bg-admin-green-dim text-admin-green",
-  LOST: "bg-admin-red-dim text-admin-red",
-};
-
-const sourceLabels: Record<string, { label: string; color: string }> = {
-  MAPS_SCRAPER: { label: "Maps Scraper", color: "bg-admin-accent-dim text-admin-accent" },
-  SITE_FORM: { label: "Site formu", color: "bg-admin-blue-dim text-admin-blue" },
-  LINKEDIN: { label: "LinkedIn", color: "bg-admin-purple-dim text-admin-purple" },
-  REFERRAL: { label: "Referans", color: "bg-admin-green-dim text-admin-green" },
-  MANUAL: { label: "Manuel", color: "bg-admin-amber-dim text-admin-amber" },
-};
-
-const statusLabels: Record<string, string> = {
-  COLD: "Yeni",
-  CONTACTED: "İletişim",
-  MEETING: "Görüşme",
-  QUOTED: "Teklif gönderildi",
-  WON: "Kazanıldı",
-  LOST: "Kaybedildi",
-};
-
-const dotColors: Record<string, string> = {
-  red: "bg-admin-red",
-  amber: "bg-admin-amber",
-  green: "bg-admin-green",
-  blue: "bg-admin-blue",
-};
-
 export default async function DashboardPage() {
   const [stats, projects, leads] = await Promise.all([
     getStats(),
     getActiveProjects(),
     getRecentLeads(),
   ]);
+
+  // Deadline bu hafta olan proje sayısı
+  const now = new Date();
+  const weekLater = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
+  const dueThisWeek = seedProjects.filter(
+    (p) => p.deadline <= weekLater && p.deadline >= now
+  ).length;
 
   return (
     <div className="space-y-5">
@@ -141,20 +136,20 @@ export default async function DashboardPage() {
         <StatCard
           label="Aktif proje"
           value={String(stats.projectCount)}
-          sub="1 bu hafta teslim"
+          sub={dueThisWeek > 0 ? `${dueThisWeek} bu hafta teslim` : "Devam eden projeler"}
         />
         <StatCard
           label="Bakım geliri"
           value={`₺${stats.maintenanceRevenue.toLocaleString("tr-TR")}`}
-          sub="4 aktif müşteri"
+          sub={`${stats.maintenanceCount} aktif müşteri`}
           color="accent"
         />
         <StatCard
           label="Bekleyen teklif"
           value={String(stats.pendingQuotes)}
-          sub="2 takip gerekiyor"
+          sub={stats.pendingQuotes > 0 ? `${Math.min(stats.pendingQuotes, 2)} takip gerekiyor` : "Bekleyen yok"}
           color="amber"
-          trend="warn"
+          trend={stats.pendingQuotes > 0 ? "warn" : undefined}
         />
       </div>
 
@@ -168,28 +163,7 @@ export default async function DashboardPage() {
               {seedAlerts.length} uyarı
             </span>
           </div>
-          <div className="divide-y divide-admin-border">
-            {seedAlerts.map((alert, i) => (
-              <div key={i} className="flex items-start gap-3 px-4 py-3">
-                <div
-                  className={`mt-1.5 h-2 w-2 shrink-0 rounded-full ${dotColors[alert.dot]}`}
-                />
-                <div className="min-w-0 flex-1">
-                  <div className="text-[12.5px] font-medium">{alert.title}</div>
-                  <div className="text-[11px] text-admin-muted">{alert.meta}</div>
-                </div>
-                <button
-                  className={`shrink-0 rounded px-2.5 py-1 text-[10px] font-medium ${
-                    alert.actionType === "primary"
-                      ? "bg-admin-accent text-white"
-                      : "border border-admin-border text-admin-muted hover:text-admin-text"
-                  }`}
-                >
-                  {alert.action}
-                </button>
-              </div>
-            ))}
-          </div>
+          <AlertList alerts={seedAlerts} />
         </div>
 
         {/* Active Projects */}
@@ -244,58 +218,7 @@ export default async function DashboardPage() {
             Pipeline →
           </a>
         </div>
-        <div className="overflow-x-auto">
-          <table className="w-full text-[12.5px]">
-            <thead>
-              <tr className="border-b border-admin-border text-left text-[11px] font-medium text-admin-muted">
-                <th className="px-4 py-2.5">İşletme</th>
-                <th className="px-4 py-2.5">Kaynak</th>
-                <th className="px-4 py-2.5">Tür</th>
-                <th className="px-4 py-2.5">Bütçe</th>
-                <th className="px-4 py-2.5">Durum</th>
-                <th className="px-4 py-2.5"></th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-admin-border">
-              {leads.map((lead) => {
-                const src = sourceLabels[lead.source] || sourceLabels.MANUAL;
-                const st = statusLabels[lead.status] || lead.status;
-                const stColor = statusColors[lead.status] || statusColors.COLD;
-                return (
-                  <tr key={lead.id} className="hover:bg-admin-bg3">
-                    <td className="px-4 py-2.5">
-                      <div className="font-medium">{lead.name}</div>
-                      <div className="text-[11px] text-admin-muted">
-                        {lead.address || lead.sector || ""}
-                      </div>
-                    </td>
-                    <td className="px-4 py-2.5">
-                      <span className={`rounded-full px-2 py-0.5 text-[10px] font-medium ${src.color}`}>
-                        {src.label}
-                      </span>
-                    </td>
-                    <td className="px-4 py-2.5 text-admin-muted">
-                      {lead.type || "Web sitesi"}
-                    </td>
-                    <td className="px-4 py-2.5">
-                      {lead.budget || "—"}
-                    </td>
-                    <td className="px-4 py-2.5">
-                      <span className={`rounded-full px-2 py-0.5 text-[10px] font-medium ${stColor}`}>
-                        {st}
-                      </span>
-                    </td>
-                    <td className="px-4 py-2.5">
-                      <button className="rounded bg-admin-accent px-2.5 py-1 text-[10px] font-medium text-white">
-                        WA Gönder
-                      </button>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
+        <LeadTable leads={leads} />
       </div>
     </div>
   );
