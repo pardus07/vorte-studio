@@ -10,7 +10,7 @@ async function getProjects() {
       orderBy: { updatedAt: "desc" },
       include: {
         client: { select: { id: true, name: true } },
-        milestones: { orderBy: { createdAt: "asc" } },
+        milestones: { orderBy: { dueDate: "asc" } },
       },
     });
     if (projects.length > 0)

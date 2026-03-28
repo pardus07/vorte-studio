@@ -10,7 +10,7 @@ async function getProject(id: string) {
       where: { id },
       include: {
         client: { select: { id: true, name: true } },
-        milestones: { orderBy: { createdAt: "asc" } },
+        milestones: { orderBy: { dueDate: "asc" } },
         activities: { orderBy: { createdAt: "desc" }, take: 20 },
       },
     });

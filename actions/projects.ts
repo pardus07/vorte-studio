@@ -179,7 +179,7 @@ export async function getProjectById(id: string) {
       where: { id },
       include: {
         client: { select: { id: true, name: true } },
-        milestones: { orderBy: { createdAt: "asc" } },
+        milestones: { orderBy: { dueDate: "asc" } },
         activities: { orderBy: { createdAt: "desc" }, take: 20 },
       },
     });
