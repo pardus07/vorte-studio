@@ -63,6 +63,8 @@ export default function ProjectFormModal({
 
     const payload = {
       ...form,
+      type: form.type as "WEBSITE" | "ECOMMERCE" | "MOBILE_APP" | "REDESIGN" | "CUSTOM",
+      status: form.status as "DISCOVERY" | "DESIGN" | "DEVELOPMENT" | "TESTING" | "DELIVERED" | "ARCHIVED",
       budget: Number(form.budget) || 0,
     };
 
