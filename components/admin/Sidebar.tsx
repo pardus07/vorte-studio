@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { signOut } from "next-auth/react";
 import { cn } from "@/lib/utils";
 
 const sections = [
@@ -121,7 +122,7 @@ export default function Sidebar() {
           <div className="flex h-8 w-8 items-center justify-center rounded-full bg-admin-bg4 text-xs font-medium text-admin-muted">
             IA
           </div>
-          <div>
+          <div className="min-w-0 flex-1">
             <div className="text-[13px] font-medium text-admin-text">
               Ibrahim Abi
             </div>
@@ -129,6 +130,13 @@ export default function Sidebar() {
               studio.vorte.com.tr
             </div>
           </div>
+          <button
+            onClick={() => signOut({ callbackUrl: "/login" })}
+            title="Çıkış Yap"
+            className="flex h-7 w-7 items-center justify-center rounded-lg text-admin-muted transition-colors hover:bg-admin-bg4 hover:text-admin-red"
+          >
+            <LogoutIcon className="h-4 w-4" />
+          </button>
         </div>
       </div>
     </aside>
@@ -253,6 +261,22 @@ function MaintenanceIcon({ className }: { className?: string }) {
     >
       <circle cx="8" cy="8" r="2.5" />
       <path d="M8 1v2M8 13v2M1 8h2M13 8h2" />
+    </svg>
+  );
+}
+
+function LogoutIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      className={className}
+      viewBox="0 0 16 16"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+    >
+      <path d="M6 2H3.5A1.5 1.5 0 002 3.5v9A1.5 1.5 0 003.5 14H6" />
+      <path d="M10.5 11.5L14 8l-3.5-3.5" />
+      <path d="M14 8H6" />
     </svg>
   );
 }
