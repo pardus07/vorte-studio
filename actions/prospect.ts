@@ -6,28 +6,35 @@ import { prisma } from "@/lib/prisma";
 export async function calculateScore(item: {
   website?: string | null;
   mobileScore?: number | null;
-  ssl?: boolean;
+  sslValid?: boolean;
   reviewsCount?: number | null;
   phone?: string | null;
 }): Promise<number> {
   let score = 0;
-  if (!item.website) score += 40;
-  if (item.mobileScore && item.mobileScore < 50) score += 25;
-  if (item.ssl === false) score += 15;
-  if (item.reviewsCount && item.reviewsCount >= 50) score += 10;
-  if (item.phone) score += 5;
+
+  if (!item.website)                                    score += 40;
+  if (item.mobileScore !== null && item.mobileScore !== undefined) {
+    if (item.mobileScore < 50)                          score += 25;
+    else if (item.mobileScore < 70)                     score += 15;
+  }
+  if (item.sslValid === false)                          score += 15;
+  if (item.reviewsCount && item.reviewsCount >= 50)     score += 10;
+  if (item.phone)                                       score += 5;
+
   return Math.min(score, 100);
 }
 
 export async function getIssueLabel(item: {
   website?: string | null;
   mobileScore?: number | null;
-  ssl?: boolean;
+  sslValid?: boolean;
 }): Promise<string> {
   if (!item.website) return "Site yok";
-  if (item.mobileScore && item.mobileScore < 50)
-    return `Mobil ${item.mobileScore}/100`;
-  if (item.ssl === false) return "SSL yok";
+  if (item.mobileScore !== null && item.mobileScore !== undefined) {
+    if (item.mobileScore < 50) return `Mobil ${item.mobileScore}/100`;
+    if (item.mobileScore < 70) return `Yavaş site (${item.mobileScore}/100)`;
+  }
+  if (item.sslValid === false) return "SSL yok";
   return "Düşük öncelik";
 }
 
@@ -116,8 +123,7 @@ export async function getProspectsByBatch(batchId: string) {
   });
 }
 
-// Mock prospect verisinden doğrudan lead oluşturma
-// DB'de prospect kaydı olmadan çalışır
+// Scraper sonucundan lead oluşturma — dublike kontrol ile
 export async function addRawProspectToLead(data: {
   name: string;
   phone: string | null;
@@ -131,6 +137,14 @@ export async function addRawProspectToLead(data: {
   mobileScore: number | null;
 }) {
   try {
+    // Dublike kontrol — aynı isimde lead var mı?
+    const existing = await prisma.lead.findFirst({
+      where: { name: data.name, source: "MAPS_SCRAPER" },
+    });
+    if (existing) {
+      return { success: false, error: "duplicate", message: `${data.name} zaten Soğuk Lead olarak ekli.` };
+    }
+
     await prisma.lead.create({
       data: {
         name: data.name,
@@ -151,5 +165,18 @@ export async function addRawProspectToLead(data: {
   } catch (err) {
     console.error("Lead kayıt hatası:", err);
     return { success: false, error: "Lead kaydedilemedi." };
+  }
+}
+
+// DB'deki mevcut lead isimlerini getir (dublike kontrolü için)
+export async function getExistingLeadNames(): Promise<string[]> {
+  try {
+    const leads = await prisma.lead.findMany({
+      where: { source: "MAPS_SCRAPER" },
+      select: { name: true },
+    });
+    return leads.map((l) => l.name);
+  } catch {
+    return [];
   }
 }
