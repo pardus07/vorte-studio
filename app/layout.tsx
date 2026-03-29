@@ -26,10 +26,75 @@ const dmSans = DM_Sans({
   weight: ["300", "400", "500"],
 });
 
+const SITE_URL = "https://studio.vorte.com.tr";
+
 export const metadata: Metadata = {
-  title: "Vorte Studio — Dijital Deneyimler",
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: "Vorte Studio — Web Tasarım & Mobil Uygulama Ajansı | Türkiye",
+    template: "%s | Vorte Studio",
+  },
   description:
-    "Next.js, Kotlin ve modern teknolojilerle web siteleri ve mobil uygulamalar. WordPress degil — gercek kod, gercek hiz, gercek sonuc.",
+    "Next.js, Kotlin ve modern teknolojilerle profesyonel web siteleri, e-ticaret çözümleri ve mobil uygulamalar geliştiriyoruz. WordPress değil — gerçek kod, gerçek hız, gerçek sonuç. Türkiye geneli uzaktan hizmet.",
+  keywords: [
+    "web tasarım",
+    "web sitesi yapımı",
+    "mobil uygulama",
+    "e-ticaret sitesi",
+    "Next.js",
+    "Kotlin",
+    "React",
+    "yazılım ajansı",
+    "dijital ajans",
+    "Türkiye",
+    "freelance web geliştirici",
+    "kurumsal web sitesi",
+    "SEO uyumlu site",
+  ],
+  authors: [{ name: "Vorte Studio", url: SITE_URL }],
+  creator: "Vorte Studio",
+  publisher: "Vorte Studio",
+  formatDetection: { telephone: true, email: true },
+  alternates: { canonical: SITE_URL },
+  openGraph: {
+    type: "website",
+    locale: "tr_TR",
+    url: SITE_URL,
+    siteName: "Vorte Studio",
+    title: "Vorte Studio — Web Tasarım & Mobil Uygulama Ajansı",
+    description:
+      "Next.js, Kotlin ve modern teknolojilerle profesyonel web siteleri ve mobil uygulamalar. WordPress değil — gerçek kod, gerçek hız, gerçek sonuç.",
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "Vorte Studio — Dijital Deneyimler",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Vorte Studio — Web Tasarım & Mobil Uygulama Ajansı",
+    description:
+      "Next.js, Kotlin ve modern teknolojilerle profesyonel web siteleri ve mobil uygulamalar.",
+    images: ["/og-image.png"],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
+  icons: {
+    icon: "/favicon.ico",
+    apple: "/apple-touch-icon.png",
+  },
 };
 
 export default function RootLayout({

@@ -9,6 +9,7 @@ import Process from "@/components/site/Process";
 import TechStack from "@/components/site/TechStack";
 import CTA from "@/components/site/CTA";
 import Footer from "@/components/site/Footer";
+import JsonLd from "@/components/site/JsonLd";
 
 export const dynamic = "force-dynamic";
 
@@ -45,6 +46,7 @@ export default async function HomePage() {
 
   return (
     <>
+      <JsonLd />
       <Navbar />
       <Hero />
       <Marquee />
