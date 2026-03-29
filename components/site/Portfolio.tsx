@@ -81,16 +81,16 @@ export default function Portfolio({
           <div
             key={item.id}
             data-cursor
-            className={`group relative cursor-pointer overflow-hidden rounded-2xl border border-border ${
+            className={`group relative cursor-pointer overflow-hidden rounded-2xl border border-border bg-bg2 ${
               item.featured ? "md:col-span-2" : ""
             }`}
-            style={{ aspectRatio: item.featured ? "21/9" : "16/10" }}
+            style={item.thumbnail ? undefined : { aspectRatio: item.featured ? "21/9" : "16/10" }}
           >
             {item.thumbnail ? (
               <img
                 src={item.thumbnail}
                 alt={item.title}
-                className="h-full w-full object-cover transition-transform duration-700 ease-[cubic-bezier(0.23,1,0.32,1)] group-hover:scale-105"
+                className="h-full w-full object-contain transition-transform duration-700 ease-[cubic-bezier(0.23,1,0.32,1)] group-hover:scale-105"
               />
             ) : (
               <div
