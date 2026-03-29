@@ -29,22 +29,24 @@ export default function Process() {
         </h2>
       </RevealSection>
 
-      <RevealSection delay={200} className="mt-16 grid gap-px overflow-hidden rounded-2xl md:grid-cols-6">
-        {steps.map((step) => (
-          <div
-            key={step.num}
-            className="relative bg-bg px-6 py-8 transition-colors hover:bg-bg2"
-            style={{ borderRight: "1px solid rgba(255,255,255,0.07)" }}
-          >
-            <div className="mb-5 font-[family-name:var(--font-syne)] text-[11px] font-bold tracking-[0.1em] text-accent">
-              {step.num}
-            </div>
-            <div className="mb-2 font-[family-name:var(--font-syne)] text-[15px] font-bold tracking-[-0.01em]">
-              {step.name}
-            </div>
-            <div className="text-xs text-muted">{step.time}</div>
-          </div>
-        ))}
+      <RevealSection delay={200}>
+        <ol className="mt-16 grid list-none gap-px overflow-hidden rounded-2xl md:grid-cols-6">
+          {steps.map((step) => (
+            <li
+              key={step.num}
+              className="relative bg-bg px-6 py-8 transition-colors hover:bg-bg2"
+              style={{ borderRight: "1px solid rgba(255,255,255,0.07)" }}
+            >
+              <div className="mb-5 font-[family-name:var(--font-syne)] text-[11px] font-bold tracking-[0.1em] text-accent" aria-hidden="true">
+                {step.num}
+              </div>
+              <h3 className="mb-2 font-[family-name:var(--font-syne)] text-[15px] font-bold tracking-[-0.01em]">
+                {step.name}
+              </h3>
+              <p className="text-xs text-muted">{step.time}</p>
+            </li>
+          ))}
+        </ol>
       </RevealSection>
     </section>
   );

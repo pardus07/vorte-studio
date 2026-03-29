@@ -1,42 +1,47 @@
 export default function JsonLd() {
+  const SITE_URL = "https://studio.vorte.com.tr";
+
   const structuredData = {
     "@context": "https://schema.org",
     "@graph": [
       {
         "@type": "WebSite",
-        "@id": "https://studio.vorte.com.tr/#website",
-        url: "https://studio.vorte.com.tr",
+        "@id": `${SITE_URL}/#website`,
+        url: SITE_URL,
         name: "Vorte Studio",
         description:
           "Next.js, Kotlin ve modern teknolojilerle profesyonel web siteleri ve mobil uygulamalar geliştiriyoruz.",
-        publisher: { "@id": "https://studio.vorte.com.tr/#organization" },
+        publisher: { "@id": `${SITE_URL}/#organization` },
         inLanguage: "tr-TR",
       },
       {
         "@type": "Organization",
-        "@id": "https://studio.vorte.com.tr/#organization",
+        "@id": `${SITE_URL}/#organization`,
         name: "Vorte Studio",
-        url: "https://studio.vorte.com.tr",
+        url: SITE_URL,
         logo: {
           "@type": "ImageObject",
-          url: "https://studio.vorte.com.tr/og-image.png",
+          url: `${SITE_URL}/og-image.png`,
           width: 1200,
           height: 630,
         },
-        sameAs: [],
+        sameAs: [
+          "https://github.com/nicemicro",
+        ],
         contactPoint: {
           "@type": "ContactPoint",
           contactType: "customer service",
+          email: "studio@vorte.com.tr",
           availableLanguage: ["Turkish", "English"],
         },
       },
       {
         "@type": "ProfessionalService",
-        "@id": "https://studio.vorte.com.tr/#service",
+        "@id": `${SITE_URL}/#service`,
         name: "Vorte Studio",
         description:
           "Web tasarım, mobil uygulama geliştirme ve e-ticaret çözümleri sunan dijital ajans.",
-        url: "https://studio.vorte.com.tr",
+        url: SITE_URL,
         priceRange: "₺₺",
         areaServed: {
           "@type": "Country",
@@ -58,9 +63,56 @@ export default function JsonLd() {
           "TypeScript",
         ],
       },
+      {
+        "@type": "FAQPage",
+        "@id": `${SITE_URL}/#faq`,
+        mainEntity: [
+          {
+            "@type": "Question",
+            name: "Web sitesi yaptırmak ne kadar sürer?",
+            acceptedAnswer: {
+              "@type": "Answer",
+              text: "Proje kapsamına göre değişmekle birlikte, ortalama teslimat süremiz 3 haftadır. Keşif ve tasarım aşaması 1-2 hafta, geliştirme ve test 1-2 hafta sürer.",
+            },
+          },
+          {
+            "@type": "Question",
+            name: "WordPress yerine neden Next.js kullanıyorsunuz?",
+            acceptedAnswer: {
+              "@type": "Answer",
+              text: "Next.js, WordPress'e kıyasla 5 kata kadar daha hızlı sayfa yükleme sunar. SEO skoru 95+ garanti ediyoruz. Güvenlik açıkları minimumda, bakım maliyeti düşük ve tamamen özelleştirilebilir.",
+            },
+          },
+          {
+            "@type": "Question",
+            name: "Bakım paketi neleri kapsar?",
+            acceptedAnswer: {
+              "@type": "Answer",
+              text: "Hosting, SSL sertifikası, yedekleme, güvenlik güncellemeleri ve 7/24 izleme dahildir. Aylık sabit ücretle siteniz her zaman güncel ve güvende kalır.",
+            },
+          },
+          {
+            "@type": "Question",
+            name: "Uzaktan çalışıyor musunuz?",
+            acceptedAnswer: {
+              "@type": "Answer",
+              text: "Evet, Türkiye genelinde uzaktan hizmet veriyoruz. Tüm iletişim ve proje yönetimi dijital ortamda gerçekleşir. WhatsApp, e-posta ve video görüşme ile sürekli iletişim halindeyiz.",
+            },
+          },
+          {
+            "@type": "Question",
+            name: "E-ticaret sitesi yaptırabilir miyim?",
+            acceptedAnswer: {
+              "@type": "Answer",
+              text: "Evet, İyzico ödeme entegrasyonu, sipariş yönetimi, stok takibi ve admin paneli dahil tam kapsamlı e-ticaret çözümleri sunuyoruz.",
+            },
+          },
+        ],
+      },
     ],
   };
 
+  // Safe: structuredData is a hardcoded object, not user input
   return (
     <script
       type="application/ld+json"

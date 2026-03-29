@@ -13,13 +13,21 @@ export default function Navbar() {
   }, []);
 
   return (
-    <nav
-      className={`fixed inset-x-0 top-0 z-50 flex items-center justify-between px-6 py-6 transition-all duration-300 md:px-12 ${
-        scrolled
-          ? "border-b border-border bg-bg/85 backdrop-blur-xl"
-          : "border-b border-transparent"
-      }`}
-    >
+    <>
+      <a
+        href="#hizmetler"
+        className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-lg focus:bg-accent focus:px-4 focus:py-2 focus:text-sm focus:text-white"
+      >
+        İçeriğe geç
+      </a>
+      <nav
+        aria-label="Ana menü"
+        className={`fixed inset-x-0 top-0 z-50 flex items-center justify-between px-6 py-6 transition-all duration-300 md:px-12 ${
+          scrolled
+            ? "border-b border-border bg-bg/85 backdrop-blur-xl"
+            : "border-b border-transparent"
+        }`}
+      >
       <Link
         href="/"
         className="font-[family-name:var(--font-syne)] text-lg font-extrabold tracking-tight text-white"
@@ -46,6 +54,7 @@ export default function Navbar() {
       >
         Proje Başlat &rarr;
       </a>
-    </nav>
+      </nav>
+    </>
   );
 }

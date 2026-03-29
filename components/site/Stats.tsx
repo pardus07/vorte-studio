@@ -65,8 +65,9 @@ export default function Stats() {
   }, []);
 
   return (
-    <div
+    <section
       ref={ref}
+      aria-label="Rakamlarla Vorte Studio"
       className="grid grid-cols-2 gap-px border-b border-border md:grid-cols-4"
       style={{ background: "rgba(255,255,255,0.07)" }}
     >
@@ -96,6 +97,6 @@ export default function Stats() {
           />
         </div>
       ))}
-    </div>
+    </section>
   );
 }

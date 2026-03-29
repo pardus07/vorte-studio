@@ -40,16 +40,17 @@ export default function TechStack() {
         </p>
       </RevealSection>
 
-      <RevealSection delay={300} className="mt-12 flex flex-wrap gap-3">
-        {techs.map((tech) => (
-          <span
-            key={tech}
-            className="cursor-default rounded-lg border border-border bg-bg px-4 py-2.5 text-[13px] font-medium text-muted transition-all hover:text-white"
-            style={{ borderColor: undefined }}
-          >
-            {tech}
-          </span>
-        ))}
+      <RevealSection delay={300}>
+        <ul className="mt-12 flex list-none flex-wrap gap-3" aria-label="Kullandığımız teknolojiler">
+          {techs.map((tech) => (
+            <li
+              key={tech}
+              className="cursor-default rounded-lg border border-border bg-bg px-4 py-2.5 text-[13px] font-medium text-muted transition-all hover:text-white"
+            >
+              {tech}
+            </li>
+          ))}
+        </ul>
       </RevealSection>
     </section>
   );

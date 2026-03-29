@@ -6,6 +6,7 @@ export default function Hero() {
       {/* Grid background */}
       <div
         className="pointer-events-none absolute inset-0"
+        aria-hidden="true"
         style={{
           backgroundImage:
             "linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px)",
@@ -18,6 +19,7 @@ export default function Hero() {
       {/* Glow */}
       <div
         className="pointer-events-none absolute"
+        aria-hidden="true"
         style={{
           width: 600,
           height: 600,
@@ -128,6 +130,7 @@ export default function Hero() {
 
       {/* Scroll indicator */}
       <div
+        aria-hidden="true"
         style={{
           position: "absolute",
           bottom: 40,

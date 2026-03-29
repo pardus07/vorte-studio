@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import RevealSection from "./RevealSection";
 
 type PortfolioItemData = {
@@ -78,7 +79,7 @@ export default function Portfolio({
 
       <RevealSection delay={200} className="mt-16 grid gap-4 md:grid-cols-2">
         {data.map((item, i) => (
-          <div
+          <article
             key={item.id}
             data-cursor
             className={`group relative cursor-pointer overflow-hidden rounded-2xl border border-border bg-bg2 ${
@@ -87,10 +88,14 @@ export default function Portfolio({
             style={item.thumbnail ? undefined : { aspectRatio: item.featured ? "21/9" : "16/10" }}
           >
             {item.thumbnail ? (
-              <img
+              <Image
                 src={item.thumbnail}
-                alt={item.title}
+                alt={`${item.title} — ${item.category || "Proje"}`}
+                width={item.featured ? 1200 : 600}
+                height={item.featured ? 514 : 375}
                 className="h-full w-full object-contain transition-transform duration-700 ease-[cubic-bezier(0.23,1,0.32,1)] group-hover:scale-105"
+                loading={i === 0 ? "eager" : "lazy"}
+                sizes={item.featured ? "100vw" : "(max-width: 768px) 100vw, 50vw"}
               />
             ) : (
               <div
@@ -102,6 +107,8 @@ export default function Portfolio({
                     item.featured ? "rgba(255,69,0,0.1)" : "rgba(255,255,255,0.04)",
                   transition: "transform 0.7s cubic-bezier(0.23,1,0.32,1)",
                 }}
+                role="img"
+                aria-label={`${item.title} proje görseli`}
               >
                 {item.title.split(" ")[0]?.toUpperCase().slice(0, 5)}
               </div>
@@ -117,27 +124,45 @@ export default function Portfolio({
               onMouseEnter={(e) => (e.currentTarget.style.opacity = "1")}
               onMouseLeave={(e) => (e.currentTarget.style.opacity = "0")}
             >
-              <div className="mb-1.5 text-[11px] uppercase tracking-[0.12em] text-accent">
+              <p className="mb-1.5 text-[11px] uppercase tracking-[0.12em] text-accent">
                 {item.category}
-              </div>
-              <div className="mb-2 font-[family-name:var(--font-syne)] text-2xl font-bold tracking-[-0.02em]">
+              </p>
+              <h3 className="mb-2 font-[family-name:var(--font-syne)] text-2xl font-bold tracking-[-0.02em]">
                 {item.title}
-              </div>
-              <div className="text-xs text-muted">
+              </h3>
+              <p className="text-xs text-muted">
                 {item.techStack.join(" · ")}
-              </div>
+              </p>
             </div>
 
-            <div
-              className="absolute right-7 top-7 flex h-11 w-11 items-center justify-center rounded-full bg-accent text-lg text-white"
-              style={{
-                transform: "rotate(-45deg)",
-                transition: "transform 0.2s",
-              }}
-            >
-              &#8599;
-            </div>
-          </div>
+            {item.liveUrl && (
+              <a
+                href={item.liveUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={`${item.title} sitesini ziyaret et`}
+                className="absolute right-7 top-7 flex h-11 w-11 items-center justify-center rounded-full bg-accent text-lg text-white"
+                style={{
+                  transform: "rotate(-45deg)",
+                  transition: "transform 0.2s",
+                }}
+              >
+                &#8599;
+              </a>
+            )}
+            {!item.liveUrl && (
+              <div
+                className="absolute right-7 top-7 flex h-11 w-11 items-center justify-center rounded-full bg-accent text-lg text-white"
+                style={{
+                  transform: "rotate(-45deg)",
+                  transition: "transform 0.2s",
+                }}
+                aria-hidden="true"
+              >
+                &#8599;
+              </div>
+            )}
+          </article>
         ))}
       </RevealSection>
     </section>
