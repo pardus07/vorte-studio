@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { addRawProspectToLead, getExistingLeadNames, auditSingleWebsite } from "@/actions/prospect";
 import { createScraperJob, checkScraperJob, getScraperResults } from "@/actions/scraper";
+import { isGSM, formatWANumber } from "@/lib/phone-utils";
 import { cities, sectors } from "@/lib/turkey-data";
 
 type Prospect = {
@@ -401,8 +402,8 @@ export default function ProspectSearch({
                     </td>
                     <td className="px-4 py-2.5">
                       <div className="flex gap-1.5">
-                        {p.phone && (
-                          <a href={`https://wa.me/90${p.phone.replace(/\D/g, "").slice(-10)}`} target="_blank" rel="noopener noreferrer" className="rounded bg-admin-green px-2 py-1 text-[10px] font-medium text-white hover:brightness-110 transition-colors">WA</a>
+                        {isGSM(p.phone) && (
+                          <a href={`https://wa.me/${formatWANumber(p.phone!)}`} target="_blank" rel="noopener noreferrer" className="rounded bg-admin-green px-2 py-1 text-[10px] font-medium text-white hover:brightness-110 transition-colors">WA</a>
                         )}
                         {p.addedToLeads ? (
                           <span className="rounded bg-admin-bg4 px-2 py-1 text-[10px] text-admin-muted">Eklendi ✓</span>

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { updateLeadNotes, convertLeadToClient } from "@/actions/leads";
+import { isGSM, formatWANumber } from "@/lib/phone-utils";
 
 type Lead = {
   id: string; name: string; company: string; source: string;
@@ -43,9 +44,8 @@ export default function LeadDetailModal({
   }
 
   function openWhatsApp() {
-    if (!lead.phone) return;
-    const cleaned = lead.phone.replace(/\D/g, "").slice(-10);
-    window.open(`https://wa.me/90${cleaned}`, "_blank");
+    if (!lead.phone || !isGSM(lead.phone)) return;
+    window.open(`https://wa.me/${formatWANumber(lead.phone)}`, "_blank");
   }
 
   function openMail() {
@@ -100,7 +100,7 @@ export default function LeadDetailModal({
 
         {/* Aksiyonlar */}
         <div className="mb-4 flex flex-wrap gap-2">
-          {lead.phone && (
+          {isGSM(lead.phone) && (
             <button onClick={openWhatsApp} className="rounded-lg bg-admin-green px-3 py-1.5 text-[11px] font-medium text-white hover:brightness-110">WhatsApp</button>
           )}
           {lead.email && (

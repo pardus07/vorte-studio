@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { updateLeadStatus, convertLeadToClient, deleteLeadAction } from "@/actions/leads";
+import { isGSM, formatWANumber } from "@/lib/phone-utils";
 import LeadFormModal from "./lead-form-modal";
 import LeadDetailModal from "./lead-detail-modal";
 
@@ -82,8 +83,8 @@ export default function KanbanBoard({ leads: initial }: { leads: Lead[] }) {
   }
 
   function openWhatsApp(phone: string | null) {
-    if (!phone) return;
-    window.open(`https://wa.me/90${phone.replace(/\D/g, "").slice(-10)}`, "_blank");
+    if (!phone || !isGSM(phone)) return;
+    window.open(`https://wa.me/${formatWANumber(phone)}`, "_blank");
   }
 
   const notifColors = {
@@ -170,7 +171,7 @@ export default function KanbanBoard({ leads: initial }: { leads: Lead[] }) {
                       {/* Aksiyonlar */}
                       <div className="mt-2 flex items-center justify-between">
                         <div className="flex gap-1.5">
-                          {lead.phone && (
+                          {isGSM(lead.phone) && (
                             <button onClick={() => openWhatsApp(lead.phone)} className="rounded bg-admin-green px-2 py-1 text-[9px] font-medium text-white hover:brightness-110">WA</button>
                           )}
                           {canConvert && (
