@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { updateClientStatus } from "@/actions/crm";
+import { isGSM, formatWANumber } from "@/lib/phone-utils";
 import ClientFormModal from "./client-form-modal";
 
 type Client = {
@@ -105,9 +106,8 @@ export default function CrmClientList({ clients: initialClients }: { clients: Cl
   }
 
   function openWhatsApp(phone: string | null) {
-    if (!phone) return;
-    const cleaned = phone.replace(/\D/g, "").slice(-10);
-    window.open(`https://wa.me/90${cleaned}`, "_blank");
+    if (!phone || !isGSM(phone)) return;
+    window.open(`https://wa.me/${formatWANumber(phone)}`, "_blank");
   }
 
   const filtered = clients.filter((c) => {
@@ -225,12 +225,14 @@ export default function CrmClientList({ clients: initialClients }: { clients: Cl
                         >
                           Detay
                         </button>
-                        <button
-                          onClick={() => openWhatsApp(client.phone)}
-                          className="rounded bg-admin-green px-2 py-1 text-[10px] font-medium text-white hover:brightness-110 transition-colors"
-                        >
-                          WA
-                        </button>
+                        {isGSM(client.phone) && (
+                          <button
+                            onClick={() => openWhatsApp(client.phone)}
+                            className="rounded bg-admin-green px-2 py-1 text-[10px] font-medium text-white hover:brightness-110 transition-colors"
+                          >
+                            WA
+                          </button>
+                        )}
                       </div>
                     </td>
                   </tr>

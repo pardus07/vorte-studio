@@ -1,6 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { isGSM, formatWANumber } from "@/lib/phone-utils";
 
 type AlertItem = {
   type: string;
@@ -26,11 +27,8 @@ const actionRoutes: Record<string, string> = {
 };
 
 function openWhatsApp(phone?: string) {
-  const cleaned = phone?.replace(/\D/g, "") || "";
-  const waUrl = cleaned
-    ? `https://wa.me/90${cleaned}`
-    : "https://wa.me/90";
-  window.open(waUrl, "_blank");
+  if (!phone || !isGSM(phone)) return;
+  window.open(`https://wa.me/${formatWANumber(phone)}`, "_blank");
 }
 
 export function AlertList({ alerts }: { alerts: AlertItem[] }) {
@@ -156,12 +154,14 @@ export function LeadTable({ leads }: { leads: LeadRow[] }) {
                   </span>
                 </td>
                 <td className="px-4 py-2.5">
-                  <button
-                    onClick={() => openWhatsApp(lead.phone)}
-                    className="rounded bg-admin-accent px-2.5 py-1 text-[10px] font-medium text-white hover:brightness-110 transition-colors"
-                  >
-                    WA Gönder
-                  </button>
+                  {isGSM(lead.phone) && (
+                    <button
+                      onClick={() => openWhatsApp(lead.phone)}
+                      className="rounded bg-admin-accent px-2.5 py-1 text-[10px] font-medium text-white hover:brightness-110 transition-colors"
+                    >
+                      WA Gönder
+                    </button>
+                  )}
                 </td>
               </tr>
             );

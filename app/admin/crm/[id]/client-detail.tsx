@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { updateClient } from "@/actions/crm";
+import { isGSM, formatWANumber } from "@/lib/phone-utils";
 import ClientFormModal from "../client-form-modal";
 
 type Project = {
@@ -65,9 +66,8 @@ export default function ClientDetailView({ client }: { client: ClientData }) {
   }
 
   function openWhatsApp() {
-    if (!client.phone) return;
-    const cleaned = client.phone.replace(/\D/g, "").slice(-10);
-    window.open(`https://wa.me/90${cleaned}`, "_blank");
+    if (!client.phone || !isGSM(client.phone)) return;
+    window.open(`https://wa.me/${formatWANumber(client.phone)}`, "_blank");
   }
 
   return (
@@ -95,8 +95,8 @@ export default function ClientDetailView({ client }: { client: ClientData }) {
             )}
             <div className="mt-3 flex flex-wrap gap-4 text-[12px] text-admin-muted">
               {client.phone && (
-                <button onClick={openWhatsApp} className="flex items-center gap-1 hover:text-admin-green transition-colors">
-                  📞 {client.phone}
+                <button onClick={isGSM(client.phone) ? openWhatsApp : undefined} className={`flex items-center gap-1 ${isGSM(client.phone) ? "hover:text-admin-green cursor-pointer" : ""} transition-colors`}>
+                  {isGSM(client.phone) ? "📱" : "📞"} {client.phone}
                 </button>
               )}
               {client.email && <span>✉ {client.email}</span>}
