@@ -1,49 +1,100 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
-
-export async function getPortfolioItems() {
-  return prisma.portfolioItem.findMany({
-    orderBy: { order: "asc" },
-  });
-}
+import { revalidatePath } from "next/cache";
 
 export async function createPortfolioItem(data: {
   title: string;
   slug: string;
   description?: string;
-  liveUrl?: string;
   category?: string;
   techStack: string[];
+  liveUrl?: string;
+  thumbnail?: string;
+  featured: boolean;
+  isPublished: boolean;
+}) {
+  try {
+    const maxOrder = await prisma.portfolioItem.findFirst({
+      orderBy: { order: "desc" },
+      select: { order: true },
+    });
+    await prisma.portfolioItem.create({
+      data: {
+        title: data.title,
+        slug: data.slug,
+        description: data.description || null,
+        category: data.category || null,
+        techStack: data.techStack,
+        liveUrl: data.liveUrl || null,
+        thumbnail: data.thumbnail || null,
+        featured: data.featured,
+        isPublished: data.isPublished,
+        order: (maxOrder?.order ?? 0) + 1,
+      },
+    });
+    revalidatePath("/admin/portfolio");
+    revalidatePath("/");
+    return { success: true };
+  } catch (err) {
+    console.error("Portfolyo oluşturma hatası:", err);
+    return { success: false, error: "Proje oluşturulamadı." };
+  }
+}
+
+export async function updatePortfolioItem(id: string, data: {
+  title?: string;
+  slug?: string;
+  description?: string;
+  category?: string;
+  techStack?: string[];
+  liveUrl?: string;
+  thumbnail?: string;
   featured?: boolean;
   isPublished?: boolean;
 }) {
-  const maxOrder = await prisma.portfolioItem.findFirst({
-    orderBy: { order: "desc" },
-    select: { order: true },
-  });
-  return prisma.portfolioItem.create({
-    data: { ...data, order: (maxOrder?.order ?? 0) + 1 },
-  });
+  try {
+    await prisma.portfolioItem.update({ where: { id }, data });
+    revalidatePath("/admin/portfolio");
+    revalidatePath("/");
+    return { success: true };
+  } catch (err) {
+    console.error("Portfolyo güncelleme hatası:", err);
+    return { success: false, error: "Güncellenemedi." };
+  }
 }
 
-export async function updatePortfolioItem(
-  id: string,
-  data: {
-    title?: string;
-    slug?: string;
-    description?: string;
-    liveUrl?: string;
-    category?: string;
-    techStack?: string[];
-    featured?: boolean;
-    isPublished?: boolean;
-    order?: number;
+export async function togglePublishPortfolio(id: string) {
+  try {
+    const item = await prisma.portfolioItem.findUnique({ where: { id } });
+    if (!item) return { success: false, error: "Bulunamadı." };
+    await prisma.portfolioItem.update({
+      where: { id },
+      data: { isPublished: !item.isPublished },
+    });
+    revalidatePath("/admin/portfolio");
+    revalidatePath("/");
+    return { success: true };
+  } catch {
+    return { success: false, error: "Güncellenemedi." };
   }
-) {
-  return prisma.portfolioItem.update({ where: { id }, data });
 }
 
 export async function deletePortfolioItem(id: string) {
-  return prisma.portfolioItem.delete({ where: { id } });
+  try {
+    await prisma.portfolioItem.delete({ where: { id } });
+    revalidatePath("/admin/portfolio");
+    revalidatePath("/");
+    return { success: true };
+  } catch {
+    return { success: false, error: "Silinemedi." };
+  }
+}
+
+export async function getPortfolioItems() {
+  try {
+    return await prisma.portfolioItem.findMany({ orderBy: { order: "asc" } });
+  } catch {
+    return [];
+  }
 }
