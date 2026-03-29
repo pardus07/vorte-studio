@@ -21,12 +21,13 @@ export default async function HomePage() {
     techStack: string[];
     thumbnail: string | null;
     liveUrl: string | null;
+    featured: boolean;
   }[] = [];
 
   try {
     portfolioItems = await prisma.portfolioItem.findMany({
       where: { isPublished: true },
-      orderBy: { order: "asc" },
+      orderBy: [{ featured: "desc" }, { order: "asc" }],
       select: {
         id: true,
         title: true,
@@ -35,6 +36,7 @@ export default async function HomePage() {
         techStack: true,
         thumbnail: true,
         liveUrl: true,
+        featured: true,
       },
     });
   } catch {

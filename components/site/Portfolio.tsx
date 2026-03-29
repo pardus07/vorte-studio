@@ -10,6 +10,7 @@ type PortfolioItemData = {
   techStack: string[];
   thumbnail: string | null;
   liveUrl: string | null;
+  featured: boolean;
 };
 
 const fallbackItems: PortfolioItemData[] = [
@@ -21,6 +22,7 @@ const fallbackItems: PortfolioItemData[] = [
     techStack: ["Next.js 15", "Prisma", "PostgreSQL", "Iyzico", "Coolify"],
     thumbnail: null,
     liveUrl: "https://vorte.com.tr",
+    featured: true,
   },
   {
     id: "2",
@@ -30,6 +32,7 @@ const fallbackItems: PortfolioItemData[] = [
     techStack: ["Next.js", "Chart.js", "FreqTrade API"],
     thumbnail: null,
     liveUrl: null,
+    featured: false,
   },
   {
     id: "3",
@@ -39,6 +42,7 @@ const fallbackItems: PortfolioItemData[] = [
     techStack: ["Kotlin", "Jetpack Compose", "Room", "Hilt"],
     thumbnail: null,
     liveUrl: null,
+    featured: false,
   },
 ];
 
@@ -78,9 +82,9 @@ export default function Portfolio({
             key={item.id}
             data-cursor
             className={`group relative cursor-pointer overflow-hidden rounded-2xl border border-border ${
-              i === 0 ? "md:col-span-2" : ""
+              item.featured ? "md:col-span-2" : ""
             }`}
-            style={{ aspectRatio: i === 0 ? "21/9" : "16/10" }}
+            style={{ aspectRatio: item.featured ? "21/9" : "16/10" }}
           >
             {item.thumbnail ? (
               <img
@@ -93,9 +97,9 @@ export default function Portfolio({
                 className="flex h-full w-full items-center justify-center font-[family-name:var(--font-syne)] font-extrabold tracking-[-0.05em]"
                 style={{
                   background: bgGradients[i % bgGradients.length],
-                  fontSize: i === 0 ? 80 : 48,
+                  fontSize: item.featured ? 80 : 48,
                   color:
-                    i === 0 ? "rgba(255,69,0,0.1)" : "rgba(255,255,255,0.04)",
+                    item.featured ? "rgba(255,69,0,0.1)" : "rgba(255,255,255,0.04)",
                   transition: "transform 0.7s cubic-bezier(0.23,1,0.32,1)",
                 }}
               >
