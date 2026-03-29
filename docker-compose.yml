@@ -26,7 +26,6 @@ services:
     command: >
       -data-folder /gmapsdata
       -dsn postgresql://vorte:${DB_PASSWORD:-vorte123}@postgres:5432/vortestudio
-      -email
     depends_on:
       postgres:
         condition: service_healthy

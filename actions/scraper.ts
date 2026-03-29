@@ -30,7 +30,6 @@ export async function createScraperJob(query: string, lang: string = "tr") {
         lang,
         depth: 1,
         max_time: 300,
-        email: true,
       }),
     });
 
