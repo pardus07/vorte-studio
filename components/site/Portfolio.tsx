@@ -82,18 +82,26 @@ export default function Portfolio({
             }`}
             style={{ aspectRatio: i === 0 ? "21/9" : "16/10" }}
           >
-            <div
-              className="flex h-full w-full items-center justify-center font-[family-name:var(--font-syne)] font-extrabold tracking-[-0.05em]"
-              style={{
-                background: bgGradients[i % bgGradients.length],
-                fontSize: i === 0 ? 80 : 48,
-                color:
-                  i === 0 ? "rgba(255,69,0,0.1)" : "rgba(255,255,255,0.04)",
-                transition: "transform 0.7s cubic-bezier(0.23,1,0.32,1)",
-              }}
-            >
-              {item.title.split(" ")[0]?.toUpperCase().slice(0, 5)}
-            </div>
+            {item.thumbnail ? (
+              <img
+                src={item.thumbnail}
+                alt={item.title}
+                className="h-full w-full object-cover transition-transform duration-700 ease-[cubic-bezier(0.23,1,0.32,1)] group-hover:scale-105"
+              />
+            ) : (
+              <div
+                className="flex h-full w-full items-center justify-center font-[family-name:var(--font-syne)] font-extrabold tracking-[-0.05em]"
+                style={{
+                  background: bgGradients[i % bgGradients.length],
+                  fontSize: i === 0 ? 80 : 48,
+                  color:
+                    i === 0 ? "rgba(255,69,0,0.1)" : "rgba(255,255,255,0.04)",
+                  transition: "transform 0.7s cubic-bezier(0.23,1,0.32,1)",
+                }}
+              >
+                {item.title.split(" ")[0]?.toUpperCase().slice(0, 5)}
+              </div>
+            )}
 
             <div
               className="absolute inset-0 flex flex-col justify-end p-8"
