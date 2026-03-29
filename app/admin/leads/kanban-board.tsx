@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { updateLeadStatus, convertLeadToClient } from "@/actions/leads";
+import { updateLeadStatus, convertLeadToClient, deleteLeadAction } from "@/actions/leads";
 import LeadFormModal from "./lead-form-modal";
 import LeadDetailModal from "./lead-detail-modal";
 
@@ -36,6 +36,7 @@ export default function KanbanBoard({ leads: initial }: { leads: Lead[] }) {
   const [leads, setLeads] = useState(initial);
   const [notification, setNotification] = useState<{ msg: string; type: "success" | "error" | "info" } | null>(null);
   const [converting, setConverting] = useState<string | null>(null);
+  const [deleting, setDeleting] = useState<string | null>(null);
   const [showNewModal, setShowNewModal] = useState(false);
   const [detailLead, setDetailLead] = useState<Lead | null>(null);
 
@@ -64,6 +65,19 @@ export default function KanbanBoard({ leads: initial }: { leads: Lead[] }) {
       showNotif(`${result.clientName} CRM'e eklendi!`, "success");
     } else {
       showNotif(result.error || "CRM'e taşınamadı.", "error");
+    }
+  }
+
+  async function handleDelete(lead: Lead) {
+    if (!confirm(`"${lead.name}" silinecek. Emin misin?`)) return;
+    setDeleting(lead.id);
+    const result = await deleteLeadAction(lead.id);
+    setDeleting(null);
+    if (result.success) {
+      setLeads((prev) => prev.filter((l) => l.id !== lead.id));
+      showNotif(`${lead.name} silindi.`, "success");
+    } else {
+      showNotif(result.error || "Silinemedi.", "error");
     }
   }
 
@@ -154,16 +168,25 @@ export default function KanbanBoard({ leads: initial }: { leads: Lead[] }) {
                       </select>
 
                       {/* Aksiyonlar */}
-                      <div className="mt-2 flex gap-1.5">
-                        {lead.phone && (
-                          <button onClick={() => openWhatsApp(lead.phone)} className="rounded bg-admin-green px-2 py-1 text-[9px] font-medium text-white hover:brightness-110">WA</button>
-                        )}
-                        {canConvert && (
-                          <button onClick={() => handleConvert(lead)} disabled={converting === lead.id}
-                            className="rounded bg-admin-accent px-2 py-1 text-[9px] font-medium text-white hover:brightness-110 disabled:opacity-50">
-                            {converting === lead.id ? "Taşınıyor..." : "CRM'e Taşı"}
-                          </button>
-                        )}
+                      <div className="mt-2 flex items-center justify-between">
+                        <div className="flex gap-1.5">
+                          {lead.phone && (
+                            <button onClick={() => openWhatsApp(lead.phone)} className="rounded bg-admin-green px-2 py-1 text-[9px] font-medium text-white hover:brightness-110">WA</button>
+                          )}
+                          {canConvert && (
+                            <button onClick={() => handleConvert(lead)} disabled={converting === lead.id}
+                              className="rounded bg-admin-accent px-2 py-1 text-[9px] font-medium text-white hover:brightness-110 disabled:opacity-50">
+                              {converting === lead.id ? "Taşınıyor..." : "CRM'e Taşı"}
+                            </button>
+                          )}
+                        </div>
+                        <button
+                          onClick={() => handleDelete(lead)}
+                          disabled={deleting === lead.id}
+                          className="rounded px-2 py-1 text-[9px] font-medium text-admin-red hover:bg-admin-red-dim disabled:opacity-50"
+                        >
+                          {deleting === lead.id ? "..." : "Sil"}
+                        </button>
                       </div>
                     </div>
                   );

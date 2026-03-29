@@ -109,3 +109,15 @@ export async function convertLeadToClient(leadId: string) {
     return { success: false, error: "Lead CRM'e taşınamadı." };
   }
 }
+
+export async function deleteLeadAction(id: string) {
+  try {
+    await prisma.lead.delete({ where: { id } });
+    revalidatePath("/admin/leads");
+    revalidatePath("/admin/prospect");
+    return { success: true };
+  } catch (err) {
+    console.error("Lead silme hatası:", err);
+    return { success: false, error: "Lead silinemedi." };
+  }
+}
