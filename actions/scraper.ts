@@ -10,6 +10,7 @@ type ScraperJob = {
 type ScraperResult = {
   title: string;
   phone: string;
+  email: string;
   website: string;
   address: string;
   rating: number;
@@ -29,6 +30,7 @@ export async function createScraperJob(query: string, lang: string = "tr") {
         lang,
         depth: 1,
         max_time: 300,
+        email: true,
       }),
     });
 
@@ -94,6 +96,7 @@ export async function getScraperResults(jobId: string): Promise<{
       results.push({
         title: row.title || row.name || "",
         phone: row.phone || "",
+        email: row.emails || row.email || "",
         website: row.website || "",
         address: row.address || row.complete_address || "",
         rating: parseFloat(row.review_rating || row.rating || "0") || 0,
