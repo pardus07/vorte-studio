@@ -9,12 +9,21 @@ import { generateImage } from "@/lib/generate-image";
 
 export const maxDuration = 60;
 
+function getBaseUrl(req: NextRequest): string {
+  const proto = req.headers.get("x-forwarded-proto") || "http";
+  const host = req.headers.get("host") || "localhost:3000";
+  return `${proto}://${host}`;
+}
+
 export async function POST(req: NextRequest) {
   const session = await auth();
   if (!session) return NextResponse.json({ error: "Yetkisiz" }, { status: 401 });
 
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) return NextResponse.json({ error: "GEMINI_API_KEY tanımlanmamış" }, { status: 500 });
+
+  const baseUrl = getBaseUrl(req);
+  const cookies = req.headers.get("cookie") || "";
 
   try {
     const { messages, pageContext, approvedToolCall } = await req.json();
@@ -32,7 +41,7 @@ export async function POST(req: NextRequest) {
         imageUrl = imgResult.url;
         toolResult = { url: imgResult.url, filename: imgResult.filename, model: imgResult.model };
       } else {
-        const result = await executeApprovedToolCall(toolName, args);
+        const result = await executeApprovedToolCall(toolName, args, baseUrl, cookies);
         if (result.error) return NextResponse.json({ reply: `Hata: ${result.error}` });
         toolResult = (result.data as Record<string, unknown>) || { ok: true };
       }
@@ -103,7 +112,7 @@ export async function POST(req: NextRequest) {
         }
 
         // Level 1: otomatik çalıştır
-        const result = await resolveToolCall(nextToolName, nextArgs);
+        const result = await resolveToolCall(nextToolName, nextArgs, baseUrl, cookies);
         executedTools.push(nextToolName);
 
         response = await chat.sendMessage({
@@ -194,7 +203,7 @@ export async function POST(req: NextRequest) {
           toolResultData = { url: imgResult.url, filename: imgResult.filename, model: imgResult.model };
         }
       } else {
-        const result = await resolveToolCall(toolName, args);
+        const result = await resolveToolCall(toolName, args, baseUrl, cookies);
         toolResultData = result.data
           ? (result.data as Record<string, unknown>)
           : result.error

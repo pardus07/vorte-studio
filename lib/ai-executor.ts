@@ -1,7 +1,5 @@
 import { prisma } from "@/lib/prisma";
 import { TOOL_META } from "./ai-tools";
-import { createBlogPost, updateBlogPost, deleteBlogPost } from "@/actions/blog";
-import { upsertSetting } from "@/actions/settings";
 
 type ToolResult = {
   data?: unknown;
@@ -10,43 +8,48 @@ type ToolResult = {
 };
 
 /**
- * Level 1 tool'lari otomatik calistirir.
- * Level 2-3 tool'larini pendingArgs olarak dondurur (frontend onay bekler).
+ * Level 1 tool'ları otomatik çalıştırır.
+ * Level 2-3 tool'larını pendingArgs olarak döndürür (frontend onay bekler).
  */
 export async function resolveToolCall(
   toolName: string,
-  args: Record<string, unknown>
+  args: Record<string, unknown>,
+  baseUrl: string,
+  cookies: string
 ): Promise<ToolResult> {
   const meta = TOOL_META[toolName];
-  if (!meta) return { error: `Bilinmeyen arac: ${toolName}` };
+  if (!meta) return { error: `Bilinmeyen araç: ${toolName}` };
 
   // Level 2-3: frontend onay gerekli
   if (meta.level >= 2) {
     return { pendingArgs: args };
   }
 
-  // Level 1: otomatik calistir
-  return executeToolCall(toolName, args);
+  // Level 1: otomatik çalıştır
+  return executeReadToolCall(toolName, args);
 }
 
 /**
- * Frontend onay aldiktan sonra Level 2-3 tool'larini calistirir.
+ * Frontend onay aldıktan sonra Level 2-3 tool'larını çalıştırır.
+ * Mevcut API route'larına fetch ile yönlendirir (Vorte Tekstil pattern).
  */
 export async function executeApprovedToolCall(
   toolName: string,
-  args: Record<string, unknown>
+  args: Record<string, unknown>,
+  baseUrl: string,
+  cookies: string
 ): Promise<ToolResult> {
-  return executeToolCall(toolName, args);
+  return executeWriteToolCall(toolName, args, baseUrl, cookies);
 }
 
-async function executeToolCall(
+// ─── Level 1: Prisma-direct read operations ────────────────────
+
+async function executeReadToolCall(
   toolName: string,
   args: Record<string, unknown>
 ): Promise<ToolResult> {
   try {
     switch (toolName) {
-      // ── Level 1: Read Operations ──
-
       case "get_dashboard_stats": {
         const [projectCount, clientCount, leadCount, quoteCount, maintenanceRevenue] =
           await Promise.all([
@@ -99,7 +102,7 @@ async function executeToolCall(
         const post = await prisma.blogPost.findUnique({
           where: { id: args.id as string },
         });
-        if (!post) return { error: "Blog yazisi bulunamadi" };
+        if (!post) return { error: "Blog yazısı bulunamadı" };
         return { data: post };
       }
 
@@ -182,75 +185,92 @@ async function executeToolCall(
         return { data: items };
       }
 
-      // ── Level 2: Write Operations ──
-
-      case "create_blog_post": {
-        const tags = args.tags
-          ? (args.tags as string).split(",").map((t: string) => t.trim())
-          : [];
-        const result = await createBlogPost({
-          title: args.title as string,
-          slug: args.slug as string | undefined,
-          excerpt: args.excerpt as string | undefined,
-          content: args.content as string,
-          coverImage: args.coverImage as string | undefined,
-          seoTitle: args.seoTitle as string | undefined,
-          seoDescription: args.seoDescription as string | undefined,
-          tags,
-          published: (args.published as boolean) ?? false,
-        });
-        if (!result.success) return { error: result.error || "Blog oluşturulamadı" };
-        return { data: { id: result.id, slug: result.slug } };
-      }
-
-      case "update_blog_post": {
-        const updatePayload: Record<string, unknown> = {};
-        if (args.title) updatePayload.title = args.title;
-        if (args.content) updatePayload.content = args.content;
-        if (args.slug) updatePayload.slug = args.slug;
-        if (args.excerpt !== undefined) updatePayload.excerpt = args.excerpt;
-        if (args.seoTitle !== undefined) updatePayload.seoTitle = args.seoTitle;
-        if (args.seoDescription !== undefined) updatePayload.seoDescription = args.seoDescription;
-        if (args.coverImage !== undefined) updatePayload.coverImage = args.coverImage;
-        if (args.tags) updatePayload.tags = (args.tags as string).split(",").map((t: string) => t.trim());
-        if (args.published !== undefined) updatePayload.published = args.published;
-        const result = await updateBlogPost(args.id as string, updatePayload);
-        if (!result.success) return { error: result.error || "Blog güncellenemedi" };
-        return { data: { updated: true } };
-      }
-
-      case "update_settings": {
-        const result = await upsertSetting(args.key as string, args.value as string);
-        if (!result.success) return { error: result.error || "Ayar güncellenemedi" };
-        return { data: { key: args.key, value: args.value } };
-      }
-
       case "generate_image": {
-        // generate_image API route uzerinden calistirilir
-        // Burada sadece bilgi dondur, gercek islem chat API'de yapilir
         return {
-          data: {
-            message:
-              "generate_image araci API route uzerinden calistirilmali",
-          },
+          data: { message: "generate_image route handler'da işlenir" },
         };
       }
 
-      // ── Level 3: Delete Operations ──
-
-      case "delete_blog_post": {
-        const result = await deleteBlogPost(args.id as string);
-        if (!result.success) return { error: result.error || "Blog silinemedi" };
-        return { data: { deleted: true } };
-      }
-
       default:
-        return { error: `Bilinmeyen arac: ${toolName}` };
+        return { error: `Bilinmeyen araç: ${toolName}` };
     }
   } catch (err) {
-    console.error(`[ai-executor] ${toolName} hatasi:`, err);
+    console.error(`[ai-executor] ${toolName} hatası:`, err);
     return {
-      error: err instanceof Error ? err.message : "Arac calistirma hatasi",
+      error: err instanceof Error ? err.message : "Araç çalıştırma hatası",
+    };
+  }
+}
+
+// ─── Level 2-3: fetch to existing API routes (Vorte Tekstil pattern) ──
+
+async function executeWriteToolCall(
+  toolName: string,
+  args: Record<string, unknown>,
+  baseUrl: string,
+  cookies: string
+): Promise<ToolResult> {
+  const meta = TOOL_META[toolName];
+  if (!meta) return { error: `Bilinmeyen araç: ${toolName}` };
+
+  try {
+    // Endpoint'teki {id} gibi path param'ları değiştir
+    let endpoint = meta.endpoint;
+    const bodyArgs = { ...args };
+    const pathParamMatch = endpoint.match(/\{(\w+)\}/);
+    if (pathParamMatch) {
+      const paramName = pathParamMatch[1];
+      endpoint = endpoint.replace(`{${paramName}}`, String(args[paramName]));
+      delete bodyArgs[paramName];
+    }
+
+    // tags: virgülle ayrılmış string → array
+    if (bodyArgs.tags && typeof bodyArgs.tags === "string") {
+      bodyArgs.tags = (bodyArgs.tags as string).split(",").map((t: string) => t.trim());
+    }
+
+    const url = `${baseUrl}${endpoint}`;
+    const fetchOptions: RequestInit = {
+      method: meta.method,
+      headers: {
+        "Content-Type": "application/json",
+        Cookie: cookies,
+      },
+    };
+
+    if (meta.method !== "GET" && meta.method !== "DELETE") {
+      fetchOptions.body = JSON.stringify(bodyArgs);
+    }
+
+    console.log(`[ai-executor] ${meta.method} ${url}`);
+
+    const response = await fetch(url, fetchOptions);
+
+    if (!response.ok) {
+      const errBody = await response.text();
+      let errorMsg: string;
+      try {
+        const parsed = JSON.parse(errBody);
+        errorMsg = parsed.error || parsed.message || errBody;
+      } catch {
+        errorMsg = errBody || `HTTP ${response.status}`;
+      }
+      console.error(`[ai-executor] API hatası (${response.status}):`, errorMsg);
+      return { error: errorMsg };
+    }
+
+    const text = await response.text();
+    if (!text) return { data: { success: true } };
+
+    try {
+      return { data: JSON.parse(text) };
+    } catch {
+      return { data: { success: true } };
+    }
+  } catch (err) {
+    console.error(`[ai-executor] ${toolName} fetch hatası:`, err);
+    return {
+      error: `API bağlantı hatası: ${err instanceof Error ? err.message : "Bilinmeyen hata"}`,
     };
   }
 }
