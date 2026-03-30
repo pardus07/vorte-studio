@@ -7,6 +7,7 @@ import Services from "@/components/site/Services";
 import Portfolio from "@/components/site/Portfolio";
 import Process from "@/components/site/Process";
 import TechStack from "@/components/site/TechStack";
+import BlogSection from "@/components/site/BlogSection";
 import CTA from "@/components/site/CTA";
 import Footer from "@/components/site/Footer";
 import JsonLd from "@/components/site/JsonLd";
@@ -19,6 +20,37 @@ export default async function HomePage() {
     const setting = await prisma.siteSettings.findUnique({ where: { key: "whatsappNumber" } });
     if (setting) whatsappNumber = setting.value;
   } catch {}
+
+  let blogPosts: {
+    id: string;
+    title: string;
+    slug: string;
+    excerpt: string | null;
+    coverImage: string | null;
+    publishedAt: Date | null;
+    tags: string[];
+    authorName: string;
+  }[] = [];
+
+  try {
+    blogPosts = await prisma.blogPost.findMany({
+      where: { published: true },
+      orderBy: { publishedAt: "desc" },
+      take: 3,
+      select: {
+        id: true,
+        title: true,
+        slug: true,
+        excerpt: true,
+        coverImage: true,
+        publishedAt: true,
+        tags: true,
+        authorName: true,
+      },
+    });
+  } catch {
+    blogPosts = [];
+  }
 
   let portfolioItems: {
     id: string;
@@ -61,6 +93,12 @@ export default async function HomePage() {
       <Portfolio items={portfolioItems} />
       <Process />
       <TechStack />
+      <BlogSection
+        posts={blogPosts.map((p) => ({
+          ...p,
+          publishedAt: p.publishedAt?.toISOString() ?? null,
+        }))}
+      />
       <CTA whatsappNumber={whatsappNumber} />
       <Footer />
     </>

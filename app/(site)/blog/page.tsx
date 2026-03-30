@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import Image from "next/image";
 import { prisma } from "@/lib/prisma";
 import Navbar from "@/components/site/Navbar";
 import Footer from "@/components/site/Footer";
@@ -93,12 +92,11 @@ export default async function BlogPage() {
                   {/* Cover */}
                   <div className="relative aspect-[16/10] w-full overflow-hidden bg-bg3">
                     {post.coverImage ? (
-                      <Image
+                      <img
                         src={post.coverImage}
                         alt={post.title}
-                        fill
-                        className="object-cover transition-transform duration-500 group-hover:scale-105"
-                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                        className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                        loading="lazy"
                       />
                     ) : (
                       <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-accent/10 to-bg3">

@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
@@ -184,13 +183,10 @@ export default async function BlogDetailPage({ params }: Props) {
           {/* Cover Image */}
           {post.coverImage && (
             <div className="relative mt-10 aspect-[16/9] w-full overflow-hidden rounded-2xl">
-              <Image
+              <img
                 src={post.coverImage}
                 alt={post.title}
-                fill
-                className="object-cover"
-                sizes="(max-width: 768px) 100vw, 768px"
-                priority
+                className="h-full w-full object-cover"
               />
             </div>
           )}
