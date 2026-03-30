@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
+import { sanitizeBlogContent } from "@/lib/sanitize";
 import Navbar from "@/components/site/Navbar";
 import Footer from "@/components/site/Footer";
 
@@ -191,10 +192,10 @@ export default async function BlogDetailPage({ params }: Props) {
             </div>
           )}
 
-          {/* Content — admin-authored HTML from DB */}
+          {/* Content — sanitized HTML from DB (XSS korumalı) */}
           <div
             className="prose-blog mt-12"
-            dangerouslySetInnerHTML={{ __html: post.content }}
+            dangerouslySetInnerHTML={{ __html: sanitizeBlogContent(post.content) }}
           />
 
           {/* Bottom divider + back */}

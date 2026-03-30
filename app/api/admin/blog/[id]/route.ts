@@ -1,26 +1,27 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { turkishToSlug } from "@/lib/utils";
 import { revalidatePath } from "next/cache";
+import { z } from "zod";
 
 export const dynamic = "force-dynamic";
 
 type RouteContext = { params: Promise<{ id: string }> };
 
-// Türkçe-safe slug
-function turkishToSlug(text: string): string {
-  const charMap: Record<string, string> = {
-    ş: "s", Ş: "s", ç: "c", Ç: "c", ö: "o", Ö: "o",
-    ü: "u", Ü: "u", ğ: "g", Ğ: "g", ı: "i", İ: "i",
-  };
-  return text
-    .toLowerCase()
-    .replace(/[şŞçÇöÖüÜğĞıİ]/g, (ch) => charMap[ch] || ch)
-    .replace(/[^a-z0-9\s-]/g, "")
-    .replace(/\s+/g, "-")
-    .replace(/-+/g, "-")
-    .replace(/^-|-$/g, "");
-}
+/** Blog güncelleme şeması — tüm alanlar optional (kısmi güncelleme) */
+const UpdateBlogSchema = z.object({
+  title: z.string().min(1).optional(),
+  content: z.string().min(1).optional(),
+  slug: z.string().optional(),
+  excerpt: z.string().optional(),
+  seoTitle: z.string().optional(),
+  seoDescription: z.string().optional(),
+  tags: z.union([z.string(), z.array(z.string())]).optional(),
+  coverImage: z.string().optional(),
+  published: z.boolean().optional(),
+  authorName: z.string().optional(),
+});
 
 // GET /api/admin/blog/[id]
 export async function GET(
@@ -59,7 +60,15 @@ export async function PATCH(
 
   try {
     const { id } = await params;
-    const body = await request.json();
+    const raw = await request.json();
+    const parsed = UpdateBlogSchema.safeParse(raw);
+
+    if (!parsed.success) {
+      const msg = parsed.error.issues.map((i) => i.message).join(", ");
+      return NextResponse.json({ error: msg }, { status: 400 });
+    }
+
+    const body = parsed.data;
 
     const existing = await prisma.blogPost.findUnique({ where: { id } });
     if (!existing) {

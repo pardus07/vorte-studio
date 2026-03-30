@@ -11,8 +11,11 @@ const nextAuth = NextAuth({
         password: { label: "Sifre", type: "password" },
       },
       async authorize(credentials) {
-        // Hash dogrudan burada — Coolify/Docker $ isaretini bozuyor
-        const hash = "$2b$12$KIAJd2XBeHYFHsC61L737OcurZ15XYeGe1XdGssW8jo.rYnkCuNt6";
+        const hash = process.env.ADMIN_PASSWORD_HASH;
+        if (!hash) {
+          console.error("[auth] ADMIN_PASSWORD_HASH env tanımlı değil!");
+          return null;
+        }
         const valid = await bcrypt.compare(
           credentials.password as string,
           hash

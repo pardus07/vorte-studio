@@ -1,24 +1,25 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { turkishToSlug } from "@/lib/utils";
 import { revalidatePath } from "next/cache";
+import { z } from "zod";
 
 export const dynamic = "force-dynamic";
 
-// Türkçe-safe slug
-function turkishToSlug(text: string): string {
-  const charMap: Record<string, string> = {
-    ş: "s", Ş: "s", ç: "c", Ç: "c", ö: "o", Ö: "o",
-    ü: "u", Ü: "u", ğ: "g", Ğ: "g", ı: "i", İ: "i",
-  };
-  return text
-    .toLowerCase()
-    .replace(/[şŞçÇöÖüÜğĞıİ]/g, (ch) => charMap[ch] || ch)
-    .replace(/[^a-z0-9\s-]/g, "")
-    .replace(/\s+/g, "-")
-    .replace(/-+/g, "-")
-    .replace(/^-|-$/g, "");
-}
+/** Blog oluşturma şeması — AI asistanın gönderdiği formatla uyumlu */
+const CreateBlogSchema = z.object({
+  title: z.string().min(1, "Başlık zorunludur"),
+  content: z.string().min(1, "İçerik zorunludur"),
+  slug: z.string().optional(),
+  excerpt: z.string().optional(),
+  seoTitle: z.string().optional(),
+  seoDescription: z.string().optional(),
+  tags: z.union([z.string(), z.array(z.string())]).optional(),
+  coverImage: z.string().optional(),
+  published: z.boolean().optional(),
+  authorName: z.string().optional(),
+});
 
 // GET /api/admin/blog
 export async function GET(request: NextRequest) {
@@ -58,14 +59,15 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const body = await request.json();
+    const raw = await request.json();
+    const parsed = CreateBlogSchema.safeParse(raw);
 
-    if (!body.title || !body.content) {
-      return NextResponse.json(
-        { error: "Başlık ve içerik zorunludur." },
-        { status: 400 }
-      );
+    if (!parsed.success) {
+      const msg = parsed.error.issues.map((i) => i.message).join(", ");
+      return NextResponse.json({ error: msg }, { status: 400 });
     }
+
+    const body = parsed.data;
 
     // Slug oluştur
     let slug = body.slug?.trim()
