@@ -49,6 +49,13 @@ const sections = [
     label: "İçerik",
     items: [
       { name: "Portfolyo", href: "/admin/portfolio", icon: PortfolioIcon },
+      { name: "Blog", href: "/admin/blog", icon: BlogIcon },
+    ],
+  },
+  {
+    label: "Yönetim",
+    items: [
+      { name: "Ayarlar", href: "/admin/settings", icon: SettingsIcon },
     ],
   },
 ];
@@ -292,6 +299,35 @@ function PortfolioIcon({ className }: { className?: string }) {
     >
       <rect x="1" y="4" width="14" height="9" rx="1.5" />
       <path d="M5 4V3a1 1 0 011-1h4a1 1 0 011 1v1" />
+    </svg>
+  );
+}
+
+function BlogIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      className={className}
+      viewBox="0 0 16 16"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+    >
+      <path d="M2 3h12M2 7h8M2 11h10M2 15h6" />
+    </svg>
+  );
+}
+
+function SettingsIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      className={className}
+      viewBox="0 0 16 16"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+    >
+      <circle cx="8" cy="8" r="2" />
+      <path d="M13.5 8a5.5 5.5 0 01-.4 2l1.2 1.2-1.4 1.4-1.2-1.2a5.5 5.5 0 01-2 .4v1.7h-2v-1.7a5.5 5.5 0 01-2-.4L4.5 12.6l-1.4-1.4 1.2-1.2a5.5 5.5 0 01-.4-2H2.2v-2h1.7a5.5 5.5 0 01.4-2L3.1 2.8l1.4-1.4 1.2 1.2a5.5 5.5 0 012-.4V.5h2v1.7a5.5 5.5 0 012 .4l1.2-1.2 1.4 1.4-1.2 1.2a5.5 5.5 0 01.4 2h1.7v2h-1.7z" />
     </svg>
   );
 }

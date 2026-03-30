@@ -34,18 +34,21 @@ export async function POST(request: NextRequest) {
   const bytes = await file.arrayBuffer();
   const buffer = Buffer.from(bytes);
 
+  const folder = (formData.get("folder") as string) || "portfolio";
+  const safeFolderName = folder.replace(/[^a-z0-9-]/gi, "");
+
   const timestamp = Date.now();
   const ext = file.name.split(".").pop();
-  const filename = `portfolio-${timestamp}.${ext}`;
+  const filename = `${safeFolderName}-${timestamp}.${ext}`;
 
-  const uploadDir = join(process.cwd(), "public", "uploads", "portfolio");
+  const uploadDir = join(process.cwd(), "public", "uploads", safeFolderName);
   await mkdir(uploadDir, { recursive: true });
 
   const filepath = join(uploadDir, filename);
   await writeFile(filepath, buffer);
 
   return NextResponse.json({
-    url: `/api/uploads/portfolio/${filename}`,
+    url: `/api/uploads/${safeFolderName}/${filename}`,
     filename,
   });
 }

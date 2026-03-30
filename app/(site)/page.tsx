@@ -14,6 +14,12 @@ import JsonLd from "@/components/site/JsonLd";
 export const dynamic = "force-dynamic";
 
 export default async function HomePage() {
+  let whatsappNumber = "";
+  try {
+    const setting = await prisma.siteSettings.findUnique({ where: { key: "whatsappNumber" } });
+    if (setting) whatsappNumber = setting.value;
+  } catch {}
+
   let portfolioItems: {
     id: string;
     title: string;
@@ -55,7 +61,7 @@ export default async function HomePage() {
       <Portfolio items={portfolioItems} />
       <Process />
       <TechStack />
-      <CTA />
+      <CTA whatsappNumber={whatsappNumber} />
       <Footer />
     </>
   );
