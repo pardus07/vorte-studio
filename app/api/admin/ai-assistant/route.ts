@@ -126,7 +126,10 @@ export async function POST(req: NextRequest) {
     const reply = response.text || "Bir yanıt oluşturulamadı.";
     return NextResponse.json({ reply, executedTools });
   } catch (error) {
-    console.error("[ai-assistant] Error:", error);
-    return NextResponse.json({ error: "AI servisi geçici olarak kullanılamıyor." }, { status: 500 });
+    const errMsg = error instanceof Error ? error.message : String(error);
+    console.error("[ai-assistant] Error:", errMsg, error);
+    return NextResponse.json({
+      error: `AI hatası: ${errMsg.substring(0, 200)}`,
+    }, { status: 500 });
   }
 }
