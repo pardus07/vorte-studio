@@ -5,6 +5,7 @@ import { agentFunctionDeclarations, TOOL_META } from "@/lib/ai-tools";
 import { resolveToolCall, executeApprovedToolCall } from "@/lib/ai-executor";
 import { buildSystemPrompt } from "@/lib/ai-prompt";
 import { getPageContext } from "@/lib/ai-context";
+import { generateImage } from "@/lib/generate-image";
 
 export const maxDuration = 60;
 
@@ -26,15 +27,10 @@ export async function POST(req: NextRequest) {
 
       // Tool'u çalıştır
       if (toolName === "generate_image") {
-        const res = await fetch(new URL("/api/admin/generate-image", req.url), {
-          method: "POST",
-          headers: { "Content-Type": "application/json", cookie: req.headers.get("cookie") || "" },
-          body: JSON.stringify({ prompt: args.prompt, filename: `blog-${Date.now()}`, directory: "blog" }),
-        });
-        const data = await res.json();
-        if (data.error) return NextResponse.json({ reply: `Görsel üretim hatası: ${data.error}` });
-        imageUrl = data.url;
-        toolResult = { url: data.url, filename: data.filename, model: data.model };
+        const imgResult = await generateImage(args.prompt as string, "blog");
+        if ("error" in imgResult) return NextResponse.json({ reply: `Görsel üretim hatası: ${imgResult.error}` });
+        imageUrl = imgResult.url;
+        toolResult = { url: imgResult.url, filename: imgResult.filename, model: imgResult.model };
       } else {
         const result = await executeApprovedToolCall(toolName, args);
         if (result.error) return NextResponse.json({ reply: `Hata: ${result.error}` });
@@ -191,17 +187,11 @@ export async function POST(req: NextRequest) {
       let toolResultData: Record<string, unknown>;
 
       if (toolName === "generate_image") {
-        // generate_image özel: API route üzerinden çalıştır
-        const imgRes = await fetch(new URL("/api/admin/generate-image", req.url), {
-          method: "POST",
-          headers: { "Content-Type": "application/json", cookie: req.headers.get("cookie") || "" },
-          body: JSON.stringify({ prompt: args.prompt, filename: `blog-${Date.now()}`, directory: (args.directory as string) || "blog" }),
-        });
-        const imgData = await imgRes.json();
-        if (imgData.error) {
-          toolResultData = { error: imgData.error };
+        const imgResult = await generateImage(args.prompt as string, (args.directory as string) || "blog");
+        if ("error" in imgResult) {
+          toolResultData = { error: imgResult.error };
         } else {
-          toolResultData = { url: imgData.url, filename: imgData.filename, model: imgData.model };
+          toolResultData = { url: imgResult.url, filename: imgResult.filename, model: imgResult.model };
         }
       } else {
         const result = await resolveToolCall(toolName, args);
