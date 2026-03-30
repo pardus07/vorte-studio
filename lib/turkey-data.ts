@@ -74,30 +74,47 @@ export async function getDistricts(cityName: string): Promise<District[]> {
   }
 }
 
-// Kapsamlı sektör listesi — Google Maps arama terimleri
+// Kapsamlı sektör listesi — Google Maps arama terimleri (107 sektör, 14 kategori)
 export const sectors = [
-  // Sağlık
+  // Sağlık & Klinik
   "Diş Klinikleri",
-  "Güzellik Merkezleri",
-  "Eczaneler",
   "Veteriner Klinikleri",
   "Optik / Gözlükçü",
   "Fizik Tedavi Merkezleri",
-  "Psikolog / Terapist",
   "Tıp Merkezleri",
+  "Psikolog / Danışman",
+  "Diyetisyen / Beslenme Uzmanı",
+  "Estetik Klinik",
+  "Özel Poliklinik",
+  "İşitme Merkezi",
+  "Göz Merkezi",
+
+  // Güzellik & Bakım
+  "Kuaförler",
+  "Berberler",
+  "Güzellik / SPA",
+  "Cilt Bakım Merkezleri",
+  "Epilasyon Merkezleri",
+  "Tırnak Stüdyosu",
+  "Dövme & Piercing Stüdyosu",
 
   // Yeme-İçme
   "Restoranlar",
   "Kafeler",
   "Pastaneler",
-  "Fast Food",
   "Fırınlar",
+  "Catering / Yemek Servisi",
 
-  // Konaklama
+  // Gıda Perakende
+  "Kasaplar",
+  "Manavlar",
+  "Kuruyemişçiler",
+  "Su Bayileri",
+  "Şarküteri / Delikatessen",
+
+  // Konaklama & Turizm
   "Oteller",
-  "Butik Oteller",
-  "Pansiyonlar",
-  "Apart Oteller",
+  "Seyahat Acentesi",
 
   // Eğitim
   "Dil Kursları",
@@ -110,8 +127,6 @@ export const sectors = [
   // Spor & Fitness
   "Spor Salonları",
   "Pilates / Yoga",
-  "Yüzme Havuzları",
-  "Dövüş Sanatları",
 
   // Otomotiv
   "Oto Servisler",
@@ -119,14 +134,49 @@ export const sectors = [
   "Lastikçiler",
   "Oto Galeri",
   "Oto Elektrik",
+  "Oto Egzoz",
+  "Oto Kaporta & Boya",
+  "Oto Cam",
+  "Oto Yedek Parça",
+  "Oto Aksesuar",
+  "Motosiklet Servisi",
 
-  // Hizmet
+  // İnşaat & Tadilat
+  "İnşaat Firmaları",
+  "Mimarlık Ofisleri",
+  "Tadilat / Dekorasyon",
+  "PVC Doğrama",
+  "Alüminyum Doğrama",
+  "Cam Balkon",
+  "Mermer & Granit",
+  "Dış Cephe Kaplama",
+  "Isı Yalıtım / Mantolama",
+  "Çatı Sistemleri",
+  "Fayans / Seramik Döşeme",
+  "Asma Tavan / Alçıpan",
+  "Prefabrik Yapı",
+  "Boya Badana Ustası",
+  "Elektrikçi",
+  "Tesisatçı",
+
+  // Atölye & İmalat
+  "Parke & Zemin Döşeme",
+  "Döşemeci / Koltuk Tamircisi",
+  "Çadır & Tente İmalatı",
+  "Branda İmalatı",
+  "Kaynak & Demir Atölyesi",
+  "Marangoz / Ahşap Atölyesi",
+  "Bobinaj",
+  "Matbaalar",
+  "Ambalaj İmalatı",
+  "Plastik İmalat",
+  "Terzi / Dikiş Atölyesi",
+
+  // Hizmet & Profesyonel
   "Hukuk Büroları",
   "Muhasebe Büroları",
   "Emlak Ofisleri",
   "Sigorta Acenteleri",
-  "Noterler",
-  "Tercüme Büroları",
 
   // Perakende
   "Mobilya Mağazaları",
@@ -135,30 +185,25 @@ export const sectors = [
   "Pet Shop",
   "Çiçekçiler",
   "Kuyumcular",
+  "Tekstil / Giyim Mağazası",
+  "Spor Malzemeleri Mağazası",
 
-  // İnşaat & Tadilat
-  "İnşaat Firmaları",
-  "Mimarlık Ofisleri",
-  "Tadilat / Dekorasyon",
-  "Boya Badana",
-  "Tesisatçılar",
+  // Teknik Servis & Bakım
+  "Klima Servisi",
+  "Kombi Servisi",
+  "Beyaz Eşya Tamircisi",
+  "Asansör Bakım",
+  "Jeneratör Servisi",
+  "Güvenlik Sistemleri",
+  "Çilingir",
+  "Su Arıtma Servisi",
 
-  // Güzellik & Bakım
-  "Kuaförler",
-  "Güzellik / SPA",
-  "Berberler",
-  "Cilt Bakım Merkezleri",
-
-  // Teknoloji
-  "Bilgisayar Tamircileri",
-  "Telefon Tamircileri",
-  "Web Tasarım Ajansları",
-  "Yazılım Şirketleri",
-
-  // Diğer
+  // Diğer Hizmetler
   "Fotoğraf Stüdyoları",
-  "Matbaalar",
   "Temizlik Şirketleri",
   "Nakliyat Firmaları",
   "Organizasyon Şirketleri",
+  "Kuru Temizleme",
+  "Halı Yıkama",
+  "Tabela & Reklam",
 ];

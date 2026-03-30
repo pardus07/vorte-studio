@@ -69,7 +69,7 @@ export default function ProspectSearch({
   const [selectedDistrict, setSelectedDistrict] = useState("");
   const [selectedNeighborhoods, setSelectedNeighborhoods] = useState<Record<string, boolean>>({});
   const [neighborhoodSearch, setNeighborhoodSearch] = useState("");
-  const [sector, setSector] = useState("Diş Klinikleri");
+  const [sector, setSector] = useState("Fırınlar");
   const [filter, setFilter] = useState("Tümü");
   const [prospects, setProspects] = useState<Prospect[]>([]);
   const [searching, setSearching] = useState(false);
