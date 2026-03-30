@@ -25,7 +25,7 @@ export const TOOL_META: Record<string, ToolMeta> = {
   create_blog_post: { level: 2, description: "Yeni blog yazısı oluştur", endpoint: "/api/admin/blog", method: "POST" },
   update_blog_post: { level: 2, description: "Blog yazısı güncelle", endpoint: "/api/admin/blog/{id}", method: "PATCH" },
   update_settings:  { level: 2, description: "Site ayarı güncelle", endpoint: "/api/admin/settings", method: "PATCH" },
-  generate_image:   { level: 2, description: "AI görsel üret", endpoint: "/api/admin/generate-image", method: "POST" },
+  generate_image:   { level: 1, description: "AI görsel üret", endpoint: "/api/admin/generate-image", method: "POST" },
 
   // Level 3 — Delete (double confirm)
   delete_blog_post: { level: 3, description: "Blog yazısı sil", endpoint: "/api/admin/blog/{id}", method: "DELETE" },

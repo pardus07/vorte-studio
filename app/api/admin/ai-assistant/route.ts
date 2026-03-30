@@ -188,18 +188,37 @@ export async function POST(req: NextRequest) {
       }
 
       // Level 1: auto-execute
-      const result = await resolveToolCall(toolName, args);
+      let toolResultData: Record<string, unknown>;
+
+      if (toolName === "generate_image") {
+        // generate_image özel: API route üzerinden çalıştır
+        const imgRes = await fetch(new URL("/api/admin/generate-image", req.url), {
+          method: "POST",
+          headers: { "Content-Type": "application/json", cookie: req.headers.get("cookie") || "" },
+          body: JSON.stringify({ prompt: args.prompt, filename: `blog-${Date.now()}`, directory: (args.directory as string) || "blog" }),
+        });
+        const imgData = await imgRes.json();
+        if (imgData.error) {
+          toolResultData = { error: imgData.error };
+        } else {
+          toolResultData = { url: imgData.url, filename: imgData.filename, model: imgData.model };
+        }
+      } else {
+        const result = await resolveToolCall(toolName, args);
+        toolResultData = result.data
+          ? (result.data as Record<string, unknown>)
+          : result.error
+            ? { error: result.error }
+            : { ok: true };
+      }
+
       executedTools.push(toolName);
 
       response = await chat.sendMessage({
         message: {
           functionResponse: {
             name: toolName,
-            response: result.data
-              ? (result.data as Record<string, unknown>)
-              : result.error
-                ? { error: result.error }
-                : { ok: true },
+            response: toolResultData,
           },
         },
       });
