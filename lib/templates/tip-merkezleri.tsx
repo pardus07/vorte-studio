@@ -34,71 +34,89 @@ export default function TipMerkezleriTemplate(props: TemplateProps) {
         variants={stagger}
         className="bg-[#0F172A] text-white"
       >
-        <div className="mx-auto max-w-6xl px-5 py-20 lg:py-28 text-center">
-          {/* Kurumsal badge */}
-          <motion.div
-            variants={fadeUp}
-            className="inline-flex items-center gap-2 rounded-full bg-[#1D4ED8]/20 px-5 py-2 text-sm font-medium text-[#93C5FD] mb-8"
-          >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
-            </svg>
-            Kurumsal Sağlık Çözümleri
-          </motion.div>
-
-          <motion.h1
-            variants={fadeUp}
-            className="text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight mb-6"
-          >
-            Sağlığınız için doğru adres:{' '}
-            <span className="text-[#60A5FA]">{props.firmName}</span>
-          </motion.h1>
-
-          <motion.p
-            variants={fadeUp}
-            className="text-lg sm:text-xl text-[#94A3B8] max-w-2xl mx-auto mb-8"
-          >
-            {props.city}&apos;da uzman hekim kadrosuyla hizmetinizdeyiz
-          </motion.p>
-
-          {/* Google Rating Badge */}
-          {props.googleRating && props.googleRating > 0 && (
+        <div className={`mx-auto max-w-6xl px-5 py-20 lg:py-28 ${props.images?.hero ? 'lg:grid lg:grid-cols-2 lg:items-center lg:gap-12' : ''}`}>
+          <div className={props.images?.hero ? 'text-center lg:text-left' : 'text-center'}>
+            {/* Kurumsal badge */}
             <motion.div
               variants={fadeUp}
-              className="inline-flex items-center gap-2.5 bg-[#1D4ED8]/15 border border-[#1D4ED8]/30 rounded-lg px-5 py-2.5 mb-10"
+              className="inline-flex items-center gap-2 rounded-full bg-[#1D4ED8]/20 px-5 py-2 text-sm font-medium text-[#93C5FD] mb-8"
             >
-              <div className="flex gap-0.5">
-                {Array.from({ length: 5 }).map((_, i) => (
-                  <svg
-                    key={i}
-                    className={`w-4 h-4 ${i < Math.round(props.googleRating!) ? 'text-yellow-400' : 'text-[#475569]'}`}
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                  >
-                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                  </svg>
-                ))}
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
+              </svg>
+              Kurumsal Sağlık Çözümleri
+            </motion.div>
+
+            <motion.h1
+              variants={fadeUp}
+              className="text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight mb-6"
+            >
+              Sağlığınız için doğru adres:{' '}
+              <span className="text-[#60A5FA]">{props.firmName}</span>
+            </motion.h1>
+
+            <motion.p
+              variants={fadeUp}
+              className={`text-lg sm:text-xl text-[#94A3B8] mb-8 ${props.images?.hero ? 'lg:mx-0' : 'max-w-2xl mx-auto'}`}
+            >
+              {props.city}&apos;da uzman hekim kadrosuyla hizmetinizdeyiz
+            </motion.p>
+
+            {/* Google Rating Badge */}
+            {props.googleRating && props.googleRating > 0 && (
+              <motion.div
+                variants={fadeUp}
+                className="inline-flex items-center gap-2.5 bg-[#1D4ED8]/15 border border-[#1D4ED8]/30 rounded-lg px-5 py-2.5 mb-10"
+              >
+                <div className="flex gap-0.5">
+                  {Array.from({ length: 5 }).map((_, i) => (
+                    <svg
+                      key={i}
+                      className={`w-4 h-4 ${i < Math.round(props.googleRating!) ? 'text-yellow-400' : 'text-[#475569]'}`}
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                    >
+                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                    </svg>
+                  ))}
+                </div>
+                <span className="font-bold text-white text-lg">{props.googleRating}</span>
+                {props.googleReviews && (
+                  <span className="text-[#94A3B8] text-sm">({props.googleReviews} değerlendirme)</span>
+                )}
+              </motion.div>
+            )}
+
+            {/* CTA Buttons */}
+            <motion.div
+              variants={fadeUp}
+              className={`flex flex-col sm:flex-row gap-4 ${props.images?.hero ? 'justify-center lg:justify-start' : 'justify-center'}`}
+            >
+              <a
+                href={chatLink}
+                onClick={() => trackEvent(props.slug, 'CHAT_CLICK')}
+                className="inline-flex items-center justify-center gap-2 border-2 border-[#60A5FA] text-[#60A5FA] font-semibold px-8 py-4 rounded-lg hover:bg-[#60A5FA]/10 transition-colors text-lg"
+              >
+                Ücretsiz Teklif Al
+              </a>
+            </motion.div>
+          </div>
+
+          {/* Hero Image */}
+          {props.images?.hero && (
+            <motion.div
+              variants={fadeUp}
+              className="hidden lg:flex items-center justify-center"
+            >
+              <div className="h-80 w-80 overflow-hidden rounded-3xl shadow-2xl shadow-blue-500/20 ring-4 ring-white/10">
+                <img
+                  src={props.images.hero}
+                  alt={props.firmName}
+                  className="h-full w-full object-cover"
+                />
               </div>
-              <span className="font-bold text-white text-lg">{props.googleRating}</span>
-              {props.googleReviews && (
-                <span className="text-[#94A3B8] text-sm">({props.googleReviews} değerlendirme)</span>
-              )}
             </motion.div>
           )}
-
-          {/* CTA Buttons */}
-          <motion.div
-            variants={fadeUp}
-            className="flex flex-col sm:flex-row gap-4 justify-center"
-          >
-            <a
-              href={chatLink}
-              onClick={() => trackEvent(props.slug, 'CHAT_CLICK')}
-              className="inline-flex items-center justify-center gap-2 border-2 border-[#60A5FA] text-[#60A5FA] font-semibold px-8 py-4 rounded-lg hover:bg-[#60A5FA]/10 transition-colors text-lg"
-            >
-              Ücretsiz Teklif Al
-            </a>
-          </motion.div>
         </div>
       </motion.section>
 

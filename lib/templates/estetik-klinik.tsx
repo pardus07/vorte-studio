@@ -43,63 +43,81 @@ export default function EstetikKlinikTemplate(props: TemplateProps) {
         variants={staggerContainer}
         className="relative px-6 py-32 md:px-12 lg:px-24 lg:py-40"
       >
-        <div className="mx-auto max-w-3xl text-center">
-          {/* Thin gold line above heading */}
-          <motion.div variants={fadeInUp} className="mx-auto mb-10 h-px w-16 bg-[#C9A96E]" />
+        <div className={`mx-auto ${props.images?.hero ? 'max-w-5xl grid grid-cols-1 lg:grid-cols-2 items-center gap-12' : 'max-w-3xl text-center'}`}>
+          <div>
+            {/* Thin gold line above heading */}
+            <motion.div variants={fadeInUp} className={`mb-10 h-px w-16 bg-[#C9A96E] ${props.images?.hero ? '' : 'mx-auto'}`} />
 
-          <motion.h1
-            variants={fadeInUp}
-            className="font-[family-name:var(--font-cormorant)] text-4xl font-700 leading-tight tracking-tight md:text-5xl lg:text-6xl"
-          >
-            Güzelliğinizi en değerli ellere emanet edin
-          </motion.h1>
+            <motion.h1
+              variants={fadeInUp}
+              className="font-[family-name:var(--font-cormorant)] text-4xl font-700 leading-tight tracking-tight md:text-5xl lg:text-6xl"
+            >
+              Güzelliğinizi en değerli ellere emanet edin
+            </motion.h1>
 
-          <motion.p
-            variants={fadeInUp}
-            className="mx-auto mt-6 max-w-xl font-[family-name:var(--font-jost)] text-base text-[#1C1917]/60 md:text-lg"
-          >
-            {props.firmName} &mdash; {props.city}&apos;da estetik ve güzelliğin adresi
-          </motion.p>
+            <motion.p
+              variants={fadeInUp}
+              className={`mt-6 max-w-xl font-[family-name:var(--font-jost)] text-base text-[#1C1917]/60 md:text-lg ${props.images?.hero ? '' : 'mx-auto'}`}
+            >
+              {props.firmName} &mdash; {props.city}&apos;da estetik ve güzelliğin adresi
+            </motion.p>
 
-          {/* Thin gold line below subtext */}
-          <motion.div variants={fadeInUp} className="mx-auto mt-8 h-px w-24 bg-[#C9A96E]" />
+            {/* Thin gold line below subtext */}
+            <motion.div variants={fadeInUp} className={`mt-8 h-px w-24 bg-[#C9A96E] ${props.images?.hero ? '' : 'mx-auto'}`} />
 
-          {/* Google Rating */}
-          {props.googleRating && props.googleRating > 0 && (
-            <motion.div variants={fadeInUp} className="mt-8 flex items-center justify-center gap-3">
-              <div className="flex">
-                {Array.from({ length: 5 }).map((_, i) => (
-                  <svg
-                    key={i}
-                    className={`h-4 w-4 ${i < Math.round(props.googleRating!) ? 'text-[#C9A96E]' : 'text-[#C9A96E]/20'}`}
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                  >
-                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                  </svg>
-                ))}
-              </div>
-              <span className="font-[family-name:var(--font-cormorant)] text-lg font-600 text-[#C9A96E]">
-                {props.googleRating}
-              </span>
-              {props.googleReviews && (
-                <span className="font-[family-name:var(--font-jost)] text-sm text-[#1C1917]/40">
-                  ({props.googleReviews} değerlendirme)
+            {/* Google Rating */}
+            {props.googleRating && props.googleRating > 0 && (
+              <motion.div variants={fadeInUp} className={`mt-8 flex items-center gap-3 ${props.images?.hero ? '' : 'justify-center'}`}>
+                <div className="flex">
+                  {Array.from({ length: 5 }).map((_, i) => (
+                    <svg
+                      key={i}
+                      className={`h-4 w-4 ${i < Math.round(props.googleRating!) ? 'text-[#C9A96E]' : 'text-[#C9A96E]/20'}`}
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                    >
+                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                    </svg>
+                  ))}
+                </div>
+                <span className="font-[family-name:var(--font-cormorant)] text-lg font-600 text-[#C9A96E]">
+                  {props.googleRating}
                 </span>
-              )}
+                {props.googleReviews && (
+                  <span className="font-[family-name:var(--font-jost)] text-sm text-[#1C1917]/40">
+                    ({props.googleReviews} değerlendirme)
+                  </span>
+                )}
+              </motion.div>
+            )}
+
+            {/* CTA Buttons */}
+            <motion.div variants={fadeInUp} className={`mt-12 flex flex-col items-center gap-4 sm:flex-row ${props.images?.hero ? '' : 'sm:justify-center'}`}>
+              <a
+                href={chatLink}
+                onClick={() => trackEvent(props.slug, 'CHAT_CLICK')}
+                className="inline-flex items-center justify-center border border-[#1C1917] bg-transparent px-10 py-3.5 font-[family-name:var(--font-jost)] text-sm font-500 uppercase tracking-[0.15em] text-[#1C1917] transition-all hover:bg-[#1C1917] hover:text-[#F8F5F0] active:scale-[0.97]"
+              >
+                Ücretsiz Teklif Al
+              </a>
+            </motion.div>
+          </div>
+
+          {/* Hero Image */}
+          {props.images?.hero && (
+            <motion.div
+              variants={fadeInUp}
+              className="hidden lg:flex items-center justify-center"
+            >
+              <div className="h-80 w-80 overflow-hidden rounded-3xl shadow-2xl shadow-[#C9A96E]/20 ring-4 ring-[#C9A96E]/20">
+                <img
+                  src={props.images.hero}
+                  alt={props.firmName}
+                  className="h-full w-full object-cover"
+                />
+              </div>
             </motion.div>
           )}
-
-          {/* CTA Buttons */}
-          <motion.div variants={fadeInUp} className="mt-12 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
-            <a
-              href={chatLink}
-              onClick={() => trackEvent(props.slug, 'CHAT_CLICK')}
-              className="inline-flex items-center justify-center border border-[#1C1917] bg-transparent px-10 py-3.5 font-[family-name:var(--font-jost)] text-sm font-500 uppercase tracking-[0.15em] text-[#1C1917] transition-all hover:bg-[#1C1917] hover:text-[#F8F5F0] active:scale-[0.97]"
-            >
-              Ücretsiz Teklif Al
-            </a>
-          </motion.div>
         </div>
       </motion.section>
 

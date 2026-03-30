@@ -139,6 +139,19 @@ model ProspectPage {
   events ProspectEvent[]
 }
 
+// ── Şablon Görselleri ──
+model TemplateImage {
+  id         String   @id @default(cuid())
+  templateId String   // "dis-klinikleri", "veteriner-klinikleri" vb.
+  slot       String   // "hero", "cta", "gallery_1"
+  url        String
+  prompt     String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@unique([templateId, slot])
+}
+
 // ── Prospect Sayfa Eventleri ──
 model ProspectEvent {
   id        String       @id @default(cuid())

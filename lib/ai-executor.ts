@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { TOOL_META } from "./ai-tools";
+import { getTemplateImageSlots, getAllTemplateImageConfigs } from "./templates/template-image-config";
 
 type ToolResult = {
   data?: unknown;
@@ -189,6 +190,58 @@ async function executeReadToolCall(
         return {
           data: { message: "generate_image route handler'da işlenir" },
         };
+      }
+
+      case "get_template_image_slots": {
+        const templateId = args.templateId as string | undefined;
+
+        if (templateId) {
+          // Tek sablon detay
+          const config = getTemplateImageSlots(templateId);
+          if (!config) return { error: `Sablon bulunamadi: ${templateId}` };
+
+          // Mevcut gorselleri DB'den cek
+          const existingImages = await prisma.templateImage.findMany({
+            where: { templateId },
+            select: { slot: true, url: true, prompt: true, updatedAt: true },
+          });
+
+          const imageMap: Record<string, { url: string; prompt: string | null; updatedAt: Date }> = {};
+          for (const img of existingImages) {
+            imageMap[img.slot] = { url: img.url, prompt: img.prompt, updatedAt: img.updatedAt };
+          }
+
+          return {
+            data: {
+              ...config,
+              currentImages: imageMap,
+              slotsWithoutImage: config.imageSlots
+                .filter((s) => !imageMap[s.slot])
+                .map((s) => s.slot),
+            },
+          };
+        } else {
+          // Tum sablonlar ozet
+          const configs = getAllTemplateImageConfigs();
+
+          // Her sablon icin mevcut gorsel sayisini cek
+          const allImages = await prisma.templateImage.groupBy({
+            by: ["templateId"],
+            _count: { id: true },
+          });
+          const imageCountMap: Record<string, number> = {};
+          for (const g of allImages) {
+            imageCountMap[g.templateId] = g._count.id;
+          }
+
+          return {
+            data: configs.map((c) => ({
+              ...c,
+              existingImageCount: imageCountMap[c.id] || 0,
+              missingImageCount: c.slotCount - (imageCountMap[c.id] || 0),
+            })),
+          };
+        }
       }
 
       default:

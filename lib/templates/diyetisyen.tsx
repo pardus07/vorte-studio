@@ -152,137 +152,243 @@ export default function DiyetisyenTemplate(props: TemplateProps) {
           }}
         />
 
-        <div className="relative z-10 mx-auto max-w-4xl px-5 pb-20 pt-16 text-center sm:px-8 md:pb-28 md:pt-24 lg:px-12">
-          {/* Google rating badge */}
-          {props.googleRating && props.googleRating > 0 && (
-            <motion.div variants={fadeIn} className="mb-6 inline-block">
-              <div className="inline-flex items-center gap-2.5 rounded-full bg-white px-5 py-2.5 shadow-lg">
-                <div className="flex">
-                  {Array.from({ length: 5 }).map((_, i) => (
-                    <svg
-                      key={i}
-                      className={`h-4.5 w-4.5 ${
-                        i < Math.round(props.googleRating!)
-                          ? 'text-amber-400'
-                          : 'text-gray-300'
-                      }`}
-                      fill="currentColor"
-                      viewBox="0 0 20 20"
-                    >
-                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                    </svg>
-                  ))}
-                </div>
-                <span
-                  className={`${quicksand.className} text-sm font-bold text-[#1a2e05]`}
-                >
-                  {props.googleRating}
-                </span>
-                {props.googleReviews && (
-                  <span
-                    className={`${mulish.className} text-sm text-[#1a2e05]/60`}
-                  >
-                    ({props.googleReviews} değerlendirme)
-                  </span>
+        <div className={`relative z-10 mx-auto px-5 pb-20 pt-16 sm:px-8 md:pb-28 md:pt-24 lg:px-12 ${props.images?.hero ? 'max-w-6xl' : 'max-w-4xl text-center'}`}>
+          {props.images?.hero ? (
+            /* ---- Grid layout: text left + image right ---- */
+            <div className="grid items-center gap-12 lg:grid-cols-2">
+              <div className="text-center lg:text-left">
+                {/* Google rating badge */}
+                {props.googleRating && props.googleRating > 0 && (
+                  <motion.div variants={fadeIn} className="mb-6 inline-block">
+                    <div className="inline-flex items-center gap-2.5 rounded-full bg-white px-5 py-2.5 shadow-lg">
+                      <div className="flex">
+                        {Array.from({ length: 5 }).map((_, i) => (
+                          <svg
+                            key={i}
+                            className={`h-4.5 w-4.5 ${
+                              i < Math.round(props.googleRating!)
+                                ? 'text-amber-400'
+                                : 'text-gray-300'
+                            }`}
+                            fill="currentColor"
+                            viewBox="0 0 20 20"
+                          >
+                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                          </svg>
+                        ))}
+                      </div>
+                      <span
+                        className={`${quicksand.className} text-sm font-bold text-[#1a2e05]`}
+                      >
+                        {props.googleRating}
+                      </span>
+                      {props.googleReviews && (
+                        <span
+                          className={`${mulish.className} text-sm text-[#1a2e05]/60`}
+                        >
+                          ({props.googleReviews} değerlendirme)
+                        </span>
+                      )}
+                    </div>
+                  </motion.div>
                 )}
+
+                <motion.h1
+                  variants={fadeUp}
+                  className={`${quicksand.className} text-3xl font-bold leading-tight tracking-tight text-white sm:text-4xl md:text-5xl lg:text-6xl`}
+                >
+                  Hedef kilonuza giden yol{' '}
+                  <span className="underline decoration-white/40 decoration-4 underline-offset-4">
+                    {props.firmName}
+                  </span>
+                  &apos;dan geçiyor
+                </motion.h1>
+
+                <motion.p
+                  variants={fadeUp}
+                  className={`${mulish.className} mt-5 max-w-lg text-lg text-white/85 md:text-xl lg:mx-0`}
+                >
+                  {props.city}&apos;da uzman diyetisyen desteği
+                </motion.p>
+
+                {/* CTA Buttons */}
+                <motion.div
+                  variants={fadeUp}
+                  className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center lg:justify-start"
+                >
+                  <a
+                    href={chatLink}
+                    onClick={() => trackEvent(props.slug, 'CHAT_CLICK')}
+                    className={`${quicksand.className} inline-flex items-center justify-center gap-2 rounded-full bg-[#1A2E05] px-8 py-4 text-base font-bold text-white shadow-lg shadow-black/15 transition-all hover:-translate-y-0.5 hover:shadow-xl active:translate-y-0`}
+                  >
+                    <svg
+                      width="20"
+                      height="20"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      strokeWidth={2}
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+                      />
+                    </svg>
+                    Ücretsiz Teklif Al
+                  </a>
+                </motion.div>
               </div>
-            </motion.div>
+
+              {/* Hero image column */}
+              <motion.div
+                variants={scaleIn}
+                className="hidden lg:flex items-center justify-center"
+              >
+                <div className="h-80 w-80 overflow-hidden rounded-3xl shadow-2xl shadow-[#84CC16]/20 ring-4 ring-[#84CC16]/20">
+                  <img
+                    src={props.images.hero}
+                    alt={props.firmName}
+                    className="h-full w-full object-cover"
+                  />
+                </div>
+              </motion.div>
+            </div>
+          ) : (
+            /* ---- Original centered layout (no image) ---- */
+            <>
+              {/* Google rating badge */}
+              {props.googleRating && props.googleRating > 0 && (
+                <motion.div variants={fadeIn} className="mb-6 inline-block">
+                  <div className="inline-flex items-center gap-2.5 rounded-full bg-white px-5 py-2.5 shadow-lg">
+                    <div className="flex">
+                      {Array.from({ length: 5 }).map((_, i) => (
+                        <svg
+                          key={i}
+                          className={`h-4.5 w-4.5 ${
+                            i < Math.round(props.googleRating!)
+                              ? 'text-amber-400'
+                              : 'text-gray-300'
+                          }`}
+                          fill="currentColor"
+                          viewBox="0 0 20 20"
+                        >
+                          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                        </svg>
+                      ))}
+                    </div>
+                    <span
+                      className={`${quicksand.className} text-sm font-bold text-[#1a2e05]`}
+                    >
+                      {props.googleRating}
+                    </span>
+                    {props.googleReviews && (
+                      <span
+                        className={`${mulish.className} text-sm text-[#1a2e05]/60`}
+                      >
+                        ({props.googleReviews} değerlendirme)
+                      </span>
+                    )}
+                  </div>
+                </motion.div>
+              )}
+
+              <motion.h1
+                variants={fadeUp}
+                className={`${quicksand.className} text-3xl font-bold leading-tight tracking-tight text-white sm:text-4xl md:text-5xl lg:text-6xl`}
+              >
+                Hedef kilonuza giden yol{' '}
+                <span className="underline decoration-white/40 decoration-4 underline-offset-4">
+                  {props.firmName}
+                </span>
+                &apos;dan geçiyor
+              </motion.h1>
+
+              <motion.p
+                variants={fadeUp}
+                className={`${mulish.className} mx-auto mt-5 max-w-lg text-lg text-white/85 md:text-xl`}
+              >
+                {props.city}&apos;da uzman diyetisyen desteği
+              </motion.p>
+
+              {/* CTA Buttons */}
+              <motion.div
+                variants={fadeUp}
+                className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center"
+              >
+                <a
+                  href={chatLink}
+                  onClick={() => trackEvent(props.slug, 'CHAT_CLICK')}
+                  className={`${quicksand.className} inline-flex items-center justify-center gap-2 rounded-full bg-[#1A2E05] px-8 py-4 text-base font-bold text-white shadow-lg shadow-black/15 transition-all hover:-translate-y-0.5 hover:shadow-xl active:translate-y-0`}
+                >
+                  <svg
+                    width="20"
+                    height="20"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth={2}
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+                    />
+                  </svg>
+                  Ücretsiz Teklif Al
+                </a>
+              </motion.div>
+
+              {/* Floating decorative badges */}
+              <div className="pointer-events-none mt-12 hidden items-center justify-center gap-6 lg:flex">
+                <motion.div
+                  animate={{ y: [0, -8, 0] }}
+                  transition={{
+                    repeat: Infinity,
+                    duration: 3,
+                    ease: 'easeInOut',
+                  }}
+                  className="rounded-2xl bg-white/15 px-4 py-3 backdrop-blur-sm"
+                >
+                  <span
+                    className={`${mulish.className} text-sm font-medium text-white`}
+                  >
+                    🥗 Kişiye Özel Programlar
+                  </span>
+                </motion.div>
+                <motion.div
+                  animate={{ y: [0, 8, 0] }}
+                  transition={{
+                    repeat: Infinity,
+                    duration: 3.5,
+                    ease: 'easeInOut',
+                  }}
+                  className="rounded-2xl bg-white/15 px-4 py-3 backdrop-blur-sm"
+                >
+                  <span
+                    className={`${mulish.className} text-sm font-medium text-white`}
+                  >
+                    📊 Online Takip
+                  </span>
+                </motion.div>
+                <motion.div
+                  animate={{ y: [0, -6, 0] }}
+                  transition={{
+                    repeat: Infinity,
+                    duration: 4,
+                    ease: 'easeInOut',
+                  }}
+                  className="rounded-2xl bg-white/15 px-4 py-3 backdrop-blur-sm"
+                >
+                  <span
+                    className={`${mulish.className} text-sm font-medium text-white`}
+                  >
+                    💪 Dönüşüm Hikayeleri
+                  </span>
+                </motion.div>
+              </div>
+            </>
           )}
-
-          <motion.h1
-            variants={fadeUp}
-            className={`${quicksand.className} text-3xl font-bold leading-tight tracking-tight text-white sm:text-4xl md:text-5xl lg:text-6xl`}
-          >
-            Hedef kilonuza giden yol{' '}
-            <span className="underline decoration-white/40 decoration-4 underline-offset-4">
-              {props.firmName}
-            </span>
-            &apos;dan geçiyor
-          </motion.h1>
-
-          <motion.p
-            variants={fadeUp}
-            className={`${mulish.className} mx-auto mt-5 max-w-lg text-lg text-white/85 md:text-xl`}
-          >
-            {props.city}&apos;da uzman diyetisyen desteği
-          </motion.p>
-
-          {/* CTA Buttons */}
-          <motion.div
-            variants={fadeUp}
-            className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center"
-          >
-            <a
-              href={chatLink}
-              onClick={() => trackEvent(props.slug, 'CHAT_CLICK')}
-              className={`${quicksand.className} inline-flex items-center justify-center gap-2 rounded-full bg-[#1A2E05] px-8 py-4 text-base font-bold text-white shadow-lg shadow-black/15 transition-all hover:-translate-y-0.5 hover:shadow-xl active:translate-y-0`}
-            >
-              <svg
-                width="20"
-                height="20"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                strokeWidth={2}
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
-                />
-              </svg>
-              Ücretsiz Teklif Al
-            </a>
-          </motion.div>
-
-          {/* Floating decorative badges */}
-          <div className="pointer-events-none mt-12 hidden items-center justify-center gap-6 lg:flex">
-            <motion.div
-              animate={{ y: [0, -8, 0] }}
-              transition={{
-                repeat: Infinity,
-                duration: 3,
-                ease: 'easeInOut',
-              }}
-              className="rounded-2xl bg-white/15 px-4 py-3 backdrop-blur-sm"
-            >
-              <span
-                className={`${mulish.className} text-sm font-medium text-white`}
-              >
-                🥗 Kişiye Özel Programlar
-              </span>
-            </motion.div>
-            <motion.div
-              animate={{ y: [0, 8, 0] }}
-              transition={{
-                repeat: Infinity,
-                duration: 3.5,
-                ease: 'easeInOut',
-              }}
-              className="rounded-2xl bg-white/15 px-4 py-3 backdrop-blur-sm"
-            >
-              <span
-                className={`${mulish.className} text-sm font-medium text-white`}
-              >
-                📊 Online Takip
-              </span>
-            </motion.div>
-            <motion.div
-              animate={{ y: [0, -6, 0] }}
-              transition={{
-                repeat: Infinity,
-                duration: 4,
-                ease: 'easeInOut',
-              }}
-              className="rounded-2xl bg-white/15 px-4 py-3 backdrop-blur-sm"
-            >
-              <span
-                className={`${mulish.className} text-sm font-medium text-white`}
-              >
-                💪 Dönüşüm Hikayeleri
-              </span>
-            </motion.div>
-          </div>
         </div>
 
         {/* Bottom wave */}

@@ -59,55 +59,76 @@ export default function OptikGozlukcuTemplate(props: TemplateProps) {
           <div className="absolute top-0 left-3/4 h-full w-px bg-[#D4AF37]/10" />
         </div>
 
-        <div className="relative mx-auto max-w-4xl text-center">
-          {/* Gold top badge */}
-          <motion.div variants={fadeUp} className="mb-6 flex justify-center">
-            <span className="inline-flex items-center gap-2 rounded-full border border-[#D4AF37]/40 bg-[#D4AF37]/10 px-5 py-2 text-sm font-semibold tracking-wide text-[#D4AF37]"
-              style={{ fontFamily: 'var(--font-source-sans)' }}>
-              <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M10 1l2.39 4.84L17.3 6.7l-3.54 3.46.84 4.88L10 12.77l-4.6 2.27.84-4.88L2.7 6.7l4.91-.86L10 1z" />
-              </svg>
-              {rating} Puan ({reviews}+ Değerlendirme)
-            </span>
-          </motion.div>
+        <div className={`relative mx-auto ${props.images?.hero ? 'max-w-6xl' : 'max-w-4xl text-center'}`}>
+          <div className={props.images?.hero ? 'grid grid-cols-1 items-center gap-12 lg:grid-cols-2' : ''}>
+            {/* Hero text content */}
+            <div>
+              {/* Gold top badge */}
+              <motion.div variants={fadeUp} className={`mb-6 flex ${props.images?.hero ? 'justify-start' : 'justify-center'}`}>
+                <span className="inline-flex items-center gap-2 rounded-full border border-[#D4AF37]/40 bg-[#D4AF37]/10 px-5 py-2 text-sm font-semibold tracking-wide text-[#D4AF37]"
+                  style={{ fontFamily: 'var(--font-source-sans)' }}>
+                  <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M10 1l2.39 4.84L17.3 6.7l-3.54 3.46.84 4.88L10 12.77l-4.6 2.27.84-4.88L2.7 6.7l4.91-.86L10 1z" />
+                  </svg>
+                  {rating} Puan ({reviews}+ Değerlendirme)
+                </span>
+              </motion.div>
 
-          <motion.h1
-            variants={fadeUp}
-            className="text-4xl font-bold leading-tight tracking-tight sm:text-5xl md:text-6xl lg:text-7xl"
-            style={{ fontFamily: 'var(--font-playfair)' }}
-          >
-            Gözleriniz en iyi
-            <br />
-            gözlüğü hak ediyor
-          </motion.h1>
+              <motion.h1
+                variants={fadeUp}
+                className={`text-4xl font-bold leading-tight tracking-tight sm:text-5xl md:text-6xl ${props.images?.hero ? '' : 'lg:text-7xl'}`}
+                style={{ fontFamily: 'var(--font-playfair)' }}
+              >
+                Gözleriniz en iyi
+                <br />
+                gözlüğü hak ediyor
+              </motion.h1>
 
-          {/* Gold accent line */}
-          <motion.div variants={fadeUp} className="mx-auto mt-6 h-1 w-24 rounded-full bg-[#D4AF37]" />
+              {/* Gold accent line */}
+              <motion.div variants={fadeUp} className={`mt-6 h-1 w-24 rounded-full bg-[#D4AF37] ${props.images?.hero ? '' : 'mx-auto'}`} />
 
-          <motion.p
-            variants={fadeUp}
-            className="mx-auto mt-6 max-w-2xl text-lg text-white/80 sm:text-xl"
-            style={{ fontFamily: 'var(--font-source-sans)' }}
-          >
-            {props.firmName} &mdash; {props.city}&apos;da kaliteli görmenin adresi
-          </motion.p>
+              <motion.p
+                variants={fadeUp}
+                className={`mt-6 max-w-2xl text-lg text-white/80 sm:text-xl ${props.images?.hero ? '' : 'mx-auto'}`}
+                style={{ fontFamily: 'var(--font-source-sans)' }}
+              >
+                {props.firmName} &mdash; {props.city}&apos;da kaliteli görmenin adresi
+              </motion.p>
 
-          <motion.div
-            variants={fadeUp}
-            className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center"
-          >
-            <a
-              href={chatLink}
-              onClick={() => trackEvent(props.slug, 'CHAT_CLICK')}
-              className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-[#D4AF37] px-8 py-4 text-base font-semibold text-[#1E40AF] shadow-lg shadow-[#D4AF37]/20 transition-all hover:bg-[#c9a432] hover:shadow-xl sm:w-auto"
-              style={{ fontFamily: 'var(--font-source-sans)' }}
-            >
-              <svg className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-              </svg>
-              Ücretsiz Teklif Al
-            </a>
-          </motion.div>
+              <motion.div
+                variants={fadeUp}
+                className={`mt-10 flex flex-col gap-4 sm:flex-row ${props.images?.hero ? 'items-start sm:justify-start' : 'items-center sm:justify-center'}`}
+              >
+                <a
+                  href={chatLink}
+                  onClick={() => trackEvent(props.slug, 'CHAT_CLICK')}
+                  className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-[#D4AF37] px-8 py-4 text-base font-semibold text-[#1E40AF] shadow-lg shadow-[#D4AF37]/20 transition-all hover:bg-[#c9a432] hover:shadow-xl sm:w-auto"
+                  style={{ fontFamily: 'var(--font-source-sans)' }}
+                >
+                  <svg className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                  </svg>
+                  Ücretsiz Teklif Al
+                </a>
+              </motion.div>
+            </div>
+
+            {/* Hero image — right column */}
+            {props.images?.hero && (
+              <motion.div
+                variants={fadeIn}
+                className="hidden lg:flex items-center justify-center"
+              >
+                <div className="h-80 w-80 overflow-hidden rounded-3xl shadow-2xl shadow-[#1E40AF]/20 ring-4 ring-[#D4AF37]/20">
+                  <img
+                    src={props.images.hero}
+                    alt={props.firmName}
+                    className="h-full w-full object-cover"
+                  />
+                </div>
+              </motion.div>
+            )}
+          </div>
         </div>
       </motion.section>
 

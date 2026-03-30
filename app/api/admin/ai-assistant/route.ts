@@ -40,6 +40,17 @@ export async function POST(req: NextRequest) {
         if ("error" in imgResult) return NextResponse.json({ reply: `Görsel üretim hatası: ${imgResult.error}` });
         imageUrl = imgResult.url;
         toolResult = { url: imgResult.url, filename: imgResult.filename, model: imgResult.model };
+      } else if (toolName === "generate_template_image") {
+        // Şablon görseli — özel API route'una yönlendir
+        const response = await fetch(`${baseUrl}/api/admin/template-images`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json", Cookie: cookies },
+          body: JSON.stringify(args),
+        });
+        const data = await response.json();
+        if (!response.ok) return NextResponse.json({ reply: `Şablon görsel hatası: ${data.error}` });
+        imageUrl = data.image?.url;
+        toolResult = data;
       } else {
         const result = await executeApprovedToolCall(toolName, args, baseUrl, cookies);
         if (result.error) return NextResponse.json({ reply: `Hata: ${result.error}` });

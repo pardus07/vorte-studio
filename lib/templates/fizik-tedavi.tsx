@@ -157,51 +157,70 @@ export default function FizikTedaviTemplate(props: TemplateProps) {
         <div className="pointer-events-none absolute -right-32 -top-32 h-96 w-96 rounded-full bg-white/5" />
         <div className="pointer-events-none absolute -left-20 bottom-10 h-64 w-64 rounded-full bg-white/5" />
 
-        <div className="relative z-10 mx-auto max-w-5xl px-5 text-center text-white">
-          {/* Google Puan Rozeti */}
-          {reviews > 0 && (
-            <motion.div variants={fadeUp} className="mb-6 inline-flex items-center gap-2 rounded-full bg-white/15 px-4 py-2 text-sm font-medium backdrop-blur-sm">
-              <div className="flex text-yellow-300">
-                {Array.from({ length: fullStars }).map((_, i) => (
-                  <StarIcon key={i} className="h-4 w-4" />
-                ))}
-              </div>
-              <span className="font-[family-name:var(--font-lato)]">
-                {rating} / 5 — {reviews} Google Değerlendirmesi
+        <div className={`relative z-10 mx-auto max-w-5xl px-5 text-white ${props.images?.hero ? 'grid items-center gap-10 lg:grid-cols-2 lg:text-left' : 'text-center'}`}>
+          {/* Metin içerikleri */}
+          <div>
+            {/* Google Puan Rozeti */}
+            {reviews > 0 && (
+              <motion.div variants={fadeUp} className={`mb-6 inline-flex items-center gap-2 rounded-full bg-white/15 px-4 py-2 text-sm font-medium backdrop-blur-sm`}>
+                <div className="flex text-yellow-300">
+                  {Array.from({ length: fullStars }).map((_, i) => (
+                    <StarIcon key={i} className="h-4 w-4" />
+                  ))}
+                </div>
+                <span className="font-[family-name:var(--font-lato)]">
+                  {rating} / 5 — {reviews} Google Değerlendirmesi
+                </span>
+              </motion.div>
+            )}
+
+            <motion.h1
+              variants={fadeUp}
+              className={`text-3xl font-bold leading-tight font-[family-name:var(--font-dm-sans)] md:text-5xl md:leading-tight ${props.images?.hero ? 'max-w-3xl' : 'mx-auto max-w-3xl'}`}
+            >
+              Ağrılarınızdan kurtulmanın yolu{' '}
+              <span className="underline decoration-white/40 decoration-4 underline-offset-4">
+                {props.firmName}
               </span>
+              &apos;dan geçiyor
+            </motion.h1>
+
+            <motion.p
+              variants={fadeUp}
+              className={`mt-5 text-lg text-white/85 font-[family-name:var(--font-lato)] md:text-xl ${props.images?.hero ? 'max-w-xl' : 'mx-auto max-w-xl'}`}
+            >
+              {props.city}&apos;da uzman fizyoterapi hizmeti — ağrısız bir yaşam için doğru adres.
+            </motion.p>
+
+            <motion.div variants={fadeUp} className={`mt-8 flex flex-col gap-4 sm:flex-row ${props.images?.hero ? 'justify-start' : 'items-center justify-center'}`}>
+              <a
+                href={chatLink}
+                onClick={() => trackEvent(props.slug, 'CHAT_CLICK')}
+                className="inline-flex items-center gap-2 rounded-xl border-2 border-white/70 px-7 py-3.5 text-base font-bold text-white transition hover:bg-white/10 font-[family-name:var(--font-dm-sans)]"
+              >
+                <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                </svg>
+                Ücretsiz Teklif Al
+              </a>
+            </motion.div>
+          </div>
+
+          {/* Hero görseli */}
+          {props.images?.hero && (
+            <motion.div
+              variants={fadeUp}
+              className="hidden lg:flex items-center justify-center"
+            >
+              <div className="h-80 w-80 overflow-hidden rounded-3xl shadow-2xl shadow-[#0F766E]/20">
+                <img
+                  src={props.images.hero}
+                  alt={props.firmName}
+                  className="h-full w-full object-cover"
+                />
+              </div>
             </motion.div>
           )}
-
-          <motion.h1
-            variants={fadeUp}
-            className="mx-auto max-w-3xl text-3xl font-bold leading-tight font-[family-name:var(--font-dm-sans)] md:text-5xl md:leading-tight"
-          >
-            Ağrılarınızdan kurtulmanın yolu{' '}
-            <span className="underline decoration-white/40 decoration-4 underline-offset-4">
-              {props.firmName}
-            </span>
-            &apos;dan geçiyor
-          </motion.h1>
-
-          <motion.p
-            variants={fadeUp}
-            className="mx-auto mt-5 max-w-xl text-lg text-white/85 font-[family-name:var(--font-lato)] md:text-xl"
-          >
-            {props.city}&apos;da uzman fizyoterapi hizmeti — ağrısız bir yaşam için doğru adres.
-          </motion.p>
-
-          <motion.div variants={fadeUp} className="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row">
-            <a
-              href={chatLink}
-              onClick={() => trackEvent(props.slug, 'CHAT_CLICK')}
-              className="inline-flex items-center gap-2 rounded-xl border-2 border-white/70 px-7 py-3.5 text-base font-bold text-white transition hover:bg-white/10 font-[family-name:var(--font-dm-sans)]"
-            >
-              <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-              </svg>
-              Ücretsiz Teklif Al
-            </a>
-          </motion.div>
         </div>
 
         {/* SVG dalga ayracı */}

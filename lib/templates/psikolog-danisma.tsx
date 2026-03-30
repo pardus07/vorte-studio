@@ -62,7 +62,8 @@ export default function PsikologDanismaTemplate(props: TemplateProps) {
           style={{ background: 'radial-gradient(circle, #DDD6FE 0%, transparent 70%)' }}
         />
 
-        <div className="relative mx-auto max-w-3xl text-center">
+        <div className={`relative mx-auto ${props.images?.hero ? 'max-w-5xl grid grid-cols-1 lg:grid-cols-2 items-center gap-12' : 'max-w-3xl text-center'}`}>
+          <div className={props.images?.hero ? '' : undefined}>
           <motion.div variants={fadeInUp} className="mb-5 inline-block rounded-full bg-[#DDD6FE]/50 px-5 py-2">
             <span className="font-[family-name:var(--font-hind)] text-sm font-medium text-[#6D28D9]">
               Psikolojik Danışmanlık
@@ -79,14 +80,14 @@ export default function PsikologDanismaTemplate(props: TemplateProps) {
 
           <motion.p
             variants={fadeInUp}
-            className="mx-auto mt-6 max-w-xl font-[family-name:var(--font-hind)] text-base text-[#1C1917]/65 md:text-lg"
+            className={`mt-6 font-[family-name:var(--font-hind)] text-base text-[#1C1917]/65 md:text-lg ${props.images?.hero ? 'max-w-xl' : 'mx-auto max-w-xl'}`}
           >
             {props.firmName} &mdash; {props.city}&apos;da profesyonel psikolojik danışmanlık
           </motion.p>
 
           {/* Google Rating */}
           {props.googleRating && props.googleRating > 0 && (
-            <motion.div variants={fadeInUp} className="mt-6 flex items-center justify-center gap-2">
+            <motion.div variants={fadeInUp} className={`mt-6 flex items-center gap-2 ${props.images?.hero ? '' : 'justify-center'}`}>
               <div className="flex">
                 {Array.from({ length: 5 }).map((_, i) => (
                   <svg
@@ -111,7 +112,7 @@ export default function PsikologDanismaTemplate(props: TemplateProps) {
           )}
 
           {/* CTA Buttons */}
-          <motion.div variants={fadeInUp} className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
+          <motion.div variants={fadeInUp} className={`mt-10 flex flex-col gap-4 sm:flex-row ${props.images?.hero ? '' : 'items-center sm:justify-center'}`}>
             <a
               href={chatLink}
               onClick={() => trackEvent(props.slug, 'CHAT_CLICK')}
@@ -120,6 +121,22 @@ export default function PsikologDanismaTemplate(props: TemplateProps) {
               Ücretsiz Teklif Al
             </a>
           </motion.div>
+          </div>
+
+          {props.images?.hero && (
+            <motion.div
+              variants={fadeInUp}
+              className="hidden lg:flex items-center justify-center"
+            >
+              <div className="h-80 w-80 overflow-hidden rounded-3xl shadow-2xl shadow-[#7C3AED]/20 ring-4 ring-[#DDD6FE]/30">
+                <img
+                  src={props.images.hero}
+                  alt={props.firmName}
+                  className="h-full w-full object-cover"
+                />
+              </div>
+            </motion.div>
+          )}
         </div>
       </motion.section>
 

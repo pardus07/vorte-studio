@@ -21,11 +21,15 @@ export const TOOL_META: Record<string, ToolMeta> = {
   get_projects:        { level: 1, description: "Projeleri listele", endpoint: "/api/admin/projects", method: "GET" },
   get_maintenance:     { level: 1, description: "Bakım paketleri", endpoint: "/api/admin/maintenance", method: "GET" },
 
+  // Level 1 — Template reads
+  get_template_image_slots: { level: 1, description: "Şablon görsel slot bilgileri", endpoint: "", method: "GET" },
+
   // Level 2 — Create/Update (requires approval)
   create_blog_post: { level: 2, description: "Yeni blog yazısı oluştur", endpoint: "/api/admin/blog", method: "POST" },
   update_blog_post: { level: 2, description: "Blog yazısı güncelle", endpoint: "/api/admin/blog/{id}", method: "PATCH" },
   update_settings:  { level: 2, description: "Site ayarı güncelle", endpoint: "/api/admin/settings", method: "PATCH" },
   generate_image:   { level: 1, description: "AI görsel üret", endpoint: "/api/admin/generate-image", method: "POST" },
+  generate_template_image: { level: 2, description: "Şablon görseli üret ve kaydet", endpoint: "/api/admin/template-images", method: "POST" },
 
   // Level 3 — Delete (double confirm)
   delete_blog_post: { level: 3, description: "Blog yazısı sil", endpoint: "/api/admin/blog/{id}", method: "DELETE" },
@@ -299,6 +303,46 @@ export const agentFunctionDeclarations: FunctionDeclaration[] = [
         },
       },
       required: ["prompt"],
+    },
+  },
+  {
+    name: "get_template_image_slots",
+    description:
+      "Bir sablonun gorsel slot bilgilerini getirir: aspectRatio, imageSize, style, promptHint ve mevcut gorselleri. templateId belirtilmezse tum sablonlari listeler. SABLON GORSELI URETMEDEN ONCE BU TOOL ILE SLOT BILGILERINI OKU.",
+    parameters: {
+      type: Type.OBJECT,
+      properties: {
+        templateId: {
+          type: Type.STRING,
+          description:
+            "Sablon ID'si (ornek: 'dis-klinikleri'). Belirtilmezse tum sablonlar listelenir.",
+        },
+      },
+      required: [],
+    },
+  },
+  {
+    name: "generate_template_image",
+    description:
+      "Belirli bir sablon slot'u icin AI gorsel uretir ve kaydeder. ONCE get_template_image_slots ile slot bilgilerini oku, sonra bu tool'u cagir. Prompt'u slot'un promptHint'ini zenginlestirerek yaz.",
+    parameters: {
+      type: Type.OBJECT,
+      properties: {
+        templateId: {
+          type: Type.STRING,
+          description: "Sablon ID'si (ornek: 'dis-klinikleri')",
+        },
+        slot: {
+          type: Type.STRING,
+          description: "Gorsel slot adi (ornek: 'hero')",
+        },
+        prompt: {
+          type: Type.STRING,
+          description:
+            "Gorsel aciklamasi (Ingilizce). Slot'un promptHint'ini temel alarak daha detayli ve zengin bir prompt yaz.",
+        },
+      },
+      required: ["templateId", "slot", "prompt"],
     },
   },
 ];

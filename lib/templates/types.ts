@@ -1,3 +1,13 @@
+export interface TemplateImageSlot {
+  slot: string
+  label: string
+  aspectRatio: string
+  imageSize: string
+  style: 'photorealistic' | 'minimalist' | 'illustration'
+  promptHint: string
+  position: string
+}
+
 export interface TemplateProps {
   firmName: string
   city: string
@@ -9,6 +19,7 @@ export interface TemplateProps {
   score: number
   slug: string
   sector: string
+  images?: Record<string, string>
 }
 
 // Teklif chatbot sayfası linki

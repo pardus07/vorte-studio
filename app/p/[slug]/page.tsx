@@ -81,6 +81,21 @@ export default async function ProspectLandingPage({ params }: PageProps) {
     if (!demo) notFound()
 
     const { default: TemplateComponent } = await loader()
+
+    // Önizleme modunda da görselleri DB'den çek
+    let previewImages: Record<string, string> = {}
+    try {
+      const imgs = await prisma.templateImage.findMany({
+        where: { templateId },
+        select: { slot: true, url: true },
+      })
+      for (const img of imgs) {
+        previewImages[img.slot] = img.url
+      }
+    } catch {
+      previewImages = {}
+    }
+
     return (
       <TemplateComponent
         firmName={demo.firmName}
@@ -92,6 +107,7 @@ export default async function ProspectLandingPage({ params }: PageProps) {
         score={85}
         slug={slug}
         sector={demo.sector}
+        images={Object.keys(previewImages).length > 0 ? previewImages : undefined}
       />
     )
   }
@@ -118,6 +134,20 @@ export default async function ProspectLandingPage({ params }: PageProps) {
   const loader = templateComponents[templateName] ?? templateComponents['tip-merkezleri']
   const { default: TemplateComponent } = await loader()
 
+  // Şablon görsellerini DB'den çek
+  let templateImages: Record<string, string> = {}
+  try {
+    const imgs = await prisma.templateImage.findMany({
+      where: { templateId: templateName },
+      select: { slot: true, url: true },
+    })
+    for (const img of imgs) {
+      templateImages[img.slot] = img.url
+    }
+  } catch {
+    templateImages = {}
+  }
+
   return (
     <TemplateComponent
       firmName={prospect.name}
@@ -129,6 +159,7 @@ export default async function ProspectLandingPage({ params }: PageProps) {
       score={prospect.score}
       slug={slug}
       sector={page.sector}
+      images={Object.keys(templateImages).length > 0 ? templateImages : undefined}
     />
   )
 }

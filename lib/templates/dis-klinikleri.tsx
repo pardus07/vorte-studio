@@ -239,17 +239,27 @@ export default function DisKlinikleriTemplate(props: TemplateProps) {
               </motion.div>
             </div>
 
-            {/* Right — Decorative dental illustration */}
+            {/* Right — Hero görseli veya dekoratif illüstrasyon */}
             <motion.div
               variants={scaleIn}
               className="hidden lg:flex items-center justify-center"
             >
               <div className="relative">
-                <div className="h-80 w-80 rounded-full bg-gradient-to-br from-[#0EA5E9]/10 to-[#10B981]/10 flex items-center justify-center">
-                  <div className="h-56 w-56 rounded-full bg-gradient-to-br from-[#0EA5E9]/15 to-[#10B981]/15 flex items-center justify-center">
-                    <span className="text-8xl">🦷</span>
+                {props.images?.hero ? (
+                  <div className="h-80 w-80 overflow-hidden rounded-full shadow-2xl shadow-[#0EA5E9]/20 ring-4 ring-white/80">
+                    <img
+                      src={props.images.hero}
+                      alt={props.firmName}
+                      className="h-full w-full object-cover"
+                    />
                   </div>
-                </div>
+                ) : (
+                  <div className="h-80 w-80 rounded-full bg-gradient-to-br from-[#0EA5E9]/10 to-[#10B981]/10 flex items-center justify-center">
+                    <div className="h-56 w-56 rounded-full bg-gradient-to-br from-[#0EA5E9]/15 to-[#10B981]/15 flex items-center justify-center">
+                      <span className="text-8xl">🦷</span>
+                    </div>
+                  </div>
+                )}
                 {/* Floating badges */}
                 <motion.div
                   animate={{ y: [0, -8, 0] }}

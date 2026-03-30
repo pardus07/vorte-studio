@@ -4,7 +4,7 @@ import { generateImage } from "@/lib/generate-image";
 
 export const maxDuration = 60;
 
-const ALLOWED_DIRS = ["blog"];
+const ALLOWED_DIRS = ["blog", "templates"];
 
 export async function POST(request: NextRequest) {
   const session = await auth();

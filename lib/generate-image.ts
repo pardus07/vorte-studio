@@ -8,7 +8,16 @@ const MODELS = [
   { name: "Imagen 4", id: "imagen-4.0-generate-001" },
 ];
 
-export async function generateImage(prompt: string, directory = "blog"): Promise<{
+export interface ImageGenOptions {
+  aspectRatio?: string;  // "1:1" | "4:3" | "16:9" | "3:4" | "9:16"
+  imageSize?: string;    // "1K" | "2K" | "4K"
+}
+
+export async function generateImage(
+  prompt: string,
+  directory = "blog",
+  options?: ImageGenOptions
+): Promise<{
   url: string;
   filename: string;
   size: number;
@@ -27,7 +36,11 @@ export async function generateImage(prompt: string, directory = "blog"): Promise
         const response = await ai.models.generateImages({
           model: model.id,
           prompt,
-          config: { numberOfImages: 1 },
+          config: {
+            numberOfImages: 1,
+            ...(options?.aspectRatio && { aspectRatio: options.aspectRatio }),
+            ...(options?.imageSize && { imageSize: options.imageSize }),
+          },
         });
         const image = response.generatedImages?.[0];
         if (image?.image?.imageBytes) {
@@ -39,7 +52,17 @@ export async function generateImage(prompt: string, directory = "blog"): Promise
         const response = await ai.models.generateContent({
           model: model.id,
           contents: [{ role: "user", parts: [{ text: prompt }] }],
-          config: { responseModalities: ["IMAGE", "TEXT"] },
+          config: {
+            responseModalities: ["IMAGE", "TEXT"],
+            ...(options?.aspectRatio || options?.imageSize
+              ? {
+                  imageConfig: {
+                    ...(options?.aspectRatio && { aspectRatio: options.aspectRatio }),
+                    ...(options?.imageSize && { imageSize: options.imageSize }),
+                  },
+                }
+              : {}),
+          },
         });
         const parts = response.candidates?.[0]?.content?.parts || [];
         const imagePart = parts.find((p) => p.inlineData && typeof p.inlineData === "object");
