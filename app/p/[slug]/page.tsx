@@ -19,12 +19,35 @@ const templateComponents = {
 
 type TemplateKey = keyof typeof templateComponents
 
+// Önizleme modu için demo veriler
+const previewData: Record<string, { firmName: string; city: string; sector: string; rating: number; reviews: number }> = {
+  'dis-klinikleri': { firmName: 'Gülüş Diş Kliniği', city: 'Antalya', sector: 'Diş Klinikleri', rating: 4.8, reviews: 247 },
+  'veteriner-klinikleri': { firmName: 'Patiler Veteriner', city: 'İstanbul', sector: 'Veteriner Klinikleri', rating: 4.9, reviews: 183 },
+  'optik-gozlukcu': { firmName: 'Netgöz Optik', city: 'Ankara', sector: 'Optik / Gözlükçü', rating: 4.7, reviews: 156 },
+  'fizik-tedavi': { firmName: 'Hareket Fizik Tedavi', city: 'İzmir', sector: 'Fizik Tedavi Merkezleri', rating: 4.6, reviews: 112 },
+  'tip-merkezleri': { firmName: 'Anadolu Tıp Merkezi', city: 'Bursa', sector: 'Tıp Merkezleri', rating: 4.5, reviews: 324 },
+  'estetik-klinik': { firmName: 'Elite Estetik', city: 'İstanbul', sector: 'Estetik Klinikler', rating: 4.9, reviews: 89 },
+  'psikolog-danisma': { firmName: 'Huzur Psikoloji', city: 'Ankara', sector: 'Psikologlar / Danışmanlar', rating: 5.0, reviews: 67 },
+  'diyetisyen': { firmName: 'Sağlıklı Yaşam Beslenme', city: 'Antalya', sector: 'Diyetisyenler', rating: 4.8, reviews: 198 },
+}
+
 interface PageProps {
   params: Promise<{ slug: string }>
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params
+
+  // Önizleme modu
+  if (slug.startsWith('preview-')) {
+    const templateId = slug.replace('preview-', '')
+    const demo = previewData[templateId]
+    if (!demo) return { title: 'Şablon Bulunamadı' }
+    return {
+      title: `${demo.firmName} — Önizleme | Vorte Studio`,
+      robots: 'noindex, nofollow',
+    }
+  }
 
   let page = null
   try {
@@ -48,6 +71,32 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 export default async function ProspectLandingPage({ params }: PageProps) {
   const { slug } = await params
 
+  // ── ÖNİZLEME MODU ──
+  if (slug.startsWith('preview-')) {
+    const templateId = slug.replace('preview-', '') as TemplateKey
+    const loader = templateComponents[templateId]
+    if (!loader) notFound()
+
+    const demo = previewData[templateId]
+    if (!demo) notFound()
+
+    const { default: TemplateComponent } = await loader()
+    return (
+      <TemplateComponent
+        firmName={demo.firmName}
+        city={demo.city}
+        address="Atatürk Caddesi No:42/A"
+        phone="0532 000 00 00"
+        googleRating={demo.rating}
+        googleReviews={demo.reviews}
+        score={85}
+        slug={slug}
+        sector={demo.sector}
+      />
+    )
+  }
+
+  // ── GERÇEK VERİ MODU ──
   let page = null
   try {
     page = await prisma.prospectPage.findUnique({

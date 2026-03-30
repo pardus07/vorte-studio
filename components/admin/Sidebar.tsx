@@ -50,6 +50,7 @@ const sections = [
     items: [
       { name: "Portfolyo", href: "/admin/portfolio", icon: PortfolioIcon },
       { name: "Blog", href: "/admin/blog", icon: BlogIcon },
+      { name: "Şablonlar", href: "/admin/templates", icon: TemplatesIcon },
     ],
   },
   {
@@ -313,6 +314,23 @@ function BlogIcon({ className }: { className?: string }) {
       strokeWidth="1.5"
     >
       <path d="M2 3h12M2 7h8M2 11h10M2 15h6" />
+    </svg>
+  );
+}
+
+function TemplatesIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      className={className}
+      viewBox="0 0 16 16"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+    >
+      <rect x="1" y="1" width="6" height="8" rx="1" />
+      <rect x="9" y="1" width="6" height="5" rx="1" />
+      <rect x="9" y="8" width="6" height="7" rx="1" />
+      <rect x="1" y="11" width="6" height="4" rx="1" />
     </svg>
   );
 }
