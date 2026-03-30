@@ -18,11 +18,13 @@ export async function POST(req: NextRequest) {
   try {
     const { messages, pageContext, approvedToolCall } = await req.json();
 
-    // Handle approved tool execution
+    // Handle approved tool execution — sonucu Gemini'ye besle, döngüyü devam ettir
     if (approvedToolCall) {
       const { toolName, args } = approvedToolCall;
+      let toolResult: Record<string, unknown>;
+      let imageUrl: string | undefined;
 
-      // Special handling for generate_image
+      // Tool'u çalıştır
       if (toolName === "generate_image") {
         const res = await fetch(new URL("/api/admin/generate-image", req.url), {
           method: "POST",
@@ -31,22 +33,107 @@ export async function POST(req: NextRequest) {
         });
         const data = await res.json();
         if (data.error) return NextResponse.json({ reply: `Görsel üretim hatası: ${data.error}` });
-        return NextResponse.json({ reply: `Görsel üretildi: ${data.url}`, imageUrl: data.url });
+        imageUrl = data.url;
+        toolResult = { url: data.url, filename: data.filename, model: data.model };
+      } else {
+        const result = await executeApprovedToolCall(toolName, args);
+        if (result.error) return NextResponse.json({ reply: `Hata: ${result.error}` });
+        toolResult = (result.data as Record<string, unknown>) || { ok: true };
       }
 
-      const result = await executeApprovedToolCall(toolName, args);
-      if (result.error) return NextResponse.json({ reply: `Hata: ${result.error}` });
-      return NextResponse.json({ reply: "İşlem tamamlandı.", data: result.data });
+      // Sonucu Gemini'ye besle — konuşma döngüsünü devam ettir
+      const context = getPageContext(pageContext || "/admin/dashboard");
+      const systemPrompt = buildSystemPrompt(context.title);
+      const ai = new GoogleGenAI({ apiKey });
+
+      // Geçmiş mesajları al
+      const history = (messages || [])
+        .filter((m: { role: string; content: string }) => m.role === "user" || m.role === "assistant")
+        .map((m: { role: string; content: string }) => ({
+          role: m.role === "user" ? "user" : "model",
+          parts: [{ text: m.content }],
+        }));
+
+      while (history.length > 0 && history[0].role !== "user") {
+        history.shift();
+      }
+
+      const trimmedHistory = history.length > 30 ? history.slice(-30) : history;
+
+      const chat = ai.chats.create({
+        model: "gemini-2.5-flash",
+        history: trimmedHistory,
+        config: {
+          systemInstruction: systemPrompt,
+          tools: [{ functionDeclarations: agentFunctionDeclarations }],
+        },
+      });
+
+      // Tool sonucunu Gemini'ye gönder
+      let response = await chat.sendMessage({
+        message: {
+          functionResponse: {
+            name: toolName,
+            response: toolResult,
+          },
+        },
+      });
+
+      const executedTools: string[] = [toolName];
+
+      // Gemini'nin devam tool çağrılarını işle (max 5)
+      for (let step = 0; step < 5; step++) {
+        const functionCalls = response.functionCalls;
+        if (!functionCalls || functionCalls.length === 0) break;
+
+        const call = functionCalls[0];
+        const nextToolName = call.name!;
+        const nextArgs = (call.args || {}) as Record<string, unknown>;
+        const meta = TOOL_META[nextToolName];
+
+        // Level 2-3: yeni pending approval dön
+        if (meta && meta.level >= 2) {
+          const replyText = response.text || "";
+          return NextResponse.json({
+            reply: replyText || `${meta.description} işlemi için onay bekleniyor...`,
+            imageUrl,
+            pendingApproval: {
+              toolName: nextToolName,
+              args: nextArgs,
+              level: meta.level,
+              summary: meta.description,
+            },
+          });
+        }
+
+        // Level 1: otomatik çalıştır
+        const result = await resolveToolCall(nextToolName, nextArgs);
+        executedTools.push(nextToolName);
+
+        response = await chat.sendMessage({
+          message: {
+            functionResponse: {
+              name: nextToolName,
+              response: result.data
+                ? (result.data as Record<string, unknown>)
+                : result.error
+                  ? { error: result.error }
+                  : { ok: true },
+            },
+          },
+        });
+      }
+
+      const reply = response.text || "İşlem tamamlandı.";
+      return NextResponse.json({ reply, imageUrl, executedTools });
     }
 
-    // Build context
+    // ─── Normal chat flow ───
+
     const context = getPageContext(pageContext || "/admin/dashboard");
     const systemPrompt = buildSystemPrompt(context.title);
-
-    // Initialize Gemini
     const ai = new GoogleGenAI({ apiKey });
 
-    // Build conversation history for Gemini
     const history = (messages || [])
       .filter((m: { role: string; content: string }) => m.role === "user" || m.role === "assistant")
       .map((m: { role: string; content: string }) => ({
@@ -54,15 +141,12 @@ export async function POST(req: NextRequest) {
         parts: [{ text: m.content }],
       }));
 
-    // Ensure first message is "user"
     while (history.length > 0 && history[0].role !== "user") {
       history.shift();
     }
 
-    // Limit history
     const trimmedHistory = history.length > 30 ? history.slice(-30) : history;
 
-    // Create chat
     const chat = ai.chats.create({
       model: "gemini-2.5-flash",
       history: trimmedHistory.slice(0, -1),
@@ -72,15 +156,14 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    // Send last message
     const lastMessage =
       trimmedHistory[trimmedHistory.length - 1]?.parts[0]?.text ||
       messages[messages.length - 1]?.content;
 
     let response = await chat.sendMessage({ message: lastMessage });
-    let executedTools: string[] = [];
+    const executedTools: string[] = [];
 
-    // Multi-step tool calling loop (max 5 iterations)
+    // Multi-step tool calling loop (max 5)
     for (let step = 0; step < 5; step++) {
       const functionCalls = response.functionCalls;
       if (!functionCalls || functionCalls.length === 0) break;
@@ -108,7 +191,6 @@ export async function POST(req: NextRequest) {
       const result = await resolveToolCall(toolName, args);
       executedTools.push(toolName);
 
-      // Send result back to Gemini
       response = await chat.sendMessage({
         message: {
           functionResponse: {

@@ -75,7 +75,7 @@ export function AIMessageBubble({
         <div
           className={`rounded-2xl px-3.5 py-2.5 text-[13px] leading-relaxed ${
             isUser
-              ? "rounded-tr-sm bg-admin-accent text-white"
+              ? "rounded-tr-sm bg-[#2a2a2e] text-white"
               : "rounded-tl-sm border border-admin-border bg-admin-bg3 text-admin-text"
           }`}
         >
