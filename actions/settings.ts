@@ -7,7 +7,7 @@ const DEFAULTS: Record<string, string> = {
   whatsapp_number: "",
   email: "studio@vorte.com.tr",
   github_url: "",
-  description: "Next.js, Kotlin ve modern teknolojilerle dijital çözümler üreten yazılım stüdyosu.",
+  description: "WordPress değil, gerçek kod. Next.js ve Prisma ile yenilikçi web çözümleri üretiyoruz.",
 };
 
 export async function getSettings(): Promise<Record<string, string>> {

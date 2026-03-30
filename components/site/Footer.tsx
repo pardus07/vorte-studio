@@ -8,7 +8,7 @@ export default function Footer() {
             VORTE<span className="text-accent">.</span>STUDIO
           </div>
           <p className="mt-2 max-w-xs text-xs leading-relaxed text-muted2">
-            Next.js, Kotlin ve modern teknolojilerle dijital çözümler üreten yazılım stüdyosu.
+            WordPress değil, gerçek kod. Next.js ve Prisma ile yenilikçi web çözümleri üretiyoruz.
           </p>
         </div>
 

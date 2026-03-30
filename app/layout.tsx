@@ -35,21 +35,22 @@ export const metadata: Metadata = {
     template: "%s | Vorte Studio",
   },
   description:
-    "Next.js, Kotlin ve modern teknolojilerle profesyonel web siteleri, e-ticaret çözümleri ve mobil uygulamalar geliştiriyoruz. WordPress değil — gerçek kod, gerçek hız, gerçek sonuç. Türkiye geneli uzaktan hizmet.",
+    "Vorte Studio — Next.js ve Prisma ile kurumsal web sitesi, e-ticaret ve mobil uygulama geliştiriyoruz. WordPress değil, gerçek kod, gerçek performans.",
   keywords: [
     "web tasarım",
     "web sitesi yapımı",
     "mobil uygulama",
     "e-ticaret sitesi",
     "Next.js",
-    "Kotlin",
+    "Prisma",
     "React",
-    "yazılım ajansı",
+    "TypeScript",
+    "yazılım stüdyosu",
     "dijital ajans",
     "Türkiye",
-    "freelance web geliştirici",
     "kurumsal web sitesi",
     "SEO uyumlu site",
+    "WordPress alternatifi",
   ],
   authors: [{ name: "Vorte Studio", url: SITE_URL }],
   creator: "Vorte Studio",
@@ -63,7 +64,7 @@ export const metadata: Metadata = {
     siteName: "Vorte Studio",
     title: "Vorte Studio — Web Tasarım & Mobil Uygulama Ajansı",
     description:
-      "Next.js, Kotlin ve modern teknolojilerle profesyonel web siteleri ve mobil uygulamalar. WordPress değil — gerçek kod, gerçek hız, gerçek sonuç.",
+      "WordPress değil, gerçek kod ile fark yaratan web siteleri. Next.js ve Prisma ile hızlı, güvenli ve SEO uyumlu dijital çözümler üretiyoruz.",
     images: [
       {
         url: "/og-image.png",
@@ -77,7 +78,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Vorte Studio — Web Tasarım & Mobil Uygulama Ajansı",
     description:
-      "Next.js, Kotlin ve modern teknolojilerle profesyonel web siteleri ve mobil uygulamalar.",
+      "WordPress değil, gerçek kod. Next.js ve Prisma ile kurumsal web sitesi, e-ticaret ve mobil uygulama geliştiriyoruz.",
     images: ["/og-image.png"],
   },
   robots: {

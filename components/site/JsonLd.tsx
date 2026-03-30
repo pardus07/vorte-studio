@@ -10,7 +10,7 @@ export default function JsonLd() {
         url: SITE_URL,
         name: "Vorte Studio",
         description:
-          "Next.js, Kotlin ve modern teknolojilerle profesyonel web siteleri ve mobil uygulamalar geliştiriyoruz.",
+          "WordPress değil, gerçek kod. Next.js ve Prisma altyapısıyla kurumsal web siteleri, e-ticaret çözümleri ve mobil uygulamalar geliştiren yazılım stüdyosu.",
         publisher: { "@id": `${SITE_URL}/#organization` },
         inLanguage: "tr-TR",
       },
@@ -40,7 +40,7 @@ export default function JsonLd() {
         "@id": `${SITE_URL}/#service`,
         name: "Vorte Studio",
         description:
-          "Web tasarım, mobil uygulama geliştirme ve e-ticaret çözümleri sunan dijital ajans.",
+          "Next.js ve Prisma ile kurumsal web sitesi, e-ticaret ve mobil uygulama geliştiren yazılım stüdyosu. Yenilikçi tasarım, gerçek kod, ölçülebilir performans.",
         url: SITE_URL,
         priceRange: "₺₺",
         areaServed: {
