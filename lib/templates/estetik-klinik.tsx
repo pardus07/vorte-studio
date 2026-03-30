@@ -2,7 +2,7 @@
 
 import { Cormorant_Garamond, Jost } from 'next/font/google'
 import { motion } from 'framer-motion'
-import { TemplateProps } from './types'
+import { TemplateProps, buildChatLink } from './types'
 import { useTrackPageView, trackEvent } from './use-track'
 
 const cormorant = Cormorant_Garamond({
@@ -31,6 +31,7 @@ const staggerContainer = {
 
 export default function EstetikKlinikTemplate(props: TemplateProps) {
   useTrackPageView(props.slug)
+  const chatLink = buildChatLink(props.slug)
 
   return (
     <div className={`${cormorant.variable} ${jost.variable} min-h-screen bg-[#F8F5F0] text-[#1C1917]`}>
@@ -92,14 +93,7 @@ export default function EstetikKlinikTemplate(props: TemplateProps) {
           {/* CTA Buttons */}
           <motion.div variants={fadeInUp} className="mt-12 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
             <a
-              href={`/p/${props.slug}/demo`}
-              onClick={() => trackEvent(props.slug, 'DEMO_CLICK')}
-              className="inline-flex items-center justify-center border border-[#C9A96E] bg-[#C9A96E] px-10 py-3.5 font-[family-name:var(--font-jost)] text-sm font-500 uppercase tracking-[0.15em] text-[#1C1917] transition-all hover:bg-[#B8963F] hover:border-[#B8963F] active:scale-[0.97]"
-            >
-              Demo Siteyi Gör
-            </a>
-            <a
-              href={`/p/${props.slug}/chat`}
+              href={chatLink}
               onClick={() => trackEvent(props.slug, 'CHAT_CLICK')}
               className="inline-flex items-center justify-center border border-[#1C1917] bg-transparent px-10 py-3.5 font-[family-name:var(--font-jost)] text-sm font-500 uppercase tracking-[0.15em] text-[#1C1917] transition-all hover:bg-[#1C1917] hover:text-[#F8F5F0] active:scale-[0.97]"
             >
@@ -209,41 +203,6 @@ export default function EstetikKlinikTemplate(props: TemplateProps) {
         </div>
       </motion.section>
 
-      {/* ===== DEMO CTA ===== */}
-      <motion.section
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, amount: 0.3 }}
-        variants={staggerContainer}
-        className="px-6 py-16 md:px-12 lg:px-24"
-      >
-        <motion.div
-          variants={fadeInUp}
-          className="mx-auto max-w-2xl border border-[#C9A96E]/30 p-10 text-center md:p-14"
-          style={{
-            background: 'linear-gradient(160deg, #F8F5F0 0%, #F3EDE3 50%, #EDE5D8 100%)',
-          }}
-        >
-          <div className="mx-auto mb-8 h-px w-12 bg-[#C9A96E]" />
-
-          <h2 className="font-[family-name:var(--font-cormorant)] text-2xl font-700 text-[#1C1917] md:text-3xl">
-            Estetik Kliniğinize Yakışan Bir Web Sitesi Görün
-          </h2>
-
-          <p className="mx-auto mt-4 max-w-md font-[family-name:var(--font-jost)] text-sm text-[#1C1917]/50">
-            Size özel hazırlanan demo sayfayı inceleyerek prestijli web sitenizin nasıl görüneceğini keşfedin.
-          </p>
-
-          <a
-            href={`/p/${props.slug}/demo`}
-            onClick={() => trackEvent(props.slug, 'DEMO_CLICK')}
-            className="mt-10 inline-flex items-center justify-center bg-[#1C1917] px-12 py-4 font-[family-name:var(--font-jost)] text-sm font-500 uppercase tracking-[0.15em] text-[#F8F5F0] transition-all hover:bg-[#2C2926] active:scale-[0.97]"
-          >
-            Demo Siteyi Gör
-          </a>
-        </motion.div>
-      </motion.section>
-
       {/* ===== CHAT CTA ===== */}
       <motion.section
         initial="hidden"
@@ -271,7 +230,7 @@ export default function EstetikKlinikTemplate(props: TemplateProps) {
 
           <motion.a
             variants={fadeInUp}
-            href={`/p/${props.slug}/chat`}
+            href={chatLink}
             onClick={() => trackEvent(props.slug, 'CHAT_CLICK')}
             animate={{ scale: [1, 1.03, 1] }}
             transition={{ repeat: Infinity, duration: 2.4, ease: 'easeInOut' }}

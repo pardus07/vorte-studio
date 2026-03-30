@@ -2,7 +2,7 @@
 
 import { Playfair_Display, Source_Sans_3 } from 'next/font/google'
 import { motion, type Variants } from 'framer-motion'
-import { TemplateProps } from './types'
+import { TemplateProps, buildChatLink } from './types'
 import { useTrackPageView, trackEvent } from './use-track'
 
 const playfair = Playfair_Display({
@@ -35,6 +35,7 @@ const stagger: Variants = {
 
 export default function OptikGozlukcuTemplate(props: TemplateProps) {
   useTrackPageView(props.slug)
+  const chatLink = buildChatLink(props.slug)
 
   const rating = props.googleRating ?? 4.8
   const reviews = props.googleReviews ?? 0
@@ -96,21 +97,9 @@ export default function OptikGozlukcuTemplate(props: TemplateProps) {
             className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center"
           >
             <a
-              href={`/p/${props.slug}/demo`}
-              onClick={() => trackEvent(props.slug, 'DEMO_CLICK')}
-              className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-[#D4AF37] px-8 py-4 text-base font-semibold text-[#1E40AF] shadow-lg shadow-[#D4AF37]/20 transition-all hover:bg-[#c9a432] hover:shadow-xl sm:w-auto"
-              style={{ fontFamily: 'var(--font-source-sans)' }}
-            >
-              <svg className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                <path strokeLinecap="round" strokeLinejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-              </svg>
-              Demo Siteyi Gör
-            </a>
-            <a
-              href={`/p/${props.slug}/chat`}
+              href={chatLink}
               onClick={() => trackEvent(props.slug, 'CHAT_CLICK')}
-              className="inline-flex w-full items-center justify-center gap-2 rounded-lg border-2 border-white/30 bg-transparent px-8 py-4 text-base font-semibold text-white transition-all hover:border-[#D4AF37] hover:text-[#D4AF37] sm:w-auto"
+              className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-[#D4AF37] px-8 py-4 text-base font-semibold text-[#1E40AF] shadow-lg shadow-[#D4AF37]/20 transition-all hover:bg-[#c9a432] hover:shadow-xl sm:w-auto"
               style={{ fontFamily: 'var(--font-source-sans)' }}
             >
               <svg className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
@@ -259,63 +248,6 @@ export default function OptikGozlukcuTemplate(props: TemplateProps) {
       </motion.section>
 
       {/* ═══════════════════════════════════════════════════
-          SECTION 4 — DEMO CTA
-      ═══════════════════════════════════════════════════ */}
-      <motion.section
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, amount: 0.3 }}
-        variants={stagger}
-        className="px-4 py-16 sm:px-6 md:py-24 lg:px-8"
-      >
-        <motion.div
-          variants={fadeUp}
-          className="mx-auto max-w-3xl overflow-hidden rounded-3xl bg-gradient-to-br from-[#1E40AF] to-[#1a3699] p-10 text-center shadow-2xl sm:p-14"
-        >
-          {/* Gold eyeglass icon */}
-          <div className="mb-6 flex justify-center">
-            <div className="flex h-16 w-16 items-center justify-center rounded-full border-2 border-[#D4AF37]/30 bg-[#D4AF37]/10">
-              <svg className="h-8 w-8 text-[#D4AF37]" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                <path strokeLinecap="round" strokeLinejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-              </svg>
-            </div>
-          </div>
-
-          <h2
-            className="text-3xl font-bold text-white sm:text-4xl"
-            style={{ fontFamily: 'var(--font-playfair)' }}
-          >
-            Gözlükçünüze Özel
-            <br />
-            <span className="text-[#D4AF37]">Premium Demo Siteyi Görün</span>
-          </h2>
-
-          <div className="mx-auto mt-4 h-0.5 w-16 bg-[#D4AF37]/40" />
-
-          <p
-            className="mx-auto mt-6 max-w-lg text-white/70"
-            style={{ fontFamily: 'var(--font-source-sans)' }}
-          >
-            {props.firmName} için hazırlanan özel demo sayfasını inceleyin.
-            Koleksiyon vitrininden randevu sistemine kadar her detay düşünüldü.
-          </p>
-
-          <a
-            href={`/p/${props.slug}/demo`}
-            onClick={() => trackEvent(props.slug, 'DEMO_CLICK')}
-            className="mt-8 inline-flex items-center gap-2 rounded-xl bg-[#D4AF37] px-10 py-4 text-lg font-semibold text-[#1E40AF] shadow-lg shadow-[#D4AF37]/20 transition-all hover:bg-[#c9a432] hover:shadow-xl"
-            style={{ fontFamily: 'var(--font-source-sans)' }}
-          >
-            <svg className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
-            </svg>
-            Demo Siteyi İncele
-          </a>
-        </motion.div>
-      </motion.section>
-
-      {/* ═══════════════════════════════════════════════════
           SECTION 5 — CHAT CTA
       ═══════════════════════════════════════════════════ */}
       <motion.section
@@ -351,7 +283,7 @@ export default function OptikGozlukcuTemplate(props: TemplateProps) {
             </p>
 
             <a
-              href={`/p/${props.slug}/chat`}
+              href={chatLink}
               onClick={() => trackEvent(props.slug, 'CHAT_CLICK')}
               className="mt-8 inline-flex items-center gap-3 rounded-xl bg-white px-10 py-4 text-lg font-semibold text-[#1E40AF] shadow-lg transition-all hover:bg-gray-50 hover:shadow-xl"
               style={{ fontFamily: 'var(--font-source-sans)' }}

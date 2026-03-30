@@ -25,7 +25,7 @@ export function useTrackPageView(slug: string) {
   }, [slug])
 }
 
-export function trackEvent(slug: string, type: 'DEMO_CLICK' | 'CHAT_CLICK') {
+export function trackEvent(slug: string, type: 'CHAT_CLICK') {
   fetch('/api/track', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },

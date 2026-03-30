@@ -2,7 +2,7 @@
 
 import { Crimson_Pro, Hind } from 'next/font/google'
 import { motion } from 'framer-motion'
-import { TemplateProps } from './types'
+import { TemplateProps, buildChatLink } from './types'
 import { useTrackPageView, trackEvent } from './use-track'
 
 const crimsonPro = Crimson_Pro({
@@ -31,6 +31,7 @@ const staggerContainer = {
 
 export default function PsikologDanismaTemplate(props: TemplateProps) {
   useTrackPageView(props.slug)
+  const chatLink = buildChatLink(props.slug)
 
   return (
     <div className={`${crimsonPro.variable} ${hind.variable} min-h-screen bg-[#FAF5FF] text-[#1C1917]`}>
@@ -112,16 +113,9 @@ export default function PsikologDanismaTemplate(props: TemplateProps) {
           {/* CTA Buttons */}
           <motion.div variants={fadeInUp} className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
             <a
-              href={`/p/${props.slug}/demo`}
-              onClick={() => trackEvent(props.slug, 'DEMO_CLICK')}
-              className="inline-flex items-center justify-center rounded-full bg-[#6D28D9] px-9 py-3.5 font-[family-name:var(--font-hind)] text-base font-medium text-white shadow-lg shadow-[#6D28D9]/20 transition-all hover:bg-[#5B21B6] hover:shadow-xl hover:shadow-[#6D28D9]/30 active:scale-[0.97]"
-            >
-              Demo Siteyi Gör
-            </a>
-            <a
-              href={`/p/${props.slug}/chat`}
+              href={chatLink}
               onClick={() => trackEvent(props.slug, 'CHAT_CLICK')}
-              className="inline-flex items-center justify-center rounded-full bg-[#DDD6FE] px-9 py-3.5 font-[family-name:var(--font-hind)] text-base font-medium text-[#6D28D9] shadow-md shadow-[#DDD6FE]/30 transition-all hover:bg-[#C4B5FD] hover:shadow-lg active:scale-[0.97]"
+              className="inline-flex items-center justify-center rounded-full bg-[#6D28D9] px-9 py-3.5 font-[family-name:var(--font-hind)] text-base font-medium text-white shadow-lg shadow-[#6D28D9]/20 transition-all hover:bg-[#5B21B6] hover:shadow-xl hover:shadow-[#6D28D9]/30 active:scale-[0.97]"
             >
               Ücretsiz Teklif Al
             </a>
@@ -246,43 +240,6 @@ export default function PsikologDanismaTemplate(props: TemplateProps) {
         </div>
       </motion.section>
 
-      {/* ===== DEMO CTA ===== */}
-      <motion.section
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, amount: 0.3 }}
-        variants={staggerContainer}
-        className="px-5 py-14 md:px-12 lg:px-24"
-      >
-        <motion.div
-          variants={fadeInUp}
-          className="relative mx-auto max-w-2xl overflow-hidden rounded-2xl p-8 text-center shadow-lg md:p-12"
-          style={{
-            background: 'linear-gradient(135deg, #7C3AED 0%, #6D28D9 50%, #5B21B6 100%)',
-          }}
-        >
-          {/* Decorative soft circle */}
-          <div
-            className="pointer-events-none absolute -top-10 -right-10 h-40 w-40 rounded-full opacity-10"
-            style={{ background: 'radial-gradient(circle, #DDD6FE 0%, transparent 70%)' }}
-          />
-
-          <h2 className="relative font-[family-name:var(--font-crimson-pro)] text-2xl font-bold text-white md:text-3xl">
-            Danışmanlık Pratiğinize Özel Demo Siteyi Görün
-          </h2>
-          <p className="relative mx-auto mt-4 max-w-md font-[family-name:var(--font-hind)] text-sm text-white/75">
-            Size özel hazırlanan demo sayfayı inceleyerek web sitenizin nasıl görüneceğini keşfedin.
-          </p>
-          <a
-            href={`/p/${props.slug}/demo`}
-            onClick={() => trackEvent(props.slug, 'DEMO_CLICK')}
-            className="relative mt-8 inline-flex items-center justify-center rounded-full bg-white px-10 py-4 font-[family-name:var(--font-hind)] text-base font-medium text-[#6D28D9] shadow-lg transition-all hover:scale-105 hover:shadow-xl active:scale-[0.97]"
-          >
-            Demo Siteyi Gör
-          </a>
-        </motion.div>
-      </motion.section>
-
       {/* ===== CHAT CTA ===== */}
       <motion.section
         initial="hidden"
@@ -302,7 +259,7 @@ export default function PsikologDanismaTemplate(props: TemplateProps) {
           </p>
 
           <motion.a
-            href={`/p/${props.slug}/chat`}
+            href={chatLink}
             onClick={() => trackEvent(props.slug, 'CHAT_CLICK')}
             animate={{ scale: [1, 1.03, 1] }}
             transition={{ repeat: Infinity, duration: 2.5, ease: 'easeInOut' }}

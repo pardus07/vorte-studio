@@ -3,8 +3,7 @@
 import { Outfit, DM_Sans } from 'next/font/google'
 import { motion, useInView } from 'framer-motion'
 import { useRef, useEffect, useState } from 'react'
-import Link from 'next/link'
-import { TemplateProps } from './types'
+import { TemplateProps, buildChatLink } from './types'
 import { useTrackPageView, trackEvent } from './use-track'
 
 const outfit = Outfit({
@@ -148,6 +147,7 @@ function TrustBadge({ icon, label }: { icon: string; label: string }) {
 /* ================================================================== */
 export default function DisKlinikleriTemplate(props: TemplateProps) {
   useTrackPageView(props.slug)
+  const chatLink = buildChatLink(props.slug)
 
   const comparisons = [
     {
@@ -226,20 +226,8 @@ export default function DisKlinikleriTemplate(props: TemplateProps) {
                 variants={fadeUp}
                 className="flex flex-col gap-4 sm:flex-row"
               >
-                <Link
-                  href={`/p/${props.slug}/demo`}
-                  onClick={() => trackEvent(props.slug, 'DEMO_CLICK')}
-                  className={`${outfit.className} inline-flex items-center justify-center gap-2 rounded-2xl bg-[#0EA5E9] px-8 py-4 text-base font-bold text-white shadow-lg shadow-[#0EA5E9]/25 transition-all hover:shadow-xl hover:shadow-[#0EA5E9]/30 hover:-translate-y-0.5 active:translate-y-0`}
-                >
-                  <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                  </svg>
-                  Demo Siteyi Gör
-                </Link>
-
-                <Link
-                  href={`/p/${props.slug}/chat`}
+                <a
+                  href={chatLink}
                   onClick={() => trackEvent(props.slug, 'CHAT_CLICK')}
                   className={`${outfit.className} inline-flex items-center justify-center gap-2 rounded-2xl bg-[#10B981] px-8 py-4 text-base font-bold text-white shadow-lg shadow-[#10B981]/25 transition-all hover:shadow-xl hover:shadow-[#10B981]/30 hover:-translate-y-0.5 active:translate-y-0`}
                 >
@@ -247,7 +235,7 @@ export default function DisKlinikleriTemplate(props: TemplateProps) {
                     <path strokeLinecap="round" strokeLinejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                   </svg>
                   Ücretsiz Teklif Al
-                </Link>
+                </a>
               </motion.div>
             </div>
 
@@ -394,49 +382,6 @@ export default function DisKlinikleriTemplate(props: TemplateProps) {
       </motion.section>
 
       {/* ============================================================ */}
-      {/*  4. DEMO CTA                                                  */}
-      {/* ============================================================ */}
-      <motion.section
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, margin: '-80px' }}
-        variants={staggerContainer}
-        className="px-5 py-16 sm:px-8 sm:py-24"
-      >
-        <motion.div
-          variants={fadeUp}
-          className="mx-auto max-w-4xl overflow-hidden rounded-3xl bg-gradient-to-br from-[#0EA5E9] via-[#0284C7] to-[#0369A1] p-10 text-center shadow-2xl shadow-[#0EA5E9]/20 sm:p-16"
-        >
-          <div className="mb-4">
-            <span className="inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-white/15 text-3xl backdrop-blur-sm">
-              💻
-            </span>
-          </div>
-
-          <h2 className={`${outfit.className} mb-4 text-3xl font-bold text-white sm:text-4xl`}>
-            İşletmenize Özel Demo Siteyi Görün
-          </h2>
-
-          <p className={`${dmSans.className} mx-auto mb-10 max-w-xl text-lg leading-relaxed text-sky-100`}>
-            Diş kliniğinize özel hazırlanmış modern web sitesini hemen inceleyin.
-            Gerçek verilerinizle, gerçek tasarım.
-          </p>
-
-          <Link
-            href={`/p/${props.slug}/demo`}
-            onClick={() => trackEvent(props.slug, 'DEMO_CLICK')}
-            className={`${outfit.className} inline-flex items-center gap-3 rounded-2xl bg-white px-10 py-5 text-lg font-bold text-[#0EA5E9] shadow-lg transition-all hover:shadow-xl hover:-translate-y-0.5 active:translate-y-0`}
-          >
-            <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-              <path strokeLinecap="round" strokeLinejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-            </svg>
-            Demo Siteyi Gör
-          </Link>
-        </motion.div>
-      </motion.section>
-
-      {/* ============================================================ */}
       {/*  5. CHAT CTA                                                  */}
       {/* ============================================================ */}
       <motion.section
@@ -475,8 +420,8 @@ export default function DisKlinikleriTemplate(props: TemplateProps) {
           </motion.p>
 
           <motion.div variants={scaleIn}>
-            <Link
-              href={`/p/${props.slug}/chat`}
+            <a
+              href={chatLink}
               onClick={() => trackEvent(props.slug, 'CHAT_CLICK')}
               className={`${outfit.className} group relative inline-flex items-center gap-3 rounded-2xl bg-white px-12 py-6 text-xl font-bold text-[#059669] shadow-2xl transition-all hover:shadow-3xl hover:-translate-y-1 active:translate-y-0`}
             >
@@ -488,7 +433,7 @@ export default function DisKlinikleriTemplate(props: TemplateProps) {
                 </svg>
                 Ücretsiz Teklif Al
               </span>
-            </Link>
+            </a>
           </motion.div>
         </div>
       </motion.section>

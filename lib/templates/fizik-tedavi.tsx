@@ -3,7 +3,7 @@
 import React from 'react'
 import { DM_Sans, Lato } from 'next/font/google'
 import { motion } from 'framer-motion'
-import { TemplateProps } from './types'
+import { TemplateProps, buildChatLink } from './types'
 import { useTrackPageView, trackEvent } from './use-track'
 
 const dmSans = DM_Sans({
@@ -135,6 +135,7 @@ const stagger = {
 /* ================================================================== */
 export default function FizikTedaviTemplate(props: TemplateProps) {
   useTrackPageView(props.slug)
+  const chatLink = buildChatLink(props.slug)
 
   const rating = props.googleRating ?? 4.8
   const reviews = props.googleReviews ?? 0
@@ -191,18 +192,7 @@ export default function FizikTedaviTemplate(props: TemplateProps) {
 
           <motion.div variants={fadeUp} className="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row">
             <a
-              href={`/p/${props.slug}/demo`}
-              onClick={() => trackEvent(props.slug, 'DEMO_CLICK')}
-              className="inline-flex items-center gap-2 rounded-xl bg-white px-7 py-3.5 text-base font-bold text-[#0F766E] shadow-lg transition hover:bg-gray-50 hover:shadow-xl font-[family-name:var(--font-dm-sans)]"
-            >
-              <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                <path strokeLinecap="round" strokeLinejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-              </svg>
-              Demo Siteyi Gör
-            </a>
-            <a
-              href={`/p/${props.slug}/chat`}
+              href={chatLink}
               onClick={() => trackEvent(props.slug, 'CHAT_CLICK')}
               className="inline-flex items-center gap-2 rounded-xl border-2 border-white/70 px-7 py-3.5 text-base font-bold text-white transition hover:bg-white/10 font-[family-name:var(--font-dm-sans)]"
             >
@@ -335,57 +325,6 @@ export default function FizikTedaviTemplate(props: TemplateProps) {
       </motion.section>
 
       {/* ============================================================ */}
-      {/*  4. DEMO CTA                                                  */}
-      {/* ============================================================ */}
-      <motion.section
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, margin: '-80px' }}
-        variants={stagger}
-        className="mx-auto max-w-4xl px-5 py-16 md:py-24"
-      >
-        <motion.div
-          variants={fadeUp}
-          className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#0F766E] to-[#14B8A6] p-8 text-center text-white shadow-xl md:p-14"
-        >
-          {/* Dekoratif organik şekil */}
-          <div className="pointer-events-none absolute -right-16 -top-16 h-56 w-56 rounded-full bg-white/10" />
-          <div className="pointer-events-none absolute -bottom-10 -left-10 h-40 w-40 rounded-full bg-white/10" />
-
-          <div className="relative z-10">
-            <motion.div variants={fadeUp} className="mb-4 inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-white/20 text-2xl">
-              🏥
-            </motion.div>
-            <motion.h2
-              variants={fadeUp}
-              className="text-2xl font-bold font-[family-name:var(--font-dm-sans)] md:text-3xl"
-            >
-              Fizik Tedavi Merkezinize Özel
-              <br />
-              Demo Siteyi Görün
-            </motion.h2>
-            <motion.p variants={fadeUp} className="mx-auto mt-4 max-w-lg text-white/80 font-[family-name:var(--font-lato)]">
-              {props.firmName} için hazırladığımız örnek web sitesini inceleyin.
-              Tedavi alanlarınız, uzman kadronuz ve randevu sisteminiz nasıl görünecek?
-            </motion.p>
-            <motion.div variants={fadeUp} className="mt-8">
-              <a
-                href={`/p/${props.slug}/demo`}
-                onClick={() => trackEvent(props.slug, 'DEMO_CLICK')}
-                className="inline-flex items-center gap-2 rounded-xl bg-white px-8 py-4 text-base font-bold text-[#0F766E] shadow-lg transition hover:bg-gray-50 hover:shadow-xl font-[family-name:var(--font-dm-sans)]"
-              >
-                <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                </svg>
-                Demo Siteyi Gör
-              </a>
-            </motion.div>
-          </div>
-        </motion.div>
-      </motion.section>
-
-      {/* ============================================================ */}
       {/*  5. CHAT CTA                                                  */}
       {/* ============================================================ */}
       <motion.section
@@ -414,7 +353,7 @@ export default function FizikTedaviTemplate(props: TemplateProps) {
           </motion.p>
           <motion.div variants={fadeUp} className="mt-8">
             <a
-              href={`/p/${props.slug}/chat`}
+              href={chatLink}
               onClick={() => trackEvent(props.slug, 'CHAT_CLICK')}
               className="inline-flex items-center gap-2 rounded-xl bg-[#0F766E] px-10 py-4 text-lg font-bold text-white shadow-lg transition hover:bg-[#0d6d66] hover:shadow-xl font-[family-name:var(--font-dm-sans)]"
             >

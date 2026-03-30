@@ -10,3 +10,8 @@ export interface TemplateProps {
   slug: string
   sector: string
 }
+
+// Teklif chatbot sayfası linki
+export function buildChatLink(slug: string) {
+  return `/p/${slug}/chat`
+}

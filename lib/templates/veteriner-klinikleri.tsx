@@ -2,7 +2,7 @@
 
 import { Nunito, Inter } from 'next/font/google'
 import { motion } from 'framer-motion'
-import { TemplateProps } from './types'
+import { TemplateProps, buildChatLink } from './types'
 import { useTrackPageView, trackEvent } from './use-track'
 
 const nunito = Nunito({
@@ -31,6 +31,7 @@ const staggerContainer = {
 
 export default function VeterinerKlinikleriTemplate(props: TemplateProps) {
   useTrackPageView(props.slug)
+  const chatLink = buildChatLink(props.slug)
 
   return (
     <div className={`${nunito.variable} ${inter.variable} min-h-screen bg-[#FFFDF7] text-[#1C1917]`}>
@@ -108,14 +109,7 @@ export default function VeterinerKlinikleriTemplate(props: TemplateProps) {
           {/* CTA Buttons */}
           <motion.div variants={fadeInUp} className="mt-8 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
             <a
-              href={`/p/${props.slug}/demo`}
-              onClick={() => trackEvent(props.slug, 'DEMO_CLICK')}
-              className="inline-flex items-center justify-center rounded-full bg-[#10B981] px-8 py-3.5 font-[family-name:var(--font-nunito)] text-base font-bold text-white shadow-lg shadow-[#10B981]/25 transition-all hover:bg-[#059669] hover:shadow-xl hover:shadow-[#10B981]/30 active:scale-[0.97]"
-            >
-              Demo Siteyi Gör
-            </a>
-            <a
-              href={`/p/${props.slug}/chat`}
+              href={chatLink}
               onClick={() => trackEvent(props.slug, 'CHAT_CLICK')}
               className="inline-flex items-center justify-center rounded-full bg-[#92400E] px-8 py-3.5 font-[family-name:var(--font-nunito)] text-base font-bold text-white shadow-lg shadow-[#92400E]/20 transition-all hover:bg-[#78350F] hover:shadow-xl hover:shadow-[#92400E]/25 active:scale-[0.97]"
             >
@@ -234,40 +228,6 @@ export default function VeterinerKlinikleriTemplate(props: TemplateProps) {
         </div>
       </motion.section>
 
-      {/* ===== DEMO CTA ===== */}
-      <motion.section
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, amount: 0.3 }}
-        variants={staggerContainer}
-        className="px-5 py-12 md:px-12 lg:px-24"
-      >
-        <motion.div
-          variants={fadeInUp}
-          className="mx-auto max-w-2xl overflow-hidden rounded-2xl p-8 text-center shadow-lg md:p-12"
-          style={{
-            background: 'linear-gradient(135deg, #10B981 0%, #059669 50%, #047857 100%)',
-          }}
-        >
-          {/* Decorative paw */}
-          <div className="mb-4 text-5xl opacity-20">🐾</div>
-
-          <h2 className="font-[family-name:var(--font-nunito)] text-2xl font-bold text-white md:text-3xl">
-            Veteriner Kliniğinize Özel Demo Siteyi Görün
-          </h2>
-          <p className="mx-auto mt-3 max-w-md font-[family-name:var(--font-inter)] text-sm text-white/80">
-            Size özel hazırlanan demo sayfayı inceleyerek web sitenizin nasıl görüneceğini hemen keşfedin.
-          </p>
-          <a
-            href={`/p/${props.slug}/demo`}
-            onClick={() => trackEvent(props.slug, 'DEMO_CLICK')}
-            className="mt-8 inline-flex items-center justify-center rounded-full bg-white px-10 py-4 font-[family-name:var(--font-nunito)] text-base font-bold text-[#10B981] shadow-lg transition-all hover:scale-105 hover:shadow-xl active:scale-[0.97]"
-          >
-            Demo Siteyi Gör
-          </a>
-        </motion.div>
-      </motion.section>
-
       {/* ===== CHAT CTA ===== */}
       <motion.section
         initial="hidden"
@@ -292,7 +252,7 @@ export default function VeterinerKlinikleriTemplate(props: TemplateProps) {
           </p>
 
           <motion.a
-            href={`/p/${props.slug}/chat`}
+            href={chatLink}
             onClick={() => trackEvent(props.slug, 'CHAT_CLICK')}
             animate={{ scale: [1, 1.04, 1] }}
             transition={{ repeat: Infinity, duration: 2, ease: 'easeInOut' }}

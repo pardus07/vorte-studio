@@ -3,8 +3,7 @@
 import { Quicksand, Mulish } from 'next/font/google'
 import { motion, useInView } from 'framer-motion'
 import { useRef, useEffect, useState } from 'react'
-import Link from 'next/link'
-import { TemplateProps } from './types'
+import { TemplateProps, buildChatLink } from './types'
 import { useTrackPageView, trackEvent } from './use-track'
 
 const quicksand = Quicksand({
@@ -104,6 +103,7 @@ function AnimatedCounter({
 /* ================================================================== */
 export default function DiyetisyenTemplate(props: TemplateProps) {
   useTrackPageView(props.slug)
+  const chatLink = buildChatLink(props.slug)
 
   const negatives = [
     'Danışanlar sizi bulamıyor',
@@ -212,35 +212,8 @@ export default function DiyetisyenTemplate(props: TemplateProps) {
             variants={fadeUp}
             className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center"
           >
-            <Link
-              href={`/p/${props.slug}/demo`}
-              onClick={() => trackEvent(props.slug, 'DEMO_CLICK')}
-              className={`${quicksand.className} inline-flex items-center justify-center gap-2 rounded-full bg-white px-8 py-4 text-base font-bold text-[#65A30D] shadow-lg shadow-black/10 transition-all hover:-translate-y-0.5 hover:shadow-xl active:translate-y-0`}
-            >
-              <svg
-                width="20"
-                height="20"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                strokeWidth={2}
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                />
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-                />
-              </svg>
-              Demo Siteyi Gör
-            </Link>
-
-            <Link
-              href={`/p/${props.slug}/chat`}
+            <a
+              href={chatLink}
               onClick={() => trackEvent(props.slug, 'CHAT_CLICK')}
               className={`${quicksand.className} inline-flex items-center justify-center gap-2 rounded-full bg-[#1A2E05] px-8 py-4 text-base font-bold text-white shadow-lg shadow-black/15 transition-all hover:-translate-y-0.5 hover:shadow-xl active:translate-y-0`}
             >
@@ -259,7 +232,7 @@ export default function DiyetisyenTemplate(props: TemplateProps) {
                 />
               </svg>
               Ücretsiz Teklif Al
-            </Link>
+            </a>
           </motion.div>
 
           {/* Floating decorative badges */}
@@ -500,72 +473,6 @@ export default function DiyetisyenTemplate(props: TemplateProps) {
       </motion.section>
 
       {/* ============================================================ */}
-      {/*  4. DEMO CTA                                                  */}
-      {/* ============================================================ */}
-      <motion.section
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, margin: '-80px' }}
-        variants={staggerContainer}
-        className="px-5 py-12 sm:px-8 md:py-20"
-      >
-        <motion.div
-          variants={fadeUp}
-          className="mx-auto max-w-3xl overflow-hidden rounded-3xl p-10 text-center shadow-xl sm:p-14"
-          style={{
-            background: 'linear-gradient(135deg, #84CC16 0%, #65A30D 100%)',
-          }}
-        >
-          <div className="mb-5">
-            <span className="inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-white/15 text-3xl backdrop-blur-sm">
-              🥑
-            </span>
-          </div>
-
-          <h2
-            className={`${quicksand.className} mb-4 text-2xl font-bold text-white sm:text-3xl md:text-4xl`}
-          >
-            Beslenme Danışmanlığınıza Özel Demo Siteyi Görün
-          </h2>
-
-          <p
-            className={`${mulish.className} mx-auto mb-10 max-w-xl text-base leading-relaxed text-white/80`}
-          >
-            Size özel hazırlanan demo web sitesini hemen inceleyin.
-            Danışanlarınızın göreceği profesyonel tasarımı keşfedin.
-          </p>
-
-          <Link
-            href={`/p/${props.slug}/demo`}
-            onClick={() => trackEvent(props.slug, 'DEMO_CLICK')}
-            className={`${quicksand.className} inline-flex items-center gap-3 rounded-full bg-white px-10 py-4 text-lg font-bold shadow-lg transition-all hover:-translate-y-0.5 hover:shadow-xl active:translate-y-0`}
-            style={{ color: '#65A30D' }}
-          >
-            <svg
-              width="22"
-              height="22"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              strokeWidth={2}
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-              />
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-              />
-            </svg>
-            Demo Siteyi Gör
-          </Link>
-        </motion.div>
-      </motion.section>
-
-      {/* ============================================================ */}
       {/*  5. CHAT CTA                                                  */}
       {/* ============================================================ */}
       <motion.section
@@ -612,8 +519,8 @@ export default function DiyetisyenTemplate(props: TemplateProps) {
           </motion.p>
 
           <motion.div variants={scaleIn}>
-            <Link
-              href={`/p/${props.slug}/chat`}
+            <a
+              href={chatLink}
               onClick={() => trackEvent(props.slug, 'CHAT_CLICK')}
               className={`${quicksand.className} group relative inline-flex items-center gap-3 rounded-full px-12 py-5 text-lg font-bold shadow-2xl transition-all hover:-translate-y-1 hover:shadow-3xl active:translate-y-0`}
               style={{ backgroundColor: '#A3E635', color: '#1A2E05' }}
@@ -643,7 +550,7 @@ export default function DiyetisyenTemplate(props: TemplateProps) {
                 </svg>
                 Ücretsiz Teklif Al
               </span>
-            </Link>
+            </a>
           </motion.div>
         </div>
       </motion.section>
