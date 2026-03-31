@@ -54,8 +54,8 @@ export default function GuvenlikSistemleriTemplate(props: TemplateProps) {
         {/* Hero bg */}
         {heroImg && (
           <div className="absolute inset-0">
-            <img src={heroImg} alt={`${props.firmName} güvenlik`} className="h-full w-full object-cover" style={{ opacity: 0.08 }} />
-            <div className="absolute inset-0 bg-gradient-to-b from-[#0D1117]/60 via-[#0D1117]/80 to-[#0D1117]" />
+            <img src={heroImg} alt={`${props.firmName} güvenlik`} className="h-full w-full object-cover" style={{ opacity: 0.3 }} />
+            <div className="absolute inset-0 bg-gradient-to-b from-[#0D1117]/50 via-[#0D1117]/60 to-[#0D1117]/90" />
           </div>
         )}
 

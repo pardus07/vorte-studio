@@ -39,8 +39,8 @@ export default function JeneratorTemplate(props: TemplateProps) {
         {/* Hero bg */}
         {heroImg && (
           <div className="absolute inset-0">
-            <img src={heroImg} alt={`${props.firmName} jeneratör`} className="h-full w-full object-cover" style={{ opacity: 0.1 }} />
-            <div className="absolute inset-0 bg-gradient-to-t from-[#0A0A0A] via-[#0A0A0A]/70 to-[#0A0A0A]/50" />
+            <img src={heroImg} alt={`${props.firmName} jeneratör`} className="h-full w-full object-cover" style={{ opacity: 0.35 }} />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#0A0A0A]/90 via-[#0A0A0A]/50 to-[#0A0A0A]/30" />
           </div>
         )}
 

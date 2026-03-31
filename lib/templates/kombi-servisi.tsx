@@ -42,8 +42,8 @@ export default function KombiServisiTemplate(props: TemplateProps) {
         {/* Hero bg image */}
         {heroImg && (
           <div className="absolute inset-0">
-            <img src={heroImg} alt={`${props.firmName} kombi`} className="h-full w-full object-cover" style={{ opacity: 0.12 }} />
-            <div className="absolute inset-0 bg-gradient-to-r from-[#1E3A5F] via-[#1E3A5F]/90 to-[#1E3A5F]/60" />
+            <img src={heroImg} alt={`${props.firmName} kombi`} className="h-full w-full object-cover" style={{ opacity: 0.35 }} />
+            <div className="absolute inset-0 bg-gradient-to-r from-[#1E3A5F]/90 via-[#1E3A5F]/60 to-[#1E3A5F]/30" />
           </div>
         )}
 

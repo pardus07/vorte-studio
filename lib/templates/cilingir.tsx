@@ -41,8 +41,8 @@ export default function CilingirTemplate(props: TemplateProps) {
         {/* Hero bg */}
         {heroImg && (
           <div className="absolute inset-0">
-            <img src={heroImg} alt={`${props.firmName} çilingir`} className="h-full w-full object-cover" style={{ opacity: 0.08 }} />
-            <div className="absolute inset-0 bg-gradient-to-b from-[#1C1917]/50 to-[#1C1917]" />
+            <img src={heroImg} alt={`${props.firmName} çilingir`} className="h-full w-full object-cover" style={{ opacity: 0.3 }} />
+            <div className="absolute inset-0 bg-gradient-to-b from-[#1C1917]/40 via-[#1C1917]/50 to-[#1C1917]/90" />
           </div>
         )}
 

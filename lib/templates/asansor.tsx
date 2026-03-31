@@ -40,8 +40,8 @@ export default function AsansorTemplate(props: TemplateProps) {
         {/* Hero bg */}
         {heroImg && (
           <div className="absolute inset-0">
-            <img src={heroImg} alt={`${props.firmName} asansör`} className="h-full w-full object-cover" style={{ opacity: 0.1 }} />
-            <div className="absolute inset-0 bg-gradient-to-b from-[#1E293B]/80 to-[#1E293B]" />
+            <img src={heroImg} alt={`${props.firmName} asansör`} className="h-full w-full object-cover" style={{ opacity: 0.35 }} />
+            <div className="absolute inset-0 bg-gradient-to-b from-[#1E293B]/70 via-[#1E293B]/50 to-[#1E293B]/90" />
           </div>
         )}
 

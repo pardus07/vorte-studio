@@ -41,7 +41,7 @@ export default function BeyazEsyaTemplate(props: TemplateProps) {
         {/* Hero bg image — subtle */}
         {heroImg && (
           <div className="absolute inset-0">
-            <img src={heroImg} alt={`${props.firmName} beyaz eşya`} className="h-full w-full object-cover" style={{ opacity: 0.06 }} />
+            <img src={heroImg} alt={`${props.firmName} beyaz eşya`} className="h-full w-full object-cover" style={{ opacity: 0.15 }} />
           </div>
         )}
 
