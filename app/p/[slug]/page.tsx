@@ -37,6 +37,13 @@ const templateComponents = {
   'oteller': () => import('@/lib/templates/oteller'),
   'seyahat-acentesi': () => import('@/lib/templates/seyahat-acentesi'),
   'ozel-okullar': () => import('@/lib/templates/ozel-okullar'),
+  'kresler': () => import('@/lib/templates/kresler'),
+  'muzik-kurslari': () => import('@/lib/templates/muzik-kurslari'),
+  'spor-salonlari': () => import('@/lib/templates/spor-salonlari'),
+  'pilates-yoga': () => import('@/lib/templates/pilates-yoga'),
+  'oto-galeri': () => import('@/lib/templates/oto-galeri'),
+  'oto-servis': () => import('@/lib/templates/oto-servis'),
+  'lastikci': () => import('@/lib/templates/lastikci'),
 } as const
 
 type TemplateKey = keyof typeof templateComponents
@@ -73,6 +80,13 @@ const previewData: Record<string, { firmName: string; city: string; sector: stri
   'oteller': { firmName: 'Grand Palace Hotel', city: 'İstanbul', sector: 'Oteller', rating: 4.8, reviews: 567 },
   'seyahat-acentesi': { firmName: 'Keşif Tur', city: 'Antalya', sector: 'Seyahat Acenteleri', rating: 4.7, reviews: 289 },
   'ozel-okullar': { firmName: 'Bilgi Akademi', city: 'İzmir', sector: 'Özel Okullar / Etüt Merkezleri', rating: 4.9, reviews: 178 },
+  'kresler': { firmName: 'Minik Adımlar Kreşi', city: 'Antalya', sector: 'Kreşler', rating: 4.9, reviews: 145 },
+  'muzik-kurslari': { firmName: 'Nota Müzik Akademi', city: 'İstanbul', sector: 'Müzik Kursları', rating: 4.8, reviews: 203 },
+  'spor-salonlari': { firmName: 'PowerFit Gym', city: 'Ankara', sector: 'Spor Salonları', rating: 4.7, reviews: 356 },
+  'pilates-yoga': { firmName: 'Zen Stüdyo', city: 'İzmir', sector: 'Pilates / Yoga Stüdyoları', rating: 4.9, reviews: 167 },
+  'oto-galeri': { firmName: 'Prestige Oto Galeri', city: 'İstanbul', sector: 'Oto Galeri', rating: 4.6, reviews: 289 },
+  'oto-servis': { firmName: 'Güven Oto Servis', city: 'Bursa', sector: 'Oto Mekanik / Servisler', rating: 4.7, reviews: 234 },
+  'lastikci': { firmName: 'Hızlı Lastik', city: 'Ankara', sector: 'Lastik / Rot Balans', rating: 4.5, reviews: 312 },
 }
 
 interface PageProps {

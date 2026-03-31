@@ -32,6 +32,13 @@ type TemplateName =
   | 'oteller'
   | 'seyahat-acentesi'
   | 'ozel-okullar'
+  | 'kresler'
+  | 'muzik-kurslari'
+  | 'spor-salonlari'
+  | 'pilates-yoga'
+  | 'oto-galeri'
+  | 'oto-servis'
+  | 'lastikci'
 
 // 107 sektör → şablon eşleştirmesi
 // Sprint 1: Sağlık & Klinik (8 şablon)
@@ -83,26 +90,26 @@ const sectorMap: Record<string, TemplateName> = {
   'Özel Okullar / Etüt Merkezleri': 'ozel-okullar',
   'Dil Kursları': 'ozel-okullar',
   'Sürücü Kursları': 'ozel-okullar',
-  'Kreşler': 'tip-merkezleri',
-  'Müzik Kursları': 'ozel-okullar',
-  'Sanat Atölyeleri': 'ozel-okullar',
+  'Kreşler': 'kresler',
+  'Müzik Kursları': 'muzik-kurslari',
+  'Sanat Atölyeleri': 'muzik-kurslari',
 
   // ── Spor & Fitness → Sprint 5 ──
-  'Spor Salonları': 'fizik-tedavi',
-  'Pilates / Yoga Stüdyoları': 'fizik-tedavi',
+  'Spor Salonları': 'spor-salonlari',
+  'Pilates / Yoga Stüdyoları': 'pilates-yoga',
 
   // ── Otomotiv → Sprint 5-6 ──
-  'Oto Galeri': 'tip-merkezleri',
-  'Oto Yıkama': 'tip-merkezleri',
-  'Oto Kuaför / Detailing': 'tip-merkezleri',
-  'Oto Elektrik': 'tip-merkezleri',
-  'Oto Mekanik / Servisler': 'tip-merkezleri',
-  'Lastik / Rot Balans': 'tip-merkezleri',
-  'Oto Boyacılar': 'tip-merkezleri',
-  'Oto Kaporta': 'tip-merkezleri',
-  'Motosiklet Servisleri': 'tip-merkezleri',
-  'Araç Kiralama': 'tip-merkezleri',
-  'Oto Cam Filmi / Kaplama': 'tip-merkezleri',
+  'Oto Galeri': 'oto-galeri',
+  'Oto Yıkama': 'lastikci',
+  'Oto Kuaför / Detailing': 'oto-servis',
+  'Oto Elektrik': 'oto-servis',
+  'Oto Mekanik / Servisler': 'oto-servis',
+  'Lastik / Rot Balans': 'lastikci',
+  'Oto Boyacılar': 'oto-servis',
+  'Oto Kaporta': 'oto-servis',
+  'Motosiklet Servisleri': 'oto-servis',
+  'Araç Kiralama': 'oto-galeri',
+  'Oto Cam Filmi / Kaplama': 'oto-servis',
 
   // ── İnşaat & Tadilat → Sprint 7-8 ──
   'Müteahhitler': 'tip-merkezleri',
@@ -202,6 +209,13 @@ const templateLoaders: Record<TemplateName, () => Promise<{ default: ComponentTy
   'oteller': () => import('./templates/oteller'),
   'seyahat-acentesi': () => import('./templates/seyahat-acentesi'),
   'ozel-okullar': () => import('./templates/ozel-okullar'),
+  'kresler': () => import('./templates/kresler'),
+  'muzik-kurslari': () => import('./templates/muzik-kurslari'),
+  'spor-salonlari': () => import('./templates/spor-salonlari'),
+  'pilates-yoga': () => import('./templates/pilates-yoga'),
+  'oto-galeri': () => import('./templates/oto-galeri'),
+  'oto-servis': () => import('./templates/oto-servis'),
+  'lastikci': () => import('./templates/lastikci'),
 }
 
 export function getTemplateName(sector: string): TemplateName {

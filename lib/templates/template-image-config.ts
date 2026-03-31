@@ -803,6 +803,206 @@ export const TEMPLATE_IMAGE_CONFIG: Record<string, TemplateImageConfig> = {
       },
     ],
   },
+
+  /* ============================================================ */
+  /*  SPRINT 5 — EĞİTİM (devamı) + SPOR + OTOMOTİV (1/2)       */
+  /* ============================================================ */
+
+  kresler: {
+    id: 'kresler',
+    name: 'Kresler',
+    sector: 'Kresler',
+    imageSlots: [
+      {
+        slot: 'hero',
+        label: 'Kres Ana Gorsel',
+        aspectRatio: '4:3',
+        imageSize: '1K',
+        style: 'photorealistic',
+        promptHint:
+          'Colorful kindergarten playroom interior, bright toys, building blocks, soft play area, rainbow colored furniture, warm natural lighting, child-friendly environment, no children',
+        position: 'Hero section sag taraf, rainbow border karti (aspect 4:3), floating oyuncak badge lari',
+      },
+      {
+        slot: 'gallery',
+        label: 'Aktivite Galerisi',
+        aspectRatio: '4:3',
+        imageSize: '1K',
+        style: 'photorealistic',
+        promptHint:
+          'Kindergarten activity room, art supplies, colorful paintings on wall, educational toys, bright cheerful atmosphere, pastel colors, no children',
+        position: 'Alarm section icinde merkezi kart, renkli border, rounded-3xl, max-w-lg',
+      },
+    ],
+  },
+
+  'muzik-kurslari': {
+    id: 'muzik-kurslari',
+    name: 'Muzik Kurslari',
+    sector: 'Muzik Kurslari',
+    imageSlots: [
+      {
+        slot: 'hero',
+        label: 'Muzik Studio Ana Gorsel',
+        aspectRatio: '4:3',
+        imageSize: '1K',
+        style: 'photorealistic',
+        promptHint:
+          'Music studio with instruments, grand piano, guitars on wall, microphone, warm stage lighting with golden spotlight, dark moody atmosphere, professional music school aesthetic, no people',
+        position: 'Hero section sag taraf, spotlight efektli kart (aspect 4:3), altin border, nota dekorasyonu',
+      },
+      {
+        slot: 'studio',
+        label: 'Ders Studio Gorseli',
+        aspectRatio: '4:3',
+        imageSize: '1K',
+        style: 'photorealistic',
+        promptHint:
+          'Music lesson room, acoustic guitar, piano keyboard, sheet music on stand, warm amber lighting, cozy artistic atmosphere, no people',
+        position: 'Alarm section icinde merkezi kart, altin border, rounded-2xl, max-w-lg',
+      },
+    ],
+  },
+
+  'spor-salonlari': {
+    id: 'spor-salonlari',
+    name: 'Spor Salonlari',
+    sector: 'Spor Salonlari',
+    imageSlots: [
+      {
+        slot: 'hero',
+        label: 'Spor Salonu Ana Gorsel',
+        aspectRatio: '4:3',
+        imageSize: '1K',
+        style: 'photorealistic',
+        promptHint:
+          'Modern gym interior, professional fitness equipment, dumbbells rack, treadmills, dark interior with orange LED accent lighting, motivational atmosphere, no people',
+        position: 'Hero section sag taraf, diagonal clip-path karti (aspect 4:3), turuncu alt serit, Power Zone badge',
+      },
+      {
+        slot: 'equipment',
+        label: 'Ekipman Gorseli',
+        aspectRatio: '4:3',
+        imageSize: '1K',
+        style: 'photorealistic',
+        promptHint:
+          'Professional gym equipment close-up, weight plates, kettlebells, battle ropes, dark background with orange highlights, fitness product photography',
+        position: 'Alarm section icinde merkezi kart, turuncu border, max-w-lg',
+      },
+    ],
+  },
+
+  'pilates-yoga': {
+    id: 'pilates-yoga',
+    name: 'Pilates / Yoga',
+    sector: 'Pilates / Yoga',
+    imageSlots: [
+      {
+        slot: 'hero',
+        label: 'Studio Ana Gorsel',
+        aspectRatio: '1:1',
+        imageSize: '1K',
+        style: 'photorealistic',
+        promptHint:
+          'Serene yoga studio interior, wooden floor, large windows with natural light, yoga mats, plants, minimalist zen atmosphere, soft green and stone gray tones, no people',
+        position: 'Hero section sag taraf, dairesel mask (rounded-full, w-80 h-80), ring-4 yesil, konsantrik halkalar',
+      },
+      {
+        slot: 'studio',
+        label: 'Studio Atmosfer',
+        aspectRatio: '4:3',
+        imageSize: '1K',
+        style: 'photorealistic',
+        promptHint:
+          'Pilates reformer machines in bright studio, clean minimal interior, natural wood and white tones, morning light, wellness atmosphere, no people',
+        position: 'Alarm section icinde merkezi kart, yesil border, rounded-2xl, max-w-lg',
+      },
+    ],
+  },
+
+  'oto-galeri': {
+    id: 'oto-galeri',
+    name: 'Oto Galeri',
+    sector: 'Oto Galeri',
+    imageSlots: [
+      {
+        slot: 'hero-bg',
+        label: 'Showroom Arkaplan',
+        aspectRatio: '16:9',
+        imageSize: '2K',
+        style: 'photorealistic',
+        promptHint:
+          'Premium car showroom interior, luxury vehicles on display, dramatic spotlight lighting, polished dark floor, modern automotive dealership, dark and red accents, no people',
+        position: 'Hero section tam ekran arkaplan (min-h-90vh), koyu gradient overlay soldan saga, kirmizi alt cizgi',
+      },
+      {
+        slot: 'stock',
+        label: 'Arac Stok Gorseli',
+        aspectRatio: '4:3',
+        imageSize: '1K',
+        style: 'photorealistic',
+        promptHint:
+          'Row of premium cars in showroom, various colors, professional automotive photography, dramatic lighting, clean modern dealership floor',
+        position: 'Alarm section icinde merkezi kart, kirmizi border, max-w-lg',
+      },
+    ],
+  },
+
+  'oto-servis': {
+    id: 'oto-servis',
+    name: 'Oto Servis',
+    sector: 'Oto Servis',
+    imageSlots: [
+      {
+        slot: 'hero',
+        label: 'Servis Ana Gorsel',
+        aspectRatio: '16:9',
+        imageSize: '2K',
+        style: 'photorealistic',
+        promptHint:
+          'Professional auto repair workshop interior, car on hydraulic lift, mechanic tools organized on wall, bright industrial lighting, navy blue and orange color scheme, no people',
+        position: 'Hero section grid ust kisim full-width (16:9), turuncu kose aksanlari, servis tipi kartlari altinda',
+      },
+      {
+        slot: 'workshop',
+        label: 'Atolye Gorseli',
+        aspectRatio: '4:3',
+        imageSize: '1K',
+        style: 'photorealistic',
+        promptHint:
+          'Auto mechanic workshop close-up, engine repair, professional diagnostic tools, organized workbench, industrial automotive aesthetic, no people',
+        position: 'Alarm section icinde merkezi kart, turuncu border, max-w-lg',
+      },
+    ],
+  },
+
+  lastikci: {
+    id: 'lastikci',
+    name: 'Lastikci',
+    sector: 'Lastikci',
+    imageSlots: [
+      {
+        slot: 'hero',
+        label: 'Lastik Ana Gorsel',
+        aspectRatio: '4:3',
+        imageSize: '1K',
+        style: 'photorealistic',
+        promptHint:
+          'Professional tire shop display, stacked tires of various brands and sizes, clean organized tire rack, red and yellow accent lighting, automotive retail aesthetic, no people',
+        position: 'Hero section sag taraf, skewed polygon clip-path (aspect 4:3), kirmizi+sari alt serit, marka badge lari',
+      },
+      {
+        slot: 'products',
+        label: 'Urun Sergileme',
+        aspectRatio: '4:3',
+        imageSize: '1K',
+        style: 'photorealistic',
+        promptHint:
+          'Tire mounting service, wheel balancing machine, professional tire changing equipment, clean workshop environment, red accent lighting, no people',
+        position: 'Alarm section icinde merkezi kart, kirmizi border, max-w-lg',
+      },
+    ],
+  },
 }
 
 /**

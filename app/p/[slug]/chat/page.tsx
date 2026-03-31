@@ -37,6 +37,13 @@ const previewData: Record<string, { firmName: string; city: string; sector: stri
   'oteller': { firmName: 'Grand Palace Hotel', city: 'İstanbul', sector: 'Oteller' },
   'seyahat-acentesi': { firmName: 'Keşif Tur', city: 'Antalya', sector: 'Seyahat Acenteleri' },
   'ozel-okullar': { firmName: 'Bilgi Akademi', city: 'İzmir', sector: 'Özel Okullar / Etüt Merkezleri' },
+  'kresler': { firmName: 'Minik Adımlar Kreşi', city: 'Antalya', sector: 'Kreşler' },
+  'muzik-kurslari': { firmName: 'Nota Müzik Akademi', city: 'İstanbul', sector: 'Müzik Kursları' },
+  'spor-salonlari': { firmName: 'PowerFit Gym', city: 'Ankara', sector: 'Spor Salonları' },
+  'pilates-yoga': { firmName: 'Zen Stüdyo', city: 'İzmir', sector: 'Pilates / Yoga Stüdyoları' },
+  'oto-galeri': { firmName: 'Prestige Oto Galeri', city: 'İstanbul', sector: 'Oto Galeri' },
+  'oto-servis': { firmName: 'Güven Oto Servis', city: 'Bursa', sector: 'Oto Mekanik / Servisler' },
+  'lastikci': { firmName: 'Hızlı Lastik', city: 'Ankara', sector: 'Lastik / Rot Balans' },
 }
 
 interface PageProps {
