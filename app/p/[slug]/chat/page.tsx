@@ -51,6 +51,14 @@ const previewData: Record<string, { firmName: string; city: string; sector: stri
   'insaat-firmalari': { firmName: 'Sağlam Yapı İnşaat', city: 'İstanbul', sector: 'Müteahhitler' },
   'mimarlik-ofisleri': { firmName: 'Atölye Tasarım', city: 'Ankara', sector: 'İç Mimarlar / Dekorasyon' },
   'tadilat-dekorasyon': { firmName: 'Cam Balkon Sistemleri', city: 'Bursa', sector: 'PVC / Cam Balkon' },
+  'isi-yalitim': { firmName: 'Enerji Yalıtım', city: 'Ankara', sector: 'Isı Yalıtım / Mantolama' },
+  'dis-cephe': { firmName: 'Cephe Master', city: 'İstanbul', sector: 'Dış Cephe Kaplama' },
+  'cati-sistemleri': { firmName: 'Güven Çatı', city: 'Bursa', sector: 'Çatı & İzolasyon' },
+  'fayans-seramik': { firmName: 'Karo Ustası', city: 'İzmir', sector: 'Fayans / Seramik' },
+  'asma-tavan': { firmName: 'Tavan Tasarım', city: 'Antalya', sector: 'Asma Tavan / Alçıpan' },
+  'boya-badana': { firmName: 'Renk Ustası', city: 'İstanbul', sector: 'Boyacılar' },
+  'elektrikci': { firmName: 'Volt Elektrik', city: 'Ankara', sector: 'Elektrikçiler' },
+  'tesisatci': { firmName: 'Su Ustası Tesisat', city: 'İzmir', sector: 'Tesisatçılar' },
 }
 
 interface PageProps {

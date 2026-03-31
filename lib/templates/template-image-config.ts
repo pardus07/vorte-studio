@@ -1203,6 +1203,230 @@ export const TEMPLATE_IMAGE_CONFIG: Record<string, TemplateImageConfig> = {
       },
     ],
   },
+
+  'isi-yalitim': {
+    id: 'isi-yalitim',
+    name: 'Isi Yalitim / Mantolama',
+    sector: 'Isi Yalitim',
+    imageSlots: [
+      {
+        slot: 'hero',
+        label: 'Mantolama Ana Gorsel',
+        aspectRatio: '4:3',
+        imageSize: '1K',
+        style: 'photorealistic',
+        promptHint:
+          'Building exterior thermal insulation work, styrofoam panels on wall, professional insulation installation, warm orange-brown tones, construction scaffolding, energy efficiency concept, no people',
+        position: 'Hero section sag taraf, rounded-2xl kart (aspect 4:3), enerji gauge badge sol ust',
+      },
+      {
+        slot: 'projects',
+        label: 'Tamamlanan Proje',
+        aspectRatio: '4:3',
+        imageSize: '1K',
+        style: 'photorealistic',
+        promptHint:
+          'Completed building with new thermal insulation, modern apartment exterior, clean finished insulation work, warm cream and brown tones, energy efficient building, no people',
+        position: 'Alarm section icinde merkezi kart, kahverengi border, max-w-lg',
+      },
+    ],
+  },
+
+  'dis-cephe': {
+    id: 'dis-cephe',
+    name: 'Dis Cephe Kaplama',
+    sector: 'Dis Cephe',
+    imageSlots: [
+      {
+        slot: 'hero',
+        label: 'Cephe Kaplama Ana Gorsel',
+        aspectRatio: '4:3',
+        imageSize: '1K',
+        style: 'photorealistic',
+        promptHint:
+          'Modern building exterior facade, professional cladding installation, composite panels on building, gray and amber tones, architectural exterior photography, no people',
+        position: 'Hero section sag taraf, kart (aspect 4:3), amber sol accent cizgi, floating badge',
+      },
+      {
+        slot: 'projects',
+        label: 'Referans Proje',
+        aspectRatio: '4:3',
+        imageSize: '1K',
+        style: 'photorealistic',
+        promptHint:
+          'Completed facade renovation, before and after building exterior, modern cladding materials, professional construction photography, gray tones, no people',
+        position: 'Alarm section icinde merkezi kart, gri border, max-w-lg',
+      },
+    ],
+  },
+
+  'cati-sistemleri': {
+    id: 'cati-sistemleri',
+    name: 'Cati Sistemleri',
+    sector: 'Cati & Izolasyon',
+    imageSlots: [
+      {
+        slot: 'hero',
+        label: 'Cati Projesi Ana Gorsel',
+        aspectRatio: '4:3',
+        imageSize: '1K',
+        style: 'photorealistic',
+        promptHint:
+          'Professional roof construction, new tile roof installation, roofing workers on scaffolding, dark blue sky, red accent safety equipment, modern roofing system, no people',
+        position: 'Hero section sag taraf, kart (aspect 4:3), garanti shield badge sol ust, kirmizi accent cizgi',
+      },
+      {
+        slot: 'projects',
+        label: 'Tamamlanan Cati',
+        aspectRatio: '4:3',
+        imageSize: '1K',
+        style: 'photorealistic',
+        promptHint:
+          'Completed modern roof with quality tiles, clean roofline, professional roofing work result, blue sky background, residential building, no people',
+        position: 'Alarm section icinde merkezi kart, kirmizi border, max-w-lg',
+      },
+    ],
+  },
+
+  'fayans-seramik': {
+    id: 'fayans-seramik',
+    name: 'Fayans / Seramik',
+    sector: 'Fayans Doseme',
+    imageSlots: [
+      {
+        slot: 'hero',
+        label: 'Seramik Doseme Ana Gorsel',
+        aspectRatio: '4:3',
+        imageSize: '1K',
+        style: 'photorealistic',
+        promptHint:
+          'Beautiful ceramic tile installation, modern bathroom or kitchen floor, earth tone tiles, professional tile work, warm cream and brown palette, interior design photography, no people',
+        position: 'Hero section sag taraf, tile-framed kart (aspect 4:3), malzeme badge strip alt',
+      },
+      {
+        slot: 'gallery',
+        label: 'Model Galeri',
+        aspectRatio: '4:3',
+        imageSize: '1K',
+        style: 'photorealistic',
+        promptHint:
+          'Tile showroom display, various ceramic tile patterns, mosaic samples, earth tone color palette, organized tile exhibition, interior design materials, no people',
+        position: 'Alarm section icinde merkezi kart, toprak rengi border, max-w-lg',
+      },
+    ],
+  },
+
+  'asma-tavan': {
+    id: 'asma-tavan',
+    name: 'Asma Tavan / Alcipan',
+    sector: 'Asma Tavan',
+    imageSlots: [
+      {
+        slot: 'hero',
+        label: 'Asma Tavan Ana Gorsel',
+        aspectRatio: '4:3',
+        imageSize: '1K',
+        style: 'photorealistic',
+        promptHint:
+          'Modern suspended ceiling with LED lighting, clean white drywall ceiling, elegant interior design, silver metallic accents, recessed lighting, professional ceiling installation, no people',
+        position: 'Hero section sag taraf, silver metalik cerceve kart (aspect 4:3), tavan tipi badge strip alt',
+      },
+      {
+        slot: 'gallery',
+        label: 'Is Galeri',
+        aspectRatio: '4:3',
+        imageSize: '1K',
+        style: 'photorealistic',
+        promptHint:
+          'Variety of ceiling designs, coffered ceiling, stretch ceiling with lights, modern office ceiling, residential decorative ceiling, clean white and silver tones, no people',
+        position: 'Alarm section icinde merkezi kart, gumus border, max-w-lg',
+      },
+    ],
+  },
+
+  'boya-badana': {
+    id: 'boya-badana',
+    name: 'Boya Badana',
+    sector: 'Boyacilar',
+    imageSlots: [
+      {
+        slot: 'hero',
+        label: 'Boya Projesi Ana Gorsel',
+        aspectRatio: '4:3',
+        imageSize: '1K',
+        style: 'photorealistic',
+        promptHint:
+          'Freshly painted modern room interior, roller and paint supplies, colorful paint cans, bright cheerful atmosphere, before and after painting, clean professional painting work, no people',
+        position: 'Hero section sag taraf, rounded-2xl kart (aspect 4:3), renk cemberi dekor sag ust',
+      },
+      {
+        slot: 'gallery',
+        label: 'Oncesi Sonrasi Galeri',
+        aspectRatio: '4:3',
+        imageSize: '1K',
+        style: 'photorealistic',
+        promptHint:
+          'Before and after room painting transformation, dramatic color change, professional interior painting result, warm cheerful colors, clean paint job, no people',
+        position: 'Alarm section icinde merkezi kart, renkli border, max-w-lg',
+      },
+    ],
+  },
+
+  elektrikci: {
+    id: 'elektrikci',
+    name: 'Elektrikci',
+    sector: 'Elektrikciler',
+    imageSlots: [
+      {
+        slot: 'hero',
+        label: 'Elektrik Servis Ana Gorsel',
+        aspectRatio: '4:3',
+        imageSize: '1K',
+        style: 'photorealistic',
+        promptHint:
+          'Professional electrical panel installation, modern circuit breaker box, organized electrical wiring, yellow safety equipment, dark workshop with dramatic lighting, electrical service tools, no people',
+        position: 'Hero section sag taraf, sari borderli kart (aspect 4:3), yildirim SVG dekor sol, servis badge strip alt',
+      },
+      {
+        slot: 'service',
+        label: 'Servis Gorseli',
+        aspectRatio: '4:3',
+        imageSize: '1K',
+        style: 'photorealistic',
+        promptHint:
+          'Electrical repair tools and equipment, multimeter, wire strippers, cable management, professional electrician toolkit, yellow and black color scheme, no people',
+        position: 'Alarm section icinde merkezi kart, siyah border, max-w-lg',
+      },
+    ],
+  },
+
+  tesisatci: {
+    id: 'tesisatci',
+    name: 'Tesisatci',
+    sector: 'Tesisatcilar',
+    imageSlots: [
+      {
+        slot: 'hero',
+        label: 'Tesisat Servis Ana Gorsel',
+        aspectRatio: '4:3',
+        imageSize: '1K',
+        style: 'photorealistic',
+        promptHint:
+          'Professional plumbing service, modern bathroom pipe installation, clean water pipes and fittings, blue and chrome tones, organized plumbing workshop, water droplet theme, no people',
+        position: 'Hero section sag taraf, droplet seklinde kart (aspect 4:3), su damlasi floating ikon lar',
+      },
+      {
+        slot: 'service',
+        label: 'Servis Gorseli',
+        aspectRatio: '4:3',
+        imageSize: '1K',
+        style: 'photorealistic',
+        promptHint:
+          'Plumbing tools and equipment, pipe wrench, water fittings, modern plumbing supplies, blue and chrome color scheme, professional toolkit, no people',
+        position: 'Alarm section icinde merkezi kart, mavi border, max-w-lg',
+      },
+    ],
+  },
 }
 
 /**

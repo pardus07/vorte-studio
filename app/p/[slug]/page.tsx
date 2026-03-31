@@ -51,6 +51,14 @@ const templateComponents = {
   'insaat-firmalari': () => import('@/lib/templates/insaat-firmalari'),
   'mimarlik-ofisleri': () => import('@/lib/templates/mimarlik-ofisleri'),
   'tadilat-dekorasyon': () => import('@/lib/templates/tadilat-dekorasyon'),
+  'isi-yalitim': () => import('@/lib/templates/isi-yalitim'),
+  'dis-cephe': () => import('@/lib/templates/dis-cephe'),
+  'cati-sistemleri': () => import('@/lib/templates/cati-sistemleri'),
+  'fayans-seramik': () => import('@/lib/templates/fayans-seramik'),
+  'asma-tavan': () => import('@/lib/templates/asma-tavan'),
+  'boya-badana': () => import('@/lib/templates/boya-badana'),
+  'elektrikci': () => import('@/lib/templates/elektrikci'),
+  'tesisatci': () => import('@/lib/templates/tesisatci'),
 } as const
 
 type TemplateKey = keyof typeof templateComponents
@@ -101,6 +109,14 @@ const previewData: Record<string, { firmName: string; city: string; sector: stri
   'insaat-firmalari': { firmName: 'Sağlam Yapı İnşaat', city: 'İstanbul', sector: 'Müteahhitler', rating: 4.7, reviews: 289 },
   'mimarlik-ofisleri': { firmName: 'Atölye Tasarım', city: 'Ankara', sector: 'İç Mimarlar / Dekorasyon', rating: 4.9, reviews: 178 },
   'tadilat-dekorasyon': { firmName: 'Cam Balkon Sistemleri', city: 'Bursa', sector: 'PVC / Cam Balkon', rating: 4.6, reviews: 234 },
+  'isi-yalitim': { firmName: 'Enerji Yalıtım', city: 'Ankara', sector: 'Isı Yalıtım / Mantolama', rating: 4.8, reviews: 198 },
+  'dis-cephe': { firmName: 'Cephe Master', city: 'İstanbul', sector: 'Dış Cephe Kaplama', rating: 4.7, reviews: 167 },
+  'cati-sistemleri': { firmName: 'Güven Çatı', city: 'Bursa', sector: 'Çatı & İzolasyon', rating: 4.6, reviews: 234 },
+  'fayans-seramik': { firmName: 'Karo Ustası', city: 'İzmir', sector: 'Fayans / Seramik', rating: 4.8, reviews: 189 },
+  'asma-tavan': { firmName: 'Tavan Tasarım', city: 'Antalya', sector: 'Asma Tavan / Alçıpan', rating: 4.7, reviews: 145 },
+  'boya-badana': { firmName: 'Renk Ustası', city: 'İstanbul', sector: 'Boyacılar', rating: 4.9, reviews: 312 },
+  'elektrikci': { firmName: 'Volt Elektrik', city: 'Ankara', sector: 'Elektrikçiler', rating: 4.8, reviews: 267 },
+  'tesisatci': { firmName: 'Su Ustası Tesisat', city: 'İzmir', sector: 'Tesisatçılar', rating: 4.7, reviews: 198 },
 }
 
 interface PageProps {

@@ -46,6 +46,14 @@ type TemplateName =
   | 'insaat-firmalari'
   | 'mimarlik-ofisleri'
   | 'tadilat-dekorasyon'
+  | 'isi-yalitim'
+  | 'dis-cephe'
+  | 'cati-sistemleri'
+  | 'fayans-seramik'
+  | 'asma-tavan'
+  | 'boya-badana'
+  | 'elektrikci'
+  | 'tesisatci'
 
 // 107 sektör → şablon eşleştirmesi
 // Sprint 1: Sağlık & Klinik (8 şablon)
@@ -124,19 +132,24 @@ const sectorMap: Record<string, TemplateName> = {
   // ── İnşaat & Tadilat → Sprint 6-8 ──
   'Müteahhitler': 'insaat-firmalari',
   'İç Mimarlar / Dekorasyon': 'mimarlik-ofisleri',
-  'Boyacılar': 'mimarlik-ofisleri',
-  'Elektrikçiler': 'insaat-firmalari',
-  'Tesisatçılar': 'insaat-firmalari',
+  'Boyacılar': 'boya-badana',
+  'Elektrikçiler': 'elektrikci',
+  'Tesisatçılar': 'tesisatci',
   'Alüminyum Doğrama': 'tadilat-dekorasyon',
   'PVC / Cam Balkon': 'tadilat-dekorasyon',
   'Çelik Kapı / Kepenk': 'tadilat-dekorasyon',
-  'Parke / Zemin Kaplama': 'mimarlik-ofisleri',
-  'Çatı & İzolasyon': 'insaat-firmalari',
+  'Parke / Zemin Kaplama': 'fayans-seramik',
+  'Çatı & İzolasyon': 'cati-sistemleri',
+  'Isı Yalıtım / Mantolama': 'isi-yalitim',
+  'Dış Cephe Kaplama': 'dis-cephe',
+  'Fayans / Seramik': 'fayans-seramik',
+  'Asma Tavan / Alçıpan': 'asma-tavan',
+  'Boya Badana': 'boya-badana',
   'Peyzaj / Bahçe Düzenleme': 'veteriner-klinikleri',
   'Yapı Malzeme Mağazaları': 'insaat-firmalari',
   'Tadilat / Renovasyon': 'mimarlik-ofisleri',
   'Asansör Firmaları': 'insaat-firmalari',
-  'Güneş Enerjisi / Solar Panel': 'insaat-firmalari',
+  'Güneş Enerjisi / Solar Panel': 'dis-cephe',
   'Prefabrik Yapı': 'insaat-firmalari',
 
   // ── Atölye & İmalat → Sprint 9 ──
@@ -233,6 +246,14 @@ const templateLoaders: Record<TemplateName, () => Promise<{ default: ComponentTy
   'insaat-firmalari': () => import('./templates/insaat-firmalari'),
   'mimarlik-ofisleri': () => import('./templates/mimarlik-ofisleri'),
   'tadilat-dekorasyon': () => import('./templates/tadilat-dekorasyon'),
+  'isi-yalitim': () => import('./templates/isi-yalitim'),
+  'dis-cephe': () => import('./templates/dis-cephe'),
+  'cati-sistemleri': () => import('./templates/cati-sistemleri'),
+  'fayans-seramik': () => import('./templates/fayans-seramik'),
+  'asma-tavan': () => import('./templates/asma-tavan'),
+  'boya-badana': () => import('./templates/boya-badana'),
+  'elektrikci': () => import('./templates/elektrikci'),
+  'tesisatci': () => import('./templates/tesisatci'),
 }
 
 export function getTemplateName(sector: string): TemplateName {
