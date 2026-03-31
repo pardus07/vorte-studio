@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
-import { GoogleGenAI } from "@google/genai";
+import { GoogleGenAI, FunctionCallingConfigMode } from "@google/genai";
 import { agentFunctionDeclarations, TOOL_META } from "@/lib/ai-tools";
 import { resolveToolCall, executeApprovedToolCall } from "@/lib/ai-executor";
 import { buildSystemPrompt } from "@/lib/ai-prompt";
@@ -82,6 +82,7 @@ export async function POST(req: NextRequest) {
         config: {
           systemInstruction: systemPrompt,
           tools: [{ functionDeclarations: agentFunctionDeclarations }],
+          toolConfig: { functionCallingConfig: { mode: FunctionCallingConfigMode.AUTO } },
         },
       });
 
@@ -169,6 +170,7 @@ export async function POST(req: NextRequest) {
       config: {
         systemInstruction: systemPrompt,
         tools: [{ functionDeclarations: agentFunctionDeclarations }],
+        toolConfig: { functionCallingConfig: { mode: FunctionCallingConfigMode.AUTO } },
       },
     });
 
