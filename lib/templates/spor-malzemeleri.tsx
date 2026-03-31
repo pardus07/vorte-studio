@@ -44,7 +44,7 @@ export default function SporMalzemeleriTemplate(props: TemplateProps) {
   useTrackPageView(props.slug)
   const chatLink = buildChatLink(props.slug)
   const heroImg = props.images?.hero
-  const productsImg = props.images?.products
+  const productImg = props.images?.product
 
   return (
     <div className={`${barlowCondensed.variable} ${barlow.variable} min-h-screen bg-[#111111] text-white`}>
@@ -159,10 +159,10 @@ export default function SporMalzemeleriTemplate(props: TemplateProps) {
         </div>
       </section>
 
-      {productsImg && (
+      {productImg && (
         <section className="py-16"><div className="mx-auto max-w-5xl px-4 sm:px-6">
           <motion.div variants={scaleIn} initial="hidden" whileInView="visible" viewport={{ once: true }} className="overflow-hidden rounded-xl border border-white/10">
-            <img src={productsImg} alt={`${props.firmName} ürünler`} className="w-full object-cover" style={{ aspectRatio: '4/3' }} />
+            <img src={productImg} alt={`${props.firmName} ürünler`} className="w-full object-cover" style={{ aspectRatio: '4/3' }} />
           </motion.div>
         </div></section>
       )}
