@@ -27,7 +27,7 @@ type TemplateName =
   | 'kasaplar'
   | 'manavlar'
   | 'kuruyemisciler'
-  | 'sarküteri'
+  | 'sarkuteri'
   | 'su-bayileri'
   | 'oteller'
   | 'seyahat-acentesi'
@@ -72,7 +72,7 @@ const sectorMap: Record<string, TemplateName> = {
   'Kasaplar': 'kasaplar',
   'Manavlar': 'manavlar',
   'Kuruyemişçiler': 'kuruyemisciler',
-  'Şarküteri / Delikatessen': 'sarküteri',
+  'Şarküteri / Delikatessen': 'sarkuteri',
   'Su Bayileri': 'su-bayileri',
 
   // ── Konaklama & Turizm → Sprint 4 ──
@@ -197,7 +197,7 @@ const templateLoaders: Record<TemplateName, () => Promise<{ default: ComponentTy
   'kasaplar': () => import('./templates/kasaplar'),
   'manavlar': () => import('./templates/manavlar'),
   'kuruyemisciler': () => import('./templates/kuruyemisciler'),
-  'sarküteri': () => import('./templates/sarküteri'),
+  'sarkuteri': () => import('./templates/sarkuteri'),
   'su-bayileri': () => import('./templates/su-bayileri'),
   'oteller': () => import('./templates/oteller'),
   'seyahat-acentesi': () => import('./templates/seyahat-acentesi'),

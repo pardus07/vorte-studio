@@ -664,8 +664,8 @@ export const TEMPLATE_IMAGE_CONFIG: Record<string, TemplateImageConfig> = {
     ],
   },
 
-  'sarküteri': {
-    id: 'sarküteri',
+  'sarkuteri': {
+    id: 'sarkuteri',
     name: 'Sarküteri / Delikatessen',
     sector: 'Sarküteri',
     imageSlots: [

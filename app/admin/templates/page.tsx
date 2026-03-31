@@ -233,7 +233,7 @@ const templateCatalog = [
     description: 'Sıcak, doğal. Shelf display hero, altın aksanlar.',
   },
   {
-    id: 'sarküteri',
+    id: 'sarkuteri',
     name: 'Şarküteri / Delikatessen',
     sector: 'Şarküteri / Delikatessen',
     sprint: 4,

@@ -32,7 +32,7 @@ const previewData: Record<string, { firmName: string; city: string; sector: stri
   'kasaplar': { firmName: 'Güven Et Market', city: 'Bursa', sector: 'Kasaplar' },
   'manavlar': { firmName: 'Taze Manav', city: 'Antalya', sector: 'Manavlar' },
   'kuruyemisciler': { firmName: 'Altın Fıstık Kuruyemiş', city: 'Gaziantep', sector: 'Kuruyemişçiler' },
-  'sarküteri': { firmName: 'Gurme Şarküteri', city: 'İstanbul', sector: 'Şarküteri / Delikatessen' },
+  'sarkuteri': { firmName: 'Gurme Şarküteri', city: 'İstanbul', sector: 'Şarküteri / Delikatessen' },
   'su-bayileri': { firmName: 'Hayat Su', city: 'Ankara', sector: 'Su Bayileri' },
   'oteller': { firmName: 'Grand Palace Hotel', city: 'İstanbul', sector: 'Oteller' },
   'seyahat-acentesi': { firmName: 'Keşif Tur', city: 'Antalya', sector: 'Seyahat Acenteleri' },
