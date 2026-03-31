@@ -1662,6 +1662,16 @@ export const TEMPLATE_IMAGE_CONFIG: Record<string, TemplateImageConfig> = {
     sector: 'Matbaacilar',
     imageSlots: [
       {
+        slot: 'hero',
+        label: 'Matbaa Ana Gorsel',
+        aspectRatio: '16:9',
+        imageSize: '2K',
+        style: 'photorealistic',
+        promptHint:
+          'Professional printing press in action, CMYK ink rollers, offset printing machine, vivid colors on paper, industrial print shop interior, dramatic warm lighting, commercial printing environment, no people',
+        position: 'Hero section tam ekran arkaplan (opacity 0.12), koyu gradient overlay, CMYK watermark text ustunde',
+      },
+      {
         slot: 'products',
         label: 'Baski Urunleri',
         aspectRatio: '4:3',

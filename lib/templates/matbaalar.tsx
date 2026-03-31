@@ -67,6 +67,14 @@ export default function MatbaalarTemplate(props: TemplateProps) {
           ))}
         </div>
 
+        {/* Hero background image — düşük opacity ile arka planda */}
+        {heroImg && (
+          <div className="absolute inset-0">
+            <img src={heroImg} alt="" className="h-full w-full object-cover" style={{ opacity: 0.12 }} />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#1C1917] via-[#1C1917]/70 to-[#1C1917]/50" />
+          </div>
+        )}
+
         {/* Giant background letter — baskı estetiği */}
         <div className="pointer-events-none absolute inset-0 flex items-center justify-center overflow-hidden">
           <span className="font-[family-name:var(--font-oswald)] text-[30vw] font-700 uppercase leading-none text-white/[0.02]">
