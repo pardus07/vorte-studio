@@ -75,10 +75,10 @@ export default function MatbaalarTemplate(props: TemplateProps) {
           </div>
         )}
 
-        {/* Giant background letter — baskı estetiği */}
+        {/* Giant background brand name — müşteri markası watermark */}
         <div className="pointer-events-none absolute inset-0 flex items-center justify-center overflow-hidden">
-          <span className="font-[family-name:var(--font-oswald)] text-[30vw] font-700 uppercase leading-none text-white/[0.02]">
-            CMYK
+          <span className="whitespace-nowrap font-[family-name:var(--font-oswald)] text-[18vw] font-700 uppercase leading-none text-white/[0.03]">
+            {props.firmName}
           </span>
         </div>
 
