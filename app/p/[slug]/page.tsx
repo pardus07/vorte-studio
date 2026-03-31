@@ -75,6 +75,14 @@ const templateComponents = {
   'hukuk-burosu': () => import('@/lib/templates/hukuk-burosu'),
   'muhasebe': () => import('@/lib/templates/muhasebe'),
   'sigorta': () => import('@/lib/templates/sigorta'),
+  'emlak-ofisi': () => import('@/lib/templates/emlak-ofisi'),
+  'mobilya': () => import('@/lib/templates/mobilya'),
+  'elektronik': () => import('@/lib/templates/elektronik'),
+  'kirtasiye': () => import('@/lib/templates/kirtasiye'),
+  'pet-shop': () => import('@/lib/templates/pet-shop'),
+  'cicekci': () => import('@/lib/templates/cicekci'),
+  'kuyumcu': () => import('@/lib/templates/kuyumcu'),
+  'tekstil-giyim': () => import('@/lib/templates/tekstil-giyim'),
 } as const
 
 type TemplateKey = keyof typeof templateComponents
@@ -149,6 +157,14 @@ const previewData: Record<string, { firmName: string; city: string; sector: stri
   'hukuk-burosu': { firmName: 'Adalet Hukuk', city: 'İstanbul', sector: 'Avukatlar', rating: 4.8, reviews: 195 },
   'muhasebe': { firmName: 'Güven Mali Müşavirlik', city: 'İstanbul', sector: 'Muhasebeciler / SMMM', rating: 4.7, reviews: 170 },
   'sigorta': { firmName: 'Kalkan Sigorta', city: 'İstanbul', sector: 'Sigorta Acenteleri', rating: 4.8, reviews: 220 },
+  'emlak-ofisi': { firmName: 'Prestij Emlak', city: 'İstanbul', sector: 'Emlakçılar', rating: 4.8, reviews: 312 },
+  'mobilya': { firmName: 'Konfor Mobilya', city: 'Ankara', sector: 'Mobilya Mağazaları', rating: 4.7, reviews: 245 },
+  'elektronik': { firmName: 'TeknoPlus', city: 'İzmir', sector: 'Elektronik Mağazaları', rating: 4.6, reviews: 289 },
+  'kirtasiye': { firmName: 'Bilgi Kırtasiye', city: 'Bursa', sector: 'Kırtasiyeler', rating: 4.8, reviews: 178 },
+  'pet-shop': { firmName: 'Patili Dünya', city: 'Antalya', sector: 'Pet Shop', rating: 4.9, reviews: 234 },
+  'cicekci': { firmName: 'Gül Bahçesi', city: 'İstanbul', sector: 'Çiçekçiler', rating: 4.9, reviews: 198 },
+  'kuyumcu': { firmName: 'Altın Işık Kuyumculuk', city: 'İstanbul', sector: 'Kuyumcular', rating: 4.8, reviews: 267 },
+  'tekstil-giyim': { firmName: 'Trend Moda', city: 'İstanbul', sector: 'Tekstil / Giyim Mağazası', rating: 4.7, reviews: 312 },
 }
 
 interface PageProps {

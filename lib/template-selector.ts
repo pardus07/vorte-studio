@@ -70,6 +70,14 @@ type TemplateName =
   | 'hukuk-burosu'
   | 'muhasebe'
   | 'sigorta'
+  | 'emlak-ofisi'
+  | 'mobilya'
+  | 'elektronik'
+  | 'kirtasiye'
+  | 'pet-shop'
+  | 'cicekci'
+  | 'kuyumcu'
+  | 'tekstil-giyim'
 
 // 107 sektör → şablon eşleştirmesi
 // Sprint 1: Sağlık & Klinik (8 şablon)
@@ -177,7 +185,7 @@ const sectorMap: Record<string, TemplateName> = {
   // ── Atölye & İmalat → Sprint 8-9 ──
   'Mobilya Atölyeleri': 'marangoz',
   'Marangozlar': 'marangoz',
-  'Kuyumcular': 'estetik-klinik',
+  'Kuyumcular': 'kuyumcu',
   'Terzi / Konfeksiyoncular': 'terzi',
   'Matbaacılar': 'matbaalar',
   'Tabelacılar / Reklam': 'tabela-reklam',
@@ -194,17 +202,19 @@ const sectorMap: Record<string, TemplateName> = {
   'Avukatlar': 'hukuk-burosu',
   'Muhasebeciler / SMMM': 'muhasebe',
   'Sigorta Acenteleri': 'sigorta',
-  'Emlakçılar': 'tip-merkezleri',
 
-  // ── Perakende → Sprint 11 ──
+  // ── Perakende + Teknik Servis (1/2) → Sprint 10 ──
+  'Emlakçılar': 'emlak-ofisi',
+  'Mobilya Mağazaları': 'mobilya',
+  'Elektronik Mağazaları': 'elektronik',
+  'Kırtasiyeler': 'kirtasiye',
+  'Pet Shop': 'pet-shop',
+  'Çiçekçiler': 'cicekci',
+  'Tekstil / Giyim Mağazası': 'tekstil-giyim',
+  'Spor Mağazaları': 'elektronik',
   'Eczaneler': 'dis-klinikleri',
-  'Çiçekçiler': 'veteriner-klinikleri',
-  'Zücaciye / Ev Gereçleri': 'tip-merkezleri',
-  'Pet Shop': 'veteriner-klinikleri',
-  'Züccaciye / Hediyelik': 'tip-merkezleri',
-  'Elektronik Mağazaları': 'tip-merkezleri',
-  'Kırtasiyeler': 'tip-merkezleri',
-  'Spor Mağazaları': 'fizik-tedavi',
+  'Zücaciye / Ev Gereçleri': 'mobilya',
+  'Züccaciye / Hediyelik': 'mobilya',
 
   // ── Teknik Servis & Bakım → Sprint 12 ──
   'Bilgisayar Tamircileri': 'tip-merkezleri',
@@ -295,6 +305,14 @@ const templateLoaders: Record<TemplateName, () => Promise<{ default: ComponentTy
   'hukuk-burosu': () => import('./templates/hukuk-burosu'),
   'muhasebe': () => import('./templates/muhasebe'),
   'sigorta': () => import('./templates/sigorta'),
+  'emlak-ofisi': () => import('./templates/emlak-ofisi'),
+  'mobilya': () => import('./templates/mobilya'),
+  'elektronik': () => import('./templates/elektronik'),
+  'kirtasiye': () => import('./templates/kirtasiye'),
+  'pet-shop': () => import('./templates/pet-shop'),
+  'cicekci': () => import('./templates/cicekci'),
+  'kuyumcu': () => import('./templates/kuyumcu'),
+  'tekstil-giyim': () => import('./templates/tekstil-giyim'),
 }
 
 export function getTemplateName(sector: string): TemplateName {

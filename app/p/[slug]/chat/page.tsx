@@ -75,6 +75,14 @@ const previewData: Record<string, { firmName: string; city: string; sector: stri
   'hukuk-burosu': { firmName: 'Adalet Hukuk', city: 'İstanbul', sector: 'Avukatlar' },
   'muhasebe': { firmName: 'Güven Mali Müşavirlik', city: 'İstanbul', sector: 'Muhasebeciler / SMMM' },
   'sigorta': { firmName: 'Kalkan Sigorta', city: 'İstanbul', sector: 'Sigorta Acenteleri' },
+  'emlak-ofisi': { firmName: 'Prestij Emlak', city: 'İstanbul', sector: 'Emlakçılar' },
+  'mobilya': { firmName: 'Konfor Mobilya', city: 'Ankara', sector: 'Mobilya Mağazaları' },
+  'elektronik': { firmName: 'TeknoPlus', city: 'İzmir', sector: 'Elektronik Mağazaları' },
+  'kirtasiye': { firmName: 'Bilgi Kırtasiye', city: 'Bursa', sector: 'Kırtasiyeler' },
+  'pet-shop': { firmName: 'Patili Dünya', city: 'Antalya', sector: 'Pet Shop' },
+  'cicekci': { firmName: 'Gül Bahçesi', city: 'İstanbul', sector: 'Çiçekçiler' },
+  'kuyumcu': { firmName: 'Altın Işık Kuyumculuk', city: 'İstanbul', sector: 'Kuyumcular' },
+  'tekstil-giyim': { firmName: 'Trend Moda', city: 'İstanbul', sector: 'Tekstil / Giyim Mağazası' },
 }
 
 interface PageProps {

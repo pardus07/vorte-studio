@@ -1899,6 +1899,232 @@ export const TEMPLATE_IMAGE_CONFIG: Record<string, TemplateImageConfig> = {
       },
     ],
   },
+
+  // ── Sprint 10: Perakende + Teknik Servis (1/2) ──
+
+  'emlak-ofisi': {
+    id: 'emlak-ofisi',
+    name: 'Emlak Ofisi',
+    sector: 'Emlakcilar',
+    imageSlots: [
+      {
+        slot: 'hero',
+        label: 'Emlak Hero Gorseli',
+        aspectRatio: '16:9',
+        imageSize: '2K',
+        style: 'photorealistic',
+        promptHint:
+          'Luxury modern apartment exterior or interior, warm golden hour lighting, premium real estate photography, elegant architectural design, city skyline in background, no people, dark navy and gold color scheme',
+        position: 'Hero section sag tarafi capraz clip-path ile kesilen tam yukseklik gorsel',
+      },
+      {
+        slot: 'interior',
+        label: 'Ofis / Is Yeri Gorseli',
+        aspectRatio: '4:3',
+        imageSize: '1K',
+        style: 'photorealistic',
+        promptHint:
+          'Modern real estate office interior, professional desk with property listings, elegant decor, warm lighting, corporate but welcoming atmosphere, no people',
+        position: 'Icerik bolumunde merkezi tam genislik gorsel, rounded-2xl, max-w-5xl',
+      },
+    ],
+  },
+
+  mobilya: {
+    id: 'mobilya',
+    name: 'Mobilya Magazasi',
+    sector: 'Mobilya Magazalari',
+    imageSlots: [
+      {
+        slot: 'hero',
+        label: 'Mobilya Hero Gorseli',
+        aspectRatio: '16:9',
+        imageSize: '2K',
+        style: 'photorealistic',
+        promptHint:
+          'Beautiful modern living room interior design, stylish sofa and coffee table, warm natural wood tones, soft lighting, Scandinavian minimalist aesthetic, home decor magazine style, no people',
+        position: 'Hero section tam genislik arka plan (75vh), altinda beyaz kart ustuste binecek',
+      },
+      {
+        slot: 'showroom',
+        label: 'Showroom Gorseli',
+        aspectRatio: '4:3',
+        imageSize: '1K',
+        style: 'photorealistic',
+        promptHint:
+          'Furniture showroom interior, multiple room setups displayed, warm wood and cream tones, professional retail display, modern furniture store, no people',
+        position: 'Icerik bolumunde merkezi gorsel, max-w-5xl',
+      },
+    ],
+  },
+
+  elektronik: {
+    id: 'elektronik',
+    name: 'Elektronik Magazasi',
+    sector: 'Elektronik Magazalari',
+    imageSlots: [
+      {
+        slot: 'hero',
+        label: 'Elektronik Hero Gorseli',
+        aspectRatio: '4:3',
+        imageSize: '1K',
+        style: 'photorealistic',
+        promptHint:
+          'Modern electronics store display, smartphones laptops headphones arranged artistically, dark navy background with electric blue neon glow, tech gadgets showcase, futuristic lighting, no people',
+        position: 'Hero section arka plan gorseli (opacity 0.1), koyu bg uzerine tech karti grid',
+      },
+      {
+        slot: 'products',
+        label: 'Urun Gorseli',
+        aspectRatio: '4:3',
+        imageSize: '1K',
+        style: 'photorealistic',
+        promptHint:
+          'Electronics product display, various tech gadgets on shelves, modern retail store interior, blue LED accent lighting, clean organized layout, no people',
+        position: 'Icerik bolumunde merkezi gorsel, rounded-2xl, border, max-w-5xl',
+      },
+    ],
+  },
+
+  kirtasiye: {
+    id: 'kirtasiye',
+    name: 'Kirtasiye',
+    sector: 'Kirtasiyeler',
+    imageSlots: [
+      {
+        slot: 'hero',
+        label: 'Kirtasiye Hero Gorseli',
+        aspectRatio: '16:9',
+        imageSize: '1K',
+        style: 'photorealistic',
+        promptHint:
+          'Colorful stationery supplies flat lay, pencils pens notebooks erasers rulers arranged neatly, pastel yellow background, cheerful school supplies aesthetic, birds eye view, no people',
+        position: 'Hero section sag taraf kart icinde, rounded-2xl, col-span-2 asagi kart',
+      },
+      {
+        slot: 'products',
+        label: 'Urun Gorseli',
+        aspectRatio: '4:3',
+        imageSize: '1K',
+        style: 'photorealistic',
+        promptHint:
+          'Stationery store interior, organized shelves with school and office supplies, colorful products, warm welcoming retail space, no people',
+        position: 'Icerik bolumunde merkezi gorsel, rounded-2xl, max-w-5xl',
+      },
+    ],
+  },
+
+  'pet-shop': {
+    id: 'pet-shop',
+    name: 'Pet Shop',
+    sector: 'Pet Shop',
+    imageSlots: [
+      {
+        slot: 'hero',
+        label: 'Pet Shop Hero Gorseli',
+        aspectRatio: '1:1',
+        imageSize: '1K',
+        style: 'photorealistic',
+        promptHint:
+          'Adorable golden retriever puppy and tabby kitten sitting together, soft green background, warm natural lighting, pet store advertising style, cute friendly animals, professional pet photography',
+        position: 'Hero section sag taraf organik blob mask icinde (420x420), yuvarlak organik sekil',
+      },
+      {
+        slot: 'products',
+        label: 'Urun Gorseli',
+        aspectRatio: '4:3',
+        imageSize: '1K',
+        style: 'photorealistic',
+        promptHint:
+          'Pet shop interior with organized shelves, pet food bags, toys, accessories, colorful pet supplies display, clean modern pet store, no people no animals',
+        position: 'Icerik bolumunde merkezi gorsel, rounded-2xl, max-w-5xl',
+      },
+    ],
+  },
+
+  cicekci: {
+    id: 'cicekci',
+    name: 'Cicekci',
+    sector: 'Cicekçiler',
+    imageSlots: [
+      {
+        slot: 'hero',
+        label: 'Cicek Hero Gorseli',
+        aspectRatio: '4:3',
+        imageSize: '1K',
+        style: 'photorealistic',
+        promptHint:
+          'Beautiful fresh flower bouquet arrangement, roses peonies tulips in elegant vase, soft pink background, romantic florist studio photography, pastel colors, professional floral arrangement, no people',
+        position: 'Hero section merkezi cerceveli gorsel, rounded-xl, pink border, max-w-md',
+      },
+      {
+        slot: 'bouquet',
+        label: 'Buket Gorseli',
+        aspectRatio: '4:3',
+        imageSize: '1K',
+        style: 'photorealistic',
+        promptHint:
+          'Flower shop interior display, multiple colorful bouquets in buckets, fresh flowers market, warm inviting atmosphere, romantic aesthetic, no people',
+        position: 'Icerik bolumunde merkezi gorsel, rounded-2xl, max-w-5xl',
+      },
+    ],
+  },
+
+  kuyumcu: {
+    id: 'kuyumcu',
+    name: 'Kuyumcu',
+    sector: 'Kuyumcular',
+    imageSlots: [
+      {
+        slot: 'hero',
+        label: 'Kuyumcu Hero Gorseli',
+        aspectRatio: '16:9',
+        imageSize: '2K',
+        style: 'photorealistic',
+        promptHint:
+          'Luxury jewelry display, gold necklaces diamond rings on black velvet, cinematic ultra-wide composition, dramatic golden lighting, premium jewelry store showcase, reflection and sparkle, no people',
+        position: 'Hero section sinematik letterbox serit gorsel (21:9 crop), altin borderli, tam genislik',
+      },
+      {
+        slot: 'collection',
+        label: 'Koleksiyon Gorseli',
+        aspectRatio: '4:3',
+        imageSize: '1K',
+        style: 'photorealistic',
+        promptHint:
+          'Jewelry collection display case, various gold and diamond pieces elegantly arranged, dark velvet background, luxury retail display, warm spotlight lighting, no people',
+        position: 'Icerik bolumunde merkezi gorsel, altin border, max-w-5xl',
+      },
+    ],
+  },
+
+  'tekstil-giyim': {
+    id: 'tekstil-giyim',
+    name: 'Tekstil / Giyim Magazasi',
+    sector: 'Tekstil / Giyim Magazasi',
+    imageSlots: [
+      {
+        slot: 'hero',
+        label: 'Moda Hero Gorseli',
+        aspectRatio: '9:16',
+        imageSize: '2K',
+        style: 'photorealistic',
+        promptHint:
+          'Fashion runway or clothing store editorial, elegant mannequins with trendy outfits, moody dark background with warm amber spotlights, fashion magazine cover aesthetic, luxury boutique atmosphere, no real people',
+        position: 'Hero section tam ekran arka plan (min-h-screen), koyu overlay + merkezi text',
+      },
+      {
+        slot: 'lookbook',
+        label: 'Lookbook Gorseli',
+        aspectRatio: '4:3',
+        imageSize: '1K',
+        style: 'photorealistic',
+        promptHint:
+          'Fashion boutique interior, clothing racks with organized outfits, warm amber lighting, modern retail store design, stylish mannequins, no real people',
+        position: 'Icerik bolumunde merkezi gorsel, max-w-5xl',
+      },
+    ],
+  },
 }
 
 /**
