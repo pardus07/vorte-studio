@@ -44,6 +44,13 @@ const previewData: Record<string, { firmName: string; city: string; sector: stri
   'oto-galeri': { firmName: 'Prestige Oto Galeri', city: 'İstanbul', sector: 'Oto Galeri' },
   'oto-servis': { firmName: 'Güven Oto Servis', city: 'Bursa', sector: 'Oto Mekanik / Servisler' },
   'lastikci': { firmName: 'Hızlı Lastik', city: 'Ankara', sector: 'Lastik / Rot Balans' },
+  'oto-egzoz': { firmName: 'Performans Egzoz', city: 'İstanbul', sector: 'Oto Egzoz' },
+  'oto-kaporta': { firmName: 'Usta Kaporta', city: 'Ankara', sector: 'Oto Kaporta' },
+  'oto-cam': { firmName: 'Cam Ustası', city: 'İzmir', sector: 'Oto Cam' },
+  'motosiklet-servisi': { firmName: 'Moto Teknik', city: 'Antalya', sector: 'Motosiklet Servisleri' },
+  'insaat-firmalari': { firmName: 'Sağlam Yapı İnşaat', city: 'İstanbul', sector: 'Müteahhitler' },
+  'mimarlik-ofisleri': { firmName: 'Atölye Tasarım', city: 'Ankara', sector: 'İç Mimarlar / Dekorasyon' },
+  'tadilat-dekorasyon': { firmName: 'Cam Balkon Sistemleri', city: 'Bursa', sector: 'PVC / Cam Balkon' },
 }
 
 interface PageProps {

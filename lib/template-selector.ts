@@ -39,6 +39,13 @@ type TemplateName =
   | 'oto-galeri'
   | 'oto-servis'
   | 'lastikci'
+  | 'oto-egzoz'
+  | 'oto-kaporta'
+  | 'oto-cam'
+  | 'motosiklet-servisi'
+  | 'insaat-firmalari'
+  | 'mimarlik-ofisleri'
+  | 'tadilat-dekorasyon'
 
 // 107 sektör → şablon eşleştirmesi
 // Sprint 1: Sağlık & Klinik (8 şablon)
@@ -105,29 +112,32 @@ const sectorMap: Record<string, TemplateName> = {
   'Oto Elektrik': 'oto-servis',
   'Oto Mekanik / Servisler': 'oto-servis',
   'Lastik / Rot Balans': 'lastikci',
-  'Oto Boyacılar': 'oto-servis',
-  'Oto Kaporta': 'oto-servis',
-  'Motosiklet Servisleri': 'oto-servis',
+  'Oto Boyacılar': 'oto-kaporta',
+  'Oto Kaporta': 'oto-kaporta',
+  'Motosiklet Servisleri': 'motosiklet-servisi',
   'Araç Kiralama': 'oto-galeri',
-  'Oto Cam Filmi / Kaplama': 'oto-servis',
+  'Oto Cam Filmi / Kaplama': 'oto-cam',
+  'Oto Egzoz': 'oto-egzoz',
+  'Oto Cam': 'oto-cam',
+  'Yedek Parça': 'lastikci',
 
-  // ── İnşaat & Tadilat → Sprint 7-8 ──
-  'Müteahhitler': 'tip-merkezleri',
-  'İç Mimarlar / Dekorasyon': 'estetik-klinik',
-  'Boyacılar': 'tip-merkezleri',
-  'Elektrikçiler': 'tip-merkezleri',
-  'Tesisatçılar': 'tip-merkezleri',
-  'Alüminyum Doğrama': 'tip-merkezleri',
-  'PVC / Cam Balkon': 'tip-merkezleri',
-  'Çelik Kapı / Kepenk': 'tip-merkezleri',
-  'Parke / Zemin Kaplama': 'tip-merkezleri',
-  'Çatı & İzolasyon': 'tip-merkezleri',
+  // ── İnşaat & Tadilat → Sprint 6-8 ──
+  'Müteahhitler': 'insaat-firmalari',
+  'İç Mimarlar / Dekorasyon': 'mimarlik-ofisleri',
+  'Boyacılar': 'mimarlik-ofisleri',
+  'Elektrikçiler': 'insaat-firmalari',
+  'Tesisatçılar': 'insaat-firmalari',
+  'Alüminyum Doğrama': 'tadilat-dekorasyon',
+  'PVC / Cam Balkon': 'tadilat-dekorasyon',
+  'Çelik Kapı / Kepenk': 'tadilat-dekorasyon',
+  'Parke / Zemin Kaplama': 'mimarlik-ofisleri',
+  'Çatı & İzolasyon': 'insaat-firmalari',
   'Peyzaj / Bahçe Düzenleme': 'veteriner-klinikleri',
-  'Yapı Malzeme Mağazaları': 'tip-merkezleri',
-  'Tadilat / Renovasyon': 'tip-merkezleri',
-  'Asansör Firmaları': 'tip-merkezleri',
-  'Güneş Enerjisi / Solar Panel': 'tip-merkezleri',
-  'Prefabrik Yapı': 'tip-merkezleri',
+  'Yapı Malzeme Mağazaları': 'insaat-firmalari',
+  'Tadilat / Renovasyon': 'mimarlik-ofisleri',
+  'Asansör Firmaları': 'insaat-firmalari',
+  'Güneş Enerjisi / Solar Panel': 'insaat-firmalari',
+  'Prefabrik Yapı': 'insaat-firmalari',
 
   // ── Atölye & İmalat → Sprint 9 ──
   'Mobilya Atölyeleri': 'tip-merkezleri',
@@ -216,6 +226,13 @@ const templateLoaders: Record<TemplateName, () => Promise<{ default: ComponentTy
   'oto-galeri': () => import('./templates/oto-galeri'),
   'oto-servis': () => import('./templates/oto-servis'),
   'lastikci': () => import('./templates/lastikci'),
+  'oto-egzoz': () => import('./templates/oto-egzoz'),
+  'oto-kaporta': () => import('./templates/oto-kaporta'),
+  'oto-cam': () => import('./templates/oto-cam'),
+  'motosiklet-servisi': () => import('./templates/motosiklet-servisi'),
+  'insaat-firmalari': () => import('./templates/insaat-firmalari'),
+  'mimarlik-ofisleri': () => import('./templates/mimarlik-ofisleri'),
+  'tadilat-dekorasyon': () => import('./templates/tadilat-dekorasyon'),
 }
 
 export function getTemplateName(sector: string): TemplateName {

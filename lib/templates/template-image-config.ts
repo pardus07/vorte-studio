@@ -1003,6 +1003,206 @@ export const TEMPLATE_IMAGE_CONFIG: Record<string, TemplateImageConfig> = {
       },
     ],
   },
+
+  /* ============================================================ */
+  /*  SPRINT 6 — OTOMOTİV (2/2) + İNŞAAT (1/3)                  */
+  /* ============================================================ */
+
+  'oto-egzoz': {
+    id: 'oto-egzoz',
+    name: 'Oto Egzoz',
+    sector: 'Oto Egzoz',
+    imageSlots: [
+      {
+        slot: 'hero',
+        label: 'Egzoz Sistemi Ana Gorsel',
+        aspectRatio: '4:3',
+        imageSize: '1K',
+        style: 'photorealistic',
+        promptHint:
+          'Professional exhaust system workshop, stainless steel exhaust pipes and catalytic converters on workbench, dark industrial lighting with chrome and red accents, automotive performance aesthetic, no people',
+        position: 'Hero section sag taraf, chrome mesh overlay karti (aspect 4:3), kirmizi alt serit, muayene badge lari',
+      },
+      {
+        slot: 'workshop',
+        label: 'Atolye Gorseli',
+        aspectRatio: '4:3',
+        imageSize: '1K',
+        style: 'photorealistic',
+        promptHint:
+          'Car on lift in exhaust repair shop, mechanic tools and exhaust pipes, industrial environment, red and chrome color scheme, no people',
+        position: 'Alarm section icinde merkezi kart, kirmizi border, max-w-lg',
+      },
+    ],
+  },
+
+  'oto-kaporta': {
+    id: 'oto-kaporta',
+    name: 'Oto Kaporta & Boya',
+    sector: 'Oto Kaporta',
+    imageSlots: [
+      {
+        slot: 'hero',
+        label: 'Kaporta Ana Gorsel',
+        aspectRatio: '4:3',
+        imageSize: '1K',
+        style: 'photorealistic',
+        promptHint:
+          'Professional auto body paint booth, freshly painted car with metallic finish, clean spray booth environment, dramatic lighting showing paint quality, navy and silver tones, no people',
+        position: 'Hero section sag taraf, diagonal split before/after karti (aspect 4:3), metalik gradient border',
+      },
+      {
+        slot: 'gallery',
+        label: 'Oncesi/Sonrasi Galeri',
+        aspectRatio: '4:3',
+        imageSize: '1K',
+        style: 'photorealistic',
+        promptHint:
+          'Before and after car body repair comparison, damaged panel vs perfect finish, professional auto body work result, clean workshop, metallic gray tones, no people',
+        position: 'Alarm section icinde merkezi kart, metalik border, max-w-lg',
+      },
+    ],
+  },
+
+  'oto-cam': {
+    id: 'oto-cam',
+    name: 'Oto Cam',
+    sector: 'Oto Cam',
+    imageSlots: [
+      {
+        slot: 'hero',
+        label: 'Cam Degisim Ana Gorsel',
+        aspectRatio: '4:3',
+        imageSize: '1K',
+        style: 'photorealistic',
+        promptHint:
+          'Professional windshield replacement service, new car glass installation, clean bright workshop, blue and white tones, crystal clear glass, automotive glass service, no people',
+        position: 'Hero section sag taraf, frosted glass card (backdrop-blur, aspect 4:3), cam yansima efekti',
+      },
+      {
+        slot: 'service',
+        label: 'Mobil Servis Gorseli',
+        aspectRatio: '4:3',
+        imageSize: '1K',
+        style: 'photorealistic',
+        promptHint:
+          'Mobile windshield repair service van, technician tools for glass repair, outdoor car glass replacement setup, blue and white branding, no people',
+        position: 'Alarm section icinde merkezi kart, mavi border, max-w-lg',
+      },
+    ],
+  },
+
+  'motosiklet-servisi': {
+    id: 'motosiklet-servisi',
+    name: 'Motosiklet Servisi',
+    sector: 'Motosiklet Servisleri',
+    imageSlots: [
+      {
+        slot: 'hero',
+        label: 'Motosiklet Ana Gorsel',
+        aspectRatio: '1:1',
+        imageSize: '1K',
+        style: 'photorealistic',
+        promptHint:
+          'Powerful motorcycle in professional workshop, sport bike on repair stand, chrome and orange lighting, dramatic dark atmosphere, motorcycle service aesthetic, no people',
+        position: 'Hero section sag taraf, dairesel chrome cerceve (rounded-full, w-72 h-72), gradient ring, marka badge lari',
+      },
+      {
+        slot: 'workshop',
+        label: 'Servis Atolye',
+        aspectRatio: '4:3',
+        imageSize: '1K',
+        style: 'photorealistic',
+        promptHint:
+          'Motorcycle repair workshop interior, organized tools, bike parts on workbench, orange and chrome accents, professional mechanic environment, no people',
+        position: 'Alarm section icinde merkezi kart, turuncu border, max-w-lg',
+      },
+    ],
+  },
+
+  'insaat-firmalari': {
+    id: 'insaat-firmalari',
+    name: 'Insaat Firmalari',
+    sector: 'Insaat',
+    imageSlots: [
+      {
+        slot: 'hero',
+        label: 'Insaat Projesi Ana Gorsel',
+        aspectRatio: '4:3',
+        imageSize: '1K',
+        style: 'photorealistic',
+        promptHint:
+          'Modern construction site, building under construction with crane, professional construction project, navy blue sky, orange safety equipment visible, corporate construction company aesthetic, no people',
+        position: 'Hero section sag taraf, blueprint cerceveli kart (aspect 4:3), turuncu kose isaretleri, istatistik badge lari',
+      },
+      {
+        slot: 'projects',
+        label: 'Tamamlanan Proje',
+        aspectRatio: '4:3',
+        imageSize: '1K',
+        style: 'photorealistic',
+        promptHint:
+          'Completed modern residential building exterior, clean architecture, landscaped surroundings, professional construction photography, navy and orange tones, no people',
+        position: 'Alarm section icinde merkezi kart, lacivert border, max-w-lg',
+      },
+    ],
+  },
+
+  'mimarlik-ofisleri': {
+    id: 'mimarlik-ofisleri',
+    name: 'Mimarlik / Tadilat',
+    sector: 'Ic Mimarlar',
+    imageSlots: [
+      {
+        slot: 'hero',
+        label: 'Tasarim Ana Gorsel',
+        aspectRatio: '3:4',
+        imageSize: '1K',
+        style: 'photorealistic',
+        promptHint:
+          'Elegant modern interior design, luxury living room renovation, neutral tones with gold accents, minimalist aesthetic, architectural photography, warm natural lighting, no people',
+        position: 'Hero section sag taraf, golden ratio dikey kart (aspect 3:4), altin cerceve + kose aksanlari',
+      },
+      {
+        slot: 'portfolio',
+        label: 'Portfolyo Gorseli',
+        aspectRatio: '4:3',
+        imageSize: '1K',
+        style: 'photorealistic',
+        promptHint:
+          'Before and after interior renovation, modern kitchen or bathroom transformation, clean minimal design, warm lighting, architectural design portfolio, no people',
+        position: 'Alarm section icinde merkezi kart, altin border, max-w-lg',
+      },
+    ],
+  },
+
+  'tadilat-dekorasyon': {
+    id: 'tadilat-dekorasyon',
+    name: 'PVC / Dograma',
+    sector: 'PVC / Cam Balkon',
+    imageSlots: [
+      {
+        slot: 'hero',
+        label: 'Pencere Sistemi Ana Gorsel',
+        aspectRatio: '4:3',
+        imageSize: '1K',
+        style: 'photorealistic',
+        promptHint:
+          'Modern PVC window installation, white frame window with double glazing, bright room with view, clean professional window installation, blue-gray metallic accents, no people',
+        position: 'Hero section sag taraf, window frame mockup karti (aspect 4:3), cam capraz boluculer, yansima efekti',
+      },
+      {
+        slot: 'products',
+        label: 'Urun Cesitleri',
+        aspectRatio: '4:3',
+        imageSize: '1K',
+        style: 'photorealistic',
+        promptHint:
+          'PVC window and door display showroom, various colors and styles, sliding glass balcony systems, modern window profiles, clean retail environment, no people',
+        position: 'Alarm section icinde merkezi kart, gri border, max-w-lg',
+      },
+    ],
+  },
 }
 
 /**

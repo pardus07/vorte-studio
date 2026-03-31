@@ -44,6 +44,13 @@ const templateComponents = {
   'oto-galeri': () => import('@/lib/templates/oto-galeri'),
   'oto-servis': () => import('@/lib/templates/oto-servis'),
   'lastikci': () => import('@/lib/templates/lastikci'),
+  'oto-egzoz': () => import('@/lib/templates/oto-egzoz'),
+  'oto-kaporta': () => import('@/lib/templates/oto-kaporta'),
+  'oto-cam': () => import('@/lib/templates/oto-cam'),
+  'motosiklet-servisi': () => import('@/lib/templates/motosiklet-servisi'),
+  'insaat-firmalari': () => import('@/lib/templates/insaat-firmalari'),
+  'mimarlik-ofisleri': () => import('@/lib/templates/mimarlik-ofisleri'),
+  'tadilat-dekorasyon': () => import('@/lib/templates/tadilat-dekorasyon'),
 } as const
 
 type TemplateKey = keyof typeof templateComponents
@@ -87,6 +94,13 @@ const previewData: Record<string, { firmName: string; city: string; sector: stri
   'oto-galeri': { firmName: 'Prestige Oto Galeri', city: 'İstanbul', sector: 'Oto Galeri', rating: 4.6, reviews: 289 },
   'oto-servis': { firmName: 'Güven Oto Servis', city: 'Bursa', sector: 'Oto Mekanik / Servisler', rating: 4.7, reviews: 234 },
   'lastikci': { firmName: 'Hızlı Lastik', city: 'Ankara', sector: 'Lastik / Rot Balans', rating: 4.5, reviews: 312 },
+  'oto-egzoz': { firmName: 'Performans Egzoz', city: 'İstanbul', sector: 'Oto Egzoz', rating: 4.7, reviews: 198 },
+  'oto-kaporta': { firmName: 'Usta Kaporta', city: 'Ankara', sector: 'Oto Kaporta', rating: 4.8, reviews: 234 },
+  'oto-cam': { firmName: 'Cam Ustası', city: 'İzmir', sector: 'Oto Cam', rating: 4.6, reviews: 167 },
+  'motosiklet-servisi': { firmName: 'Moto Teknik', city: 'Antalya', sector: 'Motosiklet Servisleri', rating: 4.8, reviews: 145 },
+  'insaat-firmalari': { firmName: 'Sağlam Yapı İnşaat', city: 'İstanbul', sector: 'Müteahhitler', rating: 4.7, reviews: 289 },
+  'mimarlik-ofisleri': { firmName: 'Atölye Tasarım', city: 'Ankara', sector: 'İç Mimarlar / Dekorasyon', rating: 4.9, reviews: 178 },
+  'tadilat-dekorasyon': { firmName: 'Cam Balkon Sistemleri', city: 'Bursa', sector: 'PVC / Cam Balkon', rating: 4.6, reviews: 234 },
 }
 
 interface PageProps {
