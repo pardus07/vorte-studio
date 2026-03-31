@@ -23,6 +23,13 @@ const templateComponents = {
   'cilt-bakim': () => import('@/lib/templates/cilt-bakim'),
   'epilasyon': () => import('@/lib/templates/epilasyon'),
   'tirnak-studyosu': () => import('@/lib/templates/tirnak-studyosu'),
+  'dovme-piercing': () => import('@/lib/templates/dovme-piercing'),
+  'restoranlar': () => import('@/lib/templates/restoranlar'),
+  'kafeler': () => import('@/lib/templates/kafeler'),
+  'pastaneler': () => import('@/lib/templates/pastaneler'),
+  'firinlar': () => import('@/lib/templates/firinlar'),
+  'catering': () => import('@/lib/templates/catering'),
+  'kasaplar': () => import('@/lib/templates/kasaplar'),
 } as const
 
 type TemplateKey = keyof typeof templateComponents
@@ -45,6 +52,13 @@ const previewData: Record<string, { firmName: string; city: string; sector: stri
   'cilt-bakim': { firmName: 'Dermavita Cilt', city: 'Ankara', sector: 'Cilt Bakım Merkezleri', rating: 4.7, reviews: 98 },
   'epilasyon': { firmName: 'LazerPro Epilasyon', city: 'Bursa', sector: 'Epilasyon Merkezleri', rating: 4.8, reviews: 221 },
   'tirnak-studyosu': { firmName: 'Nail Art Studio', city: 'İstanbul', sector: 'Tırnak Stüdyoları', rating: 4.9, reviews: 178 },
+  'dovme-piercing': { firmName: 'Ink Master Studio', city: 'İstanbul', sector: 'Dövme & Piercing Stüdyoları', rating: 4.9, reviews: 312 },
+  'restoranlar': { firmName: 'Lezzet Konağı', city: 'İstanbul', sector: 'Restoranlar', rating: 4.8, reviews: 487 },
+  'kafeler': { firmName: 'Kahve Durağı', city: 'Ankara', sector: 'Kafeler', rating: 4.7, reviews: 234 },
+  'pastaneler': { firmName: 'Tatlı Eller Pastanesi', city: 'İzmir', sector: 'Pastaneler', rating: 4.9, reviews: 189 },
+  'firinlar': { firmName: 'Altın Başak Fırını', city: 'Antalya', sector: 'Fırınlar', rating: 4.6, reviews: 345 },
+  'catering': { firmName: 'Elit Catering', city: 'İstanbul', sector: 'Catering / Yemek Servisleri', rating: 4.8, reviews: 156 },
+  'kasaplar': { firmName: 'Güven Et Market', city: 'Bursa', sector: 'Kasaplar', rating: 4.7, reviews: 278 },
 }
 
 interface PageProps {

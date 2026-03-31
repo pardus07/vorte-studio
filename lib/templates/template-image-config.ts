@@ -394,6 +394,215 @@ export const TEMPLATE_IMAGE_CONFIG: Record<string, TemplateImageConfig> = {
       },
     ],
   },
+  /* ============================================================ */
+  /*  SPRINT 3 — GUZELLIK (2/2) + YEME-ICME                      */
+  /* ============================================================ */
+
+  'dovme-piercing': {
+    id: 'dovme-piercing',
+    name: 'Dovme & Piercing',
+    sector: 'Dovme & Piercing',
+    imageSlots: [
+      {
+        slot: 'hero',
+        label: 'Portfolyo Ana Gorsel',
+        aspectRatio: '16:10',
+        imageSize: '2K',
+        style: 'photorealistic',
+        promptHint:
+          'Professional tattoo portfolio showcase, close-up of intricate tattoo artwork on skin, dramatic dark lighting, artistic photography, underground studio aesthetic, no face',
+        position: 'Hero section sag taraf, 2-sutun grid ust kisim full-width (16:10), neon border efekti',
+      },
+      {
+        slot: 'portfolio',
+        label: 'Portfolyo Ikinci Gorsel',
+        aspectRatio: '1:1',
+        imageSize: '1K',
+        style: 'photorealistic',
+        promptHint:
+          'Tattoo studio interior, professional tattoo machine and ink bottles, dark moody lighting, sterilization equipment visible, artistic workspace',
+        position: 'Hero section sag taraf, 2-sutun grid sol alt kare, white/5 border',
+      },
+    ],
+  },
+
+  restoranlar: {
+    id: 'restoranlar',
+    name: 'Restoranlar',
+    sector: 'Restoranlar',
+    imageSlots: [
+      {
+        slot: 'hero-bg',
+        label: 'Restoran Atmosfer Arkaplan',
+        aspectRatio: '16:9',
+        imageSize: '2K',
+        style: 'photorealistic',
+        promptHint:
+          'Luxury fine dining restaurant interior, elegant table setting with warm candlelight, dark wood and warm amber tones, sophisticated atmosphere, no people, bokeh lights',
+        position: 'Hero section tam ekran arkaplan (min-h-screen), koyu gradient overlay soldan saga',
+      },
+      {
+        slot: 'menu',
+        label: 'Menu Gorseli',
+        aspectRatio: '4:3',
+        imageSize: '1K',
+        style: 'photorealistic',
+        promptHint:
+          'Gourmet dish beautifully plated, fine dining food photography, warm amber lighting, dark background, professional restaurant menu photo',
+        position: 'Alarm section icinde merkezi kart, turuncu border, max-w-lg',
+      },
+    ],
+  },
+
+  kafeler: {
+    id: 'kafeler',
+    name: 'Kafeler',
+    sector: 'Kafeler',
+    imageSlots: [
+      {
+        slot: 'hero',
+        label: 'Kafe Atmosfer Gorseli',
+        aspectRatio: '4:5',
+        imageSize: '1K',
+        style: 'photorealistic',
+        promptHint:
+          'Cozy artisan cafe interior, steaming latte art on wooden table, warm natural lighting, exposed brick and plants, hygge comfortable atmosphere, no people',
+        position: 'Hero section sag taraf, diagonal clip-path ile kesilmis dikey gorsel (aspect 4:5), rounded-2rem',
+      },
+      {
+        slot: 'ambiance',
+        label: 'Kafe Ambiyans Banner',
+        aspectRatio: '16:9',
+        imageSize: '2K',
+        style: 'photorealistic',
+        promptHint:
+          'Coffee shop atmosphere, barista brewing pour-over coffee, warm wooden counter, coffee beans, cream and brown tones, cozy cafe photography',
+        position: 'Alarm section icinde rounded-2xl banner, max-h-280px, koyu bg icinde',
+      },
+    ],
+  },
+
+  pastaneler: {
+    id: 'pastaneler',
+    name: 'Pastaneler',
+    sector: 'Pastaneler',
+    imageSlots: [
+      {
+        slot: 'hero',
+        label: 'Ana Pasta Gorseli',
+        aspectRatio: '3:4',
+        imageSize: '1K',
+        style: 'photorealistic',
+        promptHint:
+          'Elegant birthday cake with cream frosting and berries, artisanal pastry on white marble, soft pink lighting, bakery product photography, Instagram worthy',
+        position: 'Hero section sag taraf, masonry grid sol sutun (row-span-2, aspect 3:4), pembe border, rounded-3xl',
+      },
+      {
+        slot: 'gallery',
+        label: 'Urun Galeri 1',
+        aspectRatio: '1:1',
+        imageSize: '1K',
+        style: 'photorealistic',
+        promptHint:
+          'Assorted cupcakes with colorful frosting, pastel tones, sweet bakery display, overhead food photography, pink and cream aesthetic',
+        position: 'Hero section sag taraf, masonry grid sag ust kare, pembe border, rounded-3xl',
+      },
+      {
+        slot: 'gallery2',
+        label: 'Urun Galeri 2',
+        aspectRatio: '1:1',
+        imageSize: '1K',
+        style: 'photorealistic',
+        promptHint:
+          'French macarons in various pastel colors arranged in rows, elegant patisserie display, soft lighting, artisan bakery aesthetic',
+        position: 'Hero section sag taraf, masonry grid sag alt kare, pembe border, rounded-3xl',
+      },
+    ],
+  },
+
+  firinlar: {
+    id: 'firinlar',
+    name: 'Firinlar',
+    sector: 'Firinlar',
+    imageSlots: [
+      {
+        slot: 'hero-bg',
+        label: 'Firin Panoramik Arkaplan',
+        aspectRatio: '16:9',
+        imageSize: '2K',
+        style: 'photorealistic',
+        promptHint:
+          'Traditional bakery interior, fresh bread loaves on wooden shelves, warm golden light from brick oven, flour dusted surface, rustic artisan bakery atmosphere, no people',
+        position: 'Hero section panoramik banner (h-60vh), gradient overlay alttan, text ustunde',
+      },
+      {
+        slot: 'products',
+        label: 'Ekmek Urunleri',
+        aspectRatio: '4:3',
+        imageSize: '1K',
+        style: 'photorealistic',
+        promptHint:
+          'Assorted fresh breads and pastries display, sourdough, baguette, simit, pogaca on wooden board, warm bakery photography, golden wheat tones',
+        position: 'Alarm section icinde merkezi kart, kahverengi border, rounded-2xl, max-w-lg',
+      },
+    ],
+  },
+
+  catering: {
+    id: 'catering',
+    name: 'Catering / Yemek Servisi',
+    sector: 'Catering',
+    imageSlots: [
+      {
+        slot: 'hero',
+        label: 'Catering Ana Gorsel',
+        aspectRatio: '4:3',
+        imageSize: '1K',
+        style: 'photorealistic',
+        promptHint:
+          'Professional corporate catering setup, elegant buffet table with silver chafing dishes, white tablecloth, conference room setting, modern business event food service',
+        position: 'Hero section sag taraf, kurumsal 4:3 gorsel, kose aksanli cerceve (border-l-4 + border-t-4 gold)',
+      },
+      {
+        slot: 'showcase',
+        label: 'Etkinlik Sergileme',
+        aspectRatio: '4:3',
+        imageSize: '1K',
+        style: 'photorealistic',
+        promptHint:
+          'Corporate event catering service in action, professional staff serving food at business conference, elegant venue, navy blue and gold accents',
+        position: 'Alarm section icinde merkezi kart, lacivert border, max-w-lg',
+      },
+    ],
+  },
+
+  kasaplar: {
+    id: 'kasaplar',
+    name: 'Kasaplar',
+    sector: 'Kasaplar',
+    imageSlots: [
+      {
+        slot: 'hero',
+        label: 'Et Urunleri Ana Gorsel',
+        aspectRatio: '3:4',
+        imageSize: '1K',
+        style: 'photorealistic',
+        promptHint:
+          'Premium raw meat cuts on wooden butcher board, ribeye steak, lamb chops, fresh herbs, dramatic dark lighting, professional food photography, warm cream background',
+        position: 'Hero section sag taraf (acik bg), diagonal split layout, dikey gorsel (aspect 3:4), kirmizi alt cizgi',
+      },
+      {
+        slot: 'products',
+        label: 'Kasap Tezgahi',
+        aspectRatio: '4:3',
+        imageSize: '1K',
+        style: 'photorealistic',
+        promptHint:
+          'Professional butcher shop display counter, various meat cuts organized, clean glass display case, professional lighting, traditional butcher shop aesthetic',
+        position: 'Alarm section icinde merkezi kart, kirmizi border, max-w-lg',
+      },
+    ],
+  },
 }
 
 /**

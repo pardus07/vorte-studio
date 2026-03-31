@@ -23,6 +23,13 @@ const previewData: Record<string, { firmName: string; city: string; sector: stri
   'cilt-bakim': { firmName: 'Dermavita Cilt', city: 'Ankara', sector: 'Cilt Bakım Merkezleri' },
   'epilasyon': { firmName: 'LazerPro Epilasyon', city: 'Bursa', sector: 'Epilasyon Merkezleri' },
   'tirnak-studyosu': { firmName: 'Nail Art Studio', city: 'İstanbul', sector: 'Tırnak Stüdyoları' },
+  'dovme-piercing': { firmName: 'Ink Master Studio', city: 'İstanbul', sector: 'Dövme & Piercing Stüdyoları' },
+  'restoranlar': { firmName: 'Lezzet Konağı', city: 'İstanbul', sector: 'Restoranlar' },
+  'kafeler': { firmName: 'Kahve Durağı', city: 'Ankara', sector: 'Kafeler' },
+  'pastaneler': { firmName: 'Tatlı Eller Pastanesi', city: 'İzmir', sector: 'Pastaneler' },
+  'firinlar': { firmName: 'Altın Başak Fırını', city: 'Antalya', sector: 'Fırınlar' },
+  'catering': { firmName: 'Elit Catering', city: 'İstanbul', sector: 'Catering / Yemek Servisleri' },
+  'kasaplar': { firmName: 'Güven Et Market', city: 'Bursa', sector: 'Kasaplar' },
 }
 
 interface PageProps {

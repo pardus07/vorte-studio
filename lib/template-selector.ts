@@ -18,6 +18,13 @@ type TemplateName =
   | 'cilt-bakim'
   | 'epilasyon'
   | 'tirnak-studyosu'
+  | 'dovme-piercing'
+  | 'restoranlar'
+  | 'kafeler'
+  | 'pastaneler'
+  | 'firinlar'
+  | 'catering'
+  | 'kasaplar'
 
 // 107 sektör → şablon eşleştirmesi
 // Sprint 1: Sağlık & Klinik (8 şablon)
@@ -45,17 +52,17 @@ const sectorMap: Record<string, TemplateName> = {
   'Cilt Bakım Merkezleri': 'cilt-bakim',
   'Epilasyon Merkezleri': 'epilasyon',
   'Tırnak Stüdyoları': 'tirnak-studyosu',
-  'Dövme & Piercing Stüdyoları': 'estetik-klinik',
+  'Dövme & Piercing Stüdyoları': 'dovme-piercing',
 
   // ── Yeme-İçme → Sprint 3 ──
-  'Restoranlar': 'dis-klinikleri',
-  'Kafeler': 'dis-klinikleri',
-  'Pastaneler': 'dis-klinikleri',
-  'Fırınlar': 'dis-klinikleri',
-  'Catering / Yemek Servisleri': 'dis-klinikleri',
+  'Restoranlar': 'restoranlar',
+  'Kafeler': 'kafeler',
+  'Pastaneler': 'pastaneler',
+  'Fırınlar': 'firinlar',
+  'Catering / Yemek Servisleri': 'catering',
 
-  // ── Gıda Perakende → Sprint 4 ──
-  'Kasaplar': 'dis-klinikleri',
+  // ── Gıda Perakende → Sprint 3 (kasaplar) + Sprint 4 ──
+  'Kasaplar': 'kasaplar',
   'Manavlar': 'dis-klinikleri',
   'Kuruyemişçiler': 'dis-klinikleri',
   'Şarküteri / Delikatessen': 'dis-klinikleri',
@@ -174,6 +181,13 @@ const templateLoaders: Record<TemplateName, () => Promise<{ default: ComponentTy
   'cilt-bakim': () => import('./templates/cilt-bakim'),
   'epilasyon': () => import('./templates/epilasyon'),
   'tirnak-studyosu': () => import('./templates/tirnak-studyosu'),
+  'dovme-piercing': () => import('./templates/dovme-piercing'),
+  'restoranlar': () => import('./templates/restoranlar'),
+  'kafeler': () => import('./templates/kafeler'),
+  'pastaneler': () => import('./templates/pastaneler'),
+  'firinlar': () => import('./templates/firinlar'),
+  'catering': () => import('./templates/catering'),
+  'kasaplar': () => import('./templates/kasaplar'),
 }
 
 export function getTemplateName(sector: string): TemplateName {
