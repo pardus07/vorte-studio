@@ -324,7 +324,7 @@ export const agentFunctionDeclarations: FunctionDeclaration[] = [
   {
     name: "generate_template_image",
     description:
-      "Belirli bir sablon slot'u icin AI gorsel uretir ve kaydeder. ONCE get_template_image_slots ile slot bilgilerini oku, sonra bu tool'u cagir. Prompt'u slot'un promptHint'ini zenginlestirerek yaz.",
+      "Belirli bir sablon slot'u icin AI gorsel uretir ve kaydeder. ONCE get_template_image_slots ile slot bilgilerini oku, sonra bu tool'u HEMEN cagir. Prompt'u slot'un promptHint'ini KENDIN zenginlestirerek yaz — kullanicidan prompt isteme, promptHint zaten mevcut.",
     parameters: {
       type: Type.OBJECT,
       properties: {
@@ -339,7 +339,7 @@ export const agentFunctionDeclarations: FunctionDeclaration[] = [
         prompt: {
           type: Type.STRING,
           description:
-            "Gorsel aciklamasi (Ingilizce). Slot'un promptHint'ini temel alarak daha detayli ve zengin bir prompt yaz.",
+            "Gorsel aciklamasi (Ingilizce). Slot'un promptHint'ini temel alip 1-2 cumle ekleyerek KENDIN zenginlestir. Kullanicidan prompt ISTEME.",
         },
       },
       required: ["templateId", "slot", "prompt"],
