@@ -137,14 +137,7 @@ export default function IsitmeMerkeziTemplate(props: TemplateProps) {
                 <svg className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M19.114 5.636a9 9 0 010 12.728M16.463 8.288a5.25 5.25 0 010 7.424M6.75 8.25l4.72-4.72a.75.75 0 011.28.53v15.88a.75.75 0 01-1.28.53l-4.72-4.72H4.51c-.88 0-1.704-.507-1.938-1.354A9.01 9.01 0 012.25 12c0-.83.112-1.633.322-2.396C2.806 8.756 3.63 8.25 4.51 8.25H6.75z" />
                 </svg>
-                Ücretsiz İşitme Testi
-              </a>
-              <a
-                href={chatLink}
-                onClick={() => trackEvent(props.slug, 'CHAT_CLICK')}
-                className="inline-flex items-center justify-center rounded-xl border-2 border-[#0369A1]/20 bg-transparent px-8 py-4 font-[family-name:var(--font-poppins)] text-sm font-600 tracking-wide text-[#0369A1] transition-all hover:border-[#0369A1]/40 hover:bg-[#0369A1]/5 active:scale-[0.97]"
-              >
-                Teklif Al
+                Ücretsiz Teklif Al
               </a>
             </motion.div>
           </div>
@@ -414,7 +407,7 @@ export default function IsitmeMerkeziTemplate(props: TemplateProps) {
             <svg className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
             </svg>
-            Hemen Teklif Al
+            Ücretsiz Teklif Al
           </motion.a>
         </div>
       </motion.section>

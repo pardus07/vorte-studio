@@ -125,7 +125,7 @@ export default function KuaforlerTemplate(props: TemplateProps) {
               onClick={() => trackEvent(props.slug, 'CHAT_CLICK')}
               className="inline-flex items-center justify-center bg-[#F59E0B] px-10 py-3.5 font-[family-name:var(--font-karla)] text-sm font-700 uppercase tracking-[0.12em] text-[#1C1917] transition-all hover:bg-[#D97706] hover:shadow-lg hover:shadow-[#F59E0B]/20 active:scale-[0.97]"
             >
-              Randevu Al
+              Ücretsiz Teklif Al
             </a>
           </motion.div>
         </div>
@@ -341,7 +341,7 @@ export default function KuaforlerTemplate(props: TemplateProps) {
             transition={{ repeat: Infinity, duration: 2.4, ease: 'easeInOut' }}
             className="mt-10 inline-flex items-center justify-center bg-[#F59E0B] px-12 py-4 font-[family-name:var(--font-karla)] text-sm font-700 uppercase tracking-[0.12em] text-[#1C1917] shadow-lg shadow-[#F59E0B]/20 transition-all hover:bg-[#D97706] active:scale-[0.97]"
           >
-            Hemen Randevu Al
+            Ücretsiz Teklif Al
           </motion.a>
 
           <motion.p

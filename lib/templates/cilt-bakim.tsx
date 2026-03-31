@@ -121,7 +121,7 @@ export default function CiltBakimTemplate(props: TemplateProps) {
                 <svg className="h-4 w-4 transition-transform group-hover:scale-110" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
                 </svg>
-                Ücretsiz Cilt Analizi
+                Ücretsiz Teklif Al
               </a>
             </motion.div>
           </div>
@@ -292,7 +292,7 @@ export default function CiltBakimTemplate(props: TemplateProps) {
             <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
             </svg>
-            Ücretsiz Cilt Analizi
+            Ücretsiz Teklif Al
           </motion.a>
         </div>
       </motion.section>

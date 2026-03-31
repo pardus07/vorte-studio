@@ -131,7 +131,7 @@ export default function GuzellikSpaTemplate(props: TemplateProps) {
                 onClick={() => trackEvent(props.slug, 'CHAT_CLICK')}
                 className="inline-flex items-center justify-center rounded-full bg-[#BE185D] px-10 py-3.5 font-[family-name:var(--font-jost)] text-sm font-500 uppercase tracking-[0.15em] text-white shadow-lg shadow-[#BE185D]/20 transition-all hover:bg-[#9D174D] active:scale-[0.97]"
               >
-                Randevu Al
+                Ücretsiz Teklif Al
               </a>
               {props.phone && (
                 <a
@@ -356,7 +356,7 @@ export default function GuzellikSpaTemplate(props: TemplateProps) {
             transition={{ repeat: Infinity, duration: 2.5, ease: 'easeInOut' }}
             className="mt-10 inline-flex items-center justify-center rounded-full bg-[#D4AF37] px-12 py-4 font-[family-name:var(--font-jost)] text-sm font-500 uppercase tracking-[0.15em] text-[#1C1917] shadow-lg shadow-[#D4AF37]/25 transition-all hover:bg-[#C5A030] active:scale-[0.97]"
           >
-            Hemen Teklif Al
+            Ücretsiz Teklif Al
           </motion.a>
 
           <motion.div variants={fadeInUp} className="mx-auto mt-10 h-px w-12 bg-[#D4AF37]/40" />
