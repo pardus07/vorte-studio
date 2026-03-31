@@ -67,6 +67,14 @@ const templateComponents = {
   'branda': () => import('@/lib/templates/branda'),
   'kaynak-demir': () => import('@/lib/templates/kaynak-demir'),
   'bobinaj': () => import('@/lib/templates/bobinaj'),
+  'matbaalar': () => import('@/lib/templates/matbaalar'),
+  'ambalaj': () => import('@/lib/templates/ambalaj'),
+  'plastik-imalat': () => import('@/lib/templates/plastik-imalat'),
+  'terzi': () => import('@/lib/templates/terzi'),
+  'tabela-reklam': () => import('@/lib/templates/tabela-reklam'),
+  'hukuk-burosu': () => import('@/lib/templates/hukuk-burosu'),
+  'muhasebe': () => import('@/lib/templates/muhasebe'),
+  'sigorta': () => import('@/lib/templates/sigorta'),
 } as const
 
 type TemplateKey = keyof typeof templateComponents
@@ -133,6 +141,14 @@ const previewData: Record<string, { firmName: string; city: string; sector: stri
   'branda': { firmName: 'Endüstri Branda', city: 'Kocaeli', sector: 'Branda İmalatı', rating: 4.7, reviews: 134 },
   'kaynak-demir': { firmName: 'Çelik Usta Demir', city: 'Ankara', sector: 'Demiriciler / Ferforje', rating: 4.8, reviews: 212 },
   'bobinaj': { firmName: 'Motor Teknik Bobinaj', city: 'İstanbul', sector: 'Bobinajcılar', rating: 4.7, reviews: 145 },
+  'matbaalar': { firmName: 'Renk Matbaa', city: 'İstanbul', sector: 'Matbaacılar', rating: 4.8, reviews: 210 },
+  'ambalaj': { firmName: 'Paket Ambalaj', city: 'İstanbul', sector: 'Ambalaj / Paketleme', rating: 4.6, reviews: 135 },
+  'plastik-imalat': { firmName: 'Tekno Plastik', city: 'İstanbul', sector: 'Plastik İmalatı', rating: 4.7, reviews: 160 },
+  'terzi': { firmName: 'Elit Terzi', city: 'İstanbul', sector: 'Terzi / Konfeksiyoncular', rating: 4.9, reviews: 245 },
+  'tabela-reklam': { firmName: 'Neon Tabela', city: 'İstanbul', sector: 'Tabelacılar / Reklam', rating: 4.7, reviews: 180 },
+  'hukuk-burosu': { firmName: 'Adalet Hukuk', city: 'İstanbul', sector: 'Avukatlar', rating: 4.8, reviews: 195 },
+  'muhasebe': { firmName: 'Güven Mali Müşavirlik', city: 'İstanbul', sector: 'Muhasebeciler / SMMM', rating: 4.7, reviews: 170 },
+  'sigorta': { firmName: 'Kalkan Sigorta', city: 'İstanbul', sector: 'Sigorta Acenteleri', rating: 4.8, reviews: 220 },
 }
 
 interface PageProps {

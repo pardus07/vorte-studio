@@ -67,6 +67,14 @@ const previewData: Record<string, { firmName: string; city: string; sector: stri
   'branda': { firmName: 'Endüstri Branda', city: 'Kocaeli', sector: 'Branda İmalatı' },
   'kaynak-demir': { firmName: 'Çelik Usta Demir', city: 'Ankara', sector: 'Demiriciler / Ferforje' },
   'bobinaj': { firmName: 'Motor Teknik Bobinaj', city: 'İstanbul', sector: 'Bobinajcılar' },
+  'matbaalar': { firmName: 'Renk Matbaa', city: 'İstanbul', sector: 'Matbaacılar' },
+  'ambalaj': { firmName: 'Paket Ambalaj', city: 'İstanbul', sector: 'Ambalaj / Paketleme' },
+  'plastik-imalat': { firmName: 'Tekno Plastik', city: 'İstanbul', sector: 'Plastik İmalatı' },
+  'terzi': { firmName: 'Elit Terzi', city: 'İstanbul', sector: 'Terzi / Konfeksiyoncular' },
+  'tabela-reklam': { firmName: 'Neon Tabela', city: 'İstanbul', sector: 'Tabelacılar / Reklam' },
+  'hukuk-burosu': { firmName: 'Adalet Hukuk', city: 'İstanbul', sector: 'Avukatlar' },
+  'muhasebe': { firmName: 'Güven Mali Müşavirlik', city: 'İstanbul', sector: 'Muhasebeciler / SMMM' },
+  'sigorta': { firmName: 'Kalkan Sigorta', city: 'İstanbul', sector: 'Sigorta Acenteleri' },
 }
 
 interface PageProps {

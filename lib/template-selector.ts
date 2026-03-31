@@ -62,6 +62,14 @@ type TemplateName =
   | 'branda'
   | 'kaynak-demir'
   | 'bobinaj'
+  | 'matbaalar'
+  | 'ambalaj'
+  | 'plastik-imalat'
+  | 'terzi'
+  | 'tabela-reklam'
+  | 'hukuk-burosu'
+  | 'muhasebe'
+  | 'sigorta'
 
 // 107 sektör → şablon eşleştirmesi
 // Sprint 1: Sağlık & Klinik (8 şablon)
@@ -170,21 +178,22 @@ const sectorMap: Record<string, TemplateName> = {
   'Mobilya Atölyeleri': 'marangoz',
   'Marangozlar': 'marangoz',
   'Kuyumcular': 'estetik-klinik',
-  'Terzi / Konfeksiyoncular': 'estetik-klinik',
-  'Matbaacılar': 'tip-merkezleri',
-  'Tabelacılar / Reklam': 'tip-merkezleri',
+  'Terzi / Konfeksiyoncular': 'terzi',
+  'Matbaacılar': 'matbaalar',
+  'Tabelacılar / Reklam': 'tabela-reklam',
   'Demiriciler / Ferforje': 'kaynak-demir',
   'Kaynak / Demir Atölyesi': 'kaynak-demir',
   'Bobinajcılar': 'bobinaj',
-  'Tornacılar / CNC': 'tip-merkezleri',
-  'Tekstil Atölyeleri': 'tip-merkezleri',
-  'Ambalaj / Paketleme': 'tip-merkezleri',
+  'Tornacılar / CNC': 'plastik-imalat',
+  'Tekstil Atölyeleri': 'terzi',
+  'Ambalaj / Paketleme': 'ambalaj',
   'Ayakkabıcılar': 'dosemeci',
+  'Plastik İmalatı': 'plastik-imalat',
 
-  // ── Hizmet & Profesyonel → Sprint 10 ──
-  'Avukatlar': 'tip-merkezleri',
-  'Muhasebeciler / SMMM': 'tip-merkezleri',
-  'Sigorta Acenteleri': 'tip-merkezleri',
+  // ── Hizmet & Profesyonel → Sprint 9 ──
+  'Avukatlar': 'hukuk-burosu',
+  'Muhasebeciler / SMMM': 'muhasebe',
+  'Sigorta Acenteleri': 'sigorta',
   'Emlakçılar': 'tip-merkezleri',
 
   // ── Perakende → Sprint 11 ──
@@ -278,6 +287,14 @@ const templateLoaders: Record<TemplateName, () => Promise<{ default: ComponentTy
   'branda': () => import('./templates/branda'),
   'kaynak-demir': () => import('./templates/kaynak-demir'),
   'bobinaj': () => import('./templates/bobinaj'),
+  'matbaalar': () => import('./templates/matbaalar'),
+  'ambalaj': () => import('./templates/ambalaj'),
+  'plastik-imalat': () => import('./templates/plastik-imalat'),
+  'terzi': () => import('./templates/terzi'),
+  'tabela-reklam': () => import('./templates/tabela-reklam'),
+  'hukuk-burosu': () => import('./templates/hukuk-burosu'),
+  'muhasebe': () => import('./templates/muhasebe'),
+  'sigorta': () => import('./templates/sigorta'),
 }
 
 export function getTemplateName(sector: string): TemplateName {

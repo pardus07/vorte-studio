@@ -1651,6 +1651,234 @@ export const TEMPLATE_IMAGE_CONFIG: Record<string, TemplateImageConfig> = {
       },
     ],
   },
+
+  /* ============================================================ */
+  /*  SPRINT 9 — ATÖLYE (2/2) + HİZMET & PERAKENDE              */
+  /* ============================================================ */
+
+  matbaalar: {
+    id: 'matbaalar',
+    name: 'Matbaalar',
+    sector: 'Matbaacilar',
+    imageSlots: [
+      {
+        slot: 'products',
+        label: 'Baski Urunleri',
+        aspectRatio: '4:3',
+        imageSize: '1K',
+        style: 'photorealistic',
+        promptHint:
+          'Professional print products display, business cards, brochures, catalogs, posters stacked neatly, CMYK color theme, printing press background, commercial print shop aesthetic, no people',
+        position: 'Alarm section icinde merkezi kart, kirmizi border, max-w-lg',
+      },
+      {
+        slot: 'print',
+        label: 'Baski Kalitesi',
+        aspectRatio: '4:3',
+        imageSize: '1K',
+        style: 'photorealistic',
+        promptHint:
+          'Close-up of high quality offset printing, CMYK ink on paper, printing press rollers, vivid colors, professional print production, commercial printing environment, no people',
+        position: 'Urun galeri section, tam genislik gorsel, max-h-320px',
+      },
+    ],
+  },
+
+  ambalaj: {
+    id: 'ambalaj',
+    name: 'Ambalaj Imalat',
+    sector: 'Ambalaj / Paketleme',
+    imageSlots: [
+      {
+        slot: 'hero',
+        label: 'Ambalaj Ana Gorsel',
+        aspectRatio: '4:3',
+        imageSize: '1K',
+        style: 'photorealistic',
+        promptHint:
+          'Custom printed packaging boxes display, various sizes, branded cardboard boxes, professional packaging design, warm amber lighting, packaging production facility, no people',
+        position: 'Hero section sag taraf capraz cerceve (aspect 4:3, -rotate-3), floating Ozel Baski badge',
+      },
+      {
+        slot: 'products',
+        label: 'Urun Cesitleri',
+        aspectRatio: '4:3',
+        imageSize: '1K',
+        style: 'photorealistic',
+        promptHint:
+          'Variety of packaging products, paper bags, custom boxes, food packaging, cosmetic packaging, printed labels, professional product photography, no people',
+        position: 'Alarm section icinde merkezi kart, koyu border, max-w-lg',
+      },
+    ],
+  },
+
+  'plastik-imalat': {
+    id: 'plastik-imalat',
+    name: 'Plastik Imalat',
+    sector: 'Plastik Imalat',
+    imageSlots: [
+      {
+        slot: 'hero',
+        label: 'Uretim Ana Gorsel',
+        aspectRatio: '4:3',
+        imageSize: '1K',
+        style: 'photorealistic',
+        promptHint:
+          'Plastic injection molding machine in operation, industrial manufacturing facility, blue tones, clean modern factory floor, plastic products and molds, B2B industrial environment, no people',
+        position: 'Alarm section icinde merkezi kart, mavi border, rounded-lg, max-w-lg',
+      },
+      {
+        slot: 'factory',
+        label: 'Fabrika Gorseli',
+        aspectRatio: '4:3',
+        imageSize: '1K',
+        style: 'photorealistic',
+        promptHint:
+          'Modern plastic manufacturing factory interior, production line, industrial robots, blue and white clean environment, high-tech plastic production, no people',
+        position: 'Fabrika section tam genislik gorsel, rounded-lg, max-h-320px',
+      },
+    ],
+  },
+
+  terzi: {
+    id: 'terzi',
+    name: 'Terzi / Moda Atolyesi',
+    sector: 'Terzi / Konfeksiyoncular',
+    imageSlots: [
+      {
+        slot: 'hero',
+        label: 'Terzi Atolye Ana Gorsel',
+        aspectRatio: '1:1',
+        imageSize: '1K',
+        style: 'photorealistic',
+        promptHint:
+          'Elegant tailoring atelier, fabric rolls, sewing machine, dress form mannequin with beautiful gown, purple and gold color scheme, warm boutique lighting, luxury fashion studio, no people',
+        position: 'Hero section merkez dairesel mask (rounded-full w-64 h-64), altin ring aksanlari, Butik badge alt',
+      },
+      {
+        slot: 'fabrics',
+        label: 'Kumas Koleksiyonu',
+        aspectRatio: '4:3',
+        imageSize: '1K',
+        style: 'photorealistic',
+        promptHint:
+          'Luxury fabric collection display, silk velvet lace samples, rich textures, purple cream and gold tones, fashion atelier material showcase, elegant textile arrangement, no people',
+        position: 'Alarm section icinde merkezi kart, mor border, max-w-lg',
+      },
+    ],
+  },
+
+  'tabela-reklam': {
+    id: 'tabela-reklam',
+    name: 'Tabela & Reklam',
+    sector: 'Tabelacilar / Reklam',
+    imageSlots: [
+      {
+        slot: 'hero',
+        label: 'Tabela/Reklam Ana Gorsel',
+        aspectRatio: '16:9',
+        imageSize: '2K',
+        style: 'photorealistic',
+        promptHint:
+          'Dramatic neon sign installation at night, glowing LED channel letters on building facade, orange neon light, professional signage work, dark urban background, sign making workshop, no people',
+        position: 'Hero section tam ekran arkaplan (opacity 0.15), koyu gradient overlay, neon glow efektleri',
+      },
+      {
+        slot: 'works',
+        label: 'Referans Calismalar',
+        aspectRatio: '4:3',
+        imageSize: '1K',
+        style: 'photorealistic',
+        promptHint:
+          'Collection of custom signage work, illuminated store signs, box letters, vehicle wrapping, totem signs, professional sign making portfolio, orange and dark tones, no people',
+        position: 'Alarm section icinde merkezi kart, turuncu border, max-w-lg',
+      },
+    ],
+  },
+
+  'hukuk-burosu': {
+    id: 'hukuk-burosu',
+    name: 'Hukuk Burosu',
+    sector: 'Avukatlar',
+    imageSlots: [
+      {
+        slot: 'hero',
+        label: 'Avukat/Buro Ana Gorsel',
+        aspectRatio: '3:4',
+        imageSize: '1K',
+        style: 'photorealistic',
+        promptHint:
+          'Professional law office interior, leather chair, law books on shelves, scales of justice, dark blue and gold tones, prestigious attorney office, mahogany desk, warm desk lamp lighting, no people',
+        position: 'Hero section SOL taraf (ters duzende), portrait orani (3:4), altin kose aksanli cerceve',
+      },
+      {
+        slot: 'office',
+        label: 'Buro Ic Mekan',
+        aspectRatio: '4:3',
+        imageSize: '1K',
+        style: 'photorealistic',
+        promptHint:
+          'Modern law firm meeting room, conference table, legal documents, professional corporate interior, navy blue and gold accents, prestigious business setting, no people',
+        position: 'Alarm section icinde merkezi kart, lacivert border, max-w-lg',
+      },
+    ],
+  },
+
+  muhasebe: {
+    id: 'muhasebe',
+    name: 'Muhasebe / Mali Musavirlik',
+    sector: 'Muhasebeciler / SMMM',
+    imageSlots: [
+      {
+        slot: 'office',
+        label: 'Ofis Gorseli',
+        aspectRatio: '4:3',
+        imageSize: '1K',
+        style: 'photorealistic',
+        promptHint:
+          'Professional accounting office, organized desk with calculator, financial documents, laptop showing spreadsheet, clean modern office, green and navy blue tones, corporate atmosphere, no people',
+        position: 'Alarm section icinde merkezi kart, yesil border, max-w-lg',
+      },
+      {
+        slot: 'team',
+        label: 'Ekip Gorseli',
+        aspectRatio: '4:3',
+        imageSize: '1K',
+        style: 'photorealistic',
+        promptHint:
+          'Modern accounting firm office space, multiple workstations, financial charts on screen, professional corporate environment, green accent plants, clean organized desks, no people',
+        position: 'Ekip section tam genislik gorsel, max-h-320px',
+      },
+    ],
+  },
+
+  sigorta: {
+    id: 'sigorta',
+    name: 'Sigorta Acentesi',
+    sector: 'Sigorta Acenteleri',
+    imageSlots: [
+      {
+        slot: 'hero',
+        label: 'Sigorta Ana Gorsel',
+        aspectRatio: '4:3',
+        imageSize: '1K',
+        style: 'photorealistic',
+        promptHint:
+          'Insurance agency concept, protective umbrella over family icons, teal and white color scheme, shield and protection symbols, modern clean professional aesthetic, financial security concept, no people',
+        position: 'Hero alt yari bolunme icinde, kalkan SVG overlay altinda, rounded-2xl, max-w-2xl',
+      },
+      {
+        slot: 'office',
+        label: 'Acente Ofis Gorseli',
+        aspectRatio: '4:3',
+        imageSize: '1K',
+        style: 'photorealistic',
+        promptHint:
+          'Modern insurance agency office, professional desk setup, insurance documents and policies, teal and white interior, trustworthy corporate atmosphere, no people',
+        position: 'Alarm section icinde merkezi kart, teal border, rounded-xl, max-w-lg',
+      },
+    ],
+  },
 }
 
 /**
