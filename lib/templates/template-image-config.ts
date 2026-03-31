@@ -406,12 +406,12 @@ export const TEMPLATE_IMAGE_CONFIG: Record<string, TemplateImageConfig> = {
       {
         slot: 'hero',
         label: 'Portfolyo Ana Gorsel',
-        aspectRatio: '16:10',
+        aspectRatio: '16:9',
         imageSize: '2K',
         style: 'photorealistic',
         promptHint:
           'Professional tattoo portfolio showcase, close-up of intricate tattoo artwork on skin, dramatic dark lighting, artistic photography, underground studio aesthetic, no face',
-        position: 'Hero section sag taraf, 2-sutun grid ust kisim full-width (16:10), neon border efekti',
+        position: 'Hero section sag taraf, 2-sutun grid ust kisim full-width (16:9), neon border efekti',
       },
       {
         slot: 'portfolio',
@@ -462,12 +462,12 @@ export const TEMPLATE_IMAGE_CONFIG: Record<string, TemplateImageConfig> = {
       {
         slot: 'hero',
         label: 'Kafe Atmosfer Gorseli',
-        aspectRatio: '4:5',
+        aspectRatio: '3:4',
         imageSize: '1K',
         style: 'photorealistic',
         promptHint:
           'Cozy artisan cafe interior, steaming latte art on wooden table, warm natural lighting, exposed brick and plants, hygge comfortable atmosphere, no people',
-        position: 'Hero section sag taraf, diagonal clip-path ile kesilmis dikey gorsel (aspect 4:5), rounded-2rem',
+        position: 'Hero section sag taraf, diagonal clip-path ile kesilmis dikey gorsel (aspect 3:4), rounded-2rem',
       },
       {
         slot: 'ambiance',

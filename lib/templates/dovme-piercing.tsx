@@ -138,7 +138,7 @@ export default function DovmePiercingTemplate(props: TemplateProps) {
             <motion.div variants={scaleIn} className="relative">
               <div className="grid grid-cols-2 gap-3">
                 {/* Main hero — large */}
-                <div className="col-span-2 aspect-[16/10] overflow-hidden border border-white/10 bg-white/5">
+                <div className="col-span-2 aspect-video overflow-hidden border border-white/10 bg-white/5">
                   {heroImg ? (
                     <img src={heroImg} alt={`${props.firmName} portfolyo`} className="h-full w-full object-cover" />
                   ) : (
