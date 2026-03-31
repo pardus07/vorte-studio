@@ -75,12 +75,6 @@ export default function MatbaalarTemplate(props: TemplateProps) {
           </div>
         )}
 
-        {/* Giant background brand name — müşteri markası watermark */}
-        <div className="pointer-events-none absolute inset-0 flex items-center justify-center overflow-hidden">
-          <span className="whitespace-nowrap font-[family-name:var(--font-oswald)] text-[18vw] font-700 uppercase leading-none text-white/[0.03]">
-            {props.firmName}
-          </span>
-        </div>
 
         <div className="relative mx-auto max-w-4xl px-4 text-center sm:px-6">
           <motion.div variants={staggerContainer} initial="hidden" animate="visible" className="space-y-8">

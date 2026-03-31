@@ -63,12 +63,6 @@ export default function PlastikImalatTemplate(props: TemplateProps) {
           </div>
         )}
 
-        {/* Background brand watermark */}
-        <div className="pointer-events-none absolute inset-0 flex items-center justify-center overflow-hidden">
-          <span className="whitespace-nowrap font-[family-name:var(--font-raleway)] text-[16vw] font-700 uppercase leading-none text-white/[0.03]">
-            {props.firmName}
-          </span>
-        </div>
 
         <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <motion.div variants={staggerContainer} initial="hidden" animate="visible" className="mx-auto max-w-3xl text-center">

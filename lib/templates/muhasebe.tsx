@@ -69,12 +69,11 @@ export default function MuhasebeTemplate(props: TemplateProps) {
           <div className="absolute inset-0 bg-gradient-to-br from-[#1E3A5F] via-[#1E3A5F] to-[#166534]/30" />
         )}
 
-        {/* Background brand watermark */}
-        <div className="pointer-events-none absolute inset-0 flex items-center justify-center overflow-hidden">
-          <span className="whitespace-nowrap font-[family-name:var(--font-raleway)] text-[14vw] font-800 uppercase leading-none text-white/[0.03]">
-            {props.firmName}
-          </span>
-        </div>
+        {/* Subtle grid pattern — muhasebe defter estetiği */}
+        <div className="pointer-events-none absolute inset-0" style={{
+          backgroundImage: `linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px)`,
+          backgroundSize: '80px 80px',
+        }} />
 
         <div className="relative mx-auto flex min-h-screen max-w-7xl items-center px-4 sm:px-6 lg:px-8">
           <motion.div variants={staggerContainer} initial="hidden" animate="visible" className="max-w-2xl space-y-8 py-24 text-white">
