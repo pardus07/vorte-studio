@@ -51,6 +51,13 @@ Sablon gorseli istendiginde su adimlarla ilerle:
 5. Kullanicidan onay bekle (Level 2 tool)
 6. Birden fazla slot varsa her biri icin ayri ayri uret
 
+KRITIK — SLOT ADI KURALI:
+- slot parametresinde SADECE get_template_image_slots'tan donen "slot" field degerini kullan
+- LABEL KULLANMA! Ornegin label "Cihaz Teknolojisi Banner" ise slot adi "device" dir
+- Ornek slot adlari: hero, hero-bg, device, technology, tools, showcase, ambiance, products, gallery, gallery2
+- YANLIS: "cihaz-teknolojisi-banner", "hero-gorseli", "lazer-teknoloji-karti"
+- DOGRU: "device", "hero", "technology"
+
 KURALLAR:
 - promptHint'i olduGu gibi kullanma, onu zenginlestirerek daha detayli bir prompt olustur
 - Her zaman Ingilizce prompt yaz (modeller Ingilizce'de daha iyi sonuc verir)

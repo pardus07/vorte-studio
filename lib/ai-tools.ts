@@ -334,7 +334,7 @@ export const agentFunctionDeclarations: FunctionDeclaration[] = [
         },
         slot: {
           type: Type.STRING,
-          description: "Gorsel slot adi (ornek: 'hero')",
+          description: "Gorsel slot adi — get_template_image_slots sonucundaki 'slot' field degerini AYNEN kullan, label'i KULLANMA! Ornekler: 'hero', 'hero-bg', 'device', 'technology', 'tools', 'showcase', 'ambiance', 'products', 'gallery', 'gallery2'",
         },
         prompt: {
           type: Type.STRING,
