@@ -2125,6 +2125,232 @@ export const TEMPLATE_IMAGE_CONFIG: Record<string, TemplateImageConfig> = {
       },
     ],
   },
+
+  // ── Sprint 11: Teknik Servis (2/2) + Diger Hizmetler ──
+
+  'spor-malzemeleri': {
+    id: 'spor-malzemeleri',
+    name: 'Spor Malzemeleri',
+    sector: 'Spor Malzemeleri Magazasi',
+    imageSlots: [
+      {
+        slot: 'hero',
+        label: 'Hero Gorseli',
+        aspectRatio: '16:9',
+        imageSize: '2K',
+        style: 'photorealistic',
+        promptHint:
+          'Sports equipment store interior, dynamic display of fitness gear, running shoes, weights and balls, high-energy orange and black branding, dramatic gym lighting, no people',
+        position: 'Hero section arkaplan, koyu overlay, SVG slash dekorasyon uzerinde',
+      },
+      {
+        slot: 'product',
+        label: 'Urun Gorseli',
+        aspectRatio: '4:3',
+        imageSize: '1K',
+        style: 'photorealistic',
+        promptHint:
+          'Professional sports equipment flat lay, running shoes, fitness accessories, water bottles, athletic gear arrangement on dark background, product photography',
+        position: 'Icerik bolumunde merkezi gorsel, max-w-5xl',
+      },
+    ],
+  },
+
+  'klima-servisi': {
+    id: 'klima-servisi',
+    name: 'Klima Servisi',
+    sector: 'Klima Servisi',
+    imageSlots: [
+      {
+        slot: 'hero',
+        label: 'Hero Gorseli',
+        aspectRatio: '3:4',
+        imageSize: '1K',
+        style: 'photorealistic',
+        promptHint:
+          'Modern split air conditioner on clean white wall, cool blue LED light, frost effect, professional HVAC installation, minimalist interior, no people',
+        position: 'Hero section sag taraf, frosted glass kart yaninda, 3:4 dikey gorsel',
+      },
+      {
+        slot: 'service',
+        label: 'Servis Gorseli',
+        aspectRatio: '4:3',
+        imageSize: '1K',
+        style: 'photorealistic',
+        promptHint:
+          'HVAC technician tools and air conditioning unit maintenance, clean workspace, blue and white color theme, professional service photography, no face visible',
+        position: 'Icerik bolumunde merkezi gorsel, max-w-5xl',
+      },
+    ],
+  },
+
+  'kombi-servisi': {
+    id: 'kombi-servisi',
+    name: 'Kombi Servisi',
+    sector: 'Kombi Servisi',
+    imageSlots: [
+      {
+        slot: 'hero',
+        label: 'Hero Gorseli',
+        aspectRatio: '16:9',
+        imageSize: '2K',
+        style: 'photorealistic',
+        promptHint:
+          'Modern combi boiler wall-mounted in clean utility room, warm orange ambient lighting, professional heating system, pipes and valves visible, no people',
+        position: 'Hero section arkaplan gorseli, navy overlay uzerinde',
+      },
+      {
+        slot: 'service',
+        label: 'Servis Gorseli',
+        aspectRatio: '4:3',
+        imageSize: '1K',
+        style: 'photorealistic',
+        promptHint:
+          'Boiler maintenance tools and gauges, professional plumbing equipment, warm orange and blue tones, technical service photography, no face visible',
+        position: 'Icerik bolumunde merkezi gorsel, max-w-5xl',
+      },
+    ],
+  },
+
+  'beyaz-esya': {
+    id: 'beyaz-esya',
+    name: 'Beyaz Esya',
+    sector: 'Beyaz Esya Servisi',
+    imageSlots: [
+      {
+        slot: 'hero',
+        label: 'Hero Gorseli',
+        aspectRatio: '16:9',
+        imageSize: '2K',
+        style: 'photorealistic',
+        promptHint:
+          'Modern kitchen with white appliances, washing machine, dishwasher, refrigerator in clean bright interior, dot grid pattern overlay, product showcase, no people',
+        position: 'Hero section arkaplan, hafif opak overlay ile',
+      },
+      {
+        slot: 'service',
+        label: 'Servis Gorseli',
+        aspectRatio: '4:3',
+        imageSize: '1K',
+        style: 'photorealistic',
+        promptHint:
+          'Appliance repair technician tools, multimeter and screwdriver on washing machine, clean professional service photography, no face visible',
+        position: 'Icerik bolumunde merkezi gorsel, max-w-5xl',
+      },
+    ],
+  },
+
+  'asansor': {
+    id: 'asansor',
+    name: 'Asansor',
+    sector: 'Asansor Bakim',
+    imageSlots: [
+      {
+        slot: 'hero',
+        label: 'Hero Gorseli',
+        aspectRatio: '16:9',
+        imageSize: '2K',
+        style: 'photorealistic',
+        promptHint:
+          'Modern elevator interior with stainless steel doors, clean shaft perspective, silver metallic finishes, floor indicator display, corporate building lobby, no people',
+        position: 'Hero section arkaplan, koyu slate overlay, shaft lines uzerinde',
+      },
+      {
+        slot: 'project',
+        label: 'Proje Gorseli',
+        aspectRatio: '4:3',
+        imageSize: '1K',
+        style: 'photorealistic',
+        promptHint:
+          'Elevator installation project, modern elevator cabin, stainless steel interior, LED strip lighting, professional building engineering, no people',
+        position: 'Icerik bolumunde merkezi gorsel, max-w-5xl',
+      },
+    ],
+  },
+
+  'jenerator': {
+    id: 'jenerator',
+    name: 'Jenerator',
+    sector: 'Jenerator',
+    imageSlots: [
+      {
+        slot: 'hero',
+        label: 'Hero Gorseli',
+        aspectRatio: '16:9',
+        imageSize: '2K',
+        style: 'photorealistic',
+        promptHint:
+          'Industrial power generator set, large diesel generator in facility room, yellow and black industrial colors, energy pulse lighting, no people',
+        position: 'Hero section arkaplan, koyu siyah overlay, industrial grid uzerinde',
+      },
+      {
+        slot: 'product',
+        label: 'Urun Gorseli',
+        aspectRatio: '4:3',
+        imageSize: '1K',
+        style: 'photorealistic',
+        promptHint:
+          'Portable generator close-up, professional power equipment, yellow accents, industrial product photography, clean background, no people',
+        position: 'Icerik bolumunde merkezi gorsel, max-w-5xl',
+      },
+    ],
+  },
+
+  'guvenlik-sistemleri': {
+    id: 'guvenlik-sistemleri',
+    name: 'Guvenlik Sistemleri',
+    sector: 'Guvenlik Sistemleri',
+    imageSlots: [
+      {
+        slot: 'hero',
+        label: 'Hero Gorseli',
+        aspectRatio: '16:9',
+        imageSize: '2K',
+        style: 'photorealistic',
+        promptHint:
+          'Security surveillance control room, multiple CCTV monitors showing camera feeds, dark room with blue and red LED indicators, professional security system, no people',
+        position: 'Hero section arkaplan, koyu matrix overlay uzerinde',
+      },
+      {
+        slot: 'project',
+        label: 'Proje Gorseli',
+        aspectRatio: '4:3',
+        imageSize: '1K',
+        style: 'photorealistic',
+        promptHint:
+          'Professional CCTV camera installation on building exterior, security alarm panel, modern access control keypad, clean professional photography, no people',
+        position: 'Icerik bolumunde merkezi gorsel, max-w-5xl',
+      },
+    ],
+  },
+
+  'cilingir': {
+    id: 'cilingir',
+    name: 'Cilingir',
+    sector: 'Cilingir',
+    imageSlots: [
+      {
+        slot: 'hero',
+        label: 'Hero Gorseli',
+        aspectRatio: '16:9',
+        imageSize: '2K',
+        style: 'photorealistic',
+        promptHint:
+          'Professional locksmith tools, key cutting machine, lock picks and keys arrangement, dark moody lighting with amber highlights, artisan workshop aesthetic, no people',
+        position: 'Hero section arkaplan, koyu overlay, amber flash lines uzerinde',
+      },
+      {
+        slot: 'service',
+        label: 'Servis Gorseli',
+        aspectRatio: '4:3',
+        imageSize: '1K',
+        style: 'photorealistic',
+        promptHint:
+          'Door lock installation, modern smart lock system, professional locksmith service, amber and dark tones, close-up of lock mechanism, no people',
+        position: 'Icerik bolumunde merkezi gorsel, max-w-5xl',
+      },
+    ],
+  },
 }
 
 /**

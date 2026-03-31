@@ -83,6 +83,14 @@ const templateComponents = {
   'cicekci': () => import('@/lib/templates/cicekci'),
   'kuyumcu': () => import('@/lib/templates/kuyumcu'),
   'tekstil-giyim': () => import('@/lib/templates/tekstil-giyim'),
+  'spor-malzemeleri': () => import('@/lib/templates/spor-malzemeleri'),
+  'klima-servisi': () => import('@/lib/templates/klima-servisi'),
+  'kombi-servisi': () => import('@/lib/templates/kombi-servisi'),
+  'beyaz-esya': () => import('@/lib/templates/beyaz-esya'),
+  'asansor': () => import('@/lib/templates/asansor'),
+  'jenerator': () => import('@/lib/templates/jenerator'),
+  'guvenlik-sistemleri': () => import('@/lib/templates/guvenlik-sistemleri'),
+  'cilingir': () => import('@/lib/templates/cilingir'),
 } as const
 
 type TemplateKey = keyof typeof templateComponents
@@ -165,6 +173,14 @@ const previewData: Record<string, { firmName: string; city: string; sector: stri
   'cicekci': { firmName: 'Gül Bahçesi', city: 'İstanbul', sector: 'Çiçekçiler', rating: 4.9, reviews: 198 },
   'kuyumcu': { firmName: 'Altın Işık Kuyumculuk', city: 'İstanbul', sector: 'Kuyumcular', rating: 4.8, reviews: 267 },
   'tekstil-giyim': { firmName: 'Trend Moda', city: 'İstanbul', sector: 'Tekstil / Giyim Mağazası', rating: 4.7, reviews: 312 },
+  'spor-malzemeleri': { firmName: 'ProSport Mağaza', city: 'Antalya', sector: 'Spor Mağazaları', rating: 4.7, reviews: 234 },
+  'klima-servisi': { firmName: 'Serin Klima', city: 'Ankara', sector: 'Klima Servisleri', rating: 4.8, reviews: 278 },
+  'kombi-servisi': { firmName: 'Sıcak Yuva Kombi', city: 'İstanbul', sector: 'Kombi / Doğalgaz Servisleri', rating: 4.9, reviews: 312 },
+  'beyaz-esya': { firmName: 'Teknik Beyaz Eşya', city: 'İzmir', sector: 'Beyaz Eşya Servisleri', rating: 4.7, reviews: 256 },
+  'asansor': { firmName: 'Güven Asansör', city: 'Bursa', sector: 'Asansör Firmaları', rating: 4.8, reviews: 189 },
+  'jenerator': { firmName: 'PowerGen Enerji', city: 'İstanbul', sector: 'Jeneratör Firmaları', rating: 4.6, reviews: 145 },
+  'guvenlik-sistemleri': { firmName: 'Kalkan Güvenlik', city: 'Ankara', sector: 'Güvenlik Sistemleri', rating: 4.8, reviews: 267 },
+  'cilingir': { firmName: 'Hızlı Çilingir', city: 'İstanbul', sector: 'Çilingirler', rating: 4.9, reviews: 378 },
 }
 
 interface PageProps {

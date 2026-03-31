@@ -78,6 +78,14 @@ type TemplateName =
   | 'cicekci'
   | 'kuyumcu'
   | 'tekstil-giyim'
+  | 'spor-malzemeleri'
+  | 'klima-servisi'
+  | 'kombi-servisi'
+  | 'beyaz-esya'
+  | 'asansor'
+  | 'jenerator'
+  | 'guvenlik-sistemleri'
+  | 'cilingir'
 
 // 107 sektör → şablon eşleştirmesi
 // Sprint 1: Sağlık & Klinik (8 şablon)
@@ -172,7 +180,7 @@ const sectorMap: Record<string, TemplateName> = {
   'Peyzaj / Bahçe Düzenleme': 'veteriner-klinikleri',
   'Yapı Malzeme Mağazaları': 'insaat-firmalari',
   'Tadilat / Renovasyon': 'mimarlik-ofisleri',
-  'Asansör Firmaları': 'insaat-firmalari',
+  // 'Asansör Firmaları' → Sprint 11'de 'asansor' şablonuna taşındı
   'Güneş Enerjisi / Solar Panel': 'dis-cephe',
   'Prefabrik Yapı': 'insaat-firmalari',
 
@@ -211,18 +219,23 @@ const sectorMap: Record<string, TemplateName> = {
   'Pet Shop': 'pet-shop',
   'Çiçekçiler': 'cicekci',
   'Tekstil / Giyim Mağazası': 'tekstil-giyim',
-  'Spor Mağazaları': 'elektronik',
   'Eczaneler': 'dis-klinikleri',
   'Zücaciye / Ev Gereçleri': 'mobilya',
   'Züccaciye / Hediyelik': 'mobilya',
 
-  // ── Teknik Servis & Bakım → Sprint 12 ──
+  // ── Perakende (devam) + Teknik Servis (2/2) + Diğer Hizmetler → Sprint 11 ──
+  'Spor Mağazaları': 'spor-malzemeleri',
+  'Klima Servisleri': 'klima-servisi',
+  'Kombi / Doğalgaz Servisleri': 'kombi-servisi',
+  'Beyaz Eşya Servisleri': 'beyaz-esya',
+  'Asansör Firmaları': 'asansor',
+  'Jeneratör Firmaları': 'jenerator',
+  'Güvenlik Sistemleri': 'guvenlik-sistemleri',
+  'Çilingirler': 'cilingir',
+
+  // ── Teknik Servis & Diğer (fallback) → Sprint 12+ ──
   'Bilgisayar Tamircileri': 'tip-merkezleri',
   'Telefon Tamircileri': 'tip-merkezleri',
-  'Beyaz Eşya Servisleri': 'tip-merkezleri',
-  'Klima Servisleri': 'tip-merkezleri',
-  'Kombi / Doğalgaz Servisleri': 'tip-merkezleri',
-  'Çilingirler': 'tip-merkezleri',
   'Halı Yıkama': 'tip-merkezleri',
   'Nakliyat Firmaları': 'tip-merkezleri',
 
@@ -232,7 +245,6 @@ const sectorMap: Record<string, TemplateName> = {
   'Kreş / Çocuk Etkinlik': 'tip-merkezleri',
   'Oto Yedek Parça': 'tip-merkezleri',
   'Temizlik Şirketleri': 'tip-merkezleri',
-  'Güvenlik Sistemleri': 'tip-merkezleri',
   'Cenaze Hizmetleri': 'tip-merkezleri',
 }
 
@@ -313,6 +325,14 @@ const templateLoaders: Record<TemplateName, () => Promise<{ default: ComponentTy
   'cicekci': () => import('./templates/cicekci'),
   'kuyumcu': () => import('./templates/kuyumcu'),
   'tekstil-giyim': () => import('./templates/tekstil-giyim'),
+  'spor-malzemeleri': () => import('./templates/spor-malzemeleri'),
+  'klima-servisi': () => import('./templates/klima-servisi'),
+  'kombi-servisi': () => import('./templates/kombi-servisi'),
+  'beyaz-esya': () => import('./templates/beyaz-esya'),
+  'asansor': () => import('./templates/asansor'),
+  'jenerator': () => import('./templates/jenerator'),
+  'guvenlik-sistemleri': () => import('./templates/guvenlik-sistemleri'),
+  'cilingir': () => import('./templates/cilingir'),
 }
 
 export function getTemplateName(sector: string): TemplateName {

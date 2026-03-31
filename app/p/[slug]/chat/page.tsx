@@ -83,6 +83,14 @@ const previewData: Record<string, { firmName: string; city: string; sector: stri
   'cicekci': { firmName: 'Gül Bahçesi', city: 'İstanbul', sector: 'Çiçekçiler' },
   'kuyumcu': { firmName: 'Altın Işık Kuyumculuk', city: 'İstanbul', sector: 'Kuyumcular' },
   'tekstil-giyim': { firmName: 'Trend Moda', city: 'İstanbul', sector: 'Tekstil / Giyim Mağazası' },
+  'spor-malzemeleri': { firmName: 'ProSport Mağaza', city: 'Antalya', sector: 'Spor Mağazaları' },
+  'klima-servisi': { firmName: 'Serin Klima', city: 'Ankara', sector: 'Klima Servisleri' },
+  'kombi-servisi': { firmName: 'Sıcak Yuva Kombi', city: 'İstanbul', sector: 'Kombi / Doğalgaz Servisleri' },
+  'beyaz-esya': { firmName: 'Teknik Beyaz Eşya', city: 'İzmir', sector: 'Beyaz Eşya Servisleri' },
+  'asansor': { firmName: 'Güven Asansör', city: 'Bursa', sector: 'Asansör Firmaları' },
+  'jenerator': { firmName: 'PowerGen Enerji', city: 'İstanbul', sector: 'Jeneratör Firmaları' },
+  'guvenlik-sistemleri': { firmName: 'Kalkan Güvenlik', city: 'Ankara', sector: 'Güvenlik Sistemleri' },
+  'cilingir': { firmName: 'Hızlı Çilingir', city: 'İstanbul', sector: 'Çilingirler' },
 }
 
 interface PageProps {
