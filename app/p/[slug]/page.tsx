@@ -15,6 +15,14 @@ const templateComponents = {
   'estetik-klinik': () => import('@/lib/templates/estetik-klinik'),
   'psikolog-danisma': () => import('@/lib/templates/psikolog-danisma'),
   'diyetisyen': () => import('@/lib/templates/diyetisyen'),
+  'isitme-merkezi': () => import('@/lib/templates/isitme-merkezi'),
+  'goz-merkezi': () => import('@/lib/templates/goz-merkezi'),
+  'kuaforler': () => import('@/lib/templates/kuaforler'),
+  'berberler': () => import('@/lib/templates/berberler'),
+  'guzellik-spa': () => import('@/lib/templates/guzellik-spa'),
+  'cilt-bakim': () => import('@/lib/templates/cilt-bakim'),
+  'epilasyon': () => import('@/lib/templates/epilasyon'),
+  'tirnak-studyosu': () => import('@/lib/templates/tirnak-studyosu'),
 } as const
 
 type TemplateKey = keyof typeof templateComponents
@@ -29,6 +37,14 @@ const previewData: Record<string, { firmName: string; city: string; sector: stri
   'estetik-klinik': { firmName: 'Elite Estetik', city: 'İstanbul', sector: 'Estetik Klinikler', rating: 4.9, reviews: 89 },
   'psikolog-danisma': { firmName: 'Huzur Psikoloji', city: 'Ankara', sector: 'Psikologlar / Danışmanlar', rating: 5.0, reviews: 67 },
   'diyetisyen': { firmName: 'Sağlıklı Yaşam Beslenme', city: 'Antalya', sector: 'Diyetisyenler', rating: 4.8, reviews: 198 },
+  'isitme-merkezi': { firmName: 'Ses Dünyası İşitme', city: 'Ankara', sector: 'İşitme Merkezleri', rating: 4.7, reviews: 134 },
+  'goz-merkezi': { firmName: 'Netgöz Lazer', city: 'İstanbul', sector: 'Göz Merkezleri', rating: 4.9, reviews: 267 },
+  'kuaforler': { firmName: 'Stil Atölyesi', city: 'İzmir', sector: 'Kuaförler', rating: 4.8, reviews: 312 },
+  'berberler': { firmName: 'Usta Berber', city: 'Antalya', sector: 'Berberler', rating: 4.6, reviews: 189 },
+  'guzellik-spa': { firmName: 'Huzur SPA', city: 'İstanbul', sector: 'Güzellik / SPA Merkezleri', rating: 4.9, reviews: 156 },
+  'cilt-bakim': { firmName: 'Dermavita Cilt', city: 'Ankara', sector: 'Cilt Bakım Merkezleri', rating: 4.7, reviews: 98 },
+  'epilasyon': { firmName: 'LazerPro Epilasyon', city: 'Bursa', sector: 'Epilasyon Merkezleri', rating: 4.8, reviews: 221 },
+  'tirnak-studyosu': { firmName: 'Nail Art Studio', city: 'İstanbul', sector: 'Tırnak Stüdyoları', rating: 4.9, reviews: 178 },
 }
 
 interface PageProps {

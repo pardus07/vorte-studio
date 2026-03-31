@@ -10,6 +10,14 @@ type TemplateName =
   | 'estetik-klinik'
   | 'psikolog-danisma'
   | 'diyetisyen'
+  | 'isitme-merkezi'
+  | 'goz-merkezi'
+  | 'kuaforler'
+  | 'berberler'
+  | 'guzellik-spa'
+  | 'cilt-bakim'
+  | 'epilasyon'
+  | 'tirnak-studyosu'
 
 // 107 sektör → şablon eşleştirmesi
 // Sprint 1: Sağlık & Klinik (8 şablon)
@@ -27,16 +35,16 @@ const sectorMap: Record<string, TemplateName> = {
   'Diyetisyenler': 'diyetisyen',
   'Beslenme Danışmanları': 'diyetisyen',
   // İşitme Merkezi, Göz Merkezi → Sprint 2
-  'İşitme Merkezleri': 'tip-merkezleri',
-  'Göz Merkezleri': 'tip-merkezleri',
+  'İşitme Merkezleri': 'isitme-merkezi',
+  'Göz Merkezleri': 'goz-merkezi',
 
-  // ── Güzellik & Bakım → Sprint 2-3, şimdilik en yakın eşleşme ──
-  'Kuaförler': 'estetik-klinik',
-  'Berberler': 'estetik-klinik',
-  'Güzellik / SPA Merkezleri': 'estetik-klinik',
-  'Cilt Bakım Merkezleri': 'estetik-klinik',
-  'Epilasyon Merkezleri': 'estetik-klinik',
-  'Tırnak Stüdyoları': 'estetik-klinik',
+  // ── Güzellik & Bakım → Sprint 2 ──
+  'Kuaförler': 'kuaforler',
+  'Berberler': 'berberler',
+  'Güzellik / SPA Merkezleri': 'guzellik-spa',
+  'Cilt Bakım Merkezleri': 'cilt-bakim',
+  'Epilasyon Merkezleri': 'epilasyon',
+  'Tırnak Stüdyoları': 'tirnak-studyosu',
   'Dövme & Piercing Stüdyoları': 'estetik-klinik',
 
   // ── Yeme-İçme → Sprint 3 ──
@@ -158,6 +166,14 @@ const templateLoaders: Record<TemplateName, () => Promise<{ default: ComponentTy
   'estetik-klinik': () => import('./templates/estetik-klinik'),
   'psikolog-danisma': () => import('./templates/psikolog-danisma'),
   'diyetisyen': () => import('./templates/diyetisyen'),
+  'isitme-merkezi': () => import('./templates/isitme-merkezi'),
+  'goz-merkezi': () => import('./templates/goz-merkezi'),
+  'kuaforler': () => import('./templates/kuaforler'),
+  'berberler': () => import('./templates/berberler'),
+  'guzellik-spa': () => import('./templates/guzellik-spa'),
+  'cilt-bakim': () => import('./templates/cilt-bakim'),
+  'epilasyon': () => import('./templates/epilasyon'),
+  'tirnak-studyosu': () => import('./templates/tirnak-studyosu'),
 }
 
 export function getTemplateName(sector: string): TemplateName {
