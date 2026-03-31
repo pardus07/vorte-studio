@@ -1729,13 +1729,13 @@ export const TEMPLATE_IMAGE_CONFIG: Record<string, TemplateImageConfig> = {
     imageSlots: [
       {
         slot: 'hero',
-        label: 'Uretim Ana Gorsel',
-        aspectRatio: '4:3',
-        imageSize: '1K',
+        label: 'Fabrika Ana Gorsel',
+        aspectRatio: '16:9',
+        imageSize: '2K',
         style: 'photorealistic',
         promptHint:
-          'Plastic injection molding machine in operation, industrial manufacturing facility, blue tones, clean modern factory floor, plastic products and molds, B2B industrial environment, no people',
-        position: 'Alarm section icinde merkezi kart, mavi border, rounded-lg, max-w-lg',
+          'Plastic injection molding machine in operation, industrial manufacturing facility, blue tones, clean modern factory floor, plastic products and molds, B2B industrial environment, dramatic lighting, no people',
+        position: 'Hero section tam ekran arkaplan (opacity 0.12), mavi gradient overlay, firma watermark ustunde. Ayrica Alarm section icinde kart olarak da gosterilir.',
       },
       {
         slot: 'factory',

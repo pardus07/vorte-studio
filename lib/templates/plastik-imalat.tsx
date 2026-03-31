@@ -54,8 +54,23 @@ export default function PlastikImalatTemplate(props: TemplateProps) {
   return (
     <div className={`${raleway.variable} ${sourceSans.variable} min-h-screen bg-white text-[#1C1917]`}>
       {/* ═══════════════════ HERO — 3-Column Product Card Grid (metin üstte, kartlar hero'nun kendisi) ═══════════════════ */}
-      <section className="bg-[#0369A1] pb-20 pt-16 text-white">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <section className="relative overflow-hidden bg-[#0369A1] pb-20 pt-16 text-white">
+        {/* Hero background image — düşük opacity ile arka planda */}
+        {heroImg && (
+          <div className="absolute inset-0">
+            <img src={heroImg} alt="" className="h-full w-full object-cover" style={{ opacity: 0.12 }} />
+            <div className="absolute inset-0 bg-gradient-to-b from-[#0369A1]/60 via-[#0369A1]/80 to-[#0369A1]" />
+          </div>
+        )}
+
+        {/* Background brand watermark */}
+        <div className="pointer-events-none absolute inset-0 flex items-center justify-center overflow-hidden">
+          <span className="whitespace-nowrap font-[family-name:var(--font-raleway)] text-[16vw] font-700 uppercase leading-none text-white/[0.03]">
+            {props.firmName}
+          </span>
+        </div>
+
+        <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <motion.div variants={staggerContainer} initial="hidden" animate="visible" className="mx-auto max-w-3xl text-center">
             <motion.div variants={fadeInUp} className="mb-4 inline-flex items-center gap-2 bg-white/10 px-5 py-2 backdrop-blur-sm">
               <span className="font-[family-name:var(--font-raleway)] text-xs font-600 uppercase tracking-[0.3em] text-white/80">
