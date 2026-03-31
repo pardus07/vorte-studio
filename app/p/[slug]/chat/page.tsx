@@ -59,6 +59,14 @@ const previewData: Record<string, { firmName: string; city: string; sector: stri
   'boya-badana': { firmName: 'Renk Ustası', city: 'İstanbul', sector: 'Boyacılar' },
   'elektrikci': { firmName: 'Volt Elektrik', city: 'Ankara', sector: 'Elektrikçiler' },
   'tesisatci': { firmName: 'Su Ustası Tesisat', city: 'İzmir', sector: 'Tesisatçılar' },
+  'mermer-granit': { firmName: 'Taş Sanatı Mermer', city: 'Bursa', sector: 'Mermer / Granit' },
+  'parke-zemin': { firmName: 'Zemin Ustası Parke', city: 'Ankara', sector: 'Parke / Zemin Kaplama' },
+  'dosemeci': { firmName: 'Usta Döşemeci', city: 'İstanbul', sector: 'Döşemeciler' },
+  'marangoz': { firmName: 'Ahşap Sanatı', city: 'İzmir', sector: 'Marangozlar' },
+  'cadir-tente': { firmName: 'Gölge Tente', city: 'Antalya', sector: 'Çadır / Tente İmalatı' },
+  'branda': { firmName: 'Endüstri Branda', city: 'Kocaeli', sector: 'Branda İmalatı' },
+  'kaynak-demir': { firmName: 'Çelik Usta Demir', city: 'Ankara', sector: 'Demiriciler / Ferforje' },
+  'bobinaj': { firmName: 'Motor Teknik Bobinaj', city: 'İstanbul', sector: 'Bobinajcılar' },
 }
 
 interface PageProps {

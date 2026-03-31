@@ -54,6 +54,14 @@ type TemplateName =
   | 'boya-badana'
   | 'elektrikci'
   | 'tesisatci'
+  | 'mermer-granit'
+  | 'parke-zemin'
+  | 'dosemeci'
+  | 'marangoz'
+  | 'cadir-tente'
+  | 'branda'
+  | 'kaynak-demir'
+  | 'bobinaj'
 
 // 107 sektör → şablon eşleştirmesi
 // Sprint 1: Sağlık & Klinik (8 şablon)
@@ -138,7 +146,7 @@ const sectorMap: Record<string, TemplateName> = {
   'Alüminyum Doğrama': 'tadilat-dekorasyon',
   'PVC / Cam Balkon': 'tadilat-dekorasyon',
   'Çelik Kapı / Kepenk': 'tadilat-dekorasyon',
-  'Parke / Zemin Kaplama': 'fayans-seramik',
+  'Parke / Zemin Kaplama': 'parke-zemin',
   'Çatı & İzolasyon': 'cati-sistemleri',
   'Isı Yalıtım / Mantolama': 'isi-yalitim',
   'Dış Cephe Kaplama': 'dis-cephe',
@@ -152,18 +160,26 @@ const sectorMap: Record<string, TemplateName> = {
   'Güneş Enerjisi / Solar Panel': 'dis-cephe',
   'Prefabrik Yapı': 'insaat-firmalari',
 
-  // ── Atölye & İmalat → Sprint 9 ──
-  'Mobilya Atölyeleri': 'tip-merkezleri',
-  'Marangozlar': 'tip-merkezleri',
+  // ── İnşaat (devam) → Sprint 8 ──
+  'Mermer / Granit': 'mermer-granit',
+  'Döşemeciler': 'dosemeci',
+  'Çadır / Tente İmalatı': 'cadir-tente',
+  'Branda İmalatı': 'branda',
+
+  // ── Atölye & İmalat → Sprint 8-9 ──
+  'Mobilya Atölyeleri': 'marangoz',
+  'Marangozlar': 'marangoz',
   'Kuyumcular': 'estetik-klinik',
   'Terzi / Konfeksiyoncular': 'estetik-klinik',
   'Matbaacılar': 'tip-merkezleri',
   'Tabelacılar / Reklam': 'tip-merkezleri',
-  'Demiriciler / Ferforje': 'tip-merkezleri',
+  'Demiriciler / Ferforje': 'kaynak-demir',
+  'Kaynak / Demir Atölyesi': 'kaynak-demir',
+  'Bobinajcılar': 'bobinaj',
   'Tornacılar / CNC': 'tip-merkezleri',
   'Tekstil Atölyeleri': 'tip-merkezleri',
   'Ambalaj / Paketleme': 'tip-merkezleri',
-  'Ayakkabıcılar': 'tip-merkezleri',
+  'Ayakkabıcılar': 'dosemeci',
 
   // ── Hizmet & Profesyonel → Sprint 10 ──
   'Avukatlar': 'tip-merkezleri',
@@ -254,6 +270,14 @@ const templateLoaders: Record<TemplateName, () => Promise<{ default: ComponentTy
   'boya-badana': () => import('./templates/boya-badana'),
   'elektrikci': () => import('./templates/elektrikci'),
   'tesisatci': () => import('./templates/tesisatci'),
+  'mermer-granit': () => import('./templates/mermer-granit'),
+  'parke-zemin': () => import('./templates/parke-zemin'),
+  'dosemeci': () => import('./templates/dosemeci'),
+  'marangoz': () => import('./templates/marangoz'),
+  'cadir-tente': () => import('./templates/cadir-tente'),
+  'branda': () => import('./templates/branda'),
+  'kaynak-demir': () => import('./templates/kaynak-demir'),
+  'bobinaj': () => import('./templates/bobinaj'),
 }
 
 export function getTemplateName(sector: string): TemplateName {

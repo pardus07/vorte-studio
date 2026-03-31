@@ -59,6 +59,14 @@ const templateComponents = {
   'boya-badana': () => import('@/lib/templates/boya-badana'),
   'elektrikci': () => import('@/lib/templates/elektrikci'),
   'tesisatci': () => import('@/lib/templates/tesisatci'),
+  'mermer-granit': () => import('@/lib/templates/mermer-granit'),
+  'parke-zemin': () => import('@/lib/templates/parke-zemin'),
+  'dosemeci': () => import('@/lib/templates/dosemeci'),
+  'marangoz': () => import('@/lib/templates/marangoz'),
+  'cadir-tente': () => import('@/lib/templates/cadir-tente'),
+  'branda': () => import('@/lib/templates/branda'),
+  'kaynak-demir': () => import('@/lib/templates/kaynak-demir'),
+  'bobinaj': () => import('@/lib/templates/bobinaj'),
 } as const
 
 type TemplateKey = keyof typeof templateComponents
@@ -117,6 +125,14 @@ const previewData: Record<string, { firmName: string; city: string; sector: stri
   'boya-badana': { firmName: 'Renk Ustası', city: 'İstanbul', sector: 'Boyacılar', rating: 4.9, reviews: 312 },
   'elektrikci': { firmName: 'Volt Elektrik', city: 'Ankara', sector: 'Elektrikçiler', rating: 4.8, reviews: 267 },
   'tesisatci': { firmName: 'Su Ustası Tesisat', city: 'İzmir', sector: 'Tesisatçılar', rating: 4.7, reviews: 198 },
+  'mermer-granit': { firmName: 'Taş Sanatı Mermer', city: 'Bursa', sector: 'Mermer / Granit', rating: 4.9, reviews: 178 },
+  'parke-zemin': { firmName: 'Zemin Ustası Parke', city: 'Ankara', sector: 'Parke / Zemin Kaplama', rating: 4.7, reviews: 234 },
+  'dosemeci': { firmName: 'Usta Döşemeci', city: 'İstanbul', sector: 'Döşemeciler', rating: 4.8, reviews: 156 },
+  'marangoz': { firmName: 'Ahşap Sanatı', city: 'İzmir', sector: 'Marangozlar', rating: 4.9, reviews: 198 },
+  'cadir-tente': { firmName: 'Gölge Tente', city: 'Antalya', sector: 'Çadır / Tente İmalatı', rating: 4.6, reviews: 167 },
+  'branda': { firmName: 'Endüstri Branda', city: 'Kocaeli', sector: 'Branda İmalatı', rating: 4.7, reviews: 134 },
+  'kaynak-demir': { firmName: 'Çelik Usta Demir', city: 'Ankara', sector: 'Demiriciler / Ferforje', rating: 4.8, reviews: 212 },
+  'bobinaj': { firmName: 'Motor Teknik Bobinaj', city: 'İstanbul', sector: 'Bobinajcılar', rating: 4.7, reviews: 145 },
 }
 
 interface PageProps {

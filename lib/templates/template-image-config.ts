@@ -1427,6 +1427,230 @@ export const TEMPLATE_IMAGE_CONFIG: Record<string, TemplateImageConfig> = {
       },
     ],
   },
+
+  'mermer-granit': {
+    id: 'mermer-granit',
+    name: 'Mermer & Granit',
+    sector: 'Mermer / Granit',
+    imageSlots: [
+      {
+        slot: 'hero',
+        label: 'Mermer Showroom Ana Gorsel',
+        aspectRatio: '4:3',
+        imageSize: '1K',
+        style: 'photorealistic',
+        promptHint:
+          'Luxury marble and granite showroom, natural stone slabs on display, Calacatta marble with gold veins, dark elegant interior, professional stone craftsmanship, warm LED spotlighting, no people',
+        position: 'Hero section sag taraf, altin kose aksanli kart (aspect 4:3), tas cesidi badge lari alt',
+      },
+      {
+        slot: 'gallery',
+        label: 'Proje Galerisi',
+        aspectRatio: '4:3',
+        imageSize: '1K',
+        style: 'photorealistic',
+        promptHint:
+          'Premium marble kitchen countertop installation, polished granite surface, luxury modern kitchen, natural stone veins visible, professional stone work, warm lighting, no people',
+        position: 'Alarm section icinde merkezi kart, altin border, max-w-lg',
+      },
+    ],
+  },
+
+  'parke-zemin': {
+    id: 'parke-zemin',
+    name: 'Parke & Zemin Doseme',
+    sector: 'Parke / Zemin',
+    imageSlots: [
+      {
+        slot: 'hero',
+        label: 'Parke Doseme Ana Gorsel',
+        aspectRatio: '4:3',
+        imageSize: '1K',
+        style: 'photorealistic',
+        promptHint:
+          'Beautiful hardwood floor installation in modern living room, oak parquet pattern, warm natural wood tones, professional flooring work, sunlight on polished wood surface, no people',
+        position: 'Hero section sag taraf, ahsap serit dekorlu kart (aspect 4:3), zemin tipi badge strip alt',
+      },
+      {
+        slot: 'gallery',
+        label: 'Zemin Galeri Gorseli',
+        aspectRatio: '4:3',
+        imageSize: '1K',
+        style: 'photorealistic',
+        promptHint:
+          'Various wood flooring samples arranged neatly, different wood species and colors, oak walnut bamboo, professional flooring showroom, warm earthy tones, no people',
+        position: 'Alarm section icinde merkezi kart, kahverengi border, max-w-lg',
+      },
+    ],
+  },
+
+  dosemeci: {
+    id: 'dosemeci',
+    name: 'Dosemeci / Koltuk Tamircisi',
+    sector: 'Dosemeciler',
+    imageSlots: [
+      {
+        slot: 'hero',
+        label: 'Doseme Isi Ana Gorsel',
+        aspectRatio: '4:3',
+        imageSize: '1K',
+        style: 'photorealistic',
+        promptHint:
+          'Professional upholstery workshop, leather and fabric samples on workbench, restored antique chair, warm brown and gold tones, traditional craftsmanship tools, no people',
+        position: 'Hero section sag taraf, rounded-2xl kart (aspect 4:3), oncesi/sonrasi label badge',
+      },
+      {
+        slot: 'gallery',
+        label: 'Oncesi Sonrasi Galeri',
+        aspectRatio: '4:3',
+        imageSize: '1K',
+        style: 'photorealistic',
+        promptHint:
+          'Before and after furniture reupholstery, restored sofa with new fabric, dramatic transformation, leather and velvet textures, professional upholstery result, no people',
+        position: 'Alarm section icinde merkezi kart, kahverengi border, max-w-lg',
+      },
+    ],
+  },
+
+  marangoz: {
+    id: 'marangoz',
+    name: 'Marangoz / Ahsap Atolyesi',
+    sector: 'Marangozlar',
+    imageSlots: [
+      {
+        slot: 'hero',
+        label: 'Ahsap Atolye Ana Gorsel',
+        aspectRatio: '4:3',
+        imageSize: '1K',
+        style: 'photorealistic',
+        promptHint:
+          'Professional woodworking workshop, handcrafted wooden furniture in progress, chisels and planes on workbench, warm wood shavings, natural light through workshop window, artisan carpentry aesthetic, no people',
+        position: 'Hero section sag taraf, ahsap cerceveli kart (aspect 4:3), testere badge sol ust',
+      },
+      {
+        slot: 'gallery',
+        label: 'Proje Galerisi',
+        aspectRatio: '4:3',
+        imageSize: '1K',
+        style: 'photorealistic',
+        promptHint:
+          'Custom built wooden kitchen cabinets, handmade furniture, quality wood craftsmanship, warm cream and wood tones, professional carpentry photography, no people',
+        position: 'Alarm section icinde merkezi kart, krem border, max-w-lg',
+      },
+    ],
+  },
+
+  'cadir-tente': {
+    id: 'cadir-tente',
+    name: 'Cadir & Tente Imalati',
+    sector: 'Cadir / Tente',
+    imageSlots: [
+      {
+        slot: 'hero',
+        label: 'Tente Projesi Ana Gorsel',
+        aspectRatio: '4:3',
+        imageSize: '1K',
+        style: 'photorealistic',
+        promptHint:
+          'Modern retractable awning on restaurant terrace, green and cream striped canopy, outdoor shade solution, sunny day, professional awning installation, garden and patio setting, no people',
+        position: 'Hero section sag taraf, kanopi seritli ust kenar kart (aspect 4:3), urun badge lari alt',
+      },
+      {
+        slot: 'projects',
+        label: 'Referans Proje',
+        aspectRatio: '4:3',
+        imageSize: '1K',
+        style: 'photorealistic',
+        promptHint:
+          'Large commercial tent structure, event canopy setup, white and green fabric, professional tent installation, outdoor coverage solution, no people',
+        position: 'Alarm section icinde merkezi kart, yesil border, max-w-lg',
+      },
+    ],
+  },
+
+  branda: {
+    id: 'branda',
+    name: 'Branda Imalati',
+    sector: 'Branda Imalat',
+    imageSlots: [
+      {
+        slot: 'hero',
+        label: 'Branda Uretim Ana Gorsel',
+        aspectRatio: '4:3',
+        imageSize: '1K',
+        style: 'photorealistic',
+        promptHint:
+          'Industrial tarpaulin manufacturing, heavy duty PVC tarp rolls in warehouse, truck tarpaulin cover, dark blue and amber tones, industrial B2B production facility, no people',
+        position: 'Hero section sag taraf, endustriyel borderli kart (aspect 4:3), urun spec grid alt',
+      },
+      {
+        slot: 'products',
+        label: 'Urun Cesitleri',
+        aspectRatio: '4:3',
+        imageSize: '1K',
+        style: 'photorealistic',
+        promptHint:
+          'Various tarpaulin products displayed, printed tarp banners, truck covers, tent covers, industrial tarp rolls, blue and yellow branding, no people',
+        position: 'Alarm section icinde merkezi kart, lacivert border, max-w-lg',
+      },
+    ],
+  },
+
+  'kaynak-demir': {
+    id: 'kaynak-demir',
+    name: 'Kaynak & Demir Atolyesi',
+    sector: 'Kaynak / Demir',
+    imageSlots: [
+      {
+        slot: 'hero',
+        label: 'Demir Atolye Ana Gorsel',
+        aspectRatio: '4:3',
+        imageSize: '1K',
+        style: 'photorealistic',
+        promptHint:
+          'Dramatic welding sparks in dark workshop, iron gate fabrication, steel construction work, orange molten metal glow, industrial metal workshop, professional welding equipment, no people',
+        position: 'Hero section sag taraf, turuncu glow cerceve kart (aspect 4:3), hizmet badge lari alt',
+      },
+      {
+        slot: 'projects',
+        label: 'Tamamlanan Proje',
+        aspectRatio: '4:3',
+        imageSize: '1K',
+        style: 'photorealistic',
+        promptHint:
+          'Finished ornamental iron gate, decorative wrought iron railing, custom metal staircase, dark metallic finish with orange accent lighting, professional ironwork photography, no people',
+        position: 'Alarm section icinde merkezi kart, turuncu border, max-w-lg',
+      },
+    ],
+  },
+
+  bobinaj: {
+    id: 'bobinaj',
+    name: 'Bobinaj',
+    sector: 'Bobinajcilar',
+    imageSlots: [
+      {
+        slot: 'hero',
+        label: 'Motor Sarim Ana Gorsel',
+        aspectRatio: '4:3',
+        imageSize: '1K',
+        style: 'photorealistic',
+        promptHint:
+          'Electric motor rewinding workshop, copper wire coils on motor stator, professional motor repair bench, industrial electrical equipment, dark blue and amber tones, technical B2B environment, no people',
+        position: 'Hero section sag taraf, bakir halka dekorlu kart (aspect 4:3), servis badge grid alt',
+      },
+      {
+        slot: 'service',
+        label: 'Servis Gorseli',
+        aspectRatio: '4:3',
+        imageSize: '1K',
+        style: 'photorealistic',
+        promptHint:
+          'Industrial motor and transformer parts, copper coil winding, electrical repair tools, generator components on workbench, amber and dark blue tones, no people',
+        position: 'Alarm section icinde merkezi kart, sari border, max-w-lg',
+      },
+    ],
+  },
 }
 
 /**
