@@ -64,8 +64,8 @@ export default function SporMalzemeleriTemplate(props: TemplateProps) {
         {/* Hero bg image */}
         {heroImg && (
           <div className="absolute inset-0">
-            <img src={heroImg} alt={`${props.firmName} spor`} className="h-full w-full object-cover" style={{ opacity: 0.12 }} />
-            <div className="absolute inset-0 bg-gradient-to-r from-[#0A0A0A] via-[#0A0A0A]/80 to-[#0A0A0A]/50" />
+            <img src={heroImg} alt={`${props.firmName} spor`} className="h-full w-full object-cover" style={{ opacity: 0.35 }} />
+            <div className="absolute inset-0 bg-gradient-to-r from-[#0A0A0A]/90 via-[#0A0A0A]/60 to-[#0A0A0A]/30" />
           </div>
         )}
 
