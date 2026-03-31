@@ -1840,6 +1840,16 @@ export const TEMPLATE_IMAGE_CONFIG: Record<string, TemplateImageConfig> = {
     sector: 'Muhasebeciler / SMMM',
     imageSlots: [
       {
+        slot: 'hero',
+        label: 'Buro Ana Gorsel',
+        aspectRatio: '16:9',
+        imageSize: '2K',
+        style: 'photorealistic',
+        promptHint:
+          'Professional accounting office interior, modern corporate workspace, laptop showing financial spreadsheets and graphs, calculator, neatly organized documents on large desk, bookshelves with binders, green accent plants, warm ambient lighting, navy blue and green tones, trustworthy high-end business atmosphere, wide angle shot, no people',
+        position: 'Hero section tam ekran arkaplan (min-h-screen), soldan saga gradient overlay (lacivert → seffaf), metin sol tarafa dayali',
+      },
+      {
         slot: 'office',
         label: 'Ofis Gorseli',
         aspectRatio: '4:3',

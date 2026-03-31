@@ -48,46 +48,57 @@ export default function MuhasebeTemplate(props: TemplateProps) {
   useTrackPageView(props.slug)
   const chatLink = buildChatLink(props.slug)
 
+  const heroImg = props.images?.hero
   const officeImg = props.images?.office
   const teamImg = props.images?.team
 
   return (
     <div className={`${raleway.variable} ${openSans.variable} min-h-screen bg-white text-[#1C1917]`}>
-      {/* ═══════════════════ HERO — Minimal Typography-Only (hero'da görsel YOK) ═══════════════════ */}
-      {/* BU HERO: Saf tipografi — büyük rakamlar, istatistik kartları, görsel yok */}
-      <section className="relative overflow-hidden bg-white pb-20 pt-24">
-        {/* Subtle grid lines — muhasebe defter hissi */}
-        <div className="pointer-events-none absolute inset-0" style={{
-          backgroundImage: `linear-gradient(rgba(22,101,52,0.03) 1px, transparent 1px)`,
-          backgroundSize: '100% 40px',
-        }} />
+      {/* ═══════════════════ HERO — Full-Width 16:9 Background Image ═══════════════════ */}
+      <section className="relative min-h-screen overflow-hidden bg-[#1E3A5F]">
+        {/* Dev hero background image — 16:9 tam ekran */}
+        {heroImg && (
+          <div className="absolute inset-0">
+            <img src={heroImg} alt="" className="h-full w-full object-cover" />
+            <div className="absolute inset-0 bg-gradient-to-r from-[#1E3A5F] via-[#1E3A5F]/85 to-[#1E3A5F]/40" />
+          </div>
+        )}
 
-        {/* Left green accent bar */}
-        <div className="absolute bottom-0 left-0 top-0 w-1.5 bg-gradient-to-b from-[#166534] via-[#166534]/50 to-transparent" />
+        {/* Fallback gradient when no image */}
+        {!heroImg && (
+          <div className="absolute inset-0 bg-gradient-to-br from-[#1E3A5F] via-[#1E3A5F] to-[#166534]/30" />
+        )}
 
-        <div className="relative mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
-          <motion.div variants={staggerContainer} initial="hidden" animate="visible">
+        {/* Background brand watermark */}
+        <div className="pointer-events-none absolute inset-0 flex items-center justify-center overflow-hidden">
+          <span className="whitespace-nowrap font-[family-name:var(--font-raleway)] text-[14vw] font-800 uppercase leading-none text-white/[0.03]">
+            {props.firmName}
+          </span>
+        </div>
+
+        <div className="relative mx-auto flex min-h-screen max-w-7xl items-center px-4 sm:px-6 lg:px-8">
+          <motion.div variants={staggerContainer} initial="hidden" animate="visible" className="max-w-2xl space-y-8 py-24 text-white">
             <motion.div variants={fadeInUp} className="flex items-center gap-3">
-              <div className="h-1 w-10 bg-[#166534]" />
-              <span className="font-[family-name:var(--font-open-sans)] text-xs font-600 uppercase tracking-[0.4em] text-[#166534]">
+              <div className="h-1 w-10 bg-[#22C55E]" />
+              <span className="font-[family-name:var(--font-open-sans)] text-xs font-600 uppercase tracking-[0.4em] text-[#22C55E]">
                 {props.city} &bull; Mali Müşavirlik
               </span>
             </motion.div>
 
-            <motion.h1 variants={fadeInUp} className="mt-8 font-[family-name:var(--font-raleway)] text-5xl font-800 leading-tight text-[#1E3A5F] sm:text-6xl lg:text-7xl">
+            <motion.h1 variants={fadeInUp} className="font-[family-name:var(--font-raleway)] text-5xl font-800 leading-tight sm:text-6xl lg:text-7xl">
               Mali İşleriniz
               <br />
-              <span className="text-[#166534]">Güvende</span>
+              <span className="text-[#22C55E]">Güvende</span>
             </motion.h1>
 
-            <motion.p variants={fadeInUp} className="mt-6 max-w-lg font-[family-name:var(--font-open-sans)] text-lg leading-relaxed text-[#1C1917]/60">
-              <strong className="text-[#1C1917]">{props.firmName}</strong> — defter tutma, vergi beyannamesi,
+            <motion.p variants={fadeInUp} className="max-w-md font-[family-name:var(--font-open-sans)] text-base leading-relaxed text-white/70">
+              <strong className="text-white">{props.firmName}</strong> — defter tutma, vergi beyannamesi,
               SGK işlemleri ve şirket kuruluşu. İşinize odaklanın, muhasebeyi bize bırakın.
             </motion.p>
 
-            <motion.div variants={fadeInUp} className="mt-8">
+            <motion.div variants={fadeInUp}>
               <a href={chatLink} onClick={() => trackEvent(props.slug, 'CHAT_CLICK')}
-                className="group inline-flex items-center gap-3 bg-[#166534] px-8 py-4 font-[family-name:var(--font-raleway)] text-sm font-600 uppercase tracking-wider text-white shadow-lg shadow-[#166534]/20 transition-all hover:bg-[#14532D] hover:shadow-xl">
+                className="group inline-flex items-center gap-3 bg-[#166534] px-8 py-4 font-[family-name:var(--font-raleway)] text-sm font-600 uppercase tracking-wider text-white shadow-lg shadow-[#166534]/30 transition-all hover:bg-[#22C55E] hover:shadow-xl">
                 Ücretsiz Teklif Al
                 <svg className="h-5 w-5 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
@@ -96,29 +107,29 @@ export default function MuhasebeTemplate(props: TemplateProps) {
             </motion.div>
 
             {(props.googleRating || props.googleReviews) && (
-              <motion.div variants={fadeInUp} className="mt-6 inline-flex items-center gap-3 border border-[#166534]/20 px-5 py-3">
-                <div className="flex gap-0.5 text-[#166534]">
+              <motion.div variants={fadeInUp} className="inline-flex items-center gap-3 border border-white/10 bg-white/5 px-5 py-3 backdrop-blur-sm">
+                <div className="flex gap-0.5 text-[#22C55E]">
                   {Array.from({ length: 5 }).map((_, i) => <span key={i}>★</span>)}
                 </div>
-                <span className="font-[family-name:var(--font-open-sans)] text-sm text-[#1C1917]/50">
+                <span className="font-[family-name:var(--font-open-sans)] text-sm text-white/50">
                   {props.googleRating} ({props.googleReviews}+ yorum)
                 </span>
               </motion.div>
             )}
 
-            {/* Stat cards as hero visual — görsel yerine sayılar */}
-            <motion.div variants={staggerContainer} className="mt-14 grid gap-4 sm:grid-cols-4">
+            {/* Stat cards — hero alt kısmı */}
+            <motion.div variants={staggerContainer} className="grid grid-cols-2 gap-3 pt-4 sm:grid-cols-4">
               {[
-                { num: '500+', label: 'Aktif Müşteri', color: '#166534' },
-                { num: '15+', label: 'Yıl Deneyim', color: '#1E3A5F' },
-                { num: '%99', label: 'Zamanında Beyan', color: '#166534' },
-                { num: '7/24', label: 'Destek Hattı', color: '#1E3A5F' },
+                { num: '500+', label: 'Aktif Müşteri' },
+                { num: '15+', label: 'Yıl Deneyim' },
+                { num: '%99', label: 'Zamanında Beyan' },
+                { num: '7/24', label: 'Destek Hattı' },
               ].map((item, i) => (
-                <motion.div key={i} variants={fadeInUp} className="border-l-4 bg-[#F8FAF9] p-5" style={{ borderLeftColor: item.color }}>
-                  <div className="font-[family-name:var(--font-raleway)] text-3xl font-800" style={{ color: item.color }}>
+                <motion.div key={i} variants={fadeInUp} className="border-l-2 border-[#22C55E]/40 bg-white/5 px-4 py-3 backdrop-blur-sm">
+                  <div className="font-[family-name:var(--font-raleway)] text-2xl font-800 text-[#22C55E]">
                     {item.num}
                   </div>
-                  <div className="mt-1 font-[family-name:var(--font-open-sans)] text-xs font-600 uppercase tracking-wider text-[#1C1917]/50">
+                  <div className="mt-0.5 font-[family-name:var(--font-open-sans)] text-[10px] font-600 uppercase tracking-wider text-white/40">
                     {item.label}
                   </div>
                 </motion.div>
