@@ -25,6 +25,13 @@ type TemplateName =
   | 'firinlar'
   | 'catering'
   | 'kasaplar'
+  | 'manavlar'
+  | 'kuruyemisciler'
+  | 'sarküteri'
+  | 'su-bayileri'
+  | 'oteller'
+  | 'seyahat-acentesi'
+  | 'ozel-okullar'
 
 // 107 sektör → şablon eşleştirmesi
 // Sprint 1: Sağlık & Klinik (8 şablon)
@@ -63,22 +70,22 @@ const sectorMap: Record<string, TemplateName> = {
 
   // ── Gıda Perakende → Sprint 3 (kasaplar) + Sprint 4 ──
   'Kasaplar': 'kasaplar',
-  'Manavlar': 'dis-klinikleri',
-  'Kuruyemişçiler': 'dis-klinikleri',
-  'Şarküteri / Delikatessen': 'dis-klinikleri',
-  'Su Bayileri': 'dis-klinikleri',
+  'Manavlar': 'manavlar',
+  'Kuruyemişçiler': 'kuruyemisciler',
+  'Şarküteri / Delikatessen': 'sarküteri',
+  'Su Bayileri': 'su-bayileri',
 
   // ── Konaklama & Turizm → Sprint 4 ──
-  'Oteller': 'tip-merkezleri',
-  'Seyahat Acenteleri': 'tip-merkezleri',
+  'Oteller': 'oteller',
+  'Seyahat Acenteleri': 'seyahat-acentesi',
 
   // ── Eğitim → Sprint 4-5 ──
-  'Özel Okullar / Etüt Merkezleri': 'tip-merkezleri',
-  'Dil Kursları': 'tip-merkezleri',
-  'Sürücü Kursları': 'tip-merkezleri',
+  'Özel Okullar / Etüt Merkezleri': 'ozel-okullar',
+  'Dil Kursları': 'ozel-okullar',
+  'Sürücü Kursları': 'ozel-okullar',
   'Kreşler': 'tip-merkezleri',
-  'Müzik Kursları': 'tip-merkezleri',
-  'Sanat Atölyeleri': 'tip-merkezleri',
+  'Müzik Kursları': 'ozel-okullar',
+  'Sanat Atölyeleri': 'ozel-okullar',
 
   // ── Spor & Fitness → Sprint 5 ──
   'Spor Salonları': 'fizik-tedavi',
@@ -188,6 +195,13 @@ const templateLoaders: Record<TemplateName, () => Promise<{ default: ComponentTy
   'firinlar': () => import('./templates/firinlar'),
   'catering': () => import('./templates/catering'),
   'kasaplar': () => import('./templates/kasaplar'),
+  'manavlar': () => import('./templates/manavlar'),
+  'kuruyemisciler': () => import('./templates/kuruyemisciler'),
+  'sarküteri': () => import('./templates/sarküteri'),
+  'su-bayileri': () => import('./templates/su-bayileri'),
+  'oteller': () => import('./templates/oteller'),
+  'seyahat-acentesi': () => import('./templates/seyahat-acentesi'),
+  'ozel-okullar': () => import('./templates/ozel-okullar'),
 }
 
 export function getTemplateName(sector: string): TemplateName {

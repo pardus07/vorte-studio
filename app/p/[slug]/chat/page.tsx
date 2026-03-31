@@ -30,6 +30,13 @@ const previewData: Record<string, { firmName: string; city: string; sector: stri
   'firinlar': { firmName: 'Altın Başak Fırını', city: 'Antalya', sector: 'Fırınlar' },
   'catering': { firmName: 'Elit Catering', city: 'İstanbul', sector: 'Catering / Yemek Servisleri' },
   'kasaplar': { firmName: 'Güven Et Market', city: 'Bursa', sector: 'Kasaplar' },
+  'manavlar': { firmName: 'Taze Manav', city: 'Antalya', sector: 'Manavlar' },
+  'kuruyemisciler': { firmName: 'Altın Fıstık Kuruyemiş', city: 'Gaziantep', sector: 'Kuruyemişçiler' },
+  'sarküteri': { firmName: 'Gurme Şarküteri', city: 'İstanbul', sector: 'Şarküteri / Delikatessen' },
+  'su-bayileri': { firmName: 'Hayat Su', city: 'Ankara', sector: 'Su Bayileri' },
+  'oteller': { firmName: 'Grand Palace Hotel', city: 'İstanbul', sector: 'Oteller' },
+  'seyahat-acentesi': { firmName: 'Keşif Tur', city: 'Antalya', sector: 'Seyahat Acenteleri' },
+  'ozel-okullar': { firmName: 'Bilgi Akademi', city: 'İzmir', sector: 'Özel Okullar / Etüt Merkezleri' },
 }
 
 interface PageProps {

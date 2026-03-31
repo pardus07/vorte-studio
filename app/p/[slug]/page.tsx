@@ -30,6 +30,13 @@ const templateComponents = {
   'firinlar': () => import('@/lib/templates/firinlar'),
   'catering': () => import('@/lib/templates/catering'),
   'kasaplar': () => import('@/lib/templates/kasaplar'),
+  'manavlar': () => import('@/lib/templates/manavlar'),
+  'kuruyemisciler': () => import('@/lib/templates/kuruyemisciler'),
+  'sarküteri': () => import('@/lib/templates/sarküteri'),
+  'su-bayileri': () => import('@/lib/templates/su-bayileri'),
+  'oteller': () => import('@/lib/templates/oteller'),
+  'seyahat-acentesi': () => import('@/lib/templates/seyahat-acentesi'),
+  'ozel-okullar': () => import('@/lib/templates/ozel-okullar'),
 } as const
 
 type TemplateKey = keyof typeof templateComponents
@@ -59,6 +66,13 @@ const previewData: Record<string, { firmName: string; city: string; sector: stri
   'firinlar': { firmName: 'Altın Başak Fırını', city: 'Antalya', sector: 'Fırınlar', rating: 4.6, reviews: 345 },
   'catering': { firmName: 'Elit Catering', city: 'İstanbul', sector: 'Catering / Yemek Servisleri', rating: 4.8, reviews: 156 },
   'kasaplar': { firmName: 'Güven Et Market', city: 'Bursa', sector: 'Kasaplar', rating: 4.7, reviews: 278 },
+  'manavlar': { firmName: 'Taze Manav', city: 'Antalya', sector: 'Manavlar', rating: 4.6, reviews: 189 },
+  'kuruyemisciler': { firmName: 'Altın Fıstık Kuruyemiş', city: 'Gaziantep', sector: 'Kuruyemişçiler', rating: 4.8, reviews: 234 },
+  'sarküteri': { firmName: 'Gurme Şarküteri', city: 'İstanbul', sector: 'Şarküteri / Delikatessen', rating: 4.9, reviews: 156 },
+  'su-bayileri': { firmName: 'Hayat Su', city: 'Ankara', sector: 'Su Bayileri', rating: 4.5, reviews: 312 },
+  'oteller': { firmName: 'Grand Palace Hotel', city: 'İstanbul', sector: 'Oteller', rating: 4.8, reviews: 567 },
+  'seyahat-acentesi': { firmName: 'Keşif Tur', city: 'Antalya', sector: 'Seyahat Acenteleri', rating: 4.7, reviews: 289 },
+  'ozel-okullar': { firmName: 'Bilgi Akademi', city: 'İzmir', sector: 'Özel Okullar / Etüt Merkezleri', rating: 4.9, reviews: 178 },
 }
 
 interface PageProps {

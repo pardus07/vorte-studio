@@ -603,6 +603,206 @@ export const TEMPLATE_IMAGE_CONFIG: Record<string, TemplateImageConfig> = {
       },
     ],
   },
+
+  /* ============================================================ */
+  /*  SPRINT 4 — GIDA PERAKENDE + KONAKLAMA + EĞİTİM             */
+  /* ============================================================ */
+
+  manavlar: {
+    id: 'manavlar',
+    name: 'Manavlar',
+    sector: 'Manavlar',
+    imageSlots: [
+      {
+        slot: 'hero',
+        label: 'Manav Ana Gorsel',
+        aspectRatio: '1:1',
+        imageSize: '1K',
+        style: 'photorealistic',
+        promptHint:
+          'Fresh organic vegetables and fruits display, colorful produce arrangement, green lettuce, red tomatoes, oranges, wooden crates, farmers market aesthetic, bright natural lighting, no people',
+        position: 'Hero section sag taraf, dairesel mask (rounded-full), border-4 yesil',
+      },
+      {
+        slot: 'products',
+        label: 'Urun Sergileme',
+        aspectRatio: '4:3',
+        imageSize: '1K',
+        style: 'photorealistic',
+        promptHint:
+          'Organic fruit and vegetable shop interior, wooden shelves with fresh produce, green and orange tones, clean market aesthetic, no people',
+        position: 'Alarm section icinde merkezi kart, yesil border, rounded-2xl, max-w-lg',
+      },
+    ],
+  },
+
+  kuruyemisciler: {
+    id: 'kuruyemisciler',
+    name: 'Kuruyemisciler',
+    sector: 'Kuruyemisciler',
+    imageSlots: [
+      {
+        slot: 'hero',
+        label: 'Kuruyemis Ana Gorsel',
+        aspectRatio: '4:3',
+        imageSize: '1K',
+        style: 'photorealistic',
+        promptHint:
+          'Premium mixed nuts display, almonds pistachios walnuts hazelnuts in wooden bowls, warm golden lighting, rustic wood surface, gourmet food photography, no people',
+        position: 'Hero section sag taraf, shelf display karti (aspect 4:3), altin border, rounded-3xl',
+      },
+      {
+        slot: 'products',
+        label: 'Urun Cesitleri',
+        aspectRatio: '4:3',
+        imageSize: '1K',
+        style: 'photorealistic',
+        promptHint:
+          'Dried fruits and nuts shop display, glass jars with various nuts, dried apricots, figs, dates, warm amber lighting, traditional Turkish nut shop aesthetic',
+        position: 'Alarm section icinde merkezi kart, kahverengi border, rounded-2xl, max-w-lg',
+      },
+    ],
+  },
+
+  'sarküteri': {
+    id: 'sarküteri',
+    name: 'Sarküteri / Delikatessen',
+    sector: 'Sarküteri',
+    imageSlots: [
+      {
+        slot: 'hero',
+        label: 'Gurme Ana Gorsel',
+        aspectRatio: '4:3',
+        imageSize: '1K',
+        style: 'photorealistic',
+        promptHint:
+          'Premium charcuterie board, imported cheeses, cured meats, olives, artisan bread, dark wood surface, dramatic moody lighting, gourmet food photography, no people',
+        position: 'Hero section sag taraf, floating premium kart (aspect 4:3), amber border, rounded-3xl',
+      },
+      {
+        slot: 'products',
+        label: 'Urun Sergileme',
+        aspectRatio: '4:3',
+        imageSize: '1K',
+        style: 'photorealistic',
+        promptHint:
+          'Delicatessen shop interior, glass display counter with imported meats and cheeses, warm amber lighting, premium retail aesthetic, dark wood shelves',
+        position: 'Alarm section icinde merkezi kart, kirmizi border, rounded-2xl, max-w-lg',
+      },
+    ],
+  },
+
+  'su-bayileri': {
+    id: 'su-bayileri',
+    name: 'Su Bayileri',
+    sector: 'Su Bayileri',
+    imageSlots: [
+      {
+        slot: 'hero',
+        label: 'Su Teslimat Ana Gorsel',
+        aspectRatio: '3:4',
+        imageSize: '1K',
+        style: 'photorealistic',
+        promptHint:
+          'Clean water delivery service, blue water bottles and dispensers, crystal clear water splash, bright clean blue and white tones, hygiene focused photography, no people',
+        position: 'Hero section sag taraf, water-drop sekil (organic border-radius), mavi border',
+      },
+      {
+        slot: 'products',
+        label: 'Su Urunleri',
+        aspectRatio: '4:3',
+        imageSize: '1K',
+        style: 'photorealistic',
+        promptHint:
+          'Water cooler dispenser with blue water bottles, modern office water station, clean hygienic environment, blue and white color scheme, product photography',
+        position: 'Alarm section icinde merkezi kart, mavi border, rounded-2xl, max-w-lg',
+      },
+    ],
+  },
+
+  oteller: {
+    id: 'oteller',
+    name: 'Oteller',
+    sector: 'Oteller',
+    imageSlots: [
+      {
+        slot: 'hero-bg',
+        label: 'Otel Luks Arkaplan',
+        aspectRatio: '16:9',
+        imageSize: '2K',
+        style: 'photorealistic',
+        promptHint:
+          'Luxury hotel lobby interior, elegant chandelier, marble floor, warm golden lighting, sophisticated decor, navy and gold color scheme, premium hospitality atmosphere, no people',
+        position: 'Hero section tam ekran arkaplan (min-h-90vh), koyu gradient overlay soldan saga',
+      },
+      {
+        slot: 'rooms',
+        label: 'Oda Gorseli',
+        aspectRatio: '4:3',
+        imageSize: '1K',
+        style: 'photorealistic',
+        promptHint:
+          'Luxury hotel room interior, king size bed with white linens, elegant furniture, warm ambient lighting, city view from window, premium accommodation photography',
+        position: 'Alarm section icinde merkezi kart, altin border, max-w-lg',
+      },
+    ],
+  },
+
+  'seyahat-acentesi': {
+    id: 'seyahat-acentesi',
+    name: 'Seyahat Acentesi',
+    sector: 'Seyahat Acenteleri',
+    imageSlots: [
+      {
+        slot: 'hero',
+        label: 'Destinasyon Ana Gorsel',
+        aspectRatio: '4:3',
+        imageSize: '1K',
+        style: 'photorealistic',
+        promptHint:
+          'Beautiful travel destination collage, tropical beach sunset, mountain landscape, historic city view, adventure travel photography, vibrant warm colors, no people',
+        position: 'Hero section sag taraf, collage karti (aspect 4:3), stamp efektli badge lar, rounded-3xl',
+      },
+      {
+        slot: 'destination',
+        label: 'Destinasyon Banneri',
+        aspectRatio: '16:9',
+        imageSize: '2K',
+        style: 'photorealistic',
+        promptHint:
+          'Stunning panoramic travel landscape, turquoise sea, white sand beach, palm trees, golden sunset, paradise destination photography',
+        position: 'Alarm section icinde full-width banner, mavi gradient overlay, max-h-280px',
+      },
+    ],
+  },
+
+  'ozel-okullar': {
+    id: 'ozel-okullar',
+    name: 'Ozel Okullar / Kurslar',
+    sector: 'Ozel Okullar',
+    imageSlots: [
+      {
+        slot: 'hero',
+        label: 'Egitim Ana Gorsel',
+        aspectRatio: '4:3',
+        imageSize: '1K',
+        style: 'photorealistic',
+        promptHint:
+          'Modern education classroom interior, bright colorful learning environment, books and educational materials, whiteboard, blue and yellow accents, professional school aesthetic, no people',
+        position: 'Hero section sag taraf, geometric blok karti (aspect 4:3), mavi border, istatistik badge lari',
+      },
+      {
+        slot: 'campus',
+        label: 'Kampus Gorseli',
+        aspectRatio: '16:9',
+        imageSize: '2K',
+        style: 'photorealistic',
+        promptHint:
+          'Modern school campus exterior or library interior, bookshelves, study areas, bright natural lighting, educational environment, blue and white tones',
+        position: 'Alarm section icinde merkezi banner, mavi border, rounded-2xl, max-w-lg',
+      },
+    ],
+  },
 }
 
 /**
