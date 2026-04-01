@@ -83,7 +83,7 @@ export async function sendQuoteMail(data: {
           <div style="background:#1a1a1a;padding:24px 32px;border-bottom:3px solid #f97316">
             <table style="width:100%"><tr>
               <td><span style="font-size:20px;font-weight:800;color:#fff;letter-spacing:-0.5px">VORTE<span style="color:#f97316">.</span>STUDIO</span></td>
-              <td style="text-align:right;font-size:11px;color:#9ca3af;line-height:1.6">studio@vorte.com.tr<br>studio.vorte.com.tr</td>
+              <td style="text-align:right;font-size:11px;color:#9ca3af;line-height:1.6">studio@vorte.com.tr<br>www.vortestudio.com</td>
             </tr></table>
           </div>
 
@@ -147,7 +147,7 @@ export async function sendQuoteMail(data: {
 
           <!-- Footer -->
           <div style="background:#f3f4f6;padding:16px 32px;text-align:center;border-top:1px solid #e5e7eb">
-            <p style="font-size:11px;color:#9ca3af;margin:0">Vorte Studio — Dijital Deneyimler · <a href="https://studio.vorte.com.tr" style="color:#f97316;text-decoration:none">studio.vorte.com.tr</a></p>
+            <p style="font-size:11px;color:#9ca3af;margin:0">Vorte Studio — Dijital Deneyimler · <a href="https://www.vortestudio.com" style="color:#f97316;text-decoration:none">www.vortestudio.com</a></p>
           </div>
         </div>
       `,

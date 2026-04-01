@@ -1,5 +1,5 @@
 export default function JsonLd() {
-  const SITE_URL = "https://studio.vorte.com.tr";
+  const SITE_URL = "https://www.vortestudio.com";
 
   const structuredData = {
     "@context": "https://schema.org",

@@ -22,7 +22,7 @@ services:
     restart: unless-stopped
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.studio.rule=Host(`studio.vorte.com.tr`)"
+      - "traefik.http.routers.studio.rule=Host(`www.vortestudio.com`)"
       - "traefik.http.routers.studio.tls=true"
       - "traefik.http.routers.studio.tls.certresolver=letsencrypt"
       - "traefik.http.services.studio.loadbalancer.server.port=3000"

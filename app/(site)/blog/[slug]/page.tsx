@@ -51,7 +51,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       title,
       description,
       type: "article",
-      url: `https://studio.vorte.com.tr/blog/${slug}`,
+      url: `https://www.vortestudio.com/blog/${slug}`,
       siteName: "Vorte Studio",
       ...(post.coverImage && {
         images: [{ url: post.coverImage, width: 1200, height: 630 }],
@@ -109,11 +109,11 @@ export default async function BlogDetailPage({ params }: Props) {
     publisher: {
       "@type": "Organization",
       name: "Vorte Studio",
-      url: "https://studio.vorte.com.tr",
+      url: "https://www.vortestudio.com",
     },
     datePublished: post.publishedAt?.toISOString(),
     dateModified: post.updatedAt.toISOString(),
-    url: `https://studio.vorte.com.tr/blog/${post.slug}`,
+    url: `https://www.vortestudio.com/blog/${post.slug}`,
     keywords: post.tags.join(", "),
   };
 

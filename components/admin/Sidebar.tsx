@@ -135,7 +135,7 @@ export default function Sidebar() {
               Ibrahim Abi
             </div>
             <div className="text-[11px] text-admin-muted">
-              studio.vorte.com.tr
+              www.vortestudio.com
             </div>
           </div>
           <button

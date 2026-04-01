@@ -368,7 +368,7 @@ export default function TipMerkezleriTemplate(props: TemplateProps) {
             Bu sayfa{' '}
             <strong className="text-[#94A3B8]">{props.firmName}</strong> için{' '}
             <a
-              href="https://studio.vorte.com.tr"
+              href="https://www.vortestudio.com"
               target="_blank"
               rel="noopener noreferrer"
               className="text-[#60A5FA] hover:underline"

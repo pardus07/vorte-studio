@@ -55,7 +55,7 @@ export async function sendContactForm(data: ContactData) {
           <div style="margin-top:16px;padding:16px;background:#f8f8f8;border-radius:8px;font-size:14px;line-height:1.6">
             ${escapeHtml(message).replace(/\n/g, "<br>")}
           </div>
-          <p style="margin-top:24px;font-size:12px;color:#999">Bu mail studio.vorte.com.tr iletisim formundan gonderildi.</p>
+          <p style="margin-top:24px;font-size:12px;color:#999">Bu mail www.vortestudio.com iletisim formundan gonderildi.</p>
         </div>
       `,
     });

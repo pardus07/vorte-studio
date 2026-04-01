@@ -26,7 +26,7 @@ const dmSans = DM_Sans({
   weight: ["300", "400", "500"],
 });
 
-const SITE_URL = "https://studio.vorte.com.tr";
+const SITE_URL = "https://www.vortestudio.com";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),

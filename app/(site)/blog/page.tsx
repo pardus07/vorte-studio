@@ -14,7 +14,7 @@ export const metadata: Metadata = {
     title: "Blog | Vorte Studio",
     description:
       "Web geliştirme, mobil uygulama, UI/UX tasarım ve dijital dünya hakkında yazılar.",
-    url: "https://studio.vorte.com.tr/blog",
+    url: "https://www.vortestudio.com/blog",
     siteName: "Vorte Studio",
     type: "website",
   },

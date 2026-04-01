@@ -9,6 +9,6 @@ export default function robots(): MetadataRoute.Robots {
         disallow: ["/admin/", "/api/", "/login"],
       },
     ],
-    sitemap: "https://studio.vorte.com.tr/sitemap.xml",
+    sitemap: "https://www.vortestudio.com/sitemap.xml",
   };
 }
