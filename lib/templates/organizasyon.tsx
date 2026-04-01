@@ -49,7 +49,7 @@ export default function OrganizasyonTemplate(props: TemplateProps) {
 
         {heroImg && (
           <div className="absolute inset-0">
-            <img src={heroImg} alt={`${props.firmName} organizasyon`} className="h-full w-full object-cover" style={{ opacity: 0.25 }} />
+            <img src={heroImg} alt={`${props.firmName} organizasyon`} className="h-full w-full object-cover" style={{ opacity: 0.85 }} />
             <div className="absolute inset-0 bg-gradient-to-b from-[#0A0A0A]/80 via-[#0A0A0A]/50 to-[#0A0A0A]/90" />
           </div>
         )}
