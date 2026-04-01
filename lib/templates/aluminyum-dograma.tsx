@@ -68,28 +68,28 @@ export default function AluminyumDogramaTemplate(props: TemplateProps) {
           <div className="grid w-full items-center gap-12 lg:grid-cols-2">
             <motion.div variants={staggerContainer} initial="hidden" animate="visible">
               <motion.div variants={fadeInUp} className="mb-4 inline-flex items-center gap-2 rounded-sm border-l-4 border-[#0284C7] bg-[#0284C7]/8 px-5 py-2">
-                <span className="font-[family-name:var(--font-inter)] text-xs font-600 uppercase tracking-[0.25em] text-[#0284C7]">{props.city} &bull; Aluminyum Dograma</span>
+                <span className="font-[family-name:var(--font-inter)] text-xs font-600 uppercase tracking-[0.25em] text-[#0284C7]">{props.city} &bull; Alüminyum Doğrama</span>
               </motion.div>
               <motion.h1 variants={fadeInUp} className="font-[family-name:var(--font-archivo)] text-5xl font-800 leading-[1.08] sm:text-6xl lg:text-7xl">
                 Modern
-                <br /><span className="text-[#0284C7]">Dayanikli</span>
+                <br /><span className="text-[#0284C7]">Dayanıklı</span>
               </motion.h1>
               <motion.p variants={fadeInUp} className="mt-5 max-w-lg font-[family-name:var(--font-inter)] text-lg leading-relaxed text-gray-500">
-                {props.firmName} — {props.city}&apos;de aluminyum pencere, kapi, cephe giydirme, pergola. Hafif, dayanikli, modern gorunum.
+                {props.firmName} — {props.city}&apos;de alüminyum pencere, kapı, cephe giydirme, pergola. Hafif, dayanıklı, modern görünüm.
               </motion.p>
               <motion.div variants={fadeInUp} className="mt-6 flex flex-wrap gap-3">
-                {['Pencere', 'Kapi', 'Cephe', 'Pergola', 'Korkuluk', 'Surme'].map((s) => (
+                {['Pencere', 'Kapı', 'Cephe', 'Pergola', 'Korkuluk', 'Sürme'].map((s) => (
                   <span key={s} className="rounded-sm border border-[#0284C7]/15 bg-[#0284C7]/5 px-4 py-2 font-[family-name:var(--font-inter)] text-xs font-500 text-[#0284C7]">{s}</span>
                 ))}
               </motion.div>
               <motion.div variants={fadeInUp} className="mt-8">
                 <a href={chatLink} onClick={() => trackEvent(props.slug, 'CHAT_CLICK')} className="inline-flex items-center gap-2 rounded-lg bg-[#0284C7] px-8 py-4 font-[family-name:var(--font-archivo)] text-sm font-600 text-white shadow-lg shadow-[#0284C7]/25 transition-all hover:bg-[#0369A1]">
-                  Ucretsiz Teklif Al <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
+                  Ücretsiz Teklif Al <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
                 </a>
               </motion.div>
             </motion.div>
             <motion.div variants={staggerContainer} initial="hidden" animate="visible" className="hidden space-y-4 lg:block">
-              {[{ icon: '🏗️', title: 'Cephe Giydirme', desc: 'Kompozit & aluminyum panel' }, { icon: '🪟', title: 'Surme Sistem', desc: 'Minimal & isikli alanlar' }, { icon: '🛡️', title: 'Korozyon Direnci', desc: 'Anodize & elektrostatik boya' }, { icon: '📐', title: 'Ozel Olcu', desc: 'Projeye ozel uretim' }].map((item) => (
+              {[{ icon: '🏗️', title: 'Cephe Giydirme', desc: 'Kompozit & alüminyum panel' }, { icon: '🪟', title: 'Sürme Sistem', desc: 'Minimal & ışıklı alanlar' }, { icon: '🛡️', title: 'Korozyon Direnci', desc: 'Anodize & elektrostatik boya' }, { icon: '📐', title: 'Özel Ölçü', desc: 'Projeye özel üretim' }].map((item) => (
                 <motion.div key={item.title} variants={fadeInUp} className="flex items-center gap-4 rounded-lg border border-gray-200 bg-white/60 p-4 shadow-sm">
                   <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-lg bg-[#0284C7]/10 text-xl">{item.icon}</div>
                   <div><div className="font-[family-name:var(--font-archivo)] text-sm font-600 text-gray-900">{item.title}</div><div className="font-[family-name:var(--font-inter)] text-xs text-gray-400">{item.desc}</div></div>
@@ -103,8 +103,8 @@ export default function AluminyumDogramaTemplate(props: TemplateProps) {
       <section className="bg-[#E2E8F0] py-20"><div className="mx-auto max-w-4xl px-4 sm:px-6">
         <motion.div variants={staggerContainer} initial="hidden" whileInView="visible" viewport={{ once: true }} className="text-center">
           <motion.div variants={fadeInUp} className="mx-auto mb-6 inline-flex items-center gap-2 rounded-full bg-red-50 px-5 py-2"><span className="text-lg">⚠️</span><span className="font-[family-name:var(--font-inter)] text-sm font-600 text-red-500">Dikkat</span></motion.div>
-          <motion.h2 variants={fadeInUp} className="font-[family-name:var(--font-archivo)] text-3xl font-700 text-gray-900 sm:text-4xl">Aluminyum dograma arayanlar <span className="text-red-500">referans ve proje gorseli</span> istiyor</motion.h2>
-          <motion.p variants={fadeInUp} className="mt-4 font-[family-name:var(--font-inter)] text-lg text-gray-500">Web siteniz yoksa musteriler profesyonel gorunen rakibinizi seciyor.</motion.p>
+          <motion.h2 variants={fadeInUp} className="font-[family-name:var(--font-archivo)] text-3xl font-700 text-gray-900 sm:text-4xl">Alüminyum doğrama arayanlar <span className="text-red-500">referans ve proje görseli</span> istiyor</motion.h2>
+          <motion.p variants={fadeInUp} className="mt-4 font-[family-name:var(--font-inter)] text-lg text-gray-500">Web siteniz yoksa müşteriler profesyonel görünen rakibinizi seçiyor.</motion.p>
         </motion.div>
       </div></section>
 
@@ -114,14 +114,14 @@ export default function AluminyumDogramaTemplate(props: TemplateProps) {
           <div className="grid gap-6 md:grid-cols-2">
             <motion.div variants={slideFromLeft} className="rounded-xl border border-[#0284C7]/20 bg-[#0284C7]/5 p-8"><div className="mb-4 text-2xl">✅</div><h3 className="mb-4 font-[family-name:var(--font-archivo)] text-lg font-600 text-gray-900">Olursa</h3>
               <ul className="space-y-3 font-[family-name:var(--font-inter)] text-sm text-gray-600">
-                {['Proje galeriniz guven olusturur', 'Profil secenekleriniz seffaf sunulur', 'Online teklif formu musteri kazandirir', 'Google\'da "aluminyum dograma + sehir" aramasinda cikabilirsiniz', 'Referanslariniz her zaman gorunur'].map((i) => (
+                {['Proje galeriniz güven oluşturur', 'Profil seçenekleriniz şeffaf sunulur', 'Online teklif formu müşteri kazandırır', 'Google\'da "alüminyum doğrama + şehir" aramasında çıkabilirsiniz', 'Referanslarınız her zaman görünür'].map((i) => (
                   <li key={i} className="flex items-start gap-2"><span className="mt-0.5 text-[#0284C7]">●</span> {i}</li>
                 ))}
               </ul>
             </motion.div>
             <motion.div variants={slideFromRight} className="rounded-xl border border-red-200 bg-red-50 p-8"><div className="mb-4 text-2xl">❌</div><h3 className="mb-4 font-[family-name:var(--font-archivo)] text-lg font-600 text-gray-900">Olmazsa</h3>
               <ul className="space-y-3 font-[family-name:var(--font-inter)] text-sm text-gray-600">
-                {['Musteriler zincir markalara yonelir', 'Proje deneyiminiz bilinmez', 'Fiyat teklifi almak zorlasir', 'Profesyonel imaj olusturulamaz', 'Sadece tavsiye ile sinirli kalisiniz'].map((i) => (
+                {['Müşteriler zincir markalara yönelir', 'Proje deneyiminiz bilinmez', 'Fiyat teklifi almak zorlaşır', 'Profesyonel imaj oluşturulamaz', 'Sadece tavsiye ile sınırlı kalırsınız'].map((i) => (
                   <li key={i} className="flex items-start gap-2"><span className="mt-0.5 text-red-400">●</span> {i}</li>
                 ))}
               </ul>
@@ -134,15 +134,15 @@ export default function AluminyumDogramaTemplate(props: TemplateProps) {
 
       <section className="bg-[#0284C7] py-20"><div className="mx-auto max-w-3xl px-4 text-center sm:px-6">
         <motion.div variants={staggerContainer} initial="hidden" whileInView="visible" viewport={{ once: true }}>
-          <motion.h2 variants={fadeInUp} className="font-[family-name:var(--font-archivo)] text-3xl font-700 text-white sm:text-4xl">{props.firmName} Icin<br />Profesyonel Web Sitenizi Olusturalim</motion.h2>
-          <motion.p variants={fadeInUp} className="mt-4 font-[family-name:var(--font-inter)] text-white/80">Ucretsiz demo — taahhut yok.</motion.p>
-          <motion.div variants={fadeInUp} className="mt-8"><a href={chatLink} onClick={() => trackEvent(props.slug, 'CHAT_CLICK')} className="inline-flex items-center gap-2 rounded-lg bg-white px-10 py-4 font-[family-name:var(--font-archivo)] text-sm font-600 text-[#0284C7] shadow-lg transition-all hover:bg-gray-50">Ucretsiz Teklif Al <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg></a></motion.div>
+          <motion.h2 variants={fadeInUp} className="font-[family-name:var(--font-archivo)] text-3xl font-700 text-white sm:text-4xl">{props.firmName} İçin<br />Profesyonel Web Sitenizi Oluşturalım</motion.h2>
+          <motion.p variants={fadeInUp} className="mt-4 font-[family-name:var(--font-inter)] text-white/80">Ücretsiz demo — taahhüt yok.</motion.p>
+          <motion.div variants={fadeInUp} className="mt-8"><a href={chatLink} onClick={() => trackEvent(props.slug, 'CHAT_CLICK')} className="inline-flex items-center gap-2 rounded-lg bg-white px-10 py-4 font-[family-name:var(--font-archivo)] text-sm font-600 text-[#0284C7] shadow-lg transition-all hover:bg-gray-50">Ücretsiz Teklif Al <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg></a></motion.div>
         </motion.div>
       </div></section>
 
-      <section className="py-16"><div className="mx-auto max-w-3xl px-4 text-center sm:px-6"><motion.div variants={staggerContainer} initial="hidden" whileInView="visible" viewport={{ once: true }}><motion.div variants={scaleIn} className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-[#0284C7]/10"><span className="text-2xl">🔒</span></motion.div><motion.h3 variants={fadeInUp} className="font-[family-name:var(--font-archivo)] text-lg font-600 text-gray-900">Taahhut Yok, Risk Yok</motion.h3><motion.p variants={fadeInUp} className="mt-2 font-[family-name:var(--font-inter)] text-sm text-gray-400">Demo tamamen ucretsizdir.</motion.p></motion.div></div></section>
+      <section className="py-16"><div className="mx-auto max-w-3xl px-4 text-center sm:px-6"><motion.div variants={staggerContainer} initial="hidden" whileInView="visible" viewport={{ once: true }}><motion.div variants={scaleIn} className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-[#0284C7]/10"><span className="text-2xl">🔒</span></motion.div><motion.h3 variants={fadeInUp} className="font-[family-name:var(--font-archivo)] text-lg font-600 text-gray-900">Taahhüt Yok, Risk Yok</motion.h3><motion.p variants={fadeInUp} className="mt-2 font-[family-name:var(--font-inter)] text-sm text-gray-400">Demo tamamen ücretsizdir.</motion.p></motion.div></div></section>
 
-      <footer className="border-t border-gray-100 py-8"><div className="mx-auto max-w-5xl px-4 text-center sm:px-6"><p className="font-[family-name:var(--font-inter)] text-xs text-gray-300">© {new Date().getFullYear()} Vorte Studio — {props.firmName} icin ozel olarak hazirlanmistir.</p></div></footer>
+      <footer className="border-t border-gray-100 py-8"><div className="mx-auto max-w-5xl px-4 text-center sm:px-6"><p className="font-[family-name:var(--font-inter)] text-xs text-gray-300">© {new Date().getFullYear()} Vorte Studio — {props.firmName} için özel olarak hazırlanmıştır.</p></div></footer>
     </div>
   )
 }
