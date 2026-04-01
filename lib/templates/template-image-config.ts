@@ -2423,6 +2423,128 @@ export const TEMPLATE_IMAGE_CONFIG: Record<string, TemplateImageConfig> = {
       { slot: 'event', label: 'Etkinlik Gorseli', aspectRatio: '16:9', imageSize: '2K', style: 'photorealistic', promptHint: 'Beautiful event table setup, elegant centerpieces with candles, golden and white color scheme, luxury event decoration, bokeh lights background, no people', position: 'Icerik bolumunde merkezi gorsel, 16:9' },
     ],
   },
+
+  // ── Sprint 13 ──
+  'ozel-poliklinik': {
+    id: 'ozel-poliklinik',
+    name: 'Ozel Poliklinik',
+    sector: 'Ozel Poliklinik',
+    imageSlots: [
+      { slot: 'hero', label: 'Hero Gorseli', aspectRatio: '16:9', imageSize: '2K', style: 'photorealistic', promptHint: 'Modern private polyclinic interior, bright clean corridor with teal accent walls, professional medical equipment, warm LED lighting, no people', position: 'Hero section arkaplan, acik overlay, ECG cizgisi uzerinde' },
+      { slot: 'clinic', label: 'Klinik Gorseli', aspectRatio: '4:3', imageSize: '1K', style: 'photorealistic', promptHint: 'Welcoming polyclinic reception area, modern furniture, teal and white color scheme, potted plants, professional clean medical environment, no people', position: 'Icerik bolumunde merkezi gorsel, 4:3' },
+    ],
+  },
+
+  'dil-kurslari': {
+    id: 'dil-kurslari',
+    name: 'Dil Kurslari',
+    sector: 'Dil Kurslari',
+    imageSlots: [
+      { slot: 'hero', label: 'Hero Gorseli', aspectRatio: '16:9', imageSize: '2K', style: 'photorealistic', promptHint: 'Modern language school classroom, international flags on wall, world map, colorful learning environment, books in different languages, warm lighting, no people', position: 'Hero section arkaplan, koyu overlay, konusma baloncuklari uzerinde' },
+      { slot: 'classroom', label: 'Sinif Gorseli', aspectRatio: '4:3', imageSize: '1K', style: 'photorealistic', promptHint: 'Bright language learning classroom with interactive whiteboard, modern desks, multilingual posters, vibrant purple and white decor, no people', position: 'Icerik bolumunde merkezi gorsel, 4:3' },
+    ],
+  },
+
+  'etut-merkezleri': {
+    id: 'etut-merkezleri',
+    name: 'Etut Merkezleri',
+    sector: 'Etut Merkezleri',
+    imageSlots: [
+      { slot: 'hero', label: 'Hero Gorseli', aspectRatio: '16:9', imageSize: '2K', style: 'photorealistic', promptHint: 'Cozy study center interior, warm amber lighting, bookshelves filled with textbooks, comfortable study desks, cream and wood tones, academic atmosphere, no people', position: 'Hero section arkaplan, acik overlay, kitap sayfalari SVG uzerinde' },
+      { slot: 'study', label: 'Calisma Alani Gorseli', aspectRatio: '4:3', imageSize: '1K', style: 'photorealistic', promptHint: 'Modern tutoring room with whiteboard, organized study materials, warm lighting, wooden desks, encouraging educational posters, no people', position: 'Icerik bolumunde merkezi gorsel, 4:3' },
+    ],
+  },
+
+  'surucu-kurslari': {
+    id: 'surucu-kurslari',
+    name: 'Surucu Kurslari',
+    sector: 'Surucu Kurslari',
+    imageSlots: [
+      { slot: 'hero', label: 'Hero Gorseli', aspectRatio: '16:9', imageSize: '2K', style: 'photorealistic', promptHint: 'Professional driving school car on road, dual control vehicle, open road ahead, sunset lighting, green accent details on car, modern driving training, no people visible', position: 'Hero section arkaplan, koyu overlay, yol perspektif SVG uzerinde' },
+      { slot: 'course', label: 'Kurs Gorseli', aspectRatio: '4:3', imageSize: '1K', style: 'photorealistic', promptHint: 'Driving school classroom with traffic signs display, steering wheel simulator, projector screen showing road rules, modern clean interior, no people', position: 'Icerik bolumunde merkezi gorsel, 4:3' },
+    ],
+  },
+
+  'oto-yikama': {
+    id: 'oto-yikama',
+    name: 'Oto Yikama',
+    sector: 'Oto Yikama',
+    imageSlots: [
+      { slot: 'hero', label: 'Hero Gorseli', aspectRatio: '16:9', imageSize: '2K', style: 'photorealistic', promptHint: 'Professional car wash facility, gleaming wet car under bright lights, water spray and foam, blue and white clean environment, modern automatic car wash tunnel, no people', position: 'Hero section arkaplan, koyu overlay, su dalgasi SVG uzerinde' },
+      { slot: 'service', label: 'Hizmet Gorseli', aspectRatio: '4:3', imageSize: '1K', style: 'photorealistic', promptHint: 'Detailed car detailing close-up, shiny polished car surface, professional detailing tools, microfiber cloth, ceramic coating application, no people', position: 'Icerik bolumunde merkezi gorsel, 4:3' },
+    ],
+  },
+
+  'oto-elektrik': {
+    id: 'oto-elektrik',
+    name: 'Oto Elektrik',
+    sector: 'Oto Elektrik',
+    imageSlots: [
+      { slot: 'hero', label: 'Hero Gorseli', aspectRatio: '16:9', imageSize: '2K', style: 'photorealistic', promptHint: 'Professional auto electrical workshop, OBD diagnostic scanner connected to car, wire harnesses, multimeter, dark workshop with warm yellow task lighting, no people', position: 'Hero section arkaplan, koyu overlay, devre izleri SVG uzerinde' },
+      { slot: 'workshop', label: 'Atolye Gorseli', aspectRatio: '4:3', imageSize: '1K', style: 'photorealistic', promptHint: 'Auto electrician workshop interior, battery testing equipment, alternator and starter motor on workbench, organized tool wall, professional garage environment, no people', position: 'Icerik bolumunde merkezi gorsel, 4:3' },
+    ],
+  },
+
+  // ── Sprint 14 ──
+  'oto-yedek-parca': {
+    id: 'oto-yedek-parca',
+    name: 'Oto Yedek Parca',
+    sector: 'Oto Yedek Parca',
+    imageSlots: [
+      { slot: 'hero', label: 'Hero Gorseli', aspectRatio: '16:9', imageSize: '2K', style: 'photorealistic', promptHint: 'Auto parts warehouse with organized shelving, brake discs, filters, engine parts neatly displayed, industrial lighting, steel gray and orange accents, no people', position: 'Hero section arkaplan, koyu overlay, disli SVG uzerinde' },
+      { slot: 'product', label: 'Urun Gorseli', aspectRatio: '4:3', imageSize: '1K', style: 'photorealistic', promptHint: 'Close-up of premium auto spare parts, brake pads, oil filters, spark plugs arranged on clean surface, professional product photography style, no people', position: 'Icerik bolumunde merkezi gorsel, 4:3' },
+    ],
+  },
+
+  'oto-aksesuar': {
+    id: 'oto-aksesuar',
+    name: 'Oto Aksesuar',
+    sector: 'Oto Aksesuar',
+    imageSlots: [
+      { slot: 'hero', label: 'Hero Gorseli', aspectRatio: '16:9', imageSize: '2K', style: 'photorealistic', promptHint: 'Customized car with LED underglow, alloy wheels, dark showroom setting, neon purple ambient lighting, premium car accessories display, no people', position: 'Hero section arkaplan, koyu overlay, neon cizgiler uzerinde' },
+      { slot: 'product', label: 'Urun Gorseli', aspectRatio: '4:3', imageSize: '1K', style: 'photorealistic', promptHint: 'Car accessories display, alloy wheels, multimedia screen, LED light bars, floor mats, organized retail shelf, modern showroom lighting, no people', position: 'Icerik bolumunde merkezi gorsel, 4:3' },
+    ],
+  },
+
+  'pvc-dograma': {
+    id: 'pvc-dograma',
+    name: 'PVC Dograma',
+    sector: 'PVC Dograma',
+    imageSlots: [
+      { slot: 'hero', label: 'Hero Gorseli', aspectRatio: '16:9', imageSize: '2K', style: 'photorealistic', promptHint: 'Modern PVC window installation, white double-glazed window frame, bright sunlight streaming through, clean minimalist room interior, energy efficient window, no people', position: 'Hero section arkaplan, acik overlay, pencere cerceve SVG uzerinde' },
+      { slot: 'project', label: 'Proje Gorseli', aspectRatio: '4:3', imageSize: '1K', style: 'photorealistic', promptHint: 'PVC window and door showroom, various white PVC profiles displayed, sliding doors, casement windows, clean bright showroom, no people', position: 'Icerik bolumunde merkezi gorsel, 4:3' },
+    ],
+  },
+
+  'aluminyum-dograma': {
+    id: 'aluminyum-dograma',
+    name: 'Aluminyum Dograma',
+    sector: 'Aluminyum Dograma',
+    imageSlots: [
+      { slot: 'hero', label: 'Hero Gorseli', aspectRatio: '16:9', imageSize: '2K', style: 'photorealistic', promptHint: 'Modern aluminum curtain wall facade, sleek silver aluminum profiles, glass and metal building exterior, architectural photography, blue sky reflection, no people', position: 'Hero section arkaplan, acik overlay, metal profil izgara SVG uzerinde' },
+      { slot: 'project', label: 'Proje Gorseli', aspectRatio: '4:3', imageSize: '1K', style: 'photorealistic', promptHint: 'Aluminum window and door profiles in workshop, anodized silver frames, cutting machine, organized aluminum profile storage, industrial setting, no people', position: 'Icerik bolumunde merkezi gorsel, 4:3' },
+    ],
+  },
+
+  'cam-balkon': {
+    id: 'cam-balkon',
+    name: 'Cam Balkon',
+    sector: 'Cam Balkon',
+    imageSlots: [
+      { slot: 'hero', label: 'Hero Gorseli', aspectRatio: '16:9', imageSize: '2K', style: 'photorealistic', promptHint: 'Beautiful glass balcony enclosure, folding glass panels open to city view, bright sunlit balcony with plants, modern apartment exterior, blue sky, no people', position: 'Hero section arkaplan, acik overlay, cam panel yansimalari uzerinde' },
+      { slot: 'project', label: 'Proje Gorseli', aspectRatio: '4:3', imageSize: '1K', style: 'photorealistic', promptHint: 'Elegant enclosed glass balcony interior, folding glass system, comfortable seating area, plants, city view through crystal clear glass, warm natural light, no people', position: 'Icerik bolumunde merkezi gorsel, 4:3' },
+    ],
+  },
+
+  'prefabrik-yapi': {
+    id: 'prefabrik-yapi',
+    name: 'Prefabrik Yapi',
+    sector: 'Prefabrik Yapi',
+    imageSlots: [
+      { slot: 'hero', label: 'Hero Gorseli', aspectRatio: '16:9', imageSize: '2K', style: 'photorealistic', promptHint: 'Modern prefabricated house being assembled, modular building panels, crane lifting section, construction site, industrial amber lighting, no people', position: 'Hero section arkaplan, koyu overlay, blok yigilma SVG uzerinde' },
+      { slot: 'project', label: 'Proje Gorseli', aspectRatio: '4:3', imageSize: '1K', style: 'photorealistic', promptHint: 'Completed prefabricated house exterior, modern modular home design, garden setting, clean lines, contemporary architecture, warm evening lighting, no people', position: 'Icerik bolumunde merkezi gorsel, 4:3' },
+    ],
+  },
 }
 
 /**

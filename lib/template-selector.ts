@@ -93,6 +93,18 @@ type TemplateName =
   | 'hali-yikama'
   | 'nakliyat'
   | 'organizasyon'
+  | 'ozel-poliklinik'
+  | 'dil-kurslari'
+  | 'etut-merkezleri'
+  | 'surucu-kurslari'
+  | 'oto-yikama'
+  | 'oto-elektrik'
+  | 'oto-yedek-parca'
+  | 'oto-aksesuar'
+  | 'pvc-dograma'
+  | 'aluminyum-dograma'
+  | 'cam-balkon'
+  | 'prefabrik-yapi'
 
 // 103 sektör → şablon eşleştirmesi (turkey-data.ts ile birebir uyumlu)
 // Key'ler dropdown string'leriyle karakter karakter aynı olmalı
@@ -106,7 +118,7 @@ const sectorMap: Record<string, TemplateName> = {
   'Psikolog / Danışman': 'psikolog-danisma',
   'Diyetisyen / Beslenme Uzmanı': 'diyetisyen',
   'Estetik Klinik': 'estetik-klinik',
-  'Özel Poliklinik': 'tip-merkezleri',
+  'Özel Poliklinik': 'ozel-poliklinik',
   'İşitme Merkezi': 'isitme-merkezi',
   'Göz Merkezi': 'goz-merkezi',
 
@@ -138,11 +150,11 @@ const sectorMap: Record<string, TemplateName> = {
   'Seyahat Acentesi': 'seyahat-acentesi',
 
   // ── Eğitim (6) ──
-  'Dil Kursları': 'ozel-okullar',
+  'Dil Kursları': 'dil-kurslari',
   'Özel Okullar': 'ozel-okullar',
   'Kreşler': 'kresler',
-  'Etüt Merkezleri': 'ozel-okullar',
-  'Sürücü Kursları': 'ozel-okullar',
+  'Etüt Merkezleri': 'etut-merkezleri',
+  'Sürücü Kursları': 'surucu-kurslari',
   'Müzik Kursları': 'muzik-kurslari',
 
   // ── Spor & Fitness (2) ──
@@ -151,31 +163,31 @@ const sectorMap: Record<string, TemplateName> = {
 
   // ── Otomotiv (11) ──
   'Oto Servisler': 'oto-servis',
-  'Oto Yıkama': 'lastikci',
+  'Oto Yıkama': 'oto-yikama',
   'Lastikçiler': 'lastikci',
   'Oto Galeri': 'oto-galeri',
-  'Oto Elektrik': 'oto-servis',
+  'Oto Elektrik': 'oto-elektrik',
   'Oto Egzoz': 'oto-egzoz',
   'Oto Kaporta & Boya': 'oto-kaporta',
   'Oto Cam': 'oto-cam',
-  'Oto Yedek Parça': 'lastikci',
-  'Oto Aksesuar': 'lastikci',
+  'Oto Yedek Parça': 'oto-yedek-parca',
+  'Oto Aksesuar': 'oto-aksesuar',
   'Motosiklet Servisi': 'motosiklet-servisi',
 
   // ── İnşaat & Tadilat (16) ──
   'İnşaat Firmaları': 'insaat-firmalari',
   'Mimarlık Ofisleri': 'mimarlik-ofisleri',
   'Tadilat / Dekorasyon': 'tadilat-dekorasyon',
-  'PVC Doğrama': 'tadilat-dekorasyon',
-  'Alüminyum Doğrama': 'tadilat-dekorasyon',
-  'Cam Balkon': 'tadilat-dekorasyon',
+  'PVC Doğrama': 'pvc-dograma',
+  'Alüminyum Doğrama': 'aluminyum-dograma',
+  'Cam Balkon': 'cam-balkon',
   'Mermer & Granit': 'mermer-granit',
   'Dış Cephe Kaplama': 'dis-cephe',
   'Isı Yalıtım / Mantolama': 'isi-yalitim',
   'Çatı Sistemleri': 'cati-sistemleri',
   'Fayans / Seramik Döşeme': 'fayans-seramik',
   'Asma Tavan / Alçıpan': 'asma-tavan',
-  'Prefabrik Yapı': 'insaat-firmalari',
+  'Prefabrik Yapı': 'prefabrik-yapi',
   'Boya Badana Ustası': 'boya-badana',
   'Elektrikçi': 'elektrikci',
   'Tesisatçı': 'tesisatci',
@@ -350,6 +362,18 @@ const templateLoaders: Record<TemplateName, () => Promise<{ default: ComponentTy
   'hali-yikama': () => import('./templates/hali-yikama'),
   'nakliyat': () => import('./templates/nakliyat'),
   'organizasyon': () => import('./templates/organizasyon'),
+  'ozel-poliklinik': () => import('./templates/ozel-poliklinik'),
+  'dil-kurslari': () => import('./templates/dil-kurslari'),
+  'etut-merkezleri': () => import('./templates/etut-merkezleri'),
+  'surucu-kurslari': () => import('./templates/surucu-kurslari'),
+  'oto-yikama': () => import('./templates/oto-yikama'),
+  'oto-elektrik': () => import('./templates/oto-elektrik'),
+  'oto-yedek-parca': () => import('./templates/oto-yedek-parca'),
+  'oto-aksesuar': () => import('./templates/oto-aksesuar'),
+  'pvc-dograma': () => import('./templates/pvc-dograma'),
+  'aluminyum-dograma': () => import('./templates/aluminyum-dograma'),
+  'cam-balkon': () => import('./templates/cam-balkon'),
+  'prefabrik-yapi': () => import('./templates/prefabrik-yapi'),
 }
 
 export function getTemplateName(sector: string): TemplateName {

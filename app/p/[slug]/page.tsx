@@ -98,6 +98,18 @@ const templateComponents = {
   'hali-yikama': () => import('@/lib/templates/hali-yikama'),
   'nakliyat': () => import('@/lib/templates/nakliyat'),
   'organizasyon': () => import('@/lib/templates/organizasyon'),
+  'ozel-poliklinik': () => import('@/lib/templates/ozel-poliklinik'),
+  'dil-kurslari': () => import('@/lib/templates/dil-kurslari'),
+  'etut-merkezleri': () => import('@/lib/templates/etut-merkezleri'),
+  'surucu-kurslari': () => import('@/lib/templates/surucu-kurslari'),
+  'oto-yikama': () => import('@/lib/templates/oto-yikama'),
+  'oto-elektrik': () => import('@/lib/templates/oto-elektrik'),
+  'oto-yedek-parca': () => import('@/lib/templates/oto-yedek-parca'),
+  'oto-aksesuar': () => import('@/lib/templates/oto-aksesuar'),
+  'pvc-dograma': () => import('@/lib/templates/pvc-dograma'),
+  'aluminyum-dograma': () => import('@/lib/templates/aluminyum-dograma'),
+  'cam-balkon': () => import('@/lib/templates/cam-balkon'),
+  'prefabrik-yapi': () => import('@/lib/templates/prefabrik-yapi'),
 } as const
 
 type TemplateKey = keyof typeof templateComponents
@@ -195,6 +207,18 @@ const previewData: Record<string, { firmName: string; city: string; sector: stri
   'hali-yikama': { firmName: 'Tertemiz Halı', city: 'Bursa', sector: 'Halı Yıkama', rating: 4.6, reviews: 234 },
   'nakliyat': { firmName: 'Güven Nakliyat', city: 'İstanbul', sector: 'Nakliyat Firmaları', rating: 4.8, reviews: 356 },
   'organizasyon': { firmName: 'Altın Anlar Organizasyon', city: 'İstanbul', sector: 'Organizasyon Şirketleri', rating: 4.9, reviews: 278 },
+  'ozel-poliklinik': { firmName: 'Sağlık Poliklinik', city: 'İstanbul', sector: 'Özel Poliklinik', rating: 4.8, reviews: 312 },
+  'dil-kurslari': { firmName: 'Global Dil Akademi', city: 'Ankara', sector: 'Dil Kursları', rating: 4.9, reviews: 267 },
+  'etut-merkezleri': { firmName: 'Başarı Etüt Merkezi', city: 'İzmir', sector: 'Etüt Merkezleri', rating: 4.7, reviews: 198 },
+  'surucu-kurslari': { firmName: 'Güvenli Yol Sürücü Kursu', city: 'Bursa', sector: 'Sürücü Kursları', rating: 4.8, reviews: 345 },
+  'oto-yikama': { firmName: 'Pırıl Oto Yıkama', city: 'Antalya', sector: 'Oto Yıkama', rating: 4.6, reviews: 289 },
+  'oto-elektrik': { firmName: 'Volt Oto Elektrik', city: 'İstanbul', sector: 'Oto Elektrik', rating: 4.7, reviews: 234 },
+  'oto-yedek-parca': { firmName: 'Parça Market', city: 'Ankara', sector: 'Oto Yedek Parça', rating: 4.8, reviews: 356 },
+  'oto-aksesuar': { firmName: 'Custom Car Aksesuar', city: 'İstanbul', sector: 'Oto Aksesuar', rating: 4.7, reviews: 278 },
+  'pvc-dograma': { firmName: 'İzopan PVC', city: 'Bursa', sector: 'PVC Doğrama', rating: 4.8, reviews: 198 },
+  'aluminyum-dograma': { firmName: 'AluTek Doğrama', city: 'İzmir', sector: 'Alüminyum Doğrama', rating: 4.7, reviews: 234 },
+  'cam-balkon': { firmName: 'Kristal Cam Balkon', city: 'Antalya', sector: 'Cam Balkon', rating: 4.9, reviews: 312 },
+  'prefabrik-yapi': { firmName: 'Modül Yapı Prefabrik', city: 'Ankara', sector: 'Prefabrik Yapı', rating: 4.6, reviews: 189 },
 }
 
 interface PageProps {

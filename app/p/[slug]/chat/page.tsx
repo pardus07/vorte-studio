@@ -98,6 +98,18 @@ const previewData: Record<string, { firmName: string; city: string; sector: stri
   'hali-yikama': { firmName: 'Tertemiz Halı', city: 'Bursa', sector: 'Halı Yıkama' },
   'nakliyat': { firmName: 'Güven Nakliyat', city: 'İstanbul', sector: 'Nakliyat Firmaları' },
   'organizasyon': { firmName: 'Altın Anlar Organizasyon', city: 'İstanbul', sector: 'Organizasyon Şirketleri' },
+  'ozel-poliklinik': { firmName: 'Sağlık Poliklinik', city: 'İstanbul', sector: 'Özel Poliklinik' },
+  'dil-kurslari': { firmName: 'Global Dil Akademi', city: 'Ankara', sector: 'Dil Kursları' },
+  'etut-merkezleri': { firmName: 'Başarı Etüt Merkezi', city: 'İzmir', sector: 'Etüt Merkezleri' },
+  'surucu-kurslari': { firmName: 'Güvenli Yol Sürücü Kursu', city: 'Bursa', sector: 'Sürücü Kursları' },
+  'oto-yikama': { firmName: 'Pırıl Oto Yıkama', city: 'Antalya', sector: 'Oto Yıkama' },
+  'oto-elektrik': { firmName: 'Volt Oto Elektrik', city: 'İstanbul', sector: 'Oto Elektrik' },
+  'oto-yedek-parca': { firmName: 'Parça Market', city: 'Ankara', sector: 'Oto Yedek Parça' },
+  'oto-aksesuar': { firmName: 'Custom Car Aksesuar', city: 'İstanbul', sector: 'Oto Aksesuar' },
+  'pvc-dograma': { firmName: 'İzopan PVC', city: 'Bursa', sector: 'PVC Doğrama' },
+  'aluminyum-dograma': { firmName: 'AluTek Doğrama', city: 'İzmir', sector: 'Alüminyum Doğrama' },
+  'cam-balkon': { firmName: 'Kristal Cam Balkon', city: 'Antalya', sector: 'Cam Balkon' },
+  'prefabrik-yapi': { firmName: 'Modül Yapı Prefabrik', city: 'Ankara', sector: 'Prefabrik Yapı' },
 }
 
 interface PageProps {
