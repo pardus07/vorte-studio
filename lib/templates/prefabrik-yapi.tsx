@@ -54,29 +54,29 @@ export default function PrefabrikYapiTemplate(props: TemplateProps) {
           <div className="grid w-full items-center gap-12 lg:grid-cols-2">
             <motion.div variants={staggerContainer} initial="hidden" animate="visible">
               <motion.div variants={fadeInUp} className="mb-4 inline-flex items-center gap-2 border-l-4 border-[#F59E0B] bg-[#F59E0B]/8 px-4 py-2">
-                <span className="font-[family-name:var(--font-work)] text-xs font-600 uppercase tracking-[0.3em] text-[#F59E0B]">{props.city} &bull; Prefabrik Yapi</span>
+                <span className="font-[family-name:var(--font-work)] text-xs font-600 uppercase tracking-[0.3em] text-[#F59E0B]">{props.city} &bull; Prefabrik Yapı</span>
               </motion.div>
               <motion.h1 variants={fadeInUp} className="font-[family-name:var(--font-saira)] text-5xl font-800 uppercase leading-[1.05] sm:text-6xl lg:text-7xl">
-                Hizli
-                <br /><span className="text-[#F59E0B]">Guclu</span>
-                <br />Moduler
+                Hızlı
+                <br /><span className="text-[#F59E0B]">Güçlü</span>
+                <br />Modüler
               </motion.h1>
               <motion.p variants={fadeInUp} className="mt-5 max-w-md font-[family-name:var(--font-work)] text-lg leading-relaxed text-white/45">
-                {props.firmName} — {props.city}&apos;de prefabrik ev, konteyner, santiye binasi, depo. Hizli montaj, dayanikli yapi, uygun maliyet.
+                {props.firmName} — {props.city}&apos;de prefabrik ev, konteyner, şantiye binası, depo. Hızlı montaj, dayanıklı yapı, uygun maliyet.
               </motion.p>
               <motion.div variants={fadeInUp} className="mt-6 flex flex-wrap gap-3">
-                {['Prefabrik Ev', 'Konteyner', 'Santiye', 'Depo', 'Moduler Ofis'].map((s) => (
+                {['Prefabrik Ev', 'Konteyner', 'Şantiye', 'Depo', 'Modüler Ofis'].map((s) => (
                   <span key={s} className="border border-[#F59E0B]/15 bg-[#F59E0B]/5 px-4 py-2 font-[family-name:var(--font-saira)] text-xs font-500 uppercase tracking-wider text-[#F59E0B]">{s}</span>
                 ))}
               </motion.div>
               <motion.div variants={fadeInUp} className="mt-8">
                 <a href={chatLink} onClick={() => trackEvent(props.slug, 'CHAT_CLICK')} className="inline-flex items-center gap-2 bg-[#F59E0B] px-8 py-4 font-[family-name:var(--font-saira)] text-sm font-700 uppercase tracking-wider text-[#18181B] transition-all hover:bg-[#D97706] hover:shadow-lg hover:shadow-[#F59E0B]/25">
-                  Ucretsiz Teklif Al <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
+                  Ücretsiz Teklif Al <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
                 </a>
               </motion.div>
             </motion.div>
             <motion.div variants={staggerContainer} initial="hidden" animate="visible" className="hidden space-y-4 lg:block">
-              {[{ icon: '🏭', title: 'Fabrika Uretim', desc: 'Standart kalite kontrolu' }, { icon: '⚡', title: 'Hizli Montaj', desc: '1-3 gun icerisinde kurulum' }, { icon: '🏠', title: 'Yasam Alani', desc: 'Konforlu ic mekan tasarimi' }, { icon: '📦', title: 'Tasima Kolayligi', desc: 'Moduler parca sistemi' }].map((item) => (
+              {[{ icon: '🏭', title: 'Fabrika Üretim', desc: 'Standart kalite kontrolü' }, { icon: '⚡', title: 'Hızlı Montaj', desc: '1-3 gün içerisinde kurulum' }, { icon: '🏠', title: 'Yaşam Alanı', desc: 'Konforlu iç mekan tasarımı' }, { icon: '📦', title: 'Taşıma Kolaylığı', desc: 'Modüler parça sistemi' }].map((item) => (
                 <motion.div key={item.title} variants={fadeInUp} className="flex items-center gap-4 border border-white/10 bg-white/5 p-4">
                   <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center bg-[#F59E0B]/10 text-xl">{item.icon}</div>
                   <div><div className="font-[family-name:var(--font-saira)] text-sm font-600 uppercase text-white/80">{item.title}</div><div className="font-[family-name:var(--font-work)] text-xs text-white/35">{item.desc}</div></div>
@@ -90,8 +90,8 @@ export default function PrefabrikYapiTemplate(props: TemplateProps) {
       <section className="border-t border-white/5 py-20"><div className="mx-auto max-w-4xl px-4 sm:px-6">
         <motion.div variants={staggerContainer} initial="hidden" whileInView="visible" viewport={{ once: true }} className="text-center">
           <motion.div variants={fadeInUp} className="mx-auto mb-6 inline-flex items-center gap-2 rounded-full bg-red-500/10 px-5 py-2"><span className="text-lg">⚠️</span><span className="font-[family-name:var(--font-work)] text-sm font-600 text-red-400">Dikkat</span></motion.div>
-          <motion.h2 variants={fadeInUp} className="font-[family-name:var(--font-saira)] text-3xl font-700 uppercase text-white sm:text-4xl">Prefabrik yapi arayanlar <span className="text-red-400">proje gorseli ve fiyat</span> karsilastiriyor</motion.h2>
-          <motion.p variants={fadeInUp} className="mt-4 font-[family-name:var(--font-work)] text-lg text-white/45">Web siteniz yoksa musteriler buyuk firmalara yoneliyor.</motion.p>
+          <motion.h2 variants={fadeInUp} className="font-[family-name:var(--font-saira)] text-3xl font-700 uppercase text-white sm:text-4xl">Prefabrik yapı arayanlar <span className="text-red-400">proje görseli ve fiyat</span> karşılaştırıyor</motion.h2>
+          <motion.p variants={fadeInUp} className="mt-4 font-[family-name:var(--font-work)] text-lg text-white/45">Web siteniz yoksa müşteriler büyük firmalara yöneliyor.</motion.p>
         </motion.div>
       </div></section>
 
@@ -101,14 +101,14 @@ export default function PrefabrikYapiTemplate(props: TemplateProps) {
           <div className="grid gap-6 md:grid-cols-2">
             <motion.div variants={slideFromLeft} className="border border-[#F59E0B]/20 bg-[#F59E0B]/5 p-8"><div className="mb-4 text-2xl">✅</div><h3 className="mb-4 font-[family-name:var(--font-saira)] text-lg font-600 uppercase text-white">Olursa</h3>
               <ul className="space-y-3 font-[family-name:var(--font-work)] text-sm text-white/60">
-                {['Proje katalogunuz guven olusturur', 'Fiyat listeniz seffaf sunulur', 'Teslim suresi bilginiz paylasililir', 'Google\'da "prefabrik yapi + sehir" aramasinda cikabilirsiniz', 'Turkiye geneli siparis alabilirsiniz'].map((i) => (
+                {['Proje kataloğunuz güven oluşturur', 'Fiyat listeniz şeffaf sunulur', 'Teslim süresi bilginiz paylaşılır', 'Google\'da "prefabrik yapı + şehir" aramasında çıkabilirsiniz', 'Türkiye geneli sipariş alabilirsiniz'].map((i) => (
                   <li key={i} className="flex items-start gap-2"><span className="mt-0.5 text-[#F59E0B]">●</span> {i}</li>
                 ))}
               </ul>
             </motion.div>
             <motion.div variants={slideFromRight} className="border border-red-500/15 bg-red-500/5 p-8"><div className="mb-4 text-2xl">❌</div><h3 className="mb-4 font-[family-name:var(--font-saira)] text-lg font-600 uppercase text-white">Olmazsa</h3>
               <ul className="space-y-3 font-[family-name:var(--font-work)] text-sm text-white/60">
-                {['Musteriler buyuk zincir firmalara gider', 'Uretim kapasiteniz bilinmez', 'Fiyat avantajiniz gorulmez', 'Sehir disi satis imkansiz', 'Sadece yerel tanidikla sinirli kalisiniz'].map((i) => (
+                {['Müşteriler büyük zincir firmalara gider', 'Üretim kapasiteniz bilinmez', 'Fiyat avantajınız görülmez', 'Şehir dışı satış imkansız', 'Sadece yerel tanıdıkla sınırlı kalırsınız'].map((i) => (
                   <li key={i} className="flex items-start gap-2"><span className="mt-0.5 text-red-400">●</span> {i}</li>
                 ))}
               </ul>
@@ -121,15 +121,15 @@ export default function PrefabrikYapiTemplate(props: TemplateProps) {
 
       <section className="bg-[#F59E0B] py-20"><div className="mx-auto max-w-3xl px-4 text-center sm:px-6">
         <motion.div variants={staggerContainer} initial="hidden" whileInView="visible" viewport={{ once: true }}>
-          <motion.h2 variants={fadeInUp} className="font-[family-name:var(--font-saira)] text-3xl font-700 uppercase text-[#18181B] sm:text-4xl">{props.firmName} Icin<br />Profesyonel Web Sitenizi Olusturalim</motion.h2>
-          <motion.p variants={fadeInUp} className="mt-4 font-[family-name:var(--font-work)] text-[#18181B]/60">Ucretsiz demo — taahhut yok.</motion.p>
-          <motion.div variants={fadeInUp} className="mt-8"><a href={chatLink} onClick={() => trackEvent(props.slug, 'CHAT_CLICK')} className="inline-flex items-center gap-2 bg-[#18181B] px-10 py-4 font-[family-name:var(--font-saira)] text-sm font-700 uppercase tracking-wider text-white transition-all hover:bg-[#27272A]">Ucretsiz Teklif Al <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg></a></motion.div>
+          <motion.h2 variants={fadeInUp} className="font-[family-name:var(--font-saira)] text-3xl font-700 uppercase text-[#18181B] sm:text-4xl">{props.firmName} İçin<br />Profesyonel Web Sitenizi Oluşturalım</motion.h2>
+          <motion.p variants={fadeInUp} className="mt-4 font-[family-name:var(--font-work)] text-[#18181B]/60">Ücretsiz demo — taahhüt yok.</motion.p>
+          <motion.div variants={fadeInUp} className="mt-8"><a href={chatLink} onClick={() => trackEvent(props.slug, 'CHAT_CLICK')} className="inline-flex items-center gap-2 bg-[#18181B] px-10 py-4 font-[family-name:var(--font-saira)] text-sm font-700 uppercase tracking-wider text-white transition-all hover:bg-[#27272A]">Ücretsiz Teklif Al <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg></a></motion.div>
         </motion.div>
       </div></section>
 
-      <section className="py-16"><div className="mx-auto max-w-3xl px-4 text-center sm:px-6"><motion.div variants={staggerContainer} initial="hidden" whileInView="visible" viewport={{ once: true }}><motion.div variants={scaleIn} className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-[#F59E0B]/10"><span className="text-2xl">🔒</span></motion.div><motion.h3 variants={fadeInUp} className="font-[family-name:var(--font-saira)] text-lg font-700 uppercase text-white">Taahhut Yok, Risk Yok</motion.h3><motion.p variants={fadeInUp} className="mt-2 font-[family-name:var(--font-work)] text-sm text-white/40">Demo tamamen ucretsizdir.</motion.p></motion.div></div></section>
+      <section className="py-16"><div className="mx-auto max-w-3xl px-4 text-center sm:px-6"><motion.div variants={staggerContainer} initial="hidden" whileInView="visible" viewport={{ once: true }}><motion.div variants={scaleIn} className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-[#F59E0B]/10"><span className="text-2xl">🔒</span></motion.div><motion.h3 variants={fadeInUp} className="font-[family-name:var(--font-saira)] text-lg font-700 uppercase text-white">Taahhüt Yok, Risk Yok</motion.h3><motion.p variants={fadeInUp} className="mt-2 font-[family-name:var(--font-work)] text-sm text-white/40">Demo tamamen ücretsizdir.</motion.p></motion.div></div></section>
 
-      <footer className="border-t border-white/5 py-8"><div className="mx-auto max-w-5xl px-4 text-center sm:px-6"><p className="font-[family-name:var(--font-work)] text-xs text-white/25">© {new Date().getFullYear()} Vorte Studio — {props.firmName} icin ozel olarak hazirlanmistir.</p></div></footer>
+      <footer className="border-t border-white/5 py-8"><div className="mx-auto max-w-5xl px-4 text-center sm:px-6"><p className="font-[family-name:var(--font-work)] text-xs text-white/25">© {new Date().getFullYear()} Vorte Studio — {props.firmName} için özel olarak hazırlanmıştır.</p></div></footer>
     </div>
   )
 }
