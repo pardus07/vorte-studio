@@ -36,8 +36,8 @@ export default function EtutMerkezleriTemplate(props: TemplateProps) {
 
         {heroImg && (
           <div className="absolute inset-0">
-            <img src={heroImg} alt={`${props.firmName} etüt`} className="h-full w-full object-cover" style={{ opacity: 0.12 }} />
-            <div className="absolute inset-0 bg-gradient-to-r from-[#FFFBEB]/95 via-[#FFFBEB]/85 to-[#FFFBEB]/60" />
+            <img src={heroImg} alt={`${props.firmName} etüt`} className="h-full w-full object-cover" style={{ opacity: 0.35 }} />
+            <div className="absolute inset-0 bg-gradient-to-r from-[#FFFBEB]/70 via-[#FFFBEB]/50 to-[#FFFBEB]/20" />
           </div>
         )}
 

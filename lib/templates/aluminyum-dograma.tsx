@@ -59,8 +59,8 @@ export default function AluminyumDogramaTemplate(props: TemplateProps) {
 
         {heroImg && (
           <div className="absolute inset-0">
-            <img src={heroImg} alt={`${props.firmName} aluminyum dograma`} className="h-full w-full object-cover" style={{ opacity: 0.12 }} />
-            <div className="absolute inset-0 bg-gradient-to-r from-[#F1F5F9]/95 via-[#F1F5F9]/80 to-[#F1F5F9]/50" />
+            <img src={heroImg} alt={`${props.firmName} aluminyum dograma`} className="h-full w-full object-cover" style={{ opacity: 0.35 }} />
+            <div className="absolute inset-0 bg-gradient-to-r from-[#F1F5F9]/70 via-[#F1F5F9]/50 to-[#F1F5F9]/20" />
           </div>
         )}
 

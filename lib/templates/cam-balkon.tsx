@@ -46,8 +46,8 @@ export default function CamBalkonTemplate(props: TemplateProps) {
 
         {heroImg && (
           <div className="absolute inset-0">
-            <img src={heroImg} alt={`${props.firmName} cam balkon`} className="h-full w-full object-cover" style={{ opacity: 0.12 }} />
-            <div className="absolute inset-0 bg-gradient-to-r from-[#F0F9FF]/95 via-[#F0F9FF]/85 to-[#F0F9FF]/40" />
+            <img src={heroImg} alt={`${props.firmName} cam balkon`} className="h-full w-full object-cover" style={{ opacity: 0.35 }} />
+            <div className="absolute inset-0 bg-gradient-to-r from-[#F0F9FF]/70 via-[#F0F9FF]/50 to-[#F0F9FF]/20" />
           </div>
         )}
 

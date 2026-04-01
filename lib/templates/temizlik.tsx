@@ -44,8 +44,8 @@ export default function TemizlikTemplate(props: TemplateProps) {
 
         {heroImg && (
           <div className="absolute inset-0">
-            <img src={heroImg} alt={`${props.firmName} temizlik`} className="h-full w-full object-cover" style={{ opacity: 0.12 }} />
-            <div className="absolute inset-0 bg-gradient-to-r from-white/95 via-white/85 to-white/60" />
+            <img src={heroImg} alt={`${props.firmName} temizlik`} className="h-full w-full object-cover" style={{ opacity: 0.35 }} />
+            <div className="absolute inset-0 bg-gradient-to-r from-white/70 via-white/50 to-white/20" />
           </div>
         )}
 

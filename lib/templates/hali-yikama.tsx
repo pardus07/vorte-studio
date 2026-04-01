@@ -41,8 +41,8 @@ export default function HaliYikamaTemplate(props: TemplateProps) {
 
         {heroImg && (
           <div className="absolute inset-0">
-            <img src={heroImg} alt={`${props.firmName} halı yıkama`} className="h-full w-full object-cover" style={{ opacity: 0.15 }} />
-            <div className="absolute inset-0 bg-gradient-to-b from-white/90 via-white/80 to-white/95" />
+            <img src={heroImg} alt={`${props.firmName} halı yıkama`} className="h-full w-full object-cover" style={{ opacity: 0.35 }} />
+            <div className="absolute inset-0 bg-gradient-to-b from-white/70 via-white/50 to-white/70" />
           </div>
         )}
 
