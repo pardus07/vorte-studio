@@ -36,7 +36,7 @@ export default function OtoAksesuarTemplate(props: TemplateProps) {
 
         {heroImg && (
           <div className="absolute inset-0">
-            <img src={heroImg} alt={`${props.firmName} oto aksesuar`} className="h-full w-full object-cover" style={{ opacity: 0.3 }} />
+            <img src={heroImg} alt={`${props.firmName} oto aksesuar`} className="h-full w-full object-cover" style={{ opacity: 0.90 }} />
             <div className="absolute inset-0 bg-gradient-to-b from-[#0F0F0F]/85 via-[#0F0F0F]/60 to-[#0F0F0F]/90" />
           </div>
         )}

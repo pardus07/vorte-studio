@@ -51,7 +51,7 @@ export default function OtoElektrikTemplate(props: TemplateProps) {
 
         {heroImg && (
           <div className="absolute inset-0">
-            <img src={heroImg} alt={`${props.firmName} oto elektrik`} className="h-full w-full object-cover" style={{ opacity: 0.3 }} />
+            <img src={heroImg} alt={`${props.firmName} oto elektrik`} className="h-full w-full object-cover" style={{ opacity: 0.90 }} />
             <div className="absolute inset-0 bg-gradient-to-r from-[#111827]/90 via-[#111827]/65 to-[#111827]/40" />
           </div>
         )}

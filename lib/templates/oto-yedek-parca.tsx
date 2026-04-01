@@ -40,7 +40,7 @@ export default function OtoYedekParcaTemplate(props: TemplateProps) {
 
         {heroImg && (
           <div className="absolute inset-0">
-            <img src={heroImg} alt={`${props.firmName} yedek parça`} className="h-full w-full object-cover" style={{ opacity: 0.3 }} />
+            <img src={heroImg} alt={`${props.firmName} yedek parça`} className="h-full w-full object-cover" style={{ opacity: 0.90 }} />
             <div className="absolute inset-0 bg-gradient-to-r from-[#1F2937]/90 via-[#1F2937]/65 to-[#1F2937]/40" />
           </div>
         )}

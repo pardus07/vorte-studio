@@ -36,7 +36,7 @@ export default function PvcDogramaTemplate(props: TemplateProps) {
 
         {heroImg && (
           <div className="absolute inset-0">
-            <img src={heroImg} alt={`${props.firmName} PVC doğrama`} className="h-full w-full object-cover" style={{ opacity: 0.35 }} />
+            <img src={heroImg} alt={`${props.firmName} PVC doğrama`} className="h-full w-full object-cover" style={{ opacity: 0.90 }} />
             <div className="absolute inset-0 bg-gradient-to-r from-white/70 via-white/50 to-white/20" />
           </div>
         )}

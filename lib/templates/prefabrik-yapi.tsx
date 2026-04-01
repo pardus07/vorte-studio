@@ -45,7 +45,7 @@ export default function PrefabrikYapiTemplate(props: TemplateProps) {
 
         {heroImg && (
           <div className="absolute inset-0">
-            <img src={heroImg} alt={`${props.firmName} prefabrik yapi`} className="h-full w-full object-cover" style={{ opacity: 0.3 }} />
+            <img src={heroImg} alt={`${props.firmName} prefabrik yapi`} className="h-full w-full object-cover" style={{ opacity: 0.90 }} />
             <div className="absolute inset-0 bg-gradient-to-r from-[#18181B]/92 via-[#18181B]/70 to-[#18181B]/45" />
           </div>
         )}
