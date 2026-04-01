@@ -41,7 +41,7 @@ export default function OtoYikamaTemplate(props: TemplateProps) {
 
         {heroImg && (
           <div className="absolute inset-0">
-            <img src={heroImg} alt={`${props.firmName} oto yıkama`} className="h-full w-full object-cover" style={{ opacity: 0.3 }} />
+            <img src={heroImg} alt={`${props.firmName} oto yıkama`} className="h-full w-full object-cover" style={{ opacity: 0.90 }} />
             <div className="absolute inset-0 bg-gradient-to-b from-[#0C4A6E]/90 via-[#0C4A6E]/60 to-[#0C4A6E]/80" />
           </div>
         )}
