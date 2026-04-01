@@ -94,144 +94,122 @@ type TemplateName =
   | 'nakliyat'
   | 'organizasyon'
 
-// 107 sektör → şablon eşleştirmesi
-// Sprint 1: Sağlık & Klinik (8 şablon)
-// Diğer sprint'lerde eklenen sektörler default şablona düşer
+// 103 sektör → şablon eşleştirmesi (turkey-data.ts ile birebir uyumlu)
+// Key'ler dropdown string'leriyle karakter karakter aynı olmalı
 const sectorMap: Record<string, TemplateName> = {
-  // ── Sağlık & Klinik ──
+  // ── Sağlık & Klinik (11) ──
   'Diş Klinikleri': 'dis-klinikleri',
   'Veteriner Klinikleri': 'veteriner-klinikleri',
   'Optik / Gözlükçü': 'optik-gozlukcu',
   'Fizik Tedavi Merkezleri': 'fizik-tedavi',
   'Tıp Merkezleri': 'tip-merkezleri',
-  'Özel Poliklinikler': 'tip-merkezleri',
-  'Estetik Klinikler': 'estetik-klinik',
-  'Psikologlar / Danışmanlar': 'psikolog-danisma',
-  'Diyetisyenler': 'diyetisyen',
-  'Beslenme Danışmanları': 'diyetisyen',
-  // İşitme Merkezi, Göz Merkezi → Sprint 2
-  'İşitme Merkezleri': 'isitme-merkezi',
-  'Göz Merkezleri': 'goz-merkezi',
+  'Psikolog / Danışman': 'psikolog-danisma',
+  'Diyetisyen / Beslenme Uzmanı': 'diyetisyen',
+  'Estetik Klinik': 'estetik-klinik',
+  'Özel Poliklinik': 'tip-merkezleri',
+  'İşitme Merkezi': 'isitme-merkezi',
+  'Göz Merkezi': 'goz-merkezi',
 
-  // ── Güzellik & Bakım → Sprint 2 ──
+  // ── Güzellik & Bakım (7) ──
   'Kuaförler': 'kuaforler',
   'Berberler': 'berberler',
-  'Güzellik / SPA Merkezleri': 'guzellik-spa',
+  'Güzellik / SPA': 'guzellik-spa',
   'Cilt Bakım Merkezleri': 'cilt-bakim',
   'Epilasyon Merkezleri': 'epilasyon',
-  'Tırnak Stüdyoları': 'tirnak-studyosu',
-  'Dövme & Piercing Stüdyoları': 'dovme-piercing',
+  'Tırnak Stüdyosu': 'tirnak-studyosu',
+  'Dövme & Piercing Stüdyosu': 'dovme-piercing',
 
-  // ── Yeme-İçme → Sprint 3 ──
+  // ── Yeme-İçme (5) ──
   'Restoranlar': 'restoranlar',
   'Kafeler': 'kafeler',
   'Pastaneler': 'pastaneler',
   'Fırınlar': 'firinlar',
-  'Catering / Yemek Servisleri': 'catering',
+  'Catering / Yemek Servisi': 'catering',
 
-  // ── Gıda Perakende → Sprint 3 (kasaplar) + Sprint 4 ──
+  // ── Gıda Perakende (5) ──
   'Kasaplar': 'kasaplar',
   'Manavlar': 'manavlar',
   'Kuruyemişçiler': 'kuruyemisciler',
-  'Şarküteri / Delikatessen': 'sarkuteri',
   'Su Bayileri': 'su-bayileri',
+  'Şarküteri / Delikatessen': 'sarkuteri',
 
-  // ── Konaklama & Turizm → Sprint 4 ──
+  // ── Konaklama & Turizm (2) ──
   'Oteller': 'oteller',
-  'Seyahat Acenteleri': 'seyahat-acentesi',
+  'Seyahat Acentesi': 'seyahat-acentesi',
 
-  // ── Eğitim → Sprint 4-5 ──
-  'Özel Okullar / Etüt Merkezleri': 'ozel-okullar',
+  // ── Eğitim (6) ──
   'Dil Kursları': 'ozel-okullar',
-  'Sürücü Kursları': 'ozel-okullar',
+  'Özel Okullar': 'ozel-okullar',
   'Kreşler': 'kresler',
+  'Etüt Merkezleri': 'ozel-okullar',
+  'Sürücü Kursları': 'ozel-okullar',
   'Müzik Kursları': 'muzik-kurslari',
-  'Sanat Atölyeleri': 'muzik-kurslari',
 
-  // ── Spor & Fitness → Sprint 5 ──
+  // ── Spor & Fitness (2) ──
   'Spor Salonları': 'spor-salonlari',
-  'Pilates / Yoga Stüdyoları': 'pilates-yoga',
+  'Pilates / Yoga': 'pilates-yoga',
 
-  // ── Otomotiv → Sprint 5-6 ──
-  'Oto Galeri': 'oto-galeri',
+  // ── Otomotiv (11) ──
+  'Oto Servisler': 'oto-servis',
   'Oto Yıkama': 'lastikci',
-  'Oto Kuaför / Detailing': 'oto-servis',
+  'Lastikçiler': 'lastikci',
+  'Oto Galeri': 'oto-galeri',
   'Oto Elektrik': 'oto-servis',
-  'Oto Mekanik / Servisler': 'oto-servis',
-  'Lastik / Rot Balans': 'lastikci',
-  'Oto Boyacılar': 'oto-kaporta',
-  'Oto Kaporta': 'oto-kaporta',
-  'Motosiklet Servisleri': 'motosiklet-servisi',
-  'Araç Kiralama': 'oto-galeri',
-  'Oto Cam Filmi / Kaplama': 'oto-cam',
   'Oto Egzoz': 'oto-egzoz',
+  'Oto Kaporta & Boya': 'oto-kaporta',
   'Oto Cam': 'oto-cam',
-  'Yedek Parça': 'lastikci',
+  'Oto Yedek Parça': 'lastikci',
+  'Oto Aksesuar': 'lastikci',
+  'Motosiklet Servisi': 'motosiklet-servisi',
 
-  // ── İnşaat & Tadilat → Sprint 6-8 ──
-  'Müteahhitler': 'insaat-firmalari',
-  'İç Mimarlar / Dekorasyon': 'mimarlik-ofisleri',
-  'Boyacılar': 'boya-badana',
-  'Elektrikçiler': 'elektrikci',
-  'Tesisatçılar': 'tesisatci',
+  // ── İnşaat & Tadilat (16) ──
+  'İnşaat Firmaları': 'insaat-firmalari',
+  'Mimarlık Ofisleri': 'mimarlik-ofisleri',
+  'Tadilat / Dekorasyon': 'tadilat-dekorasyon',
+  'PVC Doğrama': 'tadilat-dekorasyon',
   'Alüminyum Doğrama': 'tadilat-dekorasyon',
-  'PVC / Cam Balkon': 'tadilat-dekorasyon',
-  'Çelik Kapı / Kepenk': 'tadilat-dekorasyon',
-  'Parke / Zemin Kaplama': 'parke-zemin',
-  'Çatı & İzolasyon': 'cati-sistemleri',
-  'Isı Yalıtım / Mantolama': 'isi-yalitim',
+  'Cam Balkon': 'tadilat-dekorasyon',
+  'Mermer & Granit': 'mermer-granit',
   'Dış Cephe Kaplama': 'dis-cephe',
-  'Fayans / Seramik': 'fayans-seramik',
+  'Isı Yalıtım / Mantolama': 'isi-yalitim',
+  'Çatı Sistemleri': 'cati-sistemleri',
+  'Fayans / Seramik Döşeme': 'fayans-seramik',
   'Asma Tavan / Alçıpan': 'asma-tavan',
-  'Boya Badana': 'boya-badana',
-  'Peyzaj / Bahçe Düzenleme': 'veteriner-klinikleri',
-  'Yapı Malzeme Mağazaları': 'insaat-firmalari',
-  'Tadilat / Renovasyon': 'mimarlik-ofisleri',
-  // 'Asansör Firmaları' → Sprint 11'de 'asansor' şablonuna taşındı
-  'Güneş Enerjisi / Solar Panel': 'dis-cephe',
   'Prefabrik Yapı': 'insaat-firmalari',
+  'Boya Badana Ustası': 'boya-badana',
+  'Elektrikçi': 'elektrikci',
+  'Tesisatçı': 'tesisatci',
 
-  // ── İnşaat (devam) → Sprint 8 ──
-  'Mermer / Granit': 'mermer-granit',
-  'Döşemeciler': 'dosemeci',
-  'Çadır / Tente İmalatı': 'cadir-tente',
+  // ── Atölye & İmalat (11) ──
+  'Parke & Zemin Döşeme': 'parke-zemin',
+  'Döşemeci / Koltuk Tamircisi': 'dosemeci',
+  'Çadır & Tente İmalatı': 'cadir-tente',
   'Branda İmalatı': 'branda',
+  'Kaynak & Demir Atölyesi': 'kaynak-demir',
+  'Marangoz / Ahşap Atölyesi': 'marangoz',
+  'Bobinaj': 'bobinaj',
+  'Matbaalar': 'matbaalar',
+  'Ambalaj İmalatı': 'ambalaj',
+  'Plastik İmalat': 'plastik-imalat',
+  'Terzi / Dikiş Atölyesi': 'terzi',
 
-  // ── Atölye & İmalat → Sprint 8-9 ──
-  'Mobilya Atölyeleri': 'marangoz',
-  'Marangozlar': 'marangoz',
-  'Kuyumcular': 'kuyumcu',
-  'Terzi / Konfeksiyoncular': 'terzi',
-  'Matbaacılar': 'matbaalar',
-  'Tabelacılar / Reklam': 'tabela-reklam',
-  'Demiriciler / Ferforje': 'kaynak-demir',
-  'Kaynak / Demir Atölyesi': 'kaynak-demir',
-  'Bobinajcılar': 'bobinaj',
-  'Tornacılar / CNC': 'plastik-imalat',
-  'Tekstil Atölyeleri': 'terzi',
-  'Ambalaj / Paketleme': 'ambalaj',
-  'Ayakkabıcılar': 'dosemeci',
-  'Plastik İmalatı': 'plastik-imalat',
-
-  // ── Hizmet & Profesyonel → Sprint 9 ──
-  'Avukatlar': 'hukuk-burosu',
-  'Muhasebeciler / SMMM': 'muhasebe',
+  // ── Hizmet & Profesyonel (4) ──
+  'Hukuk Büroları': 'hukuk-burosu',
+  'Muhasebe Büroları': 'muhasebe',
+  'Emlak Ofisleri': 'emlak-ofisi',
   'Sigorta Acenteleri': 'sigorta',
 
-  // ── Perakende + Teknik Servis (1/2) → Sprint 10 ──
-  'Emlakçılar': 'emlak-ofisi',
+  // ── Perakende (8) ──
   'Mobilya Mağazaları': 'mobilya',
   'Elektronik Mağazaları': 'elektronik',
   'Kırtasiyeler': 'kirtasiye',
   'Pet Shop': 'pet-shop',
   'Çiçekçiler': 'cicekci',
+  'Kuyumcular': 'kuyumcu',
   'Tekstil / Giyim Mağazası': 'tekstil-giyim',
-  'Eczaneler': 'dis-klinikleri',
-  'Zücaciye / Ev Gereçleri': 'mobilya',
-  'Züccaciye / Hediyelik': 'mobilya',
-
-  // ── Perakende (devam) + Teknik Servis (2/2) + Diğer Hizmetler → Sprint 11 ──
   'Spor Malzemeleri Mağazası': 'spor-malzemeleri',
+
+  // ── Teknik Servis & Bakım (8) ──
   'Klima Servisi': 'klima-servisi',
   'Kombi Servisi': 'kombi-servisi',
   'Beyaz Eşya Tamircisi': 'beyaz-esya',
@@ -239,19 +217,44 @@ const sectorMap: Record<string, TemplateName> = {
   'Jeneratör Servisi': 'jenerator',
   'Güvenlik Sistemleri': 'guvenlik-sistemleri',
   'Çilingir': 'cilingir',
-
-  // ── Diğer Hizmetler → Sprint 12 ──
   'Su Arıtma Servisi': 'su-aritma',
+
+  // ── Diğer Hizmetler (7) ──
   'Fotoğraf Stüdyoları': 'fotograf-studyosu',
   'Temizlik Şirketleri': 'temizlik',
-  'Kuru Temizleme': 'kuru-temizleme',
-  'Halı Yıkama': 'hali-yikama',
   'Nakliyat Firmaları': 'nakliyat',
   'Organizasyon Şirketleri': 'organizasyon',
+  'Kuru Temizleme': 'kuru-temizleme',
+  'Halı Yıkama': 'hali-yikama',
   'Tabela & Reklam': 'tabela-reklam',
-  // ── Fallback → Sprint 13+ ──
-  'Kreş / Çocuk Etkinlik': 'tip-merkezleri',
-  'Oto Yedek Parça': 'tip-merkezleri',
+
+  // ── Alias'lar (dropdown'da olmayan eski/alternatif isimler) ──
+  'Beslenme Danışmanları': 'diyetisyen',
+  'Sanat Atölyeleri': 'muzik-kurslari',
+  'Oto Kuaför / Detailing': 'oto-servis',
+  'Araç Kiralama': 'oto-galeri',
+  'Oto Cam Filmi / Kaplama': 'oto-cam',
+  'Müteahhitler': 'insaat-firmalari',
+  'İç Mimarlar / Dekorasyon': 'mimarlik-ofisleri',
+  'Boyacılar': 'boya-badana',
+  'PVC / Cam Balkon': 'tadilat-dekorasyon',
+  'Çelik Kapı / Kepenk': 'tadilat-dekorasyon',
+  'Peyzaj / Bahçe Düzenleme': 'veteriner-klinikleri',
+  'Yapı Malzeme Mağazaları': 'insaat-firmalari',
+  'Güneş Enerjisi / Solar Panel': 'dis-cephe',
+  'Mobilya Atölyeleri': 'marangoz',
+  'Tabelacılar / Reklam': 'tabela-reklam',
+  'Demiriciler / Ferforje': 'kaynak-demir',
+  'Tornacılar / CNC': 'plastik-imalat',
+  'Tekstil Atölyeleri': 'terzi',
+  'Ayakkabıcılar': 'dosemeci',
+  'Avukatlar': 'hukuk-burosu',
+  'Muhasebeciler / SMMM': 'muhasebe',
+  'Emlakçılar': 'emlak-ofisi',
+  'Eczaneler': 'dis-klinikleri',
+  'Zücaciye / Ev Gereçleri': 'mobilya',
+  'Züccaciye / Hediyelik': 'mobilya',
+  'Kreş / Çocuk Etkinlik': 'kresler',
   'Cenaze Hizmetleri': 'tip-merkezleri',
 }
 
