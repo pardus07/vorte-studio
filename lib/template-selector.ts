@@ -86,6 +86,13 @@ type TemplateName =
   | 'jenerator'
   | 'guvenlik-sistemleri'
   | 'cilingir'
+  | 'su-aritma'
+  | 'fotograf-studyosu'
+  | 'temizlik'
+  | 'kuru-temizleme'
+  | 'hali-yikama'
+  | 'nakliyat'
+  | 'organizasyon'
 
 // 107 sektör → şablon eşleştirmesi
 // Sprint 1: Sağlık & Klinik (8 şablon)
@@ -224,27 +231,27 @@ const sectorMap: Record<string, TemplateName> = {
   'Züccaciye / Hediyelik': 'mobilya',
 
   // ── Perakende (devam) + Teknik Servis (2/2) + Diğer Hizmetler → Sprint 11 ──
-  'Spor Mağazaları': 'spor-malzemeleri',
-  'Klima Servisleri': 'klima-servisi',
-  'Kombi / Doğalgaz Servisleri': 'kombi-servisi',
-  'Beyaz Eşya Servisleri': 'beyaz-esya',
-  'Asansör Firmaları': 'asansor',
-  'Jeneratör Firmaları': 'jenerator',
+  'Spor Malzemeleri Mağazası': 'spor-malzemeleri',
+  'Klima Servisi': 'klima-servisi',
+  'Kombi Servisi': 'kombi-servisi',
+  'Beyaz Eşya Tamircisi': 'beyaz-esya',
+  'Asansör Bakım': 'asansor',
+  'Jeneratör Servisi': 'jenerator',
   'Güvenlik Sistemleri': 'guvenlik-sistemleri',
-  'Çilingirler': 'cilingir',
+  'Çilingir': 'cilingir',
 
-  // ── Teknik Servis & Diğer (fallback) → Sprint 12+ ──
-  'Bilgisayar Tamircileri': 'tip-merkezleri',
-  'Telefon Tamircileri': 'tip-merkezleri',
-  'Halı Yıkama': 'tip-merkezleri',
-  'Nakliyat Firmaları': 'tip-merkezleri',
-
-  // ── Diğer Hizmetler → Sprint 13-14 ──
-  'Fotoğrafçılar': 'estetik-klinik',
-  'Organizasyon / Düğün Salonu': 'estetik-klinik',
+  // ── Diğer Hizmetler → Sprint 12 ──
+  'Su Arıtma Servisi': 'su-aritma',
+  'Fotoğraf Stüdyoları': 'fotograf-studyosu',
+  'Temizlik Şirketleri': 'temizlik',
+  'Kuru Temizleme': 'kuru-temizleme',
+  'Halı Yıkama': 'hali-yikama',
+  'Nakliyat Firmaları': 'nakliyat',
+  'Organizasyon Şirketleri': 'organizasyon',
+  'Tabela & Reklam': 'tabela-reklam',
+  // ── Fallback → Sprint 13+ ──
   'Kreş / Çocuk Etkinlik': 'tip-merkezleri',
   'Oto Yedek Parça': 'tip-merkezleri',
-  'Temizlik Şirketleri': 'tip-merkezleri',
   'Cenaze Hizmetleri': 'tip-merkezleri',
 }
 
@@ -333,6 +340,13 @@ const templateLoaders: Record<TemplateName, () => Promise<{ default: ComponentTy
   'jenerator': () => import('./templates/jenerator'),
   'guvenlik-sistemleri': () => import('./templates/guvenlik-sistemleri'),
   'cilingir': () => import('./templates/cilingir'),
+  'su-aritma': () => import('./templates/su-aritma'),
+  'fotograf-studyosu': () => import('./templates/fotograf-studyosu'),
+  'temizlik': () => import('./templates/temizlik'),
+  'kuru-temizleme': () => import('./templates/kuru-temizleme'),
+  'hali-yikama': () => import('./templates/hali-yikama'),
+  'nakliyat': () => import('./templates/nakliyat'),
+  'organizasyon': () => import('./templates/organizasyon'),
 }
 
 export function getTemplateName(sector: string): TemplateName {

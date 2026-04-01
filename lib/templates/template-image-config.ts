@@ -2351,6 +2351,78 @@ export const TEMPLATE_IMAGE_CONFIG: Record<string, TemplateImageConfig> = {
       },
     ],
   },
+
+  // ── Sprint 12: Diger Hizmetler ──
+
+  'su-aritma': {
+    id: 'su-aritma',
+    name: 'Su Aritma',
+    sector: 'Su Aritma Servisi',
+    imageSlots: [
+      { slot: 'hero', label: 'Hero Gorseli', aspectRatio: '16:9', imageSize: '2K', style: 'photorealistic', promptHint: 'Clean water purification system, reverse osmosis filters, blue LED water flow, modern kitchen installation, crisp clean aesthetic, no people', position: 'Hero section arkaplan, acik mavi overlay ile' },
+      { slot: 'product', label: 'Urun Gorseli', aspectRatio: '4:3', imageSize: '1K', style: 'photorealistic', promptHint: 'Water purification filter close-up, clean water glass, RO membrane and UV sterilizer, product showcase on white background, no people', position: 'Icerik bolumunde merkezi gorsel, max-w-5xl' },
+    ],
+  },
+
+  'fotograf-studyosu': {
+    id: 'fotograf-studyosu',
+    name: 'Fotograf Studyosu',
+    sector: 'Fotograf Studyolari',
+    imageSlots: [
+      { slot: 'hero', label: 'Hero Gorseli', aspectRatio: '16:9', imageSize: '2K', style: 'photorealistic', promptHint: 'Professional photography studio interior, dramatic lighting setup, softboxes and camera equipment, dark moody atmosphere with golden accent lights, no people', position: 'Hero section arkaplan, koyu overlay, aperture SVG uzerinde' },
+      { slot: 'portfolio', label: 'Portfolyo Gorseli', aspectRatio: '16:9', imageSize: '2K', style: 'photorealistic', promptHint: 'Beautiful wedding photography portfolio, elegant couple portrait with dramatic lighting, golden hour backlight, artistic composition, no real faces', position: 'Icerik bolumunde merkezi gorsel, 16:9' },
+    ],
+  },
+
+  'temizlik': {
+    id: 'temizlik',
+    name: 'Temizlik',
+    sector: 'Temizlik Sirketleri',
+    imageSlots: [
+      { slot: 'hero', label: 'Hero Gorseli', aspectRatio: '16:9', imageSize: '2K', style: 'photorealistic', promptHint: 'Sparkling clean modern office interior, bright natural lighting, mint green accents, freshly cleaned surfaces, professional cleaning result, no people', position: 'Hero section arkaplan, beyaz overlay ile' },
+      { slot: 'service', label: 'Servis Gorseli', aspectRatio: '4:3', imageSize: '1K', style: 'photorealistic', promptHint: 'Professional cleaning supplies and equipment arranged neatly, spray bottles, microfiber cloths, vacuum cleaner, green and white color theme, no people', position: 'Icerik bolumunde merkezi gorsel, max-w-5xl' },
+    ],
+  },
+
+  'kuru-temizleme': {
+    id: 'kuru-temizleme',
+    name: 'Kuru Temizleme',
+    sector: 'Kuru Temizleme',
+    imageSlots: [
+      { slot: 'hero', label: 'Hero Gorseli', aspectRatio: '16:9', imageSize: '2K', style: 'photorealistic', promptHint: 'Elegant dry cleaning shop interior, clothes on hangers in plastic covers, steam press machine, ice blue and white clean aesthetic, no people', position: 'Hero section arkaplan, beyaz overlay, aski cizgileri uzerinde' },
+      { slot: 'service', label: 'Servis Gorseli', aspectRatio: '4:3', imageSize: '1K', style: 'photorealistic', promptHint: 'Professional suit and dress on hangers with dry cleaning tags, elegant garment care, blue tones, close-up product photography, no people', position: 'Icerik bolumunde merkezi gorsel, max-w-5xl' },
+    ],
+  },
+
+  'hali-yikama': {
+    id: 'hali-yikama',
+    name: 'Hali Yikama',
+    sector: 'Hali Yikama',
+    imageSlots: [
+      { slot: 'hero', label: 'Hero Gorseli', aspectRatio: '16:9', imageSize: '2K', style: 'photorealistic', promptHint: 'Before and after carpet cleaning comparison, left side dirty carpet right side pristine clean, warm brown and golden tones, professional result showcase, no people', position: 'Hero section arkaplan, beyaz overlay, before/after split uzerinde' },
+      { slot: 'service', label: 'Servis Gorseli', aspectRatio: '4:3', imageSize: '1K', style: 'photorealistic', promptHint: 'Professional carpet cleaning machine in action, deep cleaning process, steam extraction, warm brown tones, factory-like cleaning facility, no people', position: 'Icerik bolumunde merkezi gorsel, max-w-5xl' },
+    ],
+  },
+
+  'nakliyat': {
+    id: 'nakliyat',
+    name: 'Nakliyat',
+    sector: 'Nakliyat Firmalari',
+    imageSlots: [
+      { slot: 'hero', label: 'Hero Gorseli', aspectRatio: '16:9', imageSize: '2K', style: 'photorealistic', promptHint: 'Professional moving truck on highway at sunset, large cargo vehicle, navy blue and orange branding, open road perspective, dynamic motion feel, no people', position: 'Hero section arkaplan, koyu navy overlay, yol cizgileri uzerinde' },
+      { slot: 'service', label: 'Servis Gorseli', aspectRatio: '4:3', imageSize: '1K', style: 'photorealistic', promptHint: 'Neatly packed moving boxes with bubble wrap, professional packing materials, organized warehouse, warm lighting, logistics aesthetic, no people', position: 'Icerik bolumunde merkezi gorsel, max-w-5xl' },
+    ],
+  },
+
+  'organizasyon': {
+    id: 'organizasyon',
+    name: 'Organizasyon',
+    sector: 'Organizasyon Sirketleri',
+    imageSlots: [
+      { slot: 'hero', label: 'Hero Gorseli', aspectRatio: '16:9', imageSize: '2K', style: 'photorealistic', promptHint: 'Elegant wedding venue with dramatic spotlight lighting, golden decorations, dark luxurious atmosphere, chandelier and floral arrangements, no people', position: 'Hero section arkaplan, koyu overlay, spotlight konileri uzerinde' },
+      { slot: 'event', label: 'Etkinlik Gorseli', aspectRatio: '16:9', imageSize: '2K', style: 'photorealistic', promptHint: 'Beautiful event table setup, elegant centerpieces with candles, golden and white color scheme, luxury event decoration, bokeh lights background, no people', position: 'Icerik bolumunde merkezi gorsel, 16:9' },
+    ],
+  },
 }
 
 /**

@@ -91,6 +91,13 @@ const templateComponents = {
   'jenerator': () => import('@/lib/templates/jenerator'),
   'guvenlik-sistemleri': () => import('@/lib/templates/guvenlik-sistemleri'),
   'cilingir': () => import('@/lib/templates/cilingir'),
+  'su-aritma': () => import('@/lib/templates/su-aritma'),
+  'fotograf-studyosu': () => import('@/lib/templates/fotograf-studyosu'),
+  'temizlik': () => import('@/lib/templates/temizlik'),
+  'kuru-temizleme': () => import('@/lib/templates/kuru-temizleme'),
+  'hali-yikama': () => import('@/lib/templates/hali-yikama'),
+  'nakliyat': () => import('@/lib/templates/nakliyat'),
+  'organizasyon': () => import('@/lib/templates/organizasyon'),
 } as const
 
 type TemplateKey = keyof typeof templateComponents
@@ -173,14 +180,21 @@ const previewData: Record<string, { firmName: string; city: string; sector: stri
   'cicekci': { firmName: 'Gül Bahçesi', city: 'İstanbul', sector: 'Çiçekçiler', rating: 4.9, reviews: 198 },
   'kuyumcu': { firmName: 'Altın Işık Kuyumculuk', city: 'İstanbul', sector: 'Kuyumcular', rating: 4.8, reviews: 267 },
   'tekstil-giyim': { firmName: 'Trend Moda', city: 'İstanbul', sector: 'Tekstil / Giyim Mağazası', rating: 4.7, reviews: 312 },
-  'spor-malzemeleri': { firmName: 'ProSport Mağaza', city: 'Antalya', sector: 'Spor Mağazaları', rating: 4.7, reviews: 234 },
-  'klima-servisi': { firmName: 'Serin Klima', city: 'Ankara', sector: 'Klima Servisleri', rating: 4.8, reviews: 278 },
-  'kombi-servisi': { firmName: 'Sıcak Yuva Kombi', city: 'İstanbul', sector: 'Kombi / Doğalgaz Servisleri', rating: 4.9, reviews: 312 },
-  'beyaz-esya': { firmName: 'Teknik Beyaz Eşya', city: 'İzmir', sector: 'Beyaz Eşya Servisleri', rating: 4.7, reviews: 256 },
-  'asansor': { firmName: 'Güven Asansör', city: 'Bursa', sector: 'Asansör Firmaları', rating: 4.8, reviews: 189 },
-  'jenerator': { firmName: 'PowerGen Enerji', city: 'İstanbul', sector: 'Jeneratör Firmaları', rating: 4.6, reviews: 145 },
+  'spor-malzemeleri': { firmName: 'ProSport Mağaza', city: 'Antalya', sector: 'Spor Malzemeleri Mağazası', rating: 4.7, reviews: 234 },
+  'klima-servisi': { firmName: 'Serin Klima', city: 'Ankara', sector: 'Klima Servisi', rating: 4.8, reviews: 278 },
+  'kombi-servisi': { firmName: 'Sıcak Yuva Kombi', city: 'İstanbul', sector: 'Kombi Servisi', rating: 4.9, reviews: 312 },
+  'beyaz-esya': { firmName: 'Teknik Beyaz Eşya', city: 'İzmir', sector: 'Beyaz Eşya Tamircisi', rating: 4.7, reviews: 256 },
+  'asansor': { firmName: 'Güven Asansör', city: 'Bursa', sector: 'Asansör Bakım', rating: 4.8, reviews: 189 },
+  'jenerator': { firmName: 'PowerGen Enerji', city: 'İstanbul', sector: 'Jeneratör Servisi', rating: 4.6, reviews: 145 },
   'guvenlik-sistemleri': { firmName: 'Kalkan Güvenlik', city: 'Ankara', sector: 'Güvenlik Sistemleri', rating: 4.8, reviews: 267 },
-  'cilingir': { firmName: 'Hızlı Çilingir', city: 'İstanbul', sector: 'Çilingirler', rating: 4.9, reviews: 378 },
+  'cilingir': { firmName: 'Hızlı Çilingir', city: 'İstanbul', sector: 'Çilingir', rating: 4.9, reviews: 378 },
+  'su-aritma': { firmName: 'Damla Su Arıtma', city: 'Ankara', sector: 'Su Arıtma Servisi', rating: 4.8, reviews: 198 },
+  'fotograf-studyosu': { firmName: 'Işık Fotoğraf', city: 'İstanbul', sector: 'Fotoğraf Stüdyoları', rating: 4.9, reviews: 312 },
+  'temizlik': { firmName: 'Pırıl Temizlik', city: 'İzmir', sector: 'Temizlik Şirketleri', rating: 4.7, reviews: 267 },
+  'kuru-temizleme': { firmName: 'Elit Kuru Temizleme', city: 'Ankara', sector: 'Kuru Temizleme', rating: 4.8, reviews: 189 },
+  'hali-yikama': { firmName: 'Tertemiz Halı', city: 'Bursa', sector: 'Halı Yıkama', rating: 4.6, reviews: 234 },
+  'nakliyat': { firmName: 'Güven Nakliyat', city: 'İstanbul', sector: 'Nakliyat Firmaları', rating: 4.8, reviews: 356 },
+  'organizasyon': { firmName: 'Altın Anlar Organizasyon', city: 'İstanbul', sector: 'Organizasyon Şirketleri', rating: 4.9, reviews: 278 },
 }
 
 interface PageProps {
