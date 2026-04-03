@@ -53,7 +53,7 @@ export default function Topbar({ alerts = [] }: { alerts?: Alert[] }) {
 
   return (
     <>
-      <header className="flex h-[56px] shrink-0 items-center border-b border-admin-border bg-admin-bg2/80 backdrop-blur-sm px-5">
+      <header className="relative z-40 flex h-[56px] shrink-0 items-center border-b border-admin-border bg-admin-bg2/80 backdrop-blur-sm px-5">
         {/* Left: Breadcrumb */}
         <div className="flex items-center gap-2">
           <span className="text-base">{page.emoji}</span>
