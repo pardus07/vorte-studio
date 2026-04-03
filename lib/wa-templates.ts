@@ -1,15 +1,16 @@
 /**
- * WhatsApp İlk Temas Mesaj Şablonları — v2
+ * WhatsApp İlk Temas Mesaj Şablonları — v3 (Brand-Voice)
  *
  * Pazarlama psikolojisi prensipleri:
- * - Sosyal kanıt (social proof): İstatistikler, sektör verileri
+ * - Pattern interrupt: Her şablon FARKLI açılış (soru, iddia, istatistik)
  * - Kayıp korkusu (loss aversion): Rakiplere kaybedilen müşteri vurgusu
  * - Merak boşluğu (curiosity gap): Linke tıklatmak için eksik bilgi bırakma
+ * - Sosyal kanıt (social proof): Sektöre özel spesifik istatistikler
  * - Karşılıklılık (reciprocity): Ücretsiz değer sunma
- * - Aciliyet (urgency): Zaman sınırlı teklif hissi (yumuşak)
- * - Spesifik rakamlar: Yuvarlak değil kesin sayılar güven verir
+ * - Aciliyet (urgency): Yumuşak zaman sınırlı teklif hissi
  *
  * Placeholder'lar: {firma}, {sektor}, {sehir}, {sorun}, {link}
+ * Emoji kuralı: Max 1-2 emoji, sadece link için 👉
  */
 
 import { getTemplateName } from "./template-selector";
@@ -26,226 +27,231 @@ export type WaTemplateData = {
 // ── Sektör grubu → mesaj şablonu ──
 
 const templates: Record<string, string> = {
-  // ── Sağlık ──
-  saglik: `Merhaba {firma} 👋
+  // ── Sağlık ── (hook: güven + korku)
+  saglik: `{firma} — kısa bir sorum var:
 
-{sehir}'da {sektor} araştırması yaparken Google'da sizi inceledik.
+{sehir}'da {sektor} arayan bir hasta Google'a ne yazar biliyor musunuz?
 
-Dikkat çeken bir şey fark ettik: {sorun}
-
-Neden önemli? Hastaların %82'si randevu almadan önce kliniği Google'da arıyor. İlk 3 saniyede profesyonel bir site göremezlerse, bir sonraki kliniğe geçiyor.
-
-Sizin sektörünüze özel bir site tasarladık — nasıl görüneceğini merak ediyor musunuz?
-
-👉 {link}
-
-30 saniye sürer, taahhüt yok. Sadece bakın, beğenirseniz konuşalım.
-
-Vorte Studio
-Web & Mobil Çözümler`,
-
-  // ── Güzellik & Bakım ──
-  guzellik: `Merhaba {firma} 👋
-
-{sehir}'da {sektor} sektörünü araştırırken profilinizi gördük — Google puanınız etkileyici! 🌟
-
-Ama bir şey dikkatimizi çekti: {sorun}
-
-Bugün müşterilerin %74'ü randevu almadan önce salonu online araştırıyor. Rakipleriniz bunu biliyor — {sehir}'daki 10 salondan 6'sı son 1 yılda web sitesi yaptırdı.
-
-Sizin tarzınıza uygun bir demo site hazırladık:
-👉 {link}
-
-Beğenmezseniz hiçbir yükümlülüğünüz yok. Sadece 30 saniye ayırın.
-
-Vorte Studio`,
-
-  // ── Yeme-İçme ──
-  yemeicme: `Merhaba {firma} 👋
-
-{sehir}'da {sektor} araması yapan birisi olarak söylüyorum — Google'da sizi bulmak kolay, ama ilk izlenim güçlendirilmeli.
+Biz yazdık. Ve karşımıza çıkan sonuçlarda sizi inceledik.
 
 {sorun}
 
-Bilgi: Yemek sektöründe web sitesi olan işletmeler, olmayanlara göre %43 daha fazla yeni müşteri kazanıyor. Online menü, konum ve sipariş butonu — hepsi tek sayfada.
+Rakam net: Hastaların %82'si randevu öncesi kliniği Google'da arıyor. 3 saniyede profesyonel bir site göremezlerse sıradaki kliniğe geçiyor. Her gün bu şekilde kaçan hastaları düşünün.
 
-Size özel hazırladığımız demo siteye bakmanızı öneriyoruz:
+Kliniğinize özel bir site tasarladık — 30 saniyede bakın:
 👉 {link}
 
-Tamamen ücretsiz bakın, taahhüt yok. Hoşunuza giderse 5 dk konuşalım.
+Taahhüt yok. Beğenirseniz konuşalım, beğenmezseniz sıfır yükümlülük.
 
 Vorte Studio`,
 
-  // ── Gıda Perakende ──
-  gida: `Merhaba {firma} 👋
+  // ── Güzellik & Bakım ── (hook: sosyal kanıt + trend)
+  guzellik: `Biliyor muydunuz? {sehir}'daki her 10 salondan 6'sı son 1 yılda web sitesi yaptırdı.
+
+{firma} olarak Google puanınız etkileyici — ama bir şey eksik:
+
+{sorun}
+
+Müşterilerin %74'ü randevu almadan önce salonu online araştırıyor. Instagram güzel ama yetmiyor, çünkü Google aramasında Instagram sayfanız 3. sayfada kalıyor.
+
+Sizin tarzınıza özel bir demo hazırladık:
+👉 {link}
+
+30 saniyenizi alır, beğenmezseniz hiçbir yükümlülük yok.
+
+Vorte Studio`,
+
+  // ── Yeme-İçme ── (hook: kayıp korkusu + somut fayda)
+  yemeicme: `{firma} — dün gece {sehir}'da "{sektor}" diye Google'a yazdık.
+
+Sizi bulduk, ama ilk izlenim eksik kalmış.
+
+{sorun}
+
+Net veri: Web sitesi olan yeme-içme işletmeleri %43 daha fazla yeni müşteri kazanıyor. Online menü, konum haritası, sipariş butonu — tek sayfada hepsi.
+
+Sizin restoranınıza özel bir site tasarladık:
+👉 {link}
+
+Tamamen ücretsiz bakın. Hoşunuza giderse 5 dk konuşalım.
+
+Vorte Studio`,
+
+  // ── Gıda Perakende ── (hook: müşteri sadakati + merak)
+  gida: `{firma} — düzenli müşterileriniz bile kampanyalarınızdan haberdar olamıyorsa bir sorun var.
 
 {sehir}'da {sektor} sektörünü incelerken sizi fark ettik.
 
 {sorun}
 
-Bir gerçek: Düzenli müşterileriniz bile kampanya ve yeni ürünlerinizden haberdar olmak istiyor. Web sitesi olan marketler, müşteri sadakatini %38 artırıyor.
+Web sitesi olan gıda işletmeleri müşteri sadakatini %38 artırıyor. Kampanya duyurusu, ürün kataloğu, WhatsApp sipariş butonu — hepsi bir arada.
 
-Sektörünüze özel hazırladığımız örnek siteyi görmelisiniz:
+Sektörünüze özel örnek siteyi görmeniz lazım:
 👉 {link}
 
 30 saniye bakın — beğenirseniz ücretsiz keşif görüşmesi yapalım.
 
 Vorte Studio`,
 
-  // ── Otomotiv ──
-  otomotiv: `Merhaba {firma} 👋
+  // ── Otomotiv ── (hook: aciliyet + kayıp)
+  otomotiv: `{firma} — şu an {sehir}'da "{sektor}" arayan bir araç sahibi Google'a bakıyor.
 
-{sehir}'da {sektor} araştırması yapan bir müşteri perspektifinden bakıyoruz.
+Sizi buluyor mu? Yoksa rakibinize mi gidiyor?
 
 {sorun}
 
-Gerçek: Araç sahiplerinin %67'si servis seçerken önce Google'a bakıyor. Profesyonel bir siteye sahip servisler, telefon ile randevu taleplerinde %52 artış görüyor.
+Araç sahiplerinin %67'si servis seçerken Google'a bakıyor. Profesyonel sitesi olan servisler %52 daha fazla randevu talebi alıyor. Her geçen gün bu farkı rakipleriniz lehine büyütüyor.
 
-Tam sizin sektörünüze özel bir demo hazırladık:
+Tam sizin sektöre özel bir demo hazırladık:
 👉 {link}
 
-Sadece bakmanızı istiyoruz — beğenmezseniz sıfır yükümlülük.
+Bakmanız 30 saniye sürer — beğenmezseniz sıfır yükümlülük.
 
 Vorte Studio`,
 
-  // ── İnşaat & Tadilat ──
-  insaat: `Merhaba {firma} 👋
+  // ── İnşaat & Tadilat ── (hook: güven problemi + portfolyo)
+  insaat: `Bir müşteri {sehir}'da {sektor} firması arıyor. Teklif almadan önce ne yapıyor biliyor musunuz?
 
-{sehir}'da {sektor} firması arayan bir müşteri gözünden baktık.
+Firmanın web sitesine ve referanslarına bakıyor. %71'i bunu yapıyor.
 
+{firma} olarak sizi inceledik:
 {sorun}
 
-Önemli bir veri: Tadilat/inşaat müşterilerinin %71'i teklif almadan önce firmanın web sitesini ve referanslarını kontrol ediyor. Site olmadan güven kurmak çok zor.
+Web sitesi olmadan güven kurmak neredeyse imkansız. Projelerinizi sergileyen profesyonel bir portfolyo, fiyat rekabeti yerine kalite rekabetine geçmenizi sağlar.
 
-Projelerinizi sergileyen bir portfolyo sitesi nasıl görünür?
+Nasıl görüneceğini hazırladık:
 👉 {link}
 
 Ücretsiz bakın. Taahhüt yok, sadece bir fikir.
 
 Vorte Studio`,
 
-  // ── Eğitim ──
-  egitim: `Merhaba {firma} 👋
+  // ── Eğitim ── (hook: veli psikolojisi + güvenilirlik)
+  egitim: `{firma} — velilerin %89'u kayıt öncesi kurumunuzu Google'da arıyor. Peki ne görüyorlar?
 
-{sehir}'da {sektor} araştırması yaparken kurumunuzu inceledik.
+{sehir}'da {sektor} araştırması yaparken sizi inceledik.
 
 {sorun}
 
-Velilerin %89'u kayıt öncesi okul/kurs hakkında online araştırma yapıyor. Profesyonel bir web sitesi, velilerin gözünde kurumsal güvenilirliğin ilk göstergesi.
+Profesyonel bir web sitesi, velilerin gözünde kurumsal güvenilirliğin ilk göstergesi. Kadro bilgisi, program detayları, başarı hikayeleri — bunlar kaydı tetikleyen unsurlar.
 
-Sizin kurumunuza özel tasarladığımız demo siteye göz atın:
+Kurumunuza özel tasarladığımız demo siteye göz atın:
 👉 {link}
 
 30 saniye ayırın — beğenirseniz ücretsiz keşif görüşmesi yapalım.
 
 Vorte Studio`,
 
-  // ── Konaklama ──
-  konaklama: `Merhaba {firma} 👋
+  // ── Konaklama ── (hook: komisyon kaybı + direkt gelir)
+  konaklama: `{firma} — Booking ve Trivago'ya her rezervasyonda %15-25 komisyon ödüyorsunuz. Bunu sıfırlayabilirsiniz.
 
-{sehir}'da konaklama seçenekleri araştırırken sizi bulduk.
+{sehir}'da konaklama araştırırken sizi inceledik.
 
 {sorun}
 
-Kritik bilgi: Misafirlerin %91'i rezervasyon öncesi otelin web sitesini inceliyor. Booking/Trivago komisyonları %15-25 arasında — kendi sitenizden direkt rezervasyon bu maliyeti sıfırlar.
+Misafirlerin %91'i rezervasyon öncesi otelin kendi sitesini arıyor. Profesyonel bir site ile direkt rezervasyon alarak aracı komisyonlarını ortadan kaldırabilirsiniz.
 
-Size özel hazırladığımız demo siteyi inceleyin:
+Size özel bir demo hazırladık:
 👉 {link}
 
 Ücretsiz bakın, beğenirseniz konuşalım.
 
 Vorte Studio`,
 
-  // ── Spor & Fitness ──
-  spor: `Merhaba {firma} 👋
+  // ── Spor & Fitness ── (hook: üye kazanımı + trend)
+  spor: `{firma} — {sehir}'da spor salonu arayan birinin ilk yaptığı şey ne biliyor musunuz?
 
-{sehir}'da {sektor} araştırması yaparken salonunuzu inceledik 💪
+Google'a yazıp ders programı, fiyat ve tesis fotoğraflarına bakmak. %68'i bunu yapıyor.
 
 {sorun}
 
-Bilgi: Spor salonu arayan kişilerin %68'i üyelik öncesi online ders programı, fiyat ve tesis fotoğraflarını araştırıyor. Web sitesi olan salonlar %45 daha fazla yeni üye kazanıyor.
+Web sitesi olan salonlar %45 daha fazla yeni üye kazanıyor. Online ders takvimi, üyelik paketleri, tesis galerisi — potansiyel üyenin aradığı her şey tek yerde.
 
-Salonunuza özel tasarladığımız demo siteye bakın:
+Salonunuza özel demo siteye bakın:
 👉 {link}
 
 Taahhüt yok — sadece bakın, fikir edinmeniz yeterli.
 
 Vorte Studio`,
 
-  // ── Atölye & İmalat ──
-  imalat: `Merhaba {firma} 👋
+  // ── Atölye & İmalat ── (hook: B2B güven + iş fırsatı)
+  imalat: `{firma} — B2B müşterilerinizin %73'ü sizi Google'da arıyor. Ne buluyorlar?
 
-{sehir}'da {sektor} firması araştırırken sizi bulduk.
+{sehir}'da {sektor} araştırırken sizi fark ettik.
 
 {sorun}
 
-B2B müşterilerin %73'ü iş ortağı seçerken firma web sitesini kontrol ediyor. Profesyonel bir site, yeni iş fırsatları ve güvenilir firma imajı demek.
+Profesyonel bir web sitesi, yeni iş fırsatları demek. Ürün kataloğu, referanslar, kapasite bilgisi — bunlar potansiyel iş ortağını ikna eden unsurlar.
 
-Sektörünüze özel hazırladığımız örnek siteye göz atın:
+Sektörünüze özel bir örnek hazırladık:
 👉 {link}
 
-Ücretsiz keşif — taahhütsüz. 30 saniyenizi alır.
+30 saniye bakın, taahhütsüz. Beğenirseniz konuşalım.
 
 Vorte Studio`,
 
-  // ── Hizmet & Profesyonel ──
-  profesyonel: `Merhaba {firma} 👋
+  // ── Hizmet & Profesyonel ── (hook: uzmanlık kanıtı + ilk izlenim)
+  profesyonel: `{firma} — potansiyel müşterilerinizin %76'sı ilk temas öncesi web sitenizi ziyaret ediyor.
+
+Peki şu an ne görüyorlar?
 
 {sehir}'da {sektor} araştırması yaparken profilinizi inceledik.
 
 {sorun}
 
-Müvekkil/müşteri davranışı: %76'sı ilk temas öncesi firmanın web sitesini ziyaret ediyor. Kurumsal bir site, uzmanlığınızı ve referanslarınızı sergilemenin en etkili yolu.
+Kurumsal bir web sitesi, uzmanlığınızı ve referanslarınızı sergilemenin en etkili yolu. Hizmet alanları, ekip bilgisi, başarı hikayeleri — güveni dijitalde inşa edin.
 
-Size özel hazırladığımız profesyonel demo siteye bakın:
+Size özel profesyonel demo siteye bakın:
 👉 {link}
 
 Tamamen ücretsiz — beğenirseniz 10 dk konuşalım.
 
 Vorte Studio`,
 
-  // ── Perakende ──
-  perakende: `Merhaba {firma} 👋
+  // ── Perakende ── (hook: mağaza trafiği + online keşif)
+  perakende: `{firma} — müşterilerinizin %69'u mağazanıza gelmeden önce sizi online arıyor. Bulabiliyorlar mı?
 
-{sehir}'da {sektor} sektörünü araştırırken mağazanızı fark ettik.
+{sehir}'da {sektor} araştırırken sizi fark ettik.
 
 {sorun}
 
-Tüketici araştırması: Müşterilerin %69'u mağazaya gitmeden önce ürünleri ve çalışma saatlerini online kontrol ediyor. Web sitesi olan mağazalar %41 daha fazla yaya trafiği alıyor.
+Web sitesi olan mağazalar %41 daha fazla ziyaretçi alıyor. Ürün vitrini, çalışma saatleri, konum haritası — müşteriyi kapınıza getiren üçlü.
 
-Mağazanıza özel hazırladığımız demo siteye bakın:
+Mağazanıza özel demo siteye bakın:
 👉 {link}
 
 30 saniye ayırın — taahhüt yok, beğenirseniz konuşalım.
 
 Vorte Studio`,
 
-  // ── Teknik Servis ──
-  teknik: `Merhaba {firma} 👋
+  // ── Teknik Servis ── (hook: acil arama davranışı)
+  teknik: `{firma} — kliması bozulan, kombi arıza veren biri ne yapar? Google'a yazar ve ilk 3 sonuca bakar.
 
-{sehir}'da {sektor} arayan bir müşteri gözünden bakıyoruz.
+Sizin orada olmanız lazım.
+
+{sehir}'da {sektor} arayan bir müşteri gözünden baktık.
 
 {sorun}
 
-Acil servis aramasında müşterinin davranışı: Google'da ilk 3 sonuca bakar, web sitesi olan güvenilir görüneni arar. Web sitesi olan servisler %58 daha fazla çağrı alıyor.
+Web sitesi olan servisler %58 daha fazla çağrı alıyor. Acil servis numarası, hizmet bölgesi, fiyat bilgisi — müşteri bunları 10 saniyede görmek istiyor.
 
-Sektörünüze özel demo sitemize bakmanızı öneriyoruz:
+Sektörünüze özel demo siteye bakın:
 👉 {link}
 
 Ücretsiz — beğenmezseniz sıfır yükümlülük.
 
 Vorte Studio`,
 
-  // ── Diğer Hizmetler ──
-  diger: `Merhaba {firma} 👋
+  // ── Diğer Hizmetler ── (hook: dijital güven + genel)
+  diger: `{firma} — {sehir}'da {sektor} arayan potansiyel müşterileriniz sizi Google'da buluyor mu?
 
-{sehir}'da {sektor} araştırması yaparken sizi fark ettik.
+Biz aradık ve şunu fark ettik:
 
 {sorun}
 
-Dijital dünyada bir gerçek: Potansiyel müşterilerin %72'si hizmet almadan önce firmayı Google'da araştırıyor. Profesyonel bir web sitesi, güvenin ilk adımı.
+Müşterilerin %72'si hizmet almadan önce firmayı online araştırıyor. Profesyonel bir web sitesi, güvenin ilk adımı — telefonu açmadan önce karar zaten veriliyor.
 
-Size özel hazırladığımız demo siteye bir göz atın:
+Size özel bir demo site hazırladık:
 👉 {link}
 
 Tamamen ücretsiz, taahhütsüz — 30 saniyenizi alır.
