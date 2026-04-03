@@ -116,9 +116,54 @@ interface PageProps {
   params: Promise<{ slug: string }>
 }
 
+// demo-{templateSlug} veya demo-{templateSlug}-{leadId} parse et
+function parseDemoSlug(slug: string): { templateId: string; leadId?: string } | null {
+  const rest = slug.replace('demo-', '')
+
+  // Önce direkt template key mi diye bak
+  if (previewData[rest]) return { templateId: rest }
+
+  // Bilinen template key'lerini uzundan kısaya sırala (doğru eşleşme için)
+  const keys = Object.keys(previewData).sort((a, b) => b.length - a.length)
+  for (const key of keys) {
+    if (rest.startsWith(key + '-')) {
+      const leadId = rest.slice(key.length + 1)
+      if (leadId) return { templateId: key, leadId }
+    }
+  }
+
+  return null
+}
+
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params
 
+  // Demo modu (WA şablonlarından gelen lead'ler)
+  if (slug.startsWith('demo-')) {
+    const parsed = parseDemoSlug(slug)
+    if (!parsed) return { title: 'Sayfa Bulunamadı' }
+
+    // Lead ID varsa DB'den firma adını çek
+    if (parsed.leadId) {
+      try {
+        const lead = await prisma.lead.findUnique({ where: { id: parsed.leadId } })
+        if (lead) {
+          return {
+            title: `Ücretsiz Teklif — ${lead.name} | Vorte Studio`,
+            robots: 'noindex, nofollow',
+          }
+        }
+      } catch { /* fallthrough to preview */ }
+    }
+
+    const demo = previewData[parsed.templateId]
+    return {
+      title: `Ücretsiz Teklif — ${demo?.firmName || 'Demo'} | Vorte Studio`,
+      robots: 'noindex, nofollow',
+    }
+  }
+
+  // Önizleme modu (admin preview)
   if (slug.startsWith('preview-')) {
     const templateId = slug.replace('preview-', '')
     const demo = previewData[templateId]
@@ -147,10 +192,63 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   }
 }
 
+// Adresten şehir çıkar (lead.address → şehir)
+function extractCityFromAddress(address?: string | null): string {
+  if (!address) return 'Türkiye'
+  const parts = address.split(/[,\/]/)
+  const cities = [
+    'İstanbul', 'Ankara', 'İzmir', 'Bursa', 'Antalya', 'Adana', 'Konya',
+    'Gaziantep', 'Mersin', 'Kayseri', 'Eskişehir', 'Diyarbakır', 'Samsun',
+    'Denizli', 'Trabzon', 'Malatya', 'Sakarya', 'Muğla', 'Kocaeli',
+  ]
+  for (const part of parts) {
+    const trimmed = part.trim()
+    if (cities.some((c) => trimmed.includes(c))) return trimmed
+  }
+  return parts[0]?.trim() || 'Türkiye'
+}
+
 export default async function ChatPage({ params }: PageProps) {
   const { slug } = await params
 
-  // Önizleme modu
+  // Demo modu (WA şablonlarından gelen lead'ler)
+  if (slug.startsWith('demo-')) {
+    const parsed = parseDemoSlug(slug)
+    if (!parsed) notFound()
+
+    // Lead ID varsa DB'den kişiselleştirilmiş veri çek
+    if (parsed.leadId) {
+      try {
+        const lead = await prisma.lead.findUnique({ where: { id: parsed.leadId } })
+        if (lead) {
+          const demo = previewData[parsed.templateId]
+          return (
+            <ChatForm
+              firmName={lead.name}
+              city={extractCityFromAddress(lead.address)}
+              sector={lead.sector || demo?.sector || 'Genel'}
+              slug={slug}
+            />
+          )
+        }
+      } catch { /* fallthrough to generic demo */ }
+    }
+
+    // Lead bulunamazsa generic demo data
+    const demo = previewData[parsed.templateId]
+    if (!demo) notFound()
+
+    return (
+      <ChatForm
+        firmName={demo.firmName}
+        city={demo.city}
+        sector={demo.sector}
+        slug={slug}
+      />
+    )
+  }
+
+  // Önizleme modu (admin preview)
   if (slug.startsWith('preview-')) {
     const templateId = slug.replace('preview-', '')
     const demo = previewData[templateId]
@@ -166,7 +264,7 @@ export default async function ChatPage({ params }: PageProps) {
     )
   }
 
-  // Gerçek veri
+  // Gerçek veri (prospect sayfaları)
   let page = null
   try {
     page = await prisma.prospectPage.findUnique({
