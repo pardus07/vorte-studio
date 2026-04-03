@@ -73,6 +73,8 @@ model Lead {
 
   createdAt     DateTime   @default(now())
   updatedAt     DateTime   @updatedAt
+
+  chatSubmissions ChatSubmission[]
 }
 
 enum LeadSource {
@@ -92,6 +94,49 @@ enum LeadStatus {
   QUOTED
   WON
   LOST
+}
+
+// ── Chatbot Başvuru ──
+model ChatSubmission {
+  id              String   @id @default(cuid())
+  leadId          String?
+  lead            Lead?    @relation(fields: [leadId], references: [id], onDelete: SetNull)
+  slug            String                // hangi demo sayfasından geldi
+  firmName        String                // ziyaret edilen firma adı
+  contactName     String?               // müşterinin verdiği isim
+  contactPhone    String?               // telefon
+  siteType        String?               // tanitim/e-ticaret/portfoy/randevu/katalog
+  features        Json     @default("[]") // seçilen özellikler (string array)
+  pageCount       String?               // 1-5/5-10/10+/siz-karar-verin
+  contentStatus   String?               // hazir/logo-var/hicbir-sey-yok/mevcut-site
+  hostingStatus   String?               // var/yok/bilmiyor
+  hostingProvider String?               // müşterinin mevcut hosting firması
+  domainStatus    String?               // var/yok/bilmiyor
+  domainName      String?               // müşterinin mevcut domain'i
+  timeline        String?               // acil/1-ay/2-3-ay/esnek
+  message         String?  @db.Text     // ek not
+  sector          String?
+  city            String?
+  completedSteps  Int      @default(0)  // kaçıncı adıma kadar geldi (1-12)
+  score           String   @default("cold") // hot/warm/cold
+  calculatedPrice Float?                // otomatik hesaplanan fiyat (TL)
+  estimatedHours  Float?                // tahmini toplam saat
+  tokenCost       Float?                // AI token maliyeti (TL)
+  isRead          Boolean  @default(false) // admin okudu mu
+  createdAt       DateTime @default(now())
+}
+
+// ── Fiyat Ayarları ──
+model PricingConfig {
+  id        String   @id @default(cuid())
+  category  String   // labor, base, feature, content, hosting, urgency, token
+  key       String   @unique // ör: base_tanitim, feature_randevu, urgency_acil
+  label     String   // Türkçe etiket
+  value     Float    // fiyat (TL), saat, veya çarpan
+  unit      String?  // saat, tl, carpan, dolar
+  sortOrder Int      @default(0)
+  isActive  Boolean  @default(true)
+  updatedAt DateTime @updatedAt
 }
 
 // ── Prospect (Maps Scraper sonuçları) ──
