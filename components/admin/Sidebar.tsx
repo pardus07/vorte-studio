@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
 import { cn } from "@/lib/utils";
+import { useSidebar } from "./SidebarContext";
 
 const sections = [
   {
@@ -63,289 +64,283 @@ const sections = [
 
 export default function Sidebar() {
   const pathname = usePathname();
+  const { collapsed, toggle } = useSidebar();
 
   return (
-    <aside className="flex w-[220px] shrink-0 flex-col border-r border-admin-border bg-admin-bg2">
+    <aside
+      className={cn(
+        "group/sidebar relative flex shrink-0 flex-col border-r border-admin-border bg-admin-bg2 transition-all duration-300 ease-in-out",
+        collapsed ? "w-[72px]" : "w-[260px]"
+      )}
+    >
       {/* Logo */}
-      <div className="flex items-center gap-2.5 border-b border-admin-border px-4 py-4">
-        <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-admin-accent text-sm font-bold text-white">
+      <div className="flex items-center gap-3 border-b border-admin-border px-4 py-4">
+        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-admin-accent to-orange-600 text-sm font-bold text-white shadow-lg shadow-admin-accent/20">
           V
         </div>
-        <span className="text-[13px] font-semibold tracking-tight text-admin-text">
+        <span
+          className={cn(
+            "whitespace-nowrap text-[14px] font-semibold tracking-tight text-admin-text transition-all duration-300",
+            collapsed && "w-0 overflow-hidden opacity-0"
+          )}
+        >
           VORTE<span className="text-admin-accent">.</span>STUDIO
         </span>
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 overflow-y-auto px-2.5 py-3">
+      <nav className="flex-1 overflow-y-auto px-3 py-4">
         {sections.map((section) => (
-          <div key={section.label} className="mb-4">
-            <div className="mb-1.5 px-2.5 text-[10px] font-medium uppercase tracking-[0.08em] text-admin-muted">
-              {section.label}
+          <div key={section.label} className="mb-5">
+            <div
+              className={cn(
+                "mb-2 px-3 text-[10px] font-semibold uppercase tracking-[0.1em] text-admin-muted2 transition-all duration-300",
+                collapsed && "text-center text-[8px] tracking-[0.05em]"
+              )}
+            >
+              {collapsed ? section.label.charAt(0) : section.label}
             </div>
-            {section.items.map((item) => {
-              const active = pathname === item.href;
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className={cn(
-                    "group flex items-center gap-2.5 rounded-lg px-2.5 py-[7px] text-[13px] transition-colors",
-                    active
-                      ? "bg-admin-accent-dim font-medium text-admin-accent"
-                      : "text-admin-muted hover:bg-admin-bg3 hover:text-admin-text"
-                  )}
-                >
-                  <item.icon
+            <div className="space-y-0.5">
+              {section.items.map((item) => {
+                const active =
+                  pathname === item.href ||
+                  (item.href !== "/admin/dashboard" &&
+                    pathname.startsWith(item.href));
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    title={collapsed ? item.name : undefined}
                     className={cn(
-                      "h-4 w-4 shrink-0",
+                      "group relative flex items-center gap-3 rounded-xl px-3 py-2.5 text-[13px] transition-all duration-200",
                       active
-                        ? "text-admin-accent"
-                        : "text-admin-muted group-hover:text-admin-text"
+                        ? "bg-admin-accent/12 font-medium text-admin-accent shadow-sm shadow-admin-accent/5"
+                        : "text-admin-muted hover:bg-admin-bg3 hover:text-admin-text",
+                      collapsed && "justify-center px-0"
                     )}
-                  />
-                  {item.name}
-                  {"badge" in item && item.badge && (
+                  >
+                    {/* Active indicator bar */}
+                    {active && (
+                      <div className="absolute left-0 top-1/2 h-5 w-[3px] -translate-y-1/2 rounded-r-full bg-admin-accent shadow-[0_0_8px_rgba(249,115,22,0.4)]" />
+                    )}
+                    <item.icon
+                      className={cn(
+                        "h-[18px] w-[18px] shrink-0 transition-colors duration-200",
+                        active
+                          ? "text-admin-accent"
+                          : "text-admin-muted group-hover:text-admin-text"
+                      )}
+                    />
                     <span
                       className={cn(
-                        "ml-auto rounded-full px-1.5 py-0.5 text-[10px] font-medium leading-none",
-                        item.badgeColor === "amber"
-                          ? "bg-admin-amber-dim text-admin-amber"
-                          : "bg-admin-red-dim text-admin-red"
+                        "transition-all duration-300",
+                        collapsed && "hidden"
                       )}
                     >
-                      {item.badge}
+                      {item.name}
                     </span>
-                  )}
-                </Link>
-              );
-            })}
+                    {"badge" in item && item.badge && !collapsed && (
+                      <span
+                        className={cn(
+                          "ml-auto flex h-5 min-w-5 items-center justify-center rounded-full px-1.5 text-[10px] font-semibold leading-none",
+                          item.badgeColor === "amber"
+                            ? "bg-admin-amber/15 text-admin-amber"
+                            : "bg-admin-red/15 text-admin-red animate-pulse"
+                        )}
+                      >
+                        {item.badge}
+                      </span>
+                    )}
+                  </Link>
+                );
+              })}
+            </div>
           </div>
         ))}
       </nav>
 
+      {/* Collapse toggle */}
+      <button
+        onClick={toggle}
+        className="flex items-center justify-center border-t border-admin-border px-4 py-3 text-admin-muted transition-colors hover:bg-admin-bg3 hover:text-admin-text"
+      >
+        <CollapseIcon
+          className={cn(
+            "h-4 w-4 transition-transform duration-300",
+            collapsed && "rotate-180"
+          )}
+        />
+        <span
+          className={cn(
+            "ml-2 text-[12px] font-medium transition-all duration-300",
+            collapsed && "hidden"
+          )}
+        >
+          Daralt
+        </span>
+      </button>
+
       {/* User row */}
-      <div className="border-t border-admin-border px-4 py-3">
-        <div className="flex items-center gap-2.5">
-          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-admin-bg4 text-xs font-medium text-admin-muted">
+      <div className="border-t border-admin-border px-3 py-3">
+        <div
+          className={cn(
+            "flex items-center gap-3",
+            collapsed && "justify-center"
+          )}
+        >
+          <div className="relative flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-admin-bg4 to-admin-bg3 text-xs font-semibold text-admin-muted ring-2 ring-admin-border">
             IA
+            <div className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full border-2 border-admin-bg2 bg-admin-green" />
           </div>
-          <div className="min-w-0 flex-1">
-            <div className="text-[13px] font-medium text-admin-text">
-              Ibrahim Abi
-            </div>
-            <div className="text-[11px] text-admin-muted">
-              www.vortestudio.com
-            </div>
-          </div>
-          <button
-            onClick={() => signOut({ callbackUrl: "/login" })}
-            title="Çıkış Yap"
-            className="flex h-7 w-7 items-center justify-center rounded-lg text-admin-muted transition-colors hover:bg-admin-bg4 hover:text-admin-red"
-          >
-            <LogoutIcon className="h-4 w-4" />
-          </button>
+          {!collapsed && (
+            <>
+              <div className="min-w-0 flex-1">
+                <div className="text-[13px] font-medium text-admin-text">
+                  İbrahim Abi
+                </div>
+                <div className="text-[11px] text-admin-muted">Yönetici</div>
+              </div>
+              <button
+                onClick={() => signOut({ callbackUrl: "/login" })}
+                title="Çıkış Yap"
+                className="flex h-8 w-8 items-center justify-center rounded-lg text-admin-muted transition-all hover:bg-admin-red/10 hover:text-admin-red"
+              >
+                <LogoutIcon className="h-4 w-4" />
+              </button>
+            </>
+          )}
         </div>
       </div>
     </aside>
   );
 }
 
-/* ── SVG Icons (16x16, stroke-based, currentColor) ── */
+/* ── SVG Icons (18x18, stroke-based, currentColor) ── */
 
 function DashboardIcon({ className }: { className?: string }) {
   return (
-    <svg
-      className={className}
-      viewBox="0 0 16 16"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.5"
-    >
-      <rect x="1" y="1" width="6" height="6" rx="1.5" />
-      <rect x="9" y="1" width="6" height="6" rx="1.5" />
-      <rect x="1" y="9" width="6" height="6" rx="1.5" />
-      <rect x="9" y="9" width="6" height="6" rx="1.5" />
+    <svg className={className} viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="1" y="1" width="6.5" height="6.5" rx="2" />
+      <rect x="10.5" y="1" width="6.5" height="6.5" rx="2" />
+      <rect x="1" y="10.5" width="6.5" height="6.5" rx="2" />
+      <rect x="10.5" y="10.5" width="6.5" height="6.5" rx="2" />
     </svg>
   );
 }
 
 function ProspectIcon({ className }: { className?: string }) {
   return (
-    <svg
-      className={className}
-      viewBox="0 0 16 16"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.5"
-    >
-      <circle cx="8" cy="8" r="6.5" />
-      <path d="M8 4v4l3 2" />
+    <svg className={className} viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="7.5" cy="7.5" r="5.5" />
+      <path d="M16 16l-3.5-3.5" />
     </svg>
   );
 }
 
 function CrmIcon({ className }: { className?: string }) {
   return (
-    <svg
-      className={className}
-      viewBox="0 0 16 16"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.5"
-    >
-      <path d="M10 2H6C4.9 2 4 2.9 4 4v8c0 1.1.9 2 2 2h4c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z" />
-      <path d="M6 6h4M6 9h4M6 12h2" />
+    <svg className={className} viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M15 6a6 6 0 01-12 0" />
+      <circle cx="9" cy="6" r="3" />
+      <path d="M3 17v-1a6 6 0 0112 0v1" />
     </svg>
   );
 }
 
 function LeadIcon({ className }: { className?: string }) {
   return (
-    <svg
-      className={className}
-      viewBox="0 0 16 16"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.5"
-    >
-      <path d="M8 1L9.8 5.4L14.5 5.9L11 9.1L12 13.8L8 11.4L4 13.8L5 9.1L1.5 5.9L6.2 5.4L8 1z" />
+    <svg className={className} viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M9 1.5l2.3 4.7 5.2.75-3.75 3.65.9 5.15L9 13.5l-4.65 2.25.9-5.15L1.5 6.95l5.2-.75L9 1.5z" />
     </svg>
   );
 }
 
 function QuoteIcon({ className }: { className?: string }) {
   return (
-    <svg
-      className={className}
-      viewBox="0 0 16 16"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.5"
-    >
-      <path d="M12 2H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h8c.55 0 1-.45 1-1V3c0-.55-.45-1-1-1z" />
-      <path d="M5 6h6M5 9h4" />
+    <svg className={className} viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M14 2H4a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2V4a2 2 0 00-2-2z" />
+      <path d="M6 6h6M6 9.5h4M6 13h2" />
     </svg>
   );
 }
 
 function ProjectIcon({ className }: { className?: string }) {
   return (
-    <svg
-      className={className}
-      viewBox="0 0 16 16"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.5"
-    >
-      <rect x="1" y="3" width="14" height="10" rx="1.5" />
-      <path d="M5 7h6M5 10h4" />
+    <svg className={className} viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="2" y="3" width="14" height="12" rx="2" />
+      <path d="M6 7h6M6 10.5h4" />
     </svg>
   );
 }
 
 function FinanceIcon({ className }: { className?: string }) {
   return (
-    <svg
-      className={className}
-      viewBox="0 0 16 16"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.5"
-    >
-      <path d="M2 12V6l6-3.5L14 6v6l-6 3.5L2 12z" />
+    <svg className={className} viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M9 1v16M13 4H7a3 3 0 000 6h4a3 3 0 010 6H5" />
     </svg>
   );
 }
 
 function MaintenanceIcon({ className }: { className?: string }) {
   return (
-    <svg
-      className={className}
-      viewBox="0 0 16 16"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.5"
-    >
-      <circle cx="8" cy="8" r="2.5" />
-      <path d="M8 1v2M8 13v2M1 8h2M13 8h2" />
-    </svg>
-  );
-}
-
-function LogoutIcon({ className }: { className?: string }) {
-  return (
-    <svg
-      className={className}
-      viewBox="0 0 16 16"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.5"
-    >
-      <path d="M6 2H3.5A1.5 1.5 0 002 3.5v9A1.5 1.5 0 003.5 14H6" />
-      <path d="M10.5 11.5L14 8l-3.5-3.5" />
-      <path d="M14 8H6" />
+    <svg className={className} viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M14.7 6.3a1 1 0 000-1.4l-1.6-1.6a1 1 0 00-1.4 0l-2 2L13 8.6l1.7-2.3z" />
+      <path d="M9.7 5.3l-7.4 7.4a1.4 1.4 0 000 2l.4.4a1.4 1.4 0 002 0l7.4-7.4" />
     </svg>
   );
 }
 
 function PortfolioIcon({ className }: { className?: string }) {
   return (
-    <svg
-      className={className}
-      viewBox="0 0 16 16"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.5"
-    >
-      <rect x="1" y="4" width="14" height="9" rx="1.5" />
-      <path d="M5 4V3a1 1 0 011-1h4a1 1 0 011 1v1" />
+    <svg className={className} viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="1.5" y="4.5" width="15" height="10" rx="2" />
+      <path d="M6 4.5V3.5a1.5 1.5 0 011.5-1.5h3A1.5 1.5 0 0112 3.5v1" />
     </svg>
   );
 }
 
 function BlogIcon({ className }: { className?: string }) {
   return (
-    <svg
-      className={className}
-      viewBox="0 0 16 16"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.5"
-    >
-      <path d="M2 3h12M2 7h8M2 11h10M2 15h6" />
+    <svg className={className} viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M3 3h12M3 7h9M3 11h11M3 15h7" />
     </svg>
   );
 }
 
 function TemplatesIcon({ className }: { className?: string }) {
   return (
-    <svg
-      className={className}
-      viewBox="0 0 16 16"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.5"
-    >
-      <rect x="1" y="1" width="6" height="8" rx="1" />
-      <rect x="9" y="1" width="6" height="5" rx="1" />
-      <rect x="9" y="8" width="6" height="7" rx="1" />
-      <rect x="1" y="11" width="6" height="4" rx="1" />
+    <svg className={className} viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="1.5" y="1.5" width="6" height="8" rx="1.5" />
+      <rect x="10.5" y="1.5" width="6" height="5" rx="1.5" />
+      <rect x="10.5" y="9" width="6" height="7.5" rx="1.5" />
+      <rect x="1.5" y="12" width="6" height="4.5" rx="1.5" />
     </svg>
   );
 }
 
 function SettingsIcon({ className }: { className?: string }) {
   return (
-    <svg
-      className={className}
-      viewBox="0 0 16 16"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.5"
-    >
-      <circle cx="8" cy="8" r="2" />
-      <path d="M13.5 8a5.5 5.5 0 01-.4 2l1.2 1.2-1.4 1.4-1.2-1.2a5.5 5.5 0 01-2 .4v1.7h-2v-1.7a5.5 5.5 0 01-2-.4L4.5 12.6l-1.4-1.4 1.2-1.2a5.5 5.5 0 01-.4-2H2.2v-2h1.7a5.5 5.5 0 01.4-2L3.1 2.8l1.4-1.4 1.2 1.2a5.5 5.5 0 012-.4V.5h2v1.7a5.5 5.5 0 012 .4l1.2-1.2 1.4 1.4-1.2 1.2a5.5 5.5 0 01.4 2h1.7v2h-1.7z" />
+    <svg className={className} viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="9" cy="9" r="2.5" />
+      <path d="M9 1.5v2M9 14.5v2M1.5 9h2M14.5 9h2M3.4 3.4l1.4 1.4M13.2 13.2l1.4 1.4M3.4 14.6l1.4-1.4M13.2 4.8l1.4-1.4" />
+    </svg>
+  );
+}
+
+function LogoutIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M7 2H4a2 2 0 00-2 2v10a2 2 0 002 2h3" />
+      <path d="M12 13l3.5-4L12 5" />
+      <path d="M15.5 9H7" />
+    </svg>
+  );
+}
+
+function CollapseIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M12 13l-4-4 4-4" />
     </svg>
   );
 }

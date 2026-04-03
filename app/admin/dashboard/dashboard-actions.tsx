@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { isGSM, formatWANumber } from "@/lib/phone-utils";
+import { cn } from "@/lib/utils";
 
 type AlertItem = {
   type: string;
@@ -18,6 +19,13 @@ const dotColors: Record<string, string> = {
   amber: "bg-admin-amber",
   green: "bg-admin-green",
   blue: "bg-admin-blue",
+};
+
+const dotGlow: Record<string, string> = {
+  red: "shadow-[0_0_6px_rgba(239,68,68,0.4)]",
+  amber: "shadow-[0_0_6px_rgba(245,158,11,0.4)]",
+  green: "shadow-[0_0_6px_rgba(34,197,94,0.4)]",
+  blue: "shadow-[0_0_6px_rgba(59,130,246,0.4)]",
 };
 
 const actionRoutes: Record<string, string> = {
@@ -40,29 +48,39 @@ export function AlertList({ alerts }: { alerts: AlertItem[] }) {
       return;
     }
     const route = actionRoutes[alert.type];
-    if (route) {
-      router.push(route);
-    }
+    if (route) router.push(route);
   }
 
   return (
     <div className="divide-y divide-admin-border">
       {alerts.map((alert, i) => (
-        <div key={i} className="flex items-start gap-3 px-4 py-3">
+        <div
+          key={i}
+          className="group flex items-start gap-3 px-4 py-3.5 transition-colors hover:bg-admin-bg3/50"
+        >
           <div
-            className={`mt-1.5 h-2 w-2 shrink-0 rounded-full ${dotColors[alert.dot]}`}
+            className={cn(
+              "mt-1.5 h-2 w-2 shrink-0 rounded-full",
+              dotColors[alert.dot],
+              dotGlow[alert.dot]
+            )}
           />
           <div className="min-w-0 flex-1">
-            <div className="text-[12.5px] font-medium">{alert.title}</div>
-            <div className="text-[11px] text-admin-muted">{alert.meta}</div>
+            <div className="text-[13px] font-medium text-admin-text">
+              {alert.title}
+            </div>
+            <div className="mt-0.5 text-[11px] text-admin-muted">
+              {alert.meta}
+            </div>
           </div>
           <button
             onClick={() => handleAction(alert)}
-            className={`shrink-0 rounded px-2.5 py-1 text-[10px] font-medium transition-colors ${
+            className={cn(
+              "shrink-0 rounded-lg px-3 py-1.5 text-[11px] font-medium transition-all",
               alert.actionType === "primary"
-                ? "bg-admin-accent text-white hover:brightness-110"
-                : "border border-admin-border text-admin-muted hover:text-admin-text hover:bg-admin-bg3"
-            }`}
+                ? "bg-admin-accent text-white shadow-sm shadow-admin-accent/20 hover:brightness-110 hover:shadow-md hover:shadow-admin-accent/30"
+                : "border border-admin-border text-admin-muted hover:border-admin-border2 hover:bg-admin-bg4 hover:text-admin-text"
+            )}
           >
             {alert.action}
           </button>
@@ -85,11 +103,11 @@ type LeadRow = {
 };
 
 const sourceLabels: Record<string, { label: string; color: string }> = {
-  MAPS_SCRAPER: { label: "Maps Scraper", color: "bg-admin-accent-dim text-admin-accent" },
-  SITE_FORM: { label: "Site formu", color: "bg-admin-blue-dim text-admin-blue" },
-  LINKEDIN: { label: "LinkedIn", color: "bg-admin-purple-dim text-admin-purple" },
-  REFERRAL: { label: "Referans", color: "bg-admin-green-dim text-admin-green" },
-  MANUAL: { label: "Manuel", color: "bg-admin-amber-dim text-admin-amber" },
+  MAPS_SCRAPER: { label: "Maps Scraper", color: "bg-admin-accent/12 text-admin-accent" },
+  SITE_FORM: { label: "Site formu", color: "bg-admin-blue/12 text-admin-blue" },
+  LINKEDIN: { label: "LinkedIn", color: "bg-admin-purple/12 text-admin-purple" },
+  REFERRAL: { label: "Referans", color: "bg-admin-green/12 text-admin-green" },
+  MANUAL: { label: "Manuel", color: "bg-admin-amber/12 text-admin-amber" },
 };
 
 const statusLabels: Record<string, string> = {
@@ -102,26 +120,26 @@ const statusLabels: Record<string, string> = {
 };
 
 const statusColors: Record<string, string> = {
-  COLD: "bg-admin-green-dim text-admin-green",
-  CONTACTED: "bg-admin-blue-dim text-admin-blue",
-  MEETING: "bg-admin-amber-dim text-admin-amber",
-  QUOTED: "bg-admin-blue-dim text-admin-blue",
-  WON: "bg-admin-green-dim text-admin-green",
-  LOST: "bg-admin-red-dim text-admin-red",
+  COLD: "bg-admin-green/12 text-admin-green",
+  CONTACTED: "bg-admin-blue/12 text-admin-blue",
+  MEETING: "bg-admin-amber/12 text-admin-amber",
+  QUOTED: "bg-admin-blue/12 text-admin-blue",
+  WON: "bg-admin-green/12 text-admin-green",
+  LOST: "bg-admin-red/12 text-admin-red",
 };
 
 export function LeadTable({ leads }: { leads: LeadRow[] }) {
   return (
     <div className="overflow-x-auto">
-      <table className="w-full text-[12.5px]">
+      <table className="w-full text-[13px]">
         <thead>
-          <tr className="border-b border-admin-border text-left text-[11px] font-medium text-admin-muted">
-            <th className="px-4 py-2.5">İşletme</th>
-            <th className="px-4 py-2.5">Kaynak</th>
-            <th className="px-4 py-2.5">Tür</th>
-            <th className="px-4 py-2.5">Bütçe</th>
-            <th className="px-4 py-2.5">Durum</th>
-            <th className="px-4 py-2.5"></th>
+          <tr className="border-b border-admin-border text-left text-[11px] font-semibold uppercase tracking-wider text-admin-muted2">
+            <th className="px-4 py-3">İşletme</th>
+            <th className="px-4 py-3">Kaynak</th>
+            <th className="px-4 py-3">Tür</th>
+            <th className="px-4 py-3">Bütçe</th>
+            <th className="px-4 py-3">Durum</th>
+            <th className="px-4 py-3"></th>
           </tr>
         </thead>
         <tbody className="divide-y divide-admin-border">
@@ -130,34 +148,47 @@ export function LeadTable({ leads }: { leads: LeadRow[] }) {
             const st = statusLabels[lead.status] || lead.status;
             const stColor = statusColors[lead.status] || statusColors.COLD;
             return (
-              <tr key={lead.id} className="hover:bg-admin-bg3">
-                <td className="px-4 py-2.5">
-                  <div className="font-medium">{lead.name}</div>
-                  <div className="text-[11px] text-admin-muted">
+              <tr
+                key={lead.id}
+                className="group transition-colors hover:bg-admin-bg3/50"
+              >
+                <td className="px-4 py-3">
+                  <div className="font-medium text-admin-text">{lead.name}</div>
+                  <div className="mt-0.5 text-[11px] text-admin-muted">
                     {lead.address || lead.sector || ""}
                   </div>
                 </td>
-                <td className="px-4 py-2.5">
-                  <span className={`rounded-full px-2 py-0.5 text-[10px] font-medium ${src.color}`}>
+                <td className="px-4 py-3">
+                  <span
+                    className={cn(
+                      "inline-flex rounded-lg px-2.5 py-1 text-[10px] font-semibold",
+                      src.color
+                    )}
+                  >
                     {src.label}
                   </span>
                 </td>
-                <td className="px-4 py-2.5 text-admin-muted">
+                <td className="px-4 py-3 text-admin-muted">
                   {lead.type || "Web sitesi"}
                 </td>
-                <td className="px-4 py-2.5">
+                <td className="px-4 py-3 font-medium">
                   {lead.budget || "—"}
                 </td>
-                <td className="px-4 py-2.5">
-                  <span className={`rounded-full px-2 py-0.5 text-[10px] font-medium ${stColor}`}>
+                <td className="px-4 py-3">
+                  <span
+                    className={cn(
+                      "inline-flex rounded-lg px-2.5 py-1 text-[10px] font-semibold",
+                      stColor
+                    )}
+                  >
                     {st}
                   </span>
                 </td>
-                <td className="px-4 py-2.5">
+                <td className="px-4 py-3">
                   {isGSM(lead.phone) && (
                     <button
                       onClick={() => openWhatsApp(lead.phone)}
-                      className="rounded bg-admin-accent px-2.5 py-1 text-[10px] font-medium text-white hover:brightness-110 transition-colors"
+                      className="rounded-lg bg-admin-accent px-3 py-1.5 text-[11px] font-medium text-white shadow-sm shadow-admin-accent/20 transition-all hover:brightness-110 hover:shadow-md hover:shadow-admin-accent/30"
                     >
                       WA Gönder
                     </button>

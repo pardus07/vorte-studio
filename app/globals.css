@@ -42,7 +42,8 @@
   --font-mono: var(--font-geist-mono);
 
   /* ─── Spacing ─── */
-  --spacing-sidebar: 220px;
+  --spacing-sidebar: 260px;
+  --spacing-sidebar-collapsed: 72px;
 
   /* ─── Animasyonlar ─── */
   --animate-marquee: marquee 22s linear infinite;
