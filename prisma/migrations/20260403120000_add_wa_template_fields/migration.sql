@@ -1,0 +1,9 @@
+-- AlterEnum: Add new LeadStatus values
+ALTER TYPE "LeadStatus" ADD VALUE IF NOT EXISTS 'TEMPLATE_ADDED';
+ALTER TYPE "LeadStatus" ADD VALUE IF NOT EXISTS 'WA_SENT';
+
+-- AlterTable: Add WA template fields to Lead
+ALTER TABLE "Lead" ADD COLUMN IF NOT EXISTS "waTemplate" TEXT;
+ALTER TABLE "Lead" ADD COLUMN IF NOT EXISTS "waTemplateSector" TEXT;
+ALTER TABLE "Lead" ADD COLUMN IF NOT EXISTS "waTemplateSlug" TEXT;
+ALTER TABLE "Lead" ADD COLUMN IF NOT EXISTS "waSentAt" TIMESTAMP(3);

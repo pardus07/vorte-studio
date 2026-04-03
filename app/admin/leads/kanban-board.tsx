@@ -2,8 +2,10 @@
 
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { updateLeadStatus, convertLeadToClient, deleteLeadAction } from "@/actions/leads";
+import { updateLeadStatus, convertLeadToClient, deleteLeadAction, addWaTemplateToLead, markWaSent } from "@/actions/leads";
 import { isGSM, formatWANumber } from "@/lib/phone-utils";
+import { generateWaMessage, buildDemoLink, buildWaUrl, detectIssue, extractCity } from "@/lib/wa-templates";
+import { getTemplateName } from "@/lib/template-selector";
 import LeadFormModal from "./lead-form-modal";
 import LeadDetailModal from "./lead-detail-modal";
 
@@ -12,10 +14,15 @@ type Lead = {
   status: string; budget: string; sector: string; phone: string | null;
   email: string | null; website: string | null; address: string | null;
   notes: string | null; googleMapsUrl: string | null; updatedAt: string;
+  hasWebsite: boolean; mobileScore: number | null; sslValid: boolean;
+  waTemplate: string | null; waTemplateSector: string | null;
+  waTemplateSlug: string | null; waSentAt: string | null;
 };
 
 const columns = [
   { key: "COLD", label: "Soğuk Lead", icon: "🔵" },
+  { key: "TEMPLATE_ADDED", label: "Şablon Eklendi", icon: "📝" },
+  { key: "WA_SENT", label: "WA Gönderildi", icon: "📲" },
   { key: "CONTACTED", label: "İletişim Kuruldu", icon: "📞" },
   { key: "QUOTED", label: "Teklif Gönderildi", icon: "📄" },
   { key: "WON", label: "Onaylandı", icon: "✅" },
@@ -39,14 +46,16 @@ export default function KanbanBoard({ leads: initial }: { leads: Lead[] }) {
   const [notification, setNotification] = useState<{ msg: string; type: "success" | "error" | "info" } | null>(null);
   const [converting, setConverting] = useState<string | null>(null);
   const [deleting, setDeleting] = useState<string | null>(null);
+  const [templating, setTemplating] = useState<string | null>(null);
+  const [waSending, setWaSending] = useState<string | null>(null);
   const [showNewModal, setShowNewModal] = useState(false);
   const [detailLead, setDetailLead] = useState<Lead | null>(null);
+  const [previewLead, setPreviewLead] = useState<Lead | null>(null);
 
   // URL'de ?new=1 varsa otomatik olarak yeni lead modal'ını aç
   useEffect(() => {
     if (searchParams.get("new") === "1") {
       setShowNewModal(true);
-      // URL'den query param'ı temizle
       router.replace("/admin/leads", { scroll: false });
     }
   }, [searchParams, router]);
@@ -60,7 +69,7 @@ export default function KanbanBoard({ leads: initial }: { leads: Lead[] }) {
     const old = [...leads];
     setLeads((prev) => prev.map((l) => (l.id === id ? { ...l, status: newStatus } : l)));
     try {
-      await updateLeadStatus(id, newStatus as "COLD" | "CONTACTED" | "MEETING" | "QUOTED" | "WON" | "LOST");
+      await updateLeadStatus(id, newStatus as "COLD" | "TEMPLATE_ADDED" | "WA_SENT" | "CONTACTED" | "MEETING" | "QUOTED" | "WON" | "LOST");
     } catch {
       setLeads(old);
       showNotif("Durum güncellenemedi.", "error");
@@ -89,6 +98,73 @@ export default function KanbanBoard({ leads: initial }: { leads: Lead[] }) {
       showNotif(`${lead.name} silindi.`, "success");
     } else {
       showNotif(result.error || "Silinemedi.", "error");
+    }
+  }
+
+  // ── Şablon Ekle ──
+  async function handleAddTemplate(lead: Lead) {
+    if (!lead.sector) {
+      showNotif("Bu lead'in sektörü belirlenmemiş. Önce sektör seçin.", "error");
+      return;
+    }
+    if (!isGSM(lead.phone)) {
+      showNotif("Bu lead'in GSM numarası yok. WA şablonu için GSM gerekli.", "error");
+      return;
+    }
+
+    setTemplating(lead.id);
+
+    const slug = getTemplateName(lead.sector);
+    const city = extractCity(lead.address);
+    const sorun = detectIssue({ hasWebsite: lead.hasWebsite, mobileScore: lead.mobileScore, sslValid: lead.sslValid });
+    const demoLink = buildDemoLink(lead.id, lead.sector);
+
+    const message = generateWaMessage({
+      firma: lead.name,
+      sektor: lead.sector,
+      sehir: city,
+      sorun: sorun,
+      link: demoLink,
+      phone: formatWANumber(lead.phone!),
+    });
+
+    const result = await addWaTemplateToLead(lead.id, message, lead.sector, slug);
+    setTemplating(null);
+
+    if (result.success) {
+      setLeads((prev) =>
+        prev.map((l) =>
+          l.id === lead.id
+            ? { ...l, status: "TEMPLATE_ADDED", waTemplate: message, waTemplateSector: lead.sector, waTemplateSlug: slug }
+            : l
+        )
+      );
+      showNotif(`${lead.name} için ${lead.sector} şablonu hazırlandı!`, "success");
+    } else {
+      showNotif(result.error || "Şablon eklenemedi.", "error");
+    }
+  }
+
+  // ── WA Gönder ──
+  async function handleWaSend(lead: Lead) {
+    if (!lead.waTemplate || !lead.phone) return;
+
+    const waUrl = buildWaUrl(formatWANumber(lead.phone), lead.waTemplate);
+    window.open(waUrl, "_blank");
+
+    setWaSending(lead.id);
+    const result = await markWaSent(lead.id);
+    setWaSending(null);
+
+    if (result.success) {
+      setLeads((prev) =>
+        prev.map((l) =>
+          l.id === lead.id
+            ? { ...l, status: "WA_SENT", waSentAt: new Date().toISOString() }
+            : l
+        )
+      );
+      showNotif(`${lead.name}'e WhatsApp mesajı gönderildi!`, "success");
     }
   }
 
@@ -128,11 +204,6 @@ export default function KanbanBoard({ leads: initial }: { leads: Lead[] }) {
                   <span className="text-[12px] font-medium">{col.label}</span>
                   <span className="ml-auto rounded-full bg-admin-bg4 px-1.5 py-0.5 text-[10px] font-medium text-admin-muted">{colLeads.length}</span>
                 </div>
-                {colLeads.length > 0 && colLeads.some((l) => l.budget && l.budget !== "—") && (
-                  <div className="mt-1 text-[10px] text-admin-muted">
-                    {colLeads.filter((l) => l.budget && l.budget !== "—").map((l) => l.budget).join(" + ")}
-                  </div>
-                )}
               </div>
 
               {/* Kartlar */}
@@ -142,6 +213,9 @@ export default function KanbanBoard({ leads: initial }: { leads: Lead[] }) {
                   const needsFollowup = daysAgo >= 3 && col.key !== "WON" && col.key !== "LOST";
                   const src = sourceLabels[lead.source] || sourceLabels.MANUAL;
                   const canConvert = col.key === "QUOTED" || col.key === "WON";
+                  const isCold = col.key === "COLD";
+                  const isTemplateAdded = col.key === "TEMPLATE_ADDED";
+                  const isWaSent = col.key === "WA_SENT";
 
                   return (
                     <div key={lead.id} className="rounded-lg border bg-admin-bg3 p-3"
@@ -161,7 +235,21 @@ export default function KanbanBoard({ leads: initial }: { leads: Lead[] }) {
 
                       {/* Sektör */}
                       {lead.sector && (
-                        <div className="mt-1 text-[10px] text-admin-muted">{lead.sector}</div>
+                        <div className="mt-1 flex items-center gap-1">
+                          <span className="text-[10px] text-admin-muted">{lead.sector}</span>
+                          {lead.waTemplateSlug && (
+                            <span className="rounded bg-admin-accent/10 px-1 py-0.5 text-[8px] font-medium text-admin-accent">
+                              {lead.waTemplateSlug}
+                            </span>
+                          )}
+                        </div>
+                      )}
+
+                      {/* WA Sent tarih (WA_SENT sütununda) */}
+                      {isWaSent && lead.waSentAt && (
+                        <div className="mt-1 text-[9px] text-admin-green">
+                          ✓ Gönderildi: {new Date(lead.waSentAt).toLocaleDateString("tr-TR")}
+                        </div>
                       )}
 
                       {/* Bütçe + Takip uyarısı */}
@@ -179,25 +267,63 @@ export default function KanbanBoard({ leads: initial }: { leads: Lead[] }) {
                       </select>
 
                       {/* Aksiyonlar */}
-                      <div className="mt-2 flex items-center justify-between">
+                      <div className="mt-2 flex flex-col gap-1.5">
+                        {/* Satır 1: Şablon Ekle / WA Gönder / Normal WA */}
                         <div className="flex gap-1.5">
-                          {isGSM(lead.phone) && (
-                            <button onClick={() => openWhatsApp(lead.phone)} className="rounded bg-admin-green px-2 py-1 text-[9px] font-medium text-white hover:brightness-110">WA</button>
+                          {/* COLD → Şablon Ekle butonu */}
+                          {isCold && lead.sector && isGSM(lead.phone) && (
+                            <button
+                              onClick={() => handleAddTemplate(lead)}
+                              disabled={templating === lead.id}
+                              className="flex-1 rounded bg-admin-purple/80 px-2 py-1.5 text-[9px] font-medium text-white hover:bg-admin-purple transition-colors disabled:opacity-50"
+                            >
+                              {templating === lead.id ? "Hazırlanıyor..." : "📝 Şablon Ekle"}
+                            </button>
                           )}
+
+                          {/* TEMPLATE_ADDED → WA Gönder butonu */}
+                          {isTemplateAdded && lead.waTemplate && (
+                            <>
+                              <button
+                                onClick={() => handleWaSend(lead)}
+                                disabled={waSending === lead.id}
+                                className="flex-1 rounded bg-[#25D366] px-2 py-1.5 text-[9px] font-bold text-white hover:brightness-110 transition-colors disabled:opacity-50"
+                              >
+                                {waSending === lead.id ? "Gönderiliyor..." : "📲 WA Gönder"}
+                              </button>
+                              <button
+                                onClick={() => setPreviewLead(lead)}
+                                className="rounded border border-admin-border bg-admin-bg4 px-2 py-1.5 text-[9px] text-admin-muted hover:text-admin-text transition-colors"
+                                title="Şablonu önizle"
+                              >
+                                👁
+                              </button>
+                            </>
+                          )}
+
+                          {/* Normal WA butonu (diğer sütunlarda) */}
+                          {!isCold && !isTemplateAdded && isGSM(lead.phone) && (
+                            <button onClick={() => openWhatsApp(lead.phone)} className="rounded bg-[#25D366] px-2 py-1 text-[9px] font-medium text-white hover:brightness-110">WA</button>
+                          )}
+
                           {canConvert && (
                             <button onClick={() => handleConvert(lead)} disabled={converting === lead.id}
                               className="rounded bg-admin-accent px-2 py-1 text-[9px] font-medium text-white hover:brightness-110 disabled:opacity-50">
-                              {converting === lead.id ? "Taşınıyor..." : "CRM'e Taşı"}
+                              {converting === lead.id ? "..." : "CRM'e Taşı"}
                             </button>
                           )}
                         </div>
-                        <button
-                          onClick={() => handleDelete(lead)}
-                          disabled={deleting === lead.id}
-                          className="rounded px-2 py-1 text-[9px] font-medium text-admin-red hover:bg-admin-red-dim disabled:opacity-50"
-                        >
-                          {deleting === lead.id ? "..." : "Sil"}
-                        </button>
+
+                        {/* Satır 2: Sil */}
+                        <div className="flex justify-end">
+                          <button
+                            onClick={() => handleDelete(lead)}
+                            disabled={deleting === lead.id}
+                            className="rounded px-2 py-0.5 text-[9px] font-medium text-admin-red hover:bg-admin-red-dim disabled:opacity-50"
+                          >
+                            {deleting === lead.id ? "..." : "Sil"}
+                          </button>
+                        </div>
                       </div>
                     </div>
                   );
@@ -225,6 +351,50 @@ export default function KanbanBoard({ leads: initial }: { leads: Lead[] }) {
           onStatusChange={(id, status) => { changeStatus(id, status); setDetailLead(null); }}
           onConvert={(lead) => handleConvert(lead)}
         />
+      )}
+
+      {/* Şablon Önizleme Modal */}
+      {previewLead && previewLead.waTemplate && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm" onClick={() => setPreviewLead(null)}>
+          <div className="mx-4 w-full max-w-lg rounded-2xl border border-admin-border bg-admin-bg2 shadow-2xl" onClick={(e) => e.stopPropagation()}>
+            {/* Header */}
+            <div className="flex items-center justify-between border-b border-admin-border px-5 py-4">
+              <div>
+                <h3 className="text-[14px] font-semibold text-admin-text">WhatsApp Şablon Önizleme</h3>
+                <p className="mt-0.5 text-[11px] text-admin-muted">{previewLead.name} — {previewLead.waTemplateSector}</p>
+              </div>
+              <button onClick={() => setPreviewLead(null)} className="flex h-7 w-7 items-center justify-center rounded-lg text-admin-muted hover:bg-admin-bg3 hover:text-admin-text">✕</button>
+            </div>
+
+            {/* Mesaj içeriği — WA tarzı baloncuk */}
+            <div className="p-5">
+              <div className="rounded-xl bg-[#005C4B] p-4">
+                <pre className="whitespace-pre-wrap font-sans text-[13px] leading-relaxed text-white/90">
+                  {previewLead.waTemplate}
+                </pre>
+              </div>
+            </div>
+
+            {/* Footer */}
+            <div className="flex gap-2 border-t border-admin-border px-5 py-4">
+              <button
+                onClick={() => {
+                  handleWaSend(previewLead);
+                  setPreviewLead(null);
+                }}
+                className="flex-1 rounded-lg bg-[#25D366] py-2.5 text-[12px] font-bold text-white hover:brightness-110 transition-colors"
+              >
+                📲 WhatsApp ile Gönder
+              </button>
+              <button
+                onClick={() => setPreviewLead(null)}
+                className="rounded-lg border border-admin-border px-4 py-2.5 text-[12px] text-admin-muted hover:text-admin-text transition-colors"
+              >
+                Kapat
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

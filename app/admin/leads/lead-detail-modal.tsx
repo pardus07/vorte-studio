@@ -9,6 +9,9 @@ type Lead = {
   status: string; budget: string; sector: string; phone: string | null;
   email: string | null; website: string | null; address: string | null;
   notes: string | null; googleMapsUrl: string | null; updatedAt: string;
+  hasWebsite: boolean; mobileScore: number | null; sslValid: boolean;
+  waTemplate: string | null; waTemplateSector: string | null;
+  waTemplateSlug: string | null; waSentAt: string | null;
 };
 
 const sourceLabels: Record<string, { label: string; color: string }> = {

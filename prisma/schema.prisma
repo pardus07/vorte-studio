@@ -64,6 +64,13 @@ model Lead {
   mobileScore   Int?
   hasWebsite    Boolean    @default(false)
   sslValid      Boolean    @default(false)
+
+  // WA şablon sistemi
+  waTemplate       String?   @db.Text  // Hazırlanan WA mesaj metni
+  waTemplateSector String?              // Hangi sektör şablonu kullanıldı
+  waTemplateSlug   String?              // Şablon slug'ı (ör: firinlar)
+  waSentAt         DateTime?            // WA gönderim tarihi
+
   createdAt     DateTime   @default(now())
   updatedAt     DateTime   @updatedAt
 }
@@ -78,6 +85,8 @@ enum LeadSource {
 
 enum LeadStatus {
   COLD
+  TEMPLATE_ADDED
+  WA_SENT
   CONTACTED
   MEETING
   QUOTED

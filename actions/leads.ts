@@ -13,7 +13,7 @@ const LeadFormSchema = z.object({
   source: z.enum(["MAPS_SCRAPER", "SITE_FORM", "LINKEDIN", "REFERRAL", "MANUAL"]),
   budget: z.string().optional(),
   notes: z.string().optional(),
-  status: z.enum(["COLD", "CONTACTED", "MEETING", "QUOTED", "WON", "LOST"]).optional(),
+  status: z.enum(["COLD", "TEMPLATE_ADDED", "WA_SENT", "CONTACTED", "MEETING", "QUOTED", "WON", "LOST"]).optional(),
 });
 
 export type LeadFormData = z.infer<typeof LeadFormSchema>;
@@ -47,7 +47,7 @@ export async function createLeadAction(data: LeadFormData) {
 
 export async function updateLeadStatus(
   id: string,
-  status: "COLD" | "CONTACTED" | "MEETING" | "QUOTED" | "WON" | "LOST"
+  status: "COLD" | "TEMPLATE_ADDED" | "WA_SENT" | "CONTACTED" | "MEETING" | "QUOTED" | "WON" | "LOST"
 ) {
   const lead = await prisma.lead.update({
     where: { id },
@@ -55,6 +55,49 @@ export async function updateLeadStatus(
   });
   revalidatePath("/admin/leads");
   return lead;
+}
+
+// ── WA Şablon ekle ──
+export async function addWaTemplateToLead(
+  leadId: string,
+  waTemplate: string,
+  waTemplateSector: string,
+  waTemplateSlug: string
+) {
+  try {
+    await prisma.lead.update({
+      where: { id: leadId },
+      data: {
+        waTemplate,
+        waTemplateSector,
+        waTemplateSlug,
+        status: "TEMPLATE_ADDED",
+      },
+    });
+    revalidatePath("/admin/leads");
+    return { success: true };
+  } catch (err) {
+    console.error("Şablon ekleme hatası:", err);
+    return { success: false, error: "Şablon eklenemedi." };
+  }
+}
+
+// ── WA gönderildi olarak işaretle ──
+export async function markWaSent(leadId: string) {
+  try {
+    await prisma.lead.update({
+      where: { id: leadId },
+      data: {
+        status: "WA_SENT",
+        waSentAt: new Date(),
+      },
+    });
+    revalidatePath("/admin/leads");
+    return { success: true };
+  } catch (err) {
+    console.error("WA gönderim kaydı hatası:", err);
+    return { success: false, error: "Gönderim kaydedilemedi." };
+  }
 }
 
 export async function updateLeadNotes(id: string, notes: string) {
