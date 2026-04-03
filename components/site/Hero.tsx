@@ -1,7 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, lazy, Suspense } from "react";
 import { motion } from "framer-motion";
+
+const HeroScene = lazy(() => import("./HeroScene"));
 
 const words = ["Next.js", "Kotlin", "React", "Tailwind", "Prisma"];
 
@@ -121,6 +123,16 @@ export default function Hero() {
           filter: "blur(30px)",
         }}
       />
+
+      {/* 3D Wireframe Sphere — right side, desktop only */}
+      <div className="pointer-events-none absolute right-0 top-0 hidden h-full w-1/2 lg:block">
+        <Suspense fallback={null}>
+          <HeroScene />
+        </Suspense>
+        {/* Fade edges into background */}
+        <div className="absolute inset-0 bg-gradient-to-r from-bg via-transparent to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-bg via-transparent to-transparent" />
+      </div>
 
       {/* Tag */}
       <motion.p
