@@ -148,18 +148,21 @@ export default async function DashboardPage() {
           sub="+12% geçen aya göre"
           color="green"
           trend="up"
+          href="/admin/finance"
         />
         <StatCard
           label="Aktif proje"
           value={String(stats.projectCount)}
           sub={dueThisWeek > 0 ? `${dueThisWeek} bu hafta teslim` : "Devam eden projeler"}
           color="blue"
+          href="/admin/projects"
         />
         <StatCard
           label="Bakım geliri"
           value={`₺${stats.maintenanceRevenue.toLocaleString("tr-TR")}`}
           sub={`${stats.maintenanceCount} aktif müşteri`}
           color="accent"
+          href="/admin/maintenance"
         />
         <StatCard
           label="Bekleyen teklif"
@@ -167,6 +170,7 @@ export default async function DashboardPage() {
           sub={stats.pendingQuotes > 0 ? `${Math.min(stats.pendingQuotes, 2)} takip gerekiyor` : "Bekleyen yok"}
           color="amber"
           trend={stats.pendingQuotes > 0 ? "warn" : undefined}
+          href="/admin/leads"
         />
       </div>
 

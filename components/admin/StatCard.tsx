@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { cn } from "@/lib/utils";
 
 type StatCardProps = {
@@ -9,6 +10,7 @@ type StatCardProps = {
   color?: "green" | "accent" | "amber" | "blue" | "red" | "default";
   trend?: "up" | "down" | "warn";
   icon?: React.ReactNode;
+  href?: string;
 };
 
 const colorConfig = {
@@ -57,17 +59,12 @@ export default function StatCard({
   color = "default",
   trend,
   icon,
+  href,
 }: StatCardProps) {
   const cfg = colorConfig[color];
 
-  return (
-    <div
-      className={cn(
-        "group relative overflow-hidden rounded-2xl border border-admin-border bg-admin-bg2 p-5 transition-all duration-300",
-        cfg.borderHover,
-        "hover:shadow-lg hover:shadow-black/20 hover:-translate-y-0.5"
-      )}
-    >
+  const content = (
+    <>
       {/* Subtle gradient glow */}
       <div
         className="pointer-events-none absolute -right-8 -top-8 h-24 w-24 rounded-full opacity-0 blur-2xl transition-opacity duration-500 group-hover:opacity-100"
@@ -104,18 +101,37 @@ export default function StatCard({
         </div>
 
         {/* Icon circle */}
-        {icon ? (
-          <div className={cn("flex h-11 w-11 shrink-0 items-center justify-center rounded-xl", cfg.iconBg)}>
+        <div className={cn(
+          "flex h-11 w-11 shrink-0 items-center justify-center rounded-xl transition-all duration-300",
+          cfg.iconBg,
+          href && "group-hover:scale-110 group-hover:shadow-md"
+        )}>
+          {icon ? (
             <div className={cfg.iconColor}>{icon}</div>
-          </div>
-        ) : (
-          <div className={cn("flex h-11 w-11 shrink-0 items-center justify-center rounded-xl", cfg.iconBg)}>
+          ) : (
             <DefaultIcon className={cn("h-5 w-5", cfg.iconColor)} color={color} />
-          </div>
-        )}
+          )}
+        </div>
       </div>
-    </div>
+    </>
   );
+
+  const cardClass = cn(
+    "group relative overflow-hidden rounded-2xl border border-admin-border bg-admin-bg2 p-5 transition-all duration-300",
+    cfg.borderHover,
+    "hover:shadow-lg hover:shadow-black/20 hover:-translate-y-0.5",
+    href && "cursor-pointer"
+  );
+
+  if (href) {
+    return (
+      <Link href={href} className={cn(cardClass, "block no-underline")}>
+        {content}
+      </Link>
+    );
+  }
+
+  return <div className={cardClass}>{content}</div>;
 }
 
 /* ── Default Icons ── */

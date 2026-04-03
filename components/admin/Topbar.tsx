@@ -1,8 +1,21 @@
 "use client";
 
 import Link from "next/link";
+import { useState } from "react";
 import { usePathname } from "next/navigation";
 import { useSidebar } from "./SidebarContext";
+import SearchModal from "./SearchModal";
+import NotificationDropdown from "./NotificationDropdown";
+
+type Alert = {
+  type: string;
+  dot: string;
+  title: string;
+  meta: string;
+  action: string;
+  actionType: string;
+  phone?: string;
+};
 
 const titles: Record<string, { title: string; emoji: string }> = {
   "/admin/dashboard": { title: "Dashboard", emoji: "📊" },
@@ -19,9 +32,10 @@ const titles: Record<string, { title: string; emoji: string }> = {
   "/admin/settings": { title: "Ayarlar", emoji: "⚙️" },
 };
 
-export default function Topbar() {
+export default function Topbar({ alerts = [] }: { alerts?: Alert[] }) {
   const pathname = usePathname();
   const { collapsed } = useSidebar();
+  const [searchOpen, setSearchOpen] = useState(false);
 
   // Find matching route (exact or prefix)
   const matchedKey = Object.keys(titles).find(
@@ -38,57 +52,60 @@ export default function Topbar() {
   }));
 
   return (
-    <header className="flex h-[56px] shrink-0 items-center border-b border-admin-border bg-admin-bg2/80 backdrop-blur-sm px-5">
-      {/* Left: Breadcrumb */}
-      <div className="flex items-center gap-2">
-        <span className="text-base">{page.emoji}</span>
-        <nav className="flex items-center gap-1 text-[13px]">
-          {breadcrumbs.map((crumb, i) => (
-            <span key={crumb.href} className="flex items-center gap-1">
-              {i > 0 && <ChevronIcon className="h-3 w-3 text-admin-muted2" />}
-              {crumb.isLast ? (
-                <span className="font-semibold text-admin-text">{crumb.label}</span>
-              ) : (
-                <Link href={crumb.href} className="text-admin-muted hover:text-admin-text transition-colors">
-                  {crumb.label}
-                </Link>
-              )}
-            </span>
-          ))}
-        </nav>
-      </div>
+    <>
+      <header className="flex h-[56px] shrink-0 items-center border-b border-admin-border bg-admin-bg2/80 backdrop-blur-sm px-5">
+        {/* Left: Breadcrumb */}
+        <div className="flex items-center gap-2">
+          <span className="text-base">{page.emoji}</span>
+          <nav className="flex items-center gap-1 text-[13px]">
+            {breadcrumbs.map((crumb, i) => (
+              <span key={crumb.href} className="flex items-center gap-1">
+                {i > 0 && <ChevronIcon className="h-3 w-3 text-admin-muted2" />}
+                {crumb.isLast ? (
+                  <span className="font-semibold text-admin-text">{crumb.label}</span>
+                ) : (
+                  <Link href={crumb.href} className="text-admin-muted hover:text-admin-text transition-colors">
+                    {crumb.label}
+                  </Link>
+                )}
+              </span>
+            ))}
+          </nav>
+        </div>
 
-      <div className="flex-1" />
+        <div className="flex-1" />
 
-      {/* Right: Actions */}
-      <div className="flex items-center gap-2">
-        {/* Search (visual) */}
-        <button className="flex h-9 items-center gap-2 rounded-xl border border-admin-border bg-admin-bg3/50 px-3 text-[12px] text-admin-muted transition-all hover:border-admin-border2 hover:bg-admin-bg3">
-          <SearchIcon className="h-3.5 w-3.5" />
-          <span className="hidden sm:inline">Ara...</span>
-          <kbd className="hidden rounded border border-admin-border bg-admin-bg4 px-1.5 py-0.5 text-[10px] font-medium text-admin-muted2 sm:inline">
-            ⌘K
-          </kbd>
-        </button>
+        {/* Right: Actions */}
+        <div className="flex items-center gap-2">
+          {/* Search */}
+          <button
+            onClick={() => setSearchOpen(true)}
+            className="flex h-9 items-center gap-2 rounded-xl border border-admin-border bg-admin-bg3/50 px-3 text-[12px] text-admin-muted transition-all hover:border-admin-border2 hover:bg-admin-bg3"
+          >
+            <SearchIcon className="h-3.5 w-3.5" />
+            <span className="hidden sm:inline">Ara...</span>
+            <kbd className="hidden rounded border border-admin-border bg-admin-bg4 px-1.5 py-0.5 text-[10px] font-medium text-admin-muted2 sm:inline">
+              ⌘K
+            </kbd>
+          </button>
 
-        {/* Quick actions */}
-        <Link
-          href="/admin/leads"
-          className="flex h-9 items-center gap-1.5 rounded-xl bg-admin-accent/10 px-3 text-[12px] font-medium text-admin-accent transition-all hover:bg-admin-accent/20"
-        >
-          <PlusIcon className="h-3.5 w-3.5" />
-          <span className="hidden md:inline">Yeni Lead</span>
-        </Link>
+          {/* Yeni Lead — leads sayfasına ?new=1 ile git, modal otomatik açılır */}
+          <Link
+            href="/admin/leads?new=1"
+            className="flex h-9 items-center gap-1.5 rounded-xl bg-admin-accent/10 px-3 text-[12px] font-medium text-admin-accent transition-all hover:bg-admin-accent/20"
+          >
+            <PlusIcon className="h-3.5 w-3.5" />
+            <span className="hidden md:inline">Yeni Lead</span>
+          </Link>
 
-        {/* Notifications */}
-        <button className="relative flex h-9 w-9 items-center justify-center rounded-xl border border-admin-border bg-admin-bg3/50 text-admin-muted transition-all hover:border-admin-border2 hover:text-admin-text">
-          <BellIcon className="h-4 w-4" />
-          <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-admin-red px-1 text-[9px] font-bold text-white">
-            3
-          </span>
-        </button>
-      </div>
-    </header>
+          {/* Notifications */}
+          <NotificationDropdown alerts={alerts} />
+        </div>
+      </header>
+
+      {/* Search Modal */}
+      <SearchModal open={searchOpen} onClose={() => setSearchOpen(false)} />
+    </>
   );
 }
 
@@ -115,15 +132,6 @@ function PlusIcon({ className }: { className?: string }) {
   return (
     <svg className={className} viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
       <path d="M8 3v10M3 8h10" />
-    </svg>
-  );
-}
-
-function BellIcon({ className }: { className?: string }) {
-  return (
-    <svg className={className} viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M10 13a2 2 0 01-4 0" />
-      <path d="M8 1a5 5 0 015 5c0 3.5 1 5 1 5H2s1-1.5 1-5a5 5 0 015-5z" />
     </svg>
   );
 }

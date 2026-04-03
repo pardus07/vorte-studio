@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { updateLeadStatus, convertLeadToClient, deleteLeadAction } from "@/actions/leads";
 import { isGSM, formatWANumber } from "@/lib/phone-utils";
 import LeadFormModal from "./lead-form-modal";
@@ -34,12 +34,22 @@ const statusOptions = columns.map((c) => ({ value: c.key, label: c.label }));
 
 export default function KanbanBoard({ leads: initial }: { leads: Lead[] }) {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [leads, setLeads] = useState(initial);
   const [notification, setNotification] = useState<{ msg: string; type: "success" | "error" | "info" } | null>(null);
   const [converting, setConverting] = useState<string | null>(null);
   const [deleting, setDeleting] = useState<string | null>(null);
   const [showNewModal, setShowNewModal] = useState(false);
   const [detailLead, setDetailLead] = useState<Lead | null>(null);
+
+  // URL'de ?new=1 varsa otomatik olarak yeni lead modal'ını aç
+  useEffect(() => {
+    if (searchParams.get("new") === "1") {
+      setShowNewModal(true);
+      // URL'den query param'ı temizle
+      router.replace("/admin/leads", { scroll: false });
+    }
+  }, [searchParams, router]);
 
   function showNotif(msg: string, type: "success" | "error" | "info" = "info") {
     setNotification({ msg, type });
