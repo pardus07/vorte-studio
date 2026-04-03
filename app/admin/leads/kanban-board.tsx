@@ -151,7 +151,7 @@ export default function KanbanBoard({ leads: initial }: { leads: Lead[] }) {
 
     const slug = getTemplateName(sector);
     const city = extractCity(lead.address);
-    const sorun = detectIssue({ hasWebsite: lead.hasWebsite, mobileScore: lead.mobileScore, sslValid: lead.sslValid });
+    const sorun = detectIssue({ hasWebsite: lead.hasWebsite, mobileScore: lead.mobileScore, sslValid: lead.sslValid, website: lead.website });
     const demoLink = buildDemoLink(lead.id, sector);
 
     const message = generateWaMessage({
