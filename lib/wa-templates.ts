@@ -39,7 +39,7 @@ Biz yazdık. Ve karşımıza çıkan sonuçlarda sizi inceledik.
 Rakam net: Hastaların %82'si randevu öncesi kliniği Google'da arıyor. 3 saniyede profesyonel bir site göremezlerse sıradaki kliniğe geçiyor. Her gün bu şekilde kaçan hastaları düşünün.
 
 Kliniğinize özel bir site tasarladık — 30 saniyede bakın:
-👉 {link}
+{link}
 
 Taahhüt yok. Beğenirseniz konuşalım, beğenmezseniz sıfır yükümlülük.
 
@@ -55,7 +55,7 @@ Vorte Studio`,
 Müşterilerin %74'ü randevu almadan önce salonu online araştırıyor. Instagram güzel ama yetmiyor, çünkü Google aramasında Instagram sayfanız 3. sayfada kalıyor.
 
 Sizin tarzınıza özel bir demo hazırladık:
-👉 {link}
+{link}
 
 30 saniyenizi alır, beğenmezseniz hiçbir yükümlülük yok.
 
@@ -71,7 +71,7 @@ Sizi bulduk, ama ilk izlenim eksik kalmış.
 Net veri: Web sitesi olan yeme-içme işletmeleri %43 daha fazla yeni müşteri kazanıyor. Online menü, konum haritası, sipariş butonu — tek sayfada hepsi.
 
 Sizin restoranınıza özel bir site tasarladık:
-👉 {link}
+{link}
 
 Tamamen ücretsiz bakın. Hoşunuza giderse 5 dk konuşalım.
 
@@ -87,7 +87,7 @@ Vorte Studio`,
 Web sitesi olan gıda işletmeleri müşteri sadakatini %38 artırıyor. Kampanya duyurusu, ürün kataloğu, WhatsApp sipariş butonu — hepsi bir arada.
 
 Sektörünüze özel örnek siteyi görmeniz lazım:
-👉 {link}
+{link}
 
 30 saniye bakın — beğenirseniz ücretsiz keşif görüşmesi yapalım.
 
@@ -103,7 +103,7 @@ Sizi buluyor mu? Yoksa rakibinize mi gidiyor?
 Araç sahiplerinin %67'si servis seçerken Google'a bakıyor. Profesyonel sitesi olan servisler %52 daha fazla randevu talebi alıyor. Her geçen gün bu farkı rakipleriniz lehine büyütüyor.
 
 Tam sizin sektöre özel bir demo hazırladık:
-👉 {link}
+{link}
 
 Bakmanız 30 saniye sürer — beğenmezseniz sıfır yükümlülük.
 
@@ -120,7 +120,7 @@ Firmanın web sitesine ve referanslarına bakıyor. %71'i bunu yapıyor.
 Web sitesi olmadan güven kurmak neredeyse imkansız. Projelerinizi sergileyen profesyonel bir portfolyo, fiyat rekabeti yerine kalite rekabetine geçmenizi sağlar.
 
 Nasıl görüneceğini hazırladık:
-👉 {link}
+{link}
 
 Ücretsiz bakın. Taahhüt yok, sadece bir fikir.
 
@@ -136,7 +136,7 @@ Vorte Studio`,
 Profesyonel bir web sitesi, velilerin gözünde kurumsal güvenilirliğin ilk göstergesi. Kadro bilgisi, program detayları, başarı hikayeleri — bunlar kaydı tetikleyen unsurlar.
 
 Kurumunuza özel tasarladığımız demo siteye göz atın:
-👉 {link}
+{link}
 
 30 saniye ayırın — beğenirseniz ücretsiz keşif görüşmesi yapalım.
 
@@ -152,7 +152,7 @@ Vorte Studio`,
 Misafirlerin %91'i rezervasyon öncesi otelin kendi sitesini arıyor. Profesyonel bir site ile direkt rezervasyon alarak aracı komisyonlarını ortadan kaldırabilirsiniz.
 
 Size özel bir demo hazırladık:
-👉 {link}
+{link}
 
 Ücretsiz bakın, beğenirseniz konuşalım.
 
@@ -168,7 +168,7 @@ Google'a yazıp ders programı, fiyat ve tesis fotoğraflarına bakmak. %68'i bu
 Web sitesi olan salonlar %45 daha fazla yeni üye kazanıyor. Online ders takvimi, üyelik paketleri, tesis galerisi — potansiyel üyenin aradığı her şey tek yerde.
 
 Salonunuza özel demo siteye bakın:
-👉 {link}
+{link}
 
 Taahhüt yok — sadece bakın, fikir edinmeniz yeterli.
 
@@ -184,7 +184,7 @@ Vorte Studio`,
 Profesyonel bir web sitesi, yeni iş fırsatları demek. Ürün kataloğu, referanslar, kapasite bilgisi — bunlar potansiyel iş ortağını ikna eden unsurlar.
 
 Sektörünüze özel bir örnek hazırladık:
-👉 {link}
+{link}
 
 30 saniye bakın, taahhütsüz. Beğenirseniz konuşalım.
 
@@ -202,7 +202,7 @@ Peki şu an ne görüyorlar?
 Kurumsal bir web sitesi, uzmanlığınızı ve referanslarınızı sergilemenin en etkili yolu. Hizmet alanları, ekip bilgisi, başarı hikayeleri — güveni dijitalde inşa edin.
 
 Size özel profesyonel demo siteye bakın:
-👉 {link}
+{link}
 
 Tamamen ücretsiz — beğenirseniz 10 dk konuşalım.
 
@@ -218,7 +218,7 @@ Vorte Studio`,
 Web sitesi olan mağazalar %41 daha fazla ziyaretçi alıyor. Ürün vitrini, çalışma saatleri, konum haritası — müşteriyi kapınıza getiren üçlü.
 
 Mağazanıza özel demo siteye bakın:
-👉 {link}
+{link}
 
 30 saniye ayırın — taahhüt yok, beğenirseniz konuşalım.
 
@@ -236,7 +236,7 @@ Sizin orada olmanız lazım.
 Web sitesi olan servisler %58 daha fazla çağrı alıyor. Acil servis numarası, hizmet bölgesi, fiyat bilgisi — müşteri bunları 10 saniyede görmek istiyor.
 
 Sektörünüze özel demo siteye bakın:
-👉 {link}
+{link}
 
 Ücretsiz — beğenmezseniz sıfır yükümlülük.
 
@@ -252,7 +252,7 @@ Biz aradık ve şunu fark ettik:
 Müşterilerin %72'si hizmet almadan önce firmayı online araştırıyor. Profesyonel bir web sitesi, güvenin ilk adımı — telefonu açmadan önce karar zaten veriliyor.
 
 Size özel bir demo site hazırladık:
-👉 {link}
+{link}
 
 Tamamen ücretsiz, taahhütsüz — 30 saniyenizi alır.
 
