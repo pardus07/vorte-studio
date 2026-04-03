@@ -188,3 +188,118 @@ export async function getExistingLeadNames(): Promise<string[]> {
     return [];
   }
 }
+
+// ── Google Maps Link veya Firma Adı ile Tek Firma Arama ──
+
+/**
+ * Google Maps share linki (maps.app.goo.gl/xxx) veya firma adı ile arama yapar.
+ * Link ise → redirect takip edip firma adını çıkarır → scraper'a gönderir
+ * İsim ise → direkt scraper'a query olarak gönderir
+ */
+export async function resolveGoogleMapsLink(input: string): Promise<{
+  success: boolean;
+  query?: string;
+  error?: string;
+}> {
+  const trimmed = input.trim();
+
+  // Google Maps short link mi?
+  if (trimmed.includes("maps.app.goo.gl") || trimmed.includes("goo.gl/maps")) {
+    try {
+      // Short link'i takip et — redirect'i manual al
+      const res = await fetch(trimmed, { redirect: "manual" });
+      const location = res.headers.get("location");
+      if (!location) {
+        return { success: false, error: "Link çözümlenemedi." };
+      }
+
+      // İkinci redirect olabilir (maps.app.goo.gl → google.com/maps/...)
+      let finalUrl = location;
+      if (finalUrl.includes("goo.gl") || !finalUrl.includes("/maps/")) {
+        try {
+          const res2 = await fetch(finalUrl, { redirect: "manual" });
+          const loc2 = res2.headers.get("location");
+          if (loc2) finalUrl = loc2;
+        } catch { /* ilk location'ı kullan */ }
+      }
+
+      // URL'den firma adını çıkar: /maps/place/FIRMA+ADI/@...
+      const placeMatch = decodeURIComponent(finalUrl).match(/\/place\/([^/@]+)/);
+      if (placeMatch) {
+        const name = placeMatch[1].replace(/\+/g, " ");
+        return { success: true, query: name };
+      }
+
+      // place yoksa search query'den dene
+      const searchMatch = decodeURIComponent(finalUrl).match(/[?&]q=([^&]+)/);
+      if (searchMatch) {
+        return { success: true, query: searchMatch[1].replace(/\+/g, " ") };
+      }
+
+      return { success: false, error: "Link'ten firma adı çıkarılamadı." };
+    } catch (err) {
+      console.error("Maps link resolve hatası:", err);
+      return { success: false, error: "Link çözümlenirken hata oluştu." };
+    }
+  }
+
+  // Normal Google Maps linki (google.com/maps/place/...)
+  if (trimmed.includes("google.com/maps") || trimmed.includes("google.com.tr/maps")) {
+    const placeMatch = decodeURIComponent(trimmed).match(/\/place\/([^/@]+)/);
+    if (placeMatch) {
+      const name = placeMatch[1].replace(/\+/g, " ");
+      return { success: true, query: name };
+    }
+    return { success: false, error: "Maps linkinden firma adı çıkarılamadı." };
+  }
+
+  // Düz metin — firma adı olarak kullan
+  if (trimmed.length < 2) {
+    return { success: false, error: "En az 2 karakter girin." };
+  }
+
+  return { success: true, query: trimmed };
+}
+
+// Manuel lead ekleme — Maps scraper sonucu olmadan, direkt bilgilerle
+export async function addManualLead(data: {
+  name: string;
+  phone: string | null;
+  website: string | null;
+  address: string | null;
+  googleRating: number | null;
+  googleReviews: number | null;
+  googleMapsUrl: string | null;
+  sector?: string | null;
+}) {
+  try {
+    const existing = await prisma.lead.findFirst({
+      where: { name: data.name },
+    });
+    if (existing) {
+      return { success: false, error: "duplicate", message: `${data.name} zaten Lead olarak ekli.` };
+    }
+
+    const lead = await prisma.lead.create({
+      data: {
+        name: data.name,
+        company: data.name,
+        phone: data.phone,
+        website: data.website,
+        address: data.address,
+        googleRating: data.googleRating,
+        googleReviews: data.googleReviews,
+        googleMapsUrl: data.googleMapsUrl,
+        sector: data.sector || null,
+        source: "MAPS_SCRAPER",
+        status: "COLD",
+        hasWebsite: !!data.website,
+        score: data.website ? 0 : 40,
+      },
+    });
+    return { success: true, id: lead.id };
+  } catch (err) {
+    console.error("Manuel lead kayıt hatası:", err);
+    return { success: false, error: "Lead kaydedilemedi." };
+  }
+}

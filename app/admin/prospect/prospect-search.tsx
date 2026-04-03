@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { addRawProspectToLead, getExistingLeadNames, auditSingleWebsite } from "@/actions/prospect";
+import { addRawProspectToLead, getExistingLeadNames, auditSingleWebsite, resolveGoogleMapsLink, addManualLead } from "@/actions/prospect";
 import { createScraperJob, checkScraperJob, getScraperResults } from "@/actions/scraper";
 import { isGSM, formatWANumber } from "@/lib/phone-utils";
 import { cities, sectors, getDistricts, type District } from "@/lib/turkey-data";
@@ -78,6 +78,106 @@ export default function ProspectSearch({
   const [notification, setNotification] = useState<{ msg: string; type: "info" | "success" | "error" } | null>(null);
   const [existingLeads, setExistingLeads] = useState<Set<string>>(new Set());
   const [loadingDistricts, setLoadingDistricts] = useState(false);
+
+  // ── Hızlı Arama (Link veya İsim) ──
+  const [quickSearch, setQuickSearch] = useState("");
+  const [quickSearching, setQuickSearching] = useState(false);
+  const [quickResult, setQuickResult] = useState<Prospect | null>(null);
+
+  async function handleQuickSearch() {
+    if (!quickSearch.trim()) return;
+    setQuickSearching(true);
+    setQuickResult(null);
+
+    // 1. Link veya isim çözümle
+    const resolved = await resolveGoogleMapsLink(quickSearch.trim());
+    if (!resolved.success || !resolved.query) {
+      showNotif(resolved.error || "Arama başarısız.", "error");
+      setQuickSearching(false);
+      return;
+    }
+
+    // 2. Scraper'a gönder
+    const job = await createScraperJob(resolved.query);
+    if (!job.success || !job.jobId) {
+      showNotif(job.error || "Scraper hatası.", "error");
+      setQuickSearching(false);
+      return;
+    }
+
+    // 3. Polling — sonuç bekle
+    let done = false;
+    let attempts = 0;
+    while (!done && attempts < 30) {
+      attempts++;
+      await new Promise((r) => setTimeout(r, 2000));
+      const status = await checkScraperJob(job.jobId!);
+      if (!status.success) break;
+      if (status.status === "ok" || status.status === "completed" || status.status === "done") {
+        done = true;
+        const results = await getScraperResults(job.jobId!);
+        if (results.success && results.results && results.results.length > 0) {
+          // En iyi eşleşmeyi bul (isim benzerliği veya ilk sonuç)
+          const queryLower = resolved.query.toLowerCase();
+          const best = results.results.find(
+            (r) => r.title.toLowerCase().includes(queryLower) || queryLower.includes(r.title.toLowerCase().split("|")[0].trim())
+          ) || results.results[0];
+
+          const score = calcScore({ website: best.website || null, reviewsCount: best.reviews, phone: best.phone || null });
+          const issue = calcIssue({ website: best.website || null });
+
+          setQuickResult({
+            id: `quick-${Date.now()}`,
+            name: best.title,
+            phone: best.phone || null,
+            website: best.website || null,
+            address: best.address || null,
+            googleRating: best.rating || null,
+            googleReviews: best.reviews || null,
+            googleMapsUrl: best.place_url || null,
+            mobileScore: null,
+            sslValid: true,
+            hasWebsite: !!best.website,
+            score,
+            issue,
+            addedToLeads: existingLeads.has(best.title),
+          });
+          showNotif(`"${best.title}" bulundu!`, "success");
+        } else {
+          showNotif("Sonuç bulunamadı. Farklı bir isim veya link deneyin.", "info");
+        }
+      }
+    }
+
+    if (!done) {
+      showNotif("Arama zaman aşımına uğradı.", "error");
+    }
+
+    setQuickSearching(false);
+  }
+
+  async function handleQuickAddToLead() {
+    if (!quickResult) return;
+    const result = await addManualLead({
+      name: quickResult.name,
+      phone: quickResult.phone,
+      website: quickResult.website,
+      address: quickResult.address,
+      googleRating: quickResult.googleRating,
+      googleReviews: quickResult.googleReviews,
+      googleMapsUrl: quickResult.googleMapsUrl,
+    });
+    if (result.success) {
+      setQuickResult((prev) => prev ? { ...prev, addedToLeads: true } : null);
+      setExistingLeads((prev) => new Set([...prev, quickResult.name]));
+      showNotif(`${quickResult.name} Soğuk Lead olarak eklendi!`, "success");
+    } else if (result.error === "duplicate") {
+      setQuickResult((prev) => prev ? { ...prev, addedToLeads: true } : null);
+      showNotif(result.message || "Bu firma zaten ekli.", "info");
+    } else {
+      showNotif(result.error || "Eklenemedi.", "error");
+    }
+  }
 
   // localStorage'dan yükle
   useEffect(() => {
@@ -262,6 +362,82 @@ export default function ProspectSearch({
   return (
     <div className="space-y-4">
       {notification && <div className={`rounded-lg border px-4 py-2.5 text-[12px] font-medium transition-all ${notifColors[notification.type]}`}>{notification.msg}</div>}
+
+      {/* Hızlı Firma Arama */}
+      <div className="rounded-xl border border-admin-accent/30 bg-admin-bg2 p-4">
+        <div className="mb-3 text-[12px] font-medium text-admin-muted">Hızlı Firma Arama — Google Maps linki veya firma adı ile</div>
+        <div className="flex gap-2">
+          <input
+            value={quickSearch}
+            onChange={(e) => setQuickSearch(e.target.value)}
+            onKeyDown={(e) => { if (e.key === "Enter" && !quickSearching) handleQuickSearch(); }}
+            placeholder="Google Maps linki yapıştırın veya firma adı yazın..."
+            className="flex-1 rounded-lg border border-admin-border bg-admin-bg3 px-4 py-2.5 text-[13px] text-admin-text placeholder:text-admin-muted2 focus:border-admin-accent focus:outline-none"
+          />
+          <button
+            onClick={handleQuickSearch}
+            disabled={quickSearching || !quickSearch.trim()}
+            className="shrink-0 rounded-lg bg-admin-accent px-5 py-2.5 text-[12px] font-medium text-white transition-opacity hover:opacity-90 disabled:opacity-50"
+          >
+            {quickSearching ? "Arıyor..." : "🔍 Araştır"}
+          </button>
+        </div>
+
+        {/* Hızlı Arama Sonucu */}
+        {quickResult && (
+          <div className="mt-3 rounded-lg border border-admin-border bg-admin-bg3 p-4">
+            <div className="flex items-start justify-between gap-4">
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center gap-2">
+                  <span className="text-[14px] font-semibold text-admin-text">{quickResult.name}</span>
+                  {quickResult.googleRating && (
+                    <span className="text-[11px] text-admin-amber">★ {quickResult.googleRating} ({quickResult.googleReviews})</span>
+                  )}
+                </div>
+                {quickResult.address && (
+                  <div className="mt-1 text-[12px] text-admin-muted">📍 {quickResult.address}</div>
+                )}
+                <div className="mt-2 flex flex-wrap items-center gap-2">
+                  {quickResult.phone && (
+                    <span className="rounded-lg bg-admin-bg4 px-2.5 py-1 text-[11px] font-mono text-admin-text">
+                      📞 {quickResult.phone}
+                    </span>
+                  )}
+                  {quickResult.website && (
+                    <a href={quickResult.website.startsWith("http") ? quickResult.website : `https://${quickResult.website}`} target="_blank" rel="noopener noreferrer"
+                      className="rounded-lg bg-admin-bg4 px-2.5 py-1 text-[11px] text-admin-accent hover:underline">
+                      🌐 {quickResult.website}
+                    </a>
+                  )}
+                  {quickResult.googleMapsUrl && (
+                    <a href={quickResult.googleMapsUrl} target="_blank" rel="noopener noreferrer"
+                      className="rounded-lg bg-admin-bg4 px-2.5 py-1 text-[11px] text-admin-blue hover:underline">
+                      📍 Haritada Gör
+                    </a>
+                  )}
+                </div>
+              </div>
+              <div className="flex shrink-0 items-center gap-2">
+                {isGSM(quickResult.phone) && (
+                  <a href={`https://wa.me/${formatWANumber(quickResult.phone!)}`} target="_blank" rel="noopener noreferrer"
+                    className="rounded-lg bg-[#25D366] px-3 py-1.5 text-[11px] font-medium text-white hover:brightness-110 transition-colors">
+                    WhatsApp
+                  </a>
+                )}
+                {quickResult.addedToLeads ? (
+                  <span className="rounded-lg bg-admin-bg4 px-3 py-1.5 text-[11px] text-admin-muted">Eklendi ✓</span>
+                ) : (
+                  <button
+                    onClick={handleQuickAddToLead}
+                    className="rounded-lg bg-admin-accent px-3 py-1.5 text-[11px] font-medium text-white hover:brightness-110 transition-colors">
+                    Soğuk Lead Ekle
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
 
       {/* Arama Formu */}
       <div className="rounded-xl border border-admin-border bg-admin-bg2 p-4">
