@@ -1,38 +1,134 @@
+"use client";
+
+import Link from "next/link";
+import { motion } from "framer-motion";
+
+const navLinks = [
+  { label: "Hizmetler", href: "#hizmetler" },
+  { label: "Portfolyo", href: "#portfolyo" },
+  { label: "Süreç", href: "#surec" },
+  { label: "Blog", href: "/blog" },
+  { label: "İletişim", href: "#contact" },
+];
+
+const techBadges = ["Next.js", "React", "Kotlin", "Tailwind", "Prisma"];
+
 export default function Footer() {
   return (
-    <footer className="border-t border-border px-6 py-12 md:px-12">
-      <div className="flex flex-col items-center gap-8 md:flex-row md:items-start md:justify-between">
-        {/* Branding */}
-        <div className="text-center md:text-left">
-          <div className="font-[family-name:var(--font-syne)] text-base font-extrabold text-white">
-            VORTE<span className="text-accent">.</span>STUDIO
+    <footer className="border-t border-border bg-bg2 px-6 pt-16 pb-8 md:px-12 lg:px-20">
+      <div className="mx-auto max-w-6xl">
+        {/* Top section */}
+        <div className="grid gap-12 md:grid-cols-3">
+          {/* Brand column */}
+          <div>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+            >
+              <div className="font-[family-name:var(--font-syne)] text-xl font-extrabold text-white">
+                VORTE<span className="text-accent">.</span>STUDIO
+              </div>
+              <p className="mt-3 max-w-xs text-sm leading-relaxed text-muted">
+                WordPress değil, gerçek kod. Next.js ve Kotlin ile sıfırdan, sizin için kodlarız.
+              </p>
+              {/* Built with badge */}
+              <div className="mt-5 inline-flex items-center gap-2 rounded-lg border border-border bg-bg px-3 py-1.5 text-[10px] font-semibold text-muted2">
+                <span className="h-1.5 w-1.5 rounded-full bg-green-500" />
+                Built with Next.js & Prisma
+              </div>
+            </motion.div>
           </div>
-          <p className="mt-2 max-w-xs text-xs leading-relaxed text-muted2">
-            WordPress değil, gerçek kod. Next.js ve Prisma ile yenilikçi web çözümleri üretiyoruz.
-          </p>
+
+          {/* Navigation column */}
+          <motion.nav
+            aria-label="Footer menüsü"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.1, duration: 0.6 }}
+          >
+            <h3 className="mb-4 text-[11px] font-semibold uppercase tracking-[0.15em] text-muted2">
+              Sayfalar
+            </h3>
+            <ul className="flex list-none flex-col gap-2.5">
+              {navLinks.map((link) => (
+                <li key={link.label}>
+                  {link.href.startsWith("/") ? (
+                    <Link
+                      href={link.href}
+                      className="text-sm text-muted transition-colors hover:text-accent"
+                    >
+                      {link.label}
+                    </Link>
+                  ) : (
+                    <a
+                      href={link.href}
+                      className="text-sm text-muted transition-colors hover:text-accent"
+                    >
+                      {link.label}
+                    </a>
+                  )}
+                </li>
+              ))}
+            </ul>
+          </motion.nav>
+
+          {/* Contact column */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.2, duration: 0.6 }}
+          >
+            <h3 className="mb-4 text-[11px] font-semibold uppercase tracking-[0.15em] text-muted2">
+              İletişim
+            </h3>
+            <address className="flex flex-col gap-2.5 not-italic">
+              <a
+                href="mailto:studio@vorte.com.tr"
+                className="text-sm text-muted transition-colors hover:text-accent"
+              >
+                studio@vorte.com.tr
+              </a>
+              <span className="text-sm text-muted2">
+                Türkiye geneli &middot; Uzaktan hizmet
+              </span>
+            </address>
+
+            {/* Tech stack row */}
+            <div className="mt-6 flex flex-wrap gap-1.5">
+              {techBadges.map((tech) => (
+                <span
+                  key={tech}
+                  className="rounded-md bg-bg px-2 py-0.5 text-[10px] font-medium text-muted2"
+                >
+                  {tech}
+                </span>
+              ))}
+            </div>
+          </motion.div>
         </div>
 
-        {/* Navigation */}
-        <nav aria-label="Footer menüsü">
-          <ul className="flex list-none gap-6 text-xs text-muted2">
-            <li><a href="#hizmetler" className="transition-colors hover:text-white">Hizmetler</a></li>
-            <li><a href="#portfolyo" className="transition-colors hover:text-white">Portfolyo</a></li>
-            <li><a href="#surec" className="transition-colors hover:text-white">Süreç</a></li>
-            <li><a href="#contact" className="transition-colors hover:text-white">İletişim</a></li>
-          </ul>
-        </nav>
+        {/* Divider */}
+        <div className="mt-12 border-t border-border" />
 
-        {/* Contact */}
-        <address className="flex flex-col items-center gap-1.5 not-italic text-xs text-muted2 md:items-end">
-          <a href="mailto:studio@vorte.com.tr" className="transition-colors hover:text-white">
-            studio@vorte.com.tr
-          </a>
-          <span>Türkiye geneli &middot; Uzaktan hizmet</span>
-        </address>
-      </div>
-
-      <div className="mt-8 border-t border-border pt-6 text-center text-[11px] text-muted2">
-        &copy; {new Date().getFullYear()} Vorte Studio. Tüm hakları saklıdır.
+        {/* Bottom bar */}
+        <div className="mt-6 flex flex-col items-center justify-between gap-3 md:flex-row">
+          <p className="text-[11px] text-muted2">
+            &copy; {new Date().getFullYear()} Vorte Studio. Tüm hakları saklıdır.
+          </p>
+          <div className="flex items-center gap-4 text-[11px] text-muted2">
+            <Link href="/gizlilik-politikasi" className="transition-colors hover:text-white">
+              Gizlilik Politikası
+            </Link>
+            <span className="text-border">|</span>
+            <Link href="/kvkk" className="transition-colors hover:text-white">
+              KVKK
+            </Link>
+          </div>
+        </div>
       </div>
     </footer>
   );

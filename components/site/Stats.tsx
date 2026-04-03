@@ -1,12 +1,13 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { motion, useInView } from "framer-motion";
 
 const stats = [
-  { target: 48, suffix: "+", label: "Teslim Edilen\nProje" },
-  { target: 96, suffix: "%", label: "Müşteri\nMemnuniyeti" },
-  { target: 3, suffix: " hafta", label: "Ort. Teslimat\nSüresi" },
-  { target: 95, suffix: "+", label: "Lighthouse\nPerformans Skoru" },
+  { target: 48, suffix: "+", label: "Teslim Edilen Proje" },
+  { target: 96, suffix: "%", label: "Müşteri Memnuniyeti" },
+  { target: 3, suffix: " hafta", label: "Ort. Teslimat Süresi" },
+  { target: 95, suffix: "+", label: "Lighthouse Performans" },
 ];
 
 function Counter({
@@ -36,7 +37,7 @@ function Counter({
   return (
     <span
       className="font-[family-name:var(--font-syne)] font-extrabold leading-none tracking-[-0.04em] text-white"
-      style={{ fontSize: "clamp(36px, 5vw, 52px)" }}
+      style={{ fontSize: "clamp(36px, 5vw, 56px)" }}
     >
       {value}
       <span className="text-accent">{suffix}</span>
@@ -46,56 +47,41 @@ function Counter({
 
 export default function Stats() {
   const ref = useRef<HTMLDivElement>(null);
-  const [inView, setInView] = useState(false);
-
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setInView(true);
-          observer.unobserve(el);
-        }
-      },
-      { threshold: 0.3 }
-    );
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, []);
+  const inView = useInView(ref, { once: true, margin: "-100px" });
 
   return (
     <section
       ref={ref}
       aria-label="Rakamlarla Vorte Studio"
-      className="grid grid-cols-2 gap-px border-b border-border md:grid-cols-4"
-      style={{ background: "rgba(255,255,255,0.07)" }}
+      className="grid grid-cols-2 gap-px border-y border-border md:grid-cols-4"
+      style={{ background: "rgba(255,255,255,0.06)" }}
     >
       {stats.map((stat, i) => (
-        <div
+        <motion.div
           key={i}
-          className="group relative overflow-hidden bg-bg px-6 py-10 transition-colors hover:bg-bg2 md:px-8"
-          style={{
-            opacity: inView ? 1 : 0,
-            transform: inView ? "translateY(0)" : "translateY(20px)",
-            transition: `all 0.6s ease ${i * 100}ms`,
-          }}
+          initial={{ opacity: 0, y: 30 }}
+          animate={inView ? { opacity: 1, y: 0 } : {}}
+          transition={{ delay: i * 0.12, duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+          className="group relative overflow-hidden bg-bg px-6 py-12 transition-colors hover:bg-bg2 md:px-10"
         >
-          <Counter target={stat.target} suffix={stat.suffix} inView={inView} />
-          <div
-            className="mt-2 text-[13px] leading-snug text-muted"
-            style={{ whiteSpace: "pre-line" }}
-          >
-            {stat.label}
+          {/* Hover glow */}
+          <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-accent/5 to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+
+          <div className="relative">
+            <Counter target={stat.target} suffix={stat.suffix} inView={inView} />
+            <div className="mt-3 text-[13px] leading-snug text-muted">
+              {stat.label}
+            </div>
           </div>
-          <div
+
+          {/* Bottom accent line — animated on view */}
+          <motion.div
             className="absolute bottom-0 left-0 h-0.5 bg-accent"
-            style={{
-              width: 0,
-              transition: "width 0.4s ease",
-            }}
+            initial={{ width: "0%" }}
+            animate={inView ? { width: "100%" } : {}}
+            transition={{ delay: 0.8 + i * 0.15, duration: 0.8, ease: "easeOut" }}
           />
-        </div>
+        </motion.div>
       ))}
     </section>
   );
