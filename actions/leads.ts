@@ -100,6 +100,19 @@ export async function markWaSent(leadId: string) {
   }
 }
 
+export async function updateLeadSector(id: string, sector: string) {
+  try {
+    await prisma.lead.update({
+      where: { id },
+      data: { sector },
+    });
+    revalidatePath("/admin/leads");
+    return { success: true };
+  } catch {
+    return { success: false, error: "Sektör güncellenemedi." };
+  }
+}
+
 export async function updateLeadNotes(id: string, notes: string) {
   try {
     await prisma.lead.update({

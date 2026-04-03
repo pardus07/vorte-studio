@@ -2,10 +2,11 @@
 
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { updateLeadStatus, convertLeadToClient, deleteLeadAction, addWaTemplateToLead, markWaSent } from "@/actions/leads";
+import { updateLeadStatus, convertLeadToClient, deleteLeadAction, addWaTemplateToLead, markWaSent, updateLeadSector } from "@/actions/leads";
 import { isGSM, formatWANumber } from "@/lib/phone-utils";
 import { generateWaMessage, buildDemoLink, buildWaUrl, detectIssue, extractCity } from "@/lib/wa-templates";
 import { getTemplateName } from "@/lib/template-selector";
+import { sectors } from "@/lib/turkey-data";
 import LeadFormModal from "./lead-form-modal";
 import LeadDetailModal from "./lead-detail-modal";
 
@@ -51,6 +52,11 @@ export default function KanbanBoard({ leads: initial }: { leads: Lead[] }) {
   const [showNewModal, setShowNewModal] = useState(false);
   const [detailLead, setDetailLead] = useState<Lead | null>(null);
   const [previewLead, setPreviewLead] = useState<Lead | null>(null);
+
+  // Sektör seçici modal state
+  const [sectorPickLead, setSectorPickLead] = useState<Lead | null>(null);
+  const [selectedSector, setSelectedSector] = useState("");
+  const [sectorSearch, setSectorSearch] = useState("");
 
   // URL'de ?new=1 varsa otomatik olarak yeni lead modal'ını aç
   useEffect(() => {
@@ -101,45 +107,74 @@ export default function KanbanBoard({ leads: initial }: { leads: Lead[] }) {
     }
   }
 
-  // ── Şablon Ekle ──
-  async function handleAddTemplate(lead: Lead) {
-    if (!lead.sector) {
-      showNotif("Bu lead'in sektörü belirlenmemiş. Önce sektör seçin.", "error");
+  // ── Şablon Ekle butonuna tıklandı ──
+  function handleTemplateClick(lead: Lead) {
+    if (!isGSM(lead.phone)) {
+      showNotif("GSM numarası yok — WA şablonu için GSM gerekli. Lead detayından numara ekleyin.", "error");
       return;
     }
-    if (!isGSM(lead.phone)) {
-      showNotif("Bu lead'in GSM numarası yok. WA şablonu için GSM gerekli.", "error");
+    if (!lead.sector) {
+      // Sektör yok — sektör seçici aç
+      setSectorPickLead(lead);
+      setSelectedSector("");
+      setSectorSearch("");
+      return;
+    }
+    // Her şey tamam — şablon oluştur
+    handleAddTemplate(lead, lead.sector);
+  }
+
+  // ── Sektör seçildi, şablonu oluştur ──
+  async function handleSectorConfirm() {
+    if (!sectorPickLead || !selectedSector) return;
+
+    // Önce sektörü DB'ye kaydet
+    const sectorResult = await updateLeadSector(sectorPickLead.id, selectedSector);
+    if (!sectorResult.success) {
+      showNotif("Sektör kaydedilemedi.", "error");
       return;
     }
 
+    // Lead'i güncelle
+    const updatedLead = { ...sectorPickLead, sector: selectedSector };
+    setLeads((prev) => prev.map((l) => l.id === updatedLead.id ? { ...l, sector: selectedSector } : l));
+
+    setSectorPickLead(null);
+
+    // Şablonu oluştur
+    await handleAddTemplate(updatedLead, selectedSector);
+  }
+
+  // ── Şablon Ekle (asıl işlem) ──
+  async function handleAddTemplate(lead: Lead, sector: string) {
     setTemplating(lead.id);
 
-    const slug = getTemplateName(lead.sector);
+    const slug = getTemplateName(sector);
     const city = extractCity(lead.address);
     const sorun = detectIssue({ hasWebsite: lead.hasWebsite, mobileScore: lead.mobileScore, sslValid: lead.sslValid });
-    const demoLink = buildDemoLink(lead.id, lead.sector);
+    const demoLink = buildDemoLink(lead.id, sector);
 
     const message = generateWaMessage({
       firma: lead.name,
-      sektor: lead.sector,
+      sektor: sector,
       sehir: city,
       sorun: sorun,
       link: demoLink,
       phone: formatWANumber(lead.phone!),
     });
 
-    const result = await addWaTemplateToLead(lead.id, message, lead.sector, slug);
+    const result = await addWaTemplateToLead(lead.id, message, sector, slug);
     setTemplating(null);
 
     if (result.success) {
       setLeads((prev) =>
         prev.map((l) =>
           l.id === lead.id
-            ? { ...l, status: "TEMPLATE_ADDED", waTemplate: message, waTemplateSector: lead.sector, waTemplateSlug: slug }
+            ? { ...l, status: "TEMPLATE_ADDED", sector, waTemplate: message, waTemplateSector: sector, waTemplateSlug: slug }
             : l
         )
       );
-      showNotif(`${lead.name} için ${lead.sector} şablonu hazırlandı!`, "success");
+      showNotif(`${lead.name} için ${sector} şablonu hazırlandı!`, "success");
     } else {
       showNotif(result.error || "Şablon eklenemedi.", "error");
     }
@@ -178,6 +213,11 @@ export default function KanbanBoard({ leads: initial }: { leads: Lead[] }) {
     success: "border-admin-green bg-admin-green-dim text-admin-green",
     error: "border-admin-red bg-admin-red-dim text-admin-red",
   };
+
+  // Sektör arama filtresi
+  const filteredSectors = sectorSearch
+    ? sectors.filter((s) => s.toLowerCase().includes(sectorSearch.toLowerCase()))
+    : sectors;
 
   return (
     <div className="space-y-4">
@@ -234,7 +274,7 @@ export default function KanbanBoard({ leads: initial }: { leads: Lead[] }) {
                       )}
 
                       {/* Sektör */}
-                      {lead.sector && (
+                      {lead.sector ? (
                         <div className="mt-1 flex items-center gap-1">
                           <span className="text-[10px] text-admin-muted">{lead.sector}</span>
                           {lead.waTemplateSlug && (
@@ -243,7 +283,9 @@ export default function KanbanBoard({ leads: initial }: { leads: Lead[] }) {
                             </span>
                           )}
                         </div>
-                      )}
+                      ) : isCold ? (
+                        <div className="mt-1 text-[9px] text-admin-amber">⚠ Sektör belirlenmemiş</div>
+                      ) : null}
 
                       {/* WA Sent tarih (WA_SENT sütununda) */}
                       {isWaSent && lead.waSentAt && (
@@ -270,15 +312,20 @@ export default function KanbanBoard({ leads: initial }: { leads: Lead[] }) {
                       <div className="mt-2 flex flex-col gap-1.5">
                         {/* Satır 1: Şablon Ekle / WA Gönder / Normal WA */}
                         <div className="flex gap-1.5">
-                          {/* COLD → Şablon Ekle butonu */}
-                          {isCold && lead.sector && isGSM(lead.phone) && (
+                          {/* COLD → Şablon Ekle butonu — HER ZAMAN GÖRÜNÜR */}
+                          {isCold && (
                             <button
-                              onClick={() => handleAddTemplate(lead)}
+                              onClick={() => handleTemplateClick(lead)}
                               disabled={templating === lead.id}
                               className="flex-1 rounded bg-admin-purple/80 px-2 py-1.5 text-[9px] font-medium text-white hover:bg-admin-purple transition-colors disabled:opacity-50"
                             >
                               {templating === lead.id ? "Hazırlanıyor..." : "📝 Şablon Ekle"}
                             </button>
+                          )}
+
+                          {/* COLD → Normal WA butonu (sektörsüz ama GSM varsa) */}
+                          {isCold && isGSM(lead.phone) && (
+                            <button onClick={() => openWhatsApp(lead.phone)} className="rounded bg-[#25D366] px-2 py-1.5 text-[9px] font-medium text-white hover:brightness-110" title="Şablonsuz WA">WA</button>
                           )}
 
                           {/* TEMPLATE_ADDED → WA Gönder butonu */}
@@ -342,7 +389,7 @@ export default function KanbanBoard({ leads: initial }: { leads: Lead[] }) {
         })}
       </div>
 
-      {/* Modaller */}
+      {/* ── Modaller ── */}
       {showNewModal && <LeadFormModal onClose={() => { setShowNewModal(false); router.refresh(); }} />}
       {detailLead && (
         <LeadDetailModal
@@ -353,7 +400,73 @@ export default function KanbanBoard({ leads: initial }: { leads: Lead[] }) {
         />
       )}
 
-      {/* Şablon Önizleme Modal */}
+      {/* ── Sektör Seçici Modal ── */}
+      {sectorPickLead && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm" onClick={() => setSectorPickLead(null)}>
+          <div className="mx-4 w-full max-w-md rounded-2xl border border-admin-border bg-admin-bg2 shadow-2xl" onClick={(e) => e.stopPropagation()}>
+            {/* Header */}
+            <div className="border-b border-admin-border px-5 py-4">
+              <h3 className="text-[14px] font-semibold text-admin-text">Sektör Seçin</h3>
+              <p className="mt-1 text-[11px] text-admin-muted">
+                <span className="font-medium text-admin-accent">{sectorPickLead.name}</span> için sektör belirleyin — şablon buna göre hazırlanacak
+              </p>
+            </div>
+
+            {/* Arama */}
+            <div className="border-b border-admin-border px-5 py-3">
+              <input
+                type="text"
+                placeholder="Sektör ara..."
+                value={sectorSearch}
+                onChange={(e) => setSectorSearch(e.target.value)}
+                autoFocus
+                className="w-full rounded-lg border border-admin-border bg-admin-bg3 px-3 py-2 text-[12px] text-admin-text placeholder:text-admin-muted2 focus:border-admin-accent focus:outline-none"
+              />
+            </div>
+
+            {/* Liste */}
+            <div className="max-h-[300px] overflow-y-auto p-2">
+              {filteredSectors.length === 0 ? (
+                <div className="py-6 text-center text-[12px] text-admin-muted">Sonuç bulunamadı</div>
+              ) : (
+                filteredSectors.map((s) => (
+                  <button
+                    key={s}
+                    onClick={() => setSelectedSector(s)}
+                    className={`w-full rounded-lg px-3 py-2 text-left text-[12px] transition-colors ${
+                      selectedSector === s
+                        ? "bg-admin-accent/15 font-medium text-admin-accent"
+                        : "text-admin-text hover:bg-admin-bg3"
+                    }`}
+                  >
+                    {s}
+                    {selectedSector === s && <span className="ml-2">✓</span>}
+                  </button>
+                ))
+              )}
+            </div>
+
+            {/* Footer */}
+            <div className="flex gap-2 border-t border-admin-border px-5 py-4">
+              <button
+                onClick={handleSectorConfirm}
+                disabled={!selectedSector}
+                className="flex-1 rounded-lg bg-admin-purple py-2.5 text-[12px] font-semibold text-white transition-colors hover:brightness-110 disabled:opacity-40"
+              >
+                {selectedSector ? `${selectedSector} — Şablon Hazırla` : "Sektör seçin"}
+              </button>
+              <button
+                onClick={() => setSectorPickLead(null)}
+                className="rounded-lg border border-admin-border px-4 py-2.5 text-[12px] text-admin-muted hover:text-admin-text transition-colors"
+              >
+                İptal
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── Şablon Önizleme Modal ── */}
       {previewLead && previewLead.waTemplate && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm" onClick={() => setPreviewLead(null)}>
           <div className="mx-4 w-full max-w-lg rounded-2xl border border-admin-border bg-admin-bg2 shadow-2xl" onClick={(e) => e.stopPropagation()}>
