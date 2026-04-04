@@ -77,3 +77,20 @@ export async function markAllSubmissionsRead() {
     return { success: false };
   }
 }
+
+export async function deleteSubmission(id: string) {
+  try {
+    // Önce bağlı proposal'ları temizle (submissionId null yap)
+    await prisma.proposal.updateMany({
+      where: { submissionId: id },
+      data: { submissionId: null },
+    });
+    await prisma.chatSubmission.delete({
+      where: { id },
+    });
+    revalidatePath("/admin/chat-submissions");
+    return { success: true };
+  } catch {
+    return { success: false, error: "Başvuru silinemedi" };
+  }
+}

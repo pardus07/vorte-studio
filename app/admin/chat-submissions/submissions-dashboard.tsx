@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useTransition, useCallback } from "react";
-import { markSubmissionRead, markAllSubmissionsRead } from "@/actions/chat-submissions";
+import { markSubmissionRead, markAllSubmissionsRead, deleteSubmission } from "@/actions/chat-submissions";
 import { createProposalFromSubmission, updateProposalStatus } from "@/actions/proposals";
 import { generateProposalDraft, generateFollowUpMessage } from "@/lib/prompt-generator";
 import type { PricingItem } from "@/lib/pricing-constants";
@@ -81,6 +81,7 @@ export default function SubmissionsDashboard({ initialData, pricingConfigs }: Pr
   const [aiPromptText, setAiPromptText] = useState<string | null>(null);
   const [copied, setCopied] = useState<"draft" | "ai" | "followup" | null>(null);
   const [proposalToken, setProposalToken] = useState<string | null>(null);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   // Filtre
   const filtered = items.filter((s) => {
@@ -356,6 +357,7 @@ TEKLİF KURALLARI:
                 setProposalToken(null);
                 setDraftText(null);
                 setAiPromptText(null);
+                setShowDeleteConfirm(false);
                 if (!s.isRead) handleMarkRead(s.id);
               }}
               className={`w-full rounded-xl border p-4 text-left transition-all ${
@@ -766,6 +768,46 @@ TEKLİF KURALLARI:
               {/* Slug */}
               <div className="text-[10px] text-admin-muted">
                 Slug: <code className="rounded bg-admin-bg px-1 py-0.5">{selected.slug}</code>
+              </div>
+
+              {/* Sil butonu */}
+              <div className="mt-4 border-t border-admin-border pt-4">
+                {showDeleteConfirm ? (
+                  <div className="rounded-lg border border-red-500/30 bg-red-500/5 p-3">
+                    <p className="mb-2 text-xs text-red-400">Bu başvuruyu silmek istediğinize emin misiniz?</p>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => {
+                          startTransition(async () => {
+                            const res = await deleteSubmission(selected.id);
+                            if (res.success) {
+                              setItems((prev) => prev.filter((s) => s.id !== selected.id));
+                              setSelectedId(null);
+                              setShowDeleteConfirm(false);
+                            }
+                          });
+                        }}
+                        disabled={isPending}
+                        className="flex-1 rounded-md bg-red-500/20 px-3 py-1.5 text-[11px] font-medium text-red-400 transition-colors hover:bg-red-500/30 disabled:opacity-50"
+                      >
+                        {isPending ? "Siliniyor..." : "Evet, Sil"}
+                      </button>
+                      <button
+                        onClick={() => setShowDeleteConfirm(false)}
+                        className="flex-1 rounded-md border border-admin-border px-3 py-1.5 text-[11px] text-admin-muted transition-colors hover:bg-admin-bg"
+                      >
+                        Vazgeç
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <button
+                    onClick={() => setShowDeleteConfirm(true)}
+                    className="w-full rounded-md border border-red-500/20 px-3 py-1.5 text-[11px] text-red-400/60 transition-colors hover:border-red-500/40 hover:bg-red-500/5 hover:text-red-400"
+                  >
+                    Başvuruyu Sil
+                  </button>
+                )}
               </div>
             </div>
           ) : (
