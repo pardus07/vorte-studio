@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useRef, useEffect, useCallback } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 
 interface Props {
   firmName: string
@@ -139,11 +140,39 @@ Türkiye'deki güvenilir domain sağlayıcıları:
 Eğer daha önce bir domain almadıysanız endişelenmeyin. Görüşmede size adım adım yardımcı olacağız. Domain'i kendi adınıza almanız önemlidir.`,
 }
 
+// ── Framer-motion variants ──
+const messageVariants = {
+  hidden: { opacity: 0, y: 16, scale: 0.95 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    transition: { type: 'spring' as const, stiffness: 300, damping: 24 },
+  },
+  exit: { opacity: 0, y: -8, transition: { duration: 0.15 } },
+}
+
+const buttonVariants = {
+  hidden: { opacity: 0, y: 10 },
+  visible: (i: number) => ({
+    opacity: 1,
+    y: 0,
+    transition: { delay: i * 0.05, type: 'spring' as const, stiffness: 400, damping: 25 },
+  }),
+}
+
+const pulseKeyframes = `
+@keyframes dotPulse {
+  0%, 80%, 100% { transform: scale(0.6); opacity: 0.4; }
+  40% { transform: scale(1); opacity: 1; }
+}
+`
+
 export default function ChatForm({ firmName, city, sector, slug }: Props) {
   // ── State ──
   const [messages, setMessages] = useState<Message[]>([])
   const [step, setStep] = useState<Step>('intro')
-  const [prevStep, setPrevStep] = useState<Step>('intro') // free question sonrası dönüş
+  const [prevStep, setPrevStep] = useState<Step>('intro')
   const [isTyping, setIsTyping] = useState(false)
   const [inputValue, setInputValue] = useState('')
   const [aiLoading, setAiLoading] = useState(false)
@@ -212,7 +241,7 @@ export default function ChatForm({ firmName, city, sector, slug }: Props) {
       setMessages([
         {
           role: 'assistant',
-          text: `Merhaba! 👋 ${firmName} için özel bir web sitesi teklifi hazırlayalım.`,
+          text: `Merhaba! ${firmName} için özel bir web sitesi teklifi hazırlayalım.`,
         },
       ])
     }, 500)
@@ -237,7 +266,6 @@ export default function ChatForm({ firmName, city, sector, slug }: Props) {
 
   // ── Buton tıklama ──
   function handleButtonClick(value: string, label: string) {
-    // Kullanıcı mesajı ekle
     setMessages((prev) => [...prev, { role: 'user', text: label }])
 
     switch (step) {
@@ -278,7 +306,6 @@ export default function ChatForm({ firmName, city, sector, slug }: Props) {
         if (HOSTING_INFO[value]) {
           addBotMessage(HOSTING_INFO[value], 'hostingInfo', { infoBox: true })
         } else {
-          // "var" seçtiyse doğrudan domain sorusuna geç
           addBotMessage('Domain (alan adı) durumunuz nedir?', 'domainStatus', {
             buttons: [
               { label: '✅ Domainim var', value: 'var' },
@@ -290,7 +317,6 @@ export default function ChatForm({ firmName, city, sector, slug }: Props) {
         break
 
       case 'hostingInfo':
-        // Bilgi okundu, domain sorusuna geç
         addBotMessage('Domain (alan adı) durumunuz nedir?', 'domainStatus', {
           buttons: [
             { label: '✅ Domainim var', value: 'var' },
@@ -305,7 +331,6 @@ export default function ChatForm({ firmName, city, sector, slug }: Props) {
         if (value !== 'var' && DOMAIN_INFO[value]) {
           addBotMessage(DOMAIN_INFO[value], 'domainInfo', { infoBox: true })
         } else {
-          // Domain var — timeline sorusuna geç
           addBotMessage('Projeniz için zamanlamanız nedir?', 'timeline', {
             buttons: [
               { label: '🚀 Acil — 2 hafta içinde', value: 'acil' },
@@ -318,7 +343,6 @@ export default function ChatForm({ firmName, city, sector, slug }: Props) {
         break
 
       case 'domainInfo':
-        // Bilgi okundu, timeline sorusuna geç
         addBotMessage('Projeniz için zamanlamanız nedir?', 'timeline', {
           buttons: [
             { label: '🚀 Acil — 2 hafta içinde', value: 'acil' },
@@ -390,13 +414,10 @@ export default function ChatForm({ firmName, city, sector, slug }: Props) {
         break
 
       case 'contact': {
-        // İsim + telefon parse
-        // Kullanıcı "Mehmet 0532..." veya sadece telefon yazabilir
         const phonePart = value.match(/0[5]\d{2}[\s.-]?\d{3}[\s.-]?\d{2}[\s.-]?\d{2}/)?.[0] || ''
         const namePart = value.replace(phonePart, '').trim() || data.firmName
 
         if (!phonePart) {
-          // Telefon bulunamadıysa sor
           addBotMessage('Telefon numaranızı alabilir miyim? (05XX XXX XX XX formatında)', 'contact')
           return
         }
@@ -447,7 +468,6 @@ export default function ChatForm({ firmName, city, sector, slug }: Props) {
       const json = await res.json()
       const answer = json.answer || 'Sorunuzu not aldım, ekibimiz size dönecek.'
 
-      // Kaydet
       setFreeQuestions((prev) => [
         ...prev,
         { question, answer, step: stepToNumber(prevStep), timestamp: new Date().toISOString() },
@@ -456,7 +476,6 @@ export default function ChatForm({ firmName, city, sector, slug }: Props) {
       setIsTyping(false)
       setMessages((prev) => [...prev, { role: 'assistant', text: answer }])
 
-      // Önceki adıma geri dön
       setTimeout(() => {
         setStep(prevStep)
       }, 500)
@@ -480,11 +499,9 @@ export default function ChatForm({ firmName, city, sector, slug }: Props) {
   async function submitForm(finalData: typeof data) {
     const completedSteps = 10
 
-    // Slug'dan leadId parse et (demo-tekstil-giyim-LEADID)
     let leadId: string | undefined
     if (slug.startsWith('demo-')) {
       const rest = slug.replace('demo-', '')
-      // Template slugları bilinen key'ler — geri kalan leadId
       const knownTemplates = [
         'dis-klinikleri','veteriner-klinikleri','optik-gozlukcu','fizik-tedavi',
         'tip-merkezleri','estetik-klinik','psikolog-danisma','diyetisyen',
@@ -548,7 +565,7 @@ export default function ChatForm({ firmName, city, sector, slug }: Props) {
     }
 
     addBotMessage(
-      `Teşekkürler ${finalData.contactName}! 🎉\n\nBilgileriniz ekibimize iletildi. 24 saat içinde size özel teklifiniz hazırlanacak ve sizinle iletişime geçeceğiz.\n\nGüzel bir gün dileriz!`,
+      `Teşekkürler ${finalData.contactName}!\n\nBilgileriniz ekibimize iletildi. 24 saat içinde size özel teklifiniz hazırlanacak ve sizinle iletişime geçeceğiz.\n\nGüzel bir gün dileriz!`,
       'done',
     )
   }
@@ -570,219 +587,388 @@ export default function ChatForm({ firmName, city, sector, slug }: Props) {
   }
 
   return (
-    <div className="flex min-h-screen flex-col bg-gradient-to-b from-slate-50 to-white">
-      {/* Header */}
-      <header className="sticky top-0 z-10 border-b border-slate-200 bg-white/90 px-4 py-3 backdrop-blur-sm">
+    <div className="flex min-h-[100dvh] flex-col bg-gradient-to-b from-slate-50 via-white to-slate-50">
+      {/* Pulse animation style */}
+      <style>{pulseKeyframes}</style>
+
+      {/* ── Header ── */}
+      <header className="sticky top-0 z-20 border-b border-slate-200/80 bg-white/80 px-4 py-3 backdrop-blur-xl">
         <div className="mx-auto flex max-w-xl items-center gap-3">
-          <a
+          <motion.a
             href={`/p/${slug}`}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
             className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-100 text-slate-500 transition-colors hover:bg-slate-200"
           >
             <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
             </svg>
-          </a>
+          </motion.a>
+
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-orange-500 text-sm font-bold text-white">
-              V
+            <div className="relative">
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-orange-500 to-orange-600 text-sm font-bold text-white shadow-lg shadow-orange-500/25">
+                V
+              </div>
+              <span className="absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-white bg-emerald-400" />
             </div>
             <div>
               <div className="text-sm font-semibold text-slate-900">Vorte Studio</div>
-              <div className="flex items-center gap-1.5 text-xs text-slate-500">
-                <span className="h-2 w-2 rounded-full bg-emerald-400" />
-                Çevrimiçi
-              </div>
+              <div className="text-xs text-slate-500">Çevrimiçi</div>
             </div>
           </div>
+
           {/* Progress */}
-          {step !== 'intro' && step !== 'done' && (
-            <div className="ml-auto flex items-center gap-2">
-              <div className="h-1.5 w-20 overflow-hidden rounded-full bg-slate-100">
-                <div
-                  className="h-full rounded-full bg-orange-500 transition-all duration-500"
-                  style={{ width: `${progress}%` }}
-                />
-              </div>
-              <span className="text-xs text-slate-400">
-                {stepToNumber(step)}/{TOTAL_STEPS}
-              </span>
-            </div>
-          )}
+          <AnimatePresence>
+            {step !== 'intro' && step !== 'done' && (
+              <motion.div
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: 20 }}
+                className="ml-auto flex items-center gap-2.5"
+              >
+                <div className="h-2 w-24 overflow-hidden rounded-full bg-slate-100">
+                  <motion.div
+                    className="h-full rounded-full bg-gradient-to-r from-orange-400 to-orange-600"
+                    initial={{ width: 0 }}
+                    animate={{ width: `${progress}%` }}
+                    transition={{ type: 'spring', stiffness: 100, damping: 20 }}
+                  />
+                </div>
+                <span className="min-w-[2.5rem] text-right text-xs font-medium text-slate-400">
+                  {stepToNumber(step)}/{TOTAL_STEPS}
+                </span>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       </header>
 
-      {/* Chat area */}
+      {/* ── Chat area ── */}
       <main className="flex-1 overflow-y-auto px-4 py-6">
         <div className="mx-auto max-w-xl space-y-4">
-          <div className="flex justify-center">
-            <span className="rounded-full bg-slate-100 px-3 py-1 text-xs text-slate-500">Bugün</span>
-          </div>
+          {/* Bugün etiketi */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.2 }}
+            className="flex justify-center"
+          >
+            <span className="rounded-full bg-slate-100 px-3 py-1 text-xs text-slate-400">Bugün</span>
+          </motion.div>
 
-          {messages.map((msg, i) => (
-            <div key={i}>
-              <div className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                <div
-                  className={`max-w-[85%] whitespace-pre-line rounded-2xl px-4 py-3 text-sm leading-relaxed ${
-                    msg.role === 'user'
-                      ? 'rounded-br-md bg-orange-500 text-white'
-                      : msg.infoBox
-                        ? 'rounded-bl-md border border-blue-200 bg-blue-50 text-slate-700'
-                        : 'rounded-bl-md bg-white text-slate-700 shadow-sm ring-1 ring-slate-100'
-                  }`}
-                >
-                  {msg.text}
-                </div>
-              </div>
+          {/* ── Mesajlar ── */}
+          <AnimatePresence mode="popLayout">
+            {messages.map((msg, i) => (
+              <motion.div
+                key={i}
+                variants={messageVariants}
+                initial="hidden"
+                animate="visible"
+                layout
+              >
+                {/* Mesaj balonu */}
+                <div className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                  {/* Assistant avatar (sadece ilk mesajda veya önceki farklı role ise) */}
+                  {msg.role === 'assistant' && (
+                    <div className="mr-2 mt-1 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-orange-500 to-orange-600 text-[10px] font-bold text-white">
+                      V
+                    </div>
+                  )}
 
-              {/* Inline butonlar (son assistant mesajında ve step eşleşiyorsa) */}
-              {msg.buttons && i === messages.length - 1 && !msg.multiSelect && (
-                <div className="mt-3 flex flex-wrap gap-2 pl-2">
-                  {msg.buttons.map((btn) => (
-                    <button
-                      key={btn.value}
-                      onClick={() => handleButtonClick(btn.value, btn.label)}
-                      className="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm text-slate-700 shadow-sm transition-all hover:border-orange-300 hover:bg-orange-50 active:scale-95"
-                    >
-                      {btn.label}
-                    </button>
-                  ))}
-                </div>
-              )}
-
-              {/* Multi-select butonlar */}
-              {msg.multiSelect && i === messages.length - 1 && (
-                <div className="mt-3 space-y-3 pl-2">
-                  <div className="flex flex-wrap gap-2">
-                    {FEATURES.map((f) => (
-                      <button
-                        key={f.value}
-                        onClick={() => toggleFeature(f.value)}
-                        className={`rounded-full border px-4 py-2 text-sm transition-all active:scale-95 ${
-                          selectedFeatures.includes(f.value)
-                            ? 'border-orange-400 bg-orange-50 text-orange-700'
-                            : 'border-slate-200 bg-white text-slate-700 hover:border-orange-300'
-                        }`}
-                      >
-                        {f.label}
-                      </button>
-                    ))}
+                  <div
+                    className={`max-w-[80%] whitespace-pre-line rounded-2xl px-4 py-3 text-[14px] leading-relaxed ${
+                      msg.role === 'user'
+                        ? 'rounded-br-sm bg-gradient-to-br from-orange-500 to-orange-600 text-white shadow-lg shadow-orange-500/20'
+                        : msg.infoBox
+                          ? 'rounded-bl-sm border border-blue-200/60 bg-gradient-to-br from-blue-50 to-indigo-50 text-slate-700'
+                          : 'rounded-bl-sm bg-white text-slate-700 shadow-sm ring-1 ring-slate-200/60'
+                    }`}
+                  >
+                    {/* Info box ikon */}
+                    {msg.infoBox && (
+                      <div className="mb-2 flex items-center gap-2 text-xs font-medium text-blue-600">
+                        <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        Bilgilendirme
+                      </div>
+                    )}
+                    {msg.text}
                   </div>
-                  <button
-                    onClick={handleFeaturesConfirm}
-                    className="rounded-full bg-orange-500 px-6 py-2 text-sm font-medium text-white shadow-sm transition-all hover:bg-orange-600 active:scale-95"
-                  >
-                    Devam Et →
-                  </button>
                 </div>
-              )}
 
-              {/* Info box — "Anladım" butonu */}
-              {msg.infoBox && i === messages.length - 1 && (
-                <div className="mt-3 pl-2">
-                  <button
-                    onClick={() => handleButtonClick('anladim', 'Anladım, devam edelim')}
-                    className="rounded-full bg-blue-500 px-6 py-2 text-sm font-medium text-white shadow-sm transition-all hover:bg-blue-600 active:scale-95"
+                {/* ── Inline butonlar ── */}
+                {msg.buttons && i === messages.length - 1 && !msg.multiSelect && (
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.15 }}
+                    className="mt-3 flex flex-wrap gap-2 pl-9"
                   >
-                    Anladım, devam edelim →
-                  </button>
-                </div>
-              )}
-            </div>
-          ))}
+                    {msg.buttons.map((btn, bi) => (
+                      <motion.button
+                        key={btn.value}
+                        custom={bi}
+                        variants={buttonVariants}
+                        initial="hidden"
+                        animate="visible"
+                        whileHover={{ scale: 1.03, y: -1 }}
+                        whileTap={{ scale: 0.96 }}
+                        onClick={() => handleButtonClick(btn.value, btn.label)}
+                        className="rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-700 shadow-sm transition-colors hover:border-orange-300 hover:bg-orange-50 hover:shadow-md"
+                      >
+                        {btn.label}
+                      </motion.button>
+                    ))}
+                  </motion.div>
+                )}
 
-          {/* Typing indicator */}
-          {isTyping && (
-            <div className="flex justify-start">
-              <div className="flex items-center gap-1.5 rounded-2xl rounded-bl-md bg-white px-4 py-3 shadow-sm ring-1 ring-slate-100">
-                <span className="h-2 w-2 animate-bounce rounded-full bg-slate-300" style={{ animationDelay: '0ms' }} />
-                <span className="h-2 w-2 animate-bounce rounded-full bg-slate-300" style={{ animationDelay: '150ms' }} />
-                <span className="h-2 w-2 animate-bounce rounded-full bg-slate-300" style={{ animationDelay: '300ms' }} />
-              </div>
-            </div>
-          )}
+                {/* ── Multi-select butonlar ── */}
+                {msg.multiSelect && i === messages.length - 1 && (
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.15 }}
+                    className="mt-3 space-y-3 pl-9"
+                  >
+                    <div className="flex flex-wrap gap-2">
+                      {FEATURES.map((f, fi) => {
+                        const selected = selectedFeatures.includes(f.value)
+                        return (
+                          <motion.button
+                            key={f.value}
+                            custom={fi}
+                            variants={buttonVariants}
+                            initial="hidden"
+                            animate="visible"
+                            whileHover={{ scale: 1.03 }}
+                            whileTap={{ scale: 0.96 }}
+                            onClick={() => toggleFeature(f.value)}
+                            className={`relative rounded-xl border px-4 py-2.5 text-sm transition-all ${
+                              selected
+                                ? 'border-orange-400 bg-orange-50 text-orange-700 shadow-md shadow-orange-500/10'
+                                : 'border-slate-200 bg-white text-slate-700 hover:border-orange-300 hover:bg-orange-50/50'
+                            }`}
+                          >
+                            <span className="flex items-center gap-2">
+                              {selected && (
+                                <motion.svg
+                                  initial={{ scale: 0 }}
+                                  animate={{ scale: 1 }}
+                                  className="h-4 w-4 text-orange-500"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  strokeWidth={2.5}
+                                  viewBox="0 0 24 24"
+                                >
+                                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                                </motion.svg>
+                              )}
+                              {f.label}
+                            </span>
+                          </motion.button>
+                        )
+                      })}
+                    </div>
+                    <motion.button
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.97 }}
+                      onClick={handleFeaturesConfirm}
+                      className="rounded-xl bg-gradient-to-r from-orange-500 to-orange-600 px-6 py-2.5 text-sm font-medium text-white shadow-lg shadow-orange-500/25 transition-shadow hover:shadow-xl hover:shadow-orange-500/30"
+                    >
+                      Devam Et
+                      <svg className="ml-2 inline h-4 w-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                      </svg>
+                    </motion.button>
+                  </motion.div>
+                )}
+
+                {/* ── Info box — "Anladım" butonu ── */}
+                {msg.infoBox && i === messages.length - 1 && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.2 }}
+                    className="mt-3 pl-9"
+                  >
+                    <motion.button
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.97 }}
+                      onClick={() => handleButtonClick('anladim', 'Anladım, devam edelim')}
+                      className="rounded-xl bg-gradient-to-r from-blue-500 to-indigo-500 px-6 py-2.5 text-sm font-medium text-white shadow-lg shadow-blue-500/25 transition-shadow hover:shadow-xl hover:shadow-blue-500/30"
+                    >
+                      Anladım, devam edelim
+                      <svg className="ml-2 inline h-4 w-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                      </svg>
+                    </motion.button>
+                  </motion.div>
+                )}
+              </motion.div>
+            ))}
+          </AnimatePresence>
+
+          {/* ── Typing indicator ── */}
+          <AnimatePresence>
+            {isTyping && (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                className="flex items-start justify-start"
+              >
+                <div className="mr-2 mt-1 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-orange-500 to-orange-600 text-[10px] font-bold text-white">
+                  V
+                </div>
+                <div className="flex items-center gap-1.5 rounded-2xl rounded-bl-sm bg-white px-5 py-3.5 shadow-sm ring-1 ring-slate-200/60">
+                  <span
+                    className="h-2 w-2 rounded-full bg-slate-400"
+                    style={{ animation: 'dotPulse 1.4s ease-in-out infinite', animationDelay: '0ms' }}
+                  />
+                  <span
+                    className="h-2 w-2 rounded-full bg-slate-400"
+                    style={{ animation: 'dotPulse 1.4s ease-in-out infinite', animationDelay: '200ms' }}
+                  />
+                  <span
+                    className="h-2 w-2 rounded-full bg-slate-400"
+                    style={{ animation: 'dotPulse 1.4s ease-in-out infinite', animationDelay: '400ms' }}
+                  />
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
 
           <div ref={chatEndRef} />
         </div>
       </main>
 
-      {/* Input area */}
-      {showTextInput && (
-        <div className="sticky bottom-0 border-t border-slate-200 bg-white px-4 py-3">
-          <div className="mx-auto max-w-xl">
-            <form onSubmit={handleSubmit} className="flex gap-2">
-              <input
-                ref={inputRef}
-                type={step === 'contact' ? 'tel' : 'text'}
-                value={inputValue}
-                onChange={(e) => setInputValue(e.target.value)}
-                placeholder={placeholders[step] ?? 'Yazın...'}
-                className="flex-1 rounded-full border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm text-slate-900 placeholder-slate-400 outline-none transition-colors focus:border-orange-300 focus:bg-white focus:ring-2 focus:ring-orange-100"
-                disabled={aiLoading}
-              />
-              {step === 'message' && (
-                <button
-                  type="button"
-                  onClick={handleSkipMessage}
-                  className="rounded-full border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-500 transition-colors hover:bg-slate-50"
+      {/* ── Input area ── */}
+      <AnimatePresence mode="wait">
+        {showTextInput && (
+          <motion.div
+            key="text-input"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 20 }}
+            className="sticky bottom-0 z-10 border-t border-slate-200/80 bg-white/80 px-4 py-3 backdrop-blur-xl"
+          >
+            <div className="mx-auto max-w-xl">
+              <form onSubmit={handleSubmit} className="flex gap-2">
+                <input
+                  ref={inputRef}
+                  type={step === 'contact' ? 'tel' : 'text'}
+                  value={inputValue}
+                  onChange={(e) => setInputValue(e.target.value)}
+                  placeholder={placeholders[step] ?? 'Yazın...'}
+                  className="flex-1 rounded-xl border border-slate-200 bg-slate-50/80 px-4 py-3 text-sm text-slate-900 placeholder-slate-400 outline-none transition-all focus:border-orange-300 focus:bg-white focus:shadow-lg focus:shadow-orange-500/5 focus:ring-2 focus:ring-orange-100"
+                  disabled={aiLoading}
+                />
+                {step === 'message' && (
+                  <motion.button
+                    type="button"
+                    whileHover={{ scale: 1.03 }}
+                    whileTap={{ scale: 0.97 }}
+                    onClick={handleSkipMessage}
+                    className="rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-500 transition-colors hover:bg-slate-50"
+                  >
+                    Atla
+                  </motion.button>
+                )}
+                <motion.button
+                  type="submit"
+                  disabled={!inputValue.trim() || aiLoading}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.9 }}
+                  className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-orange-500 to-orange-600 text-white shadow-lg shadow-orange-500/25 transition-all disabled:from-slate-200 disabled:to-slate-200 disabled:text-slate-400 disabled:shadow-none"
                 >
-                  Atla
-                </button>
+                  <svg className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5" />
+                  </svg>
+                </motion.button>
+              </form>
+
+              {/* Free question butonu — text input modlarında */}
+              {showFreeQuestionBtn && step !== 'freeQuestion' && (
+                <motion.button
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.3 }}
+                  onClick={handleOpenFreeQuestion}
+                  className="mt-2 w-full text-center text-xs text-slate-400 transition-colors hover:text-orange-500"
+                >
+                  <span className="inline-flex items-center gap-1.5">
+                    <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    Bir sorum var
+                  </span>
+                </motion.button>
               )}
-              <button
-                type="submit"
-                disabled={!inputValue.trim() || aiLoading}
-                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-orange-500 text-white shadow-sm transition-all hover:bg-orange-600 disabled:bg-slate-200 disabled:text-slate-400"
-              >
-                <svg className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 19V5m0 0l-7 7m7-7l7 7" />
-                </svg>
-              </button>
-            </form>
+            </div>
+          </motion.div>
+        )}
 
-            {/* Free question butonu — text input modlarında */}
-            {showFreeQuestionBtn && step !== 'freeQuestion' && (
-              <button
+        {/* ── Buton modlarında "Bir sorum var" ── */}
+        {showButtons && !showTextInput && (
+          <motion.div
+            key="button-footer"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="sticky bottom-0 z-10 border-t border-slate-200/80 bg-white/80 px-4 py-3 backdrop-blur-xl"
+          >
+            <div className="mx-auto max-w-xl text-center">
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
                 onClick={handleOpenFreeQuestion}
-                className="mt-2 w-full text-center text-xs text-slate-400 transition-colors hover:text-orange-500"
+                className="inline-flex items-center gap-1.5 text-sm text-slate-400 transition-colors hover:text-orange-500"
               >
-                💬 Bir sorum var
-              </button>
-            )}
-          </div>
-        </div>
-      )}
+                <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                Bir sorum var
+              </motion.button>
+            </div>
+          </motion.div>
+        )}
 
-      {/* Buton modlarında "Bir sorum var" */}
-      {showButtons && !showTextInput && (
-        <div className="sticky bottom-0 border-t border-slate-200 bg-white px-4 py-3">
-          <div className="mx-auto max-w-xl text-center">
-            <button
-              onClick={handleOpenFreeQuestion}
-              className="text-sm text-slate-400 transition-colors hover:text-orange-500"
-            >
-              💬 Bir sorum var
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* Tamamlandı */}
-      {step === 'done' && (
-        <div className="sticky bottom-0 border-t border-slate-200 bg-white px-4 py-4">
-          <div className="mx-auto max-w-xl text-center">
-            <p className="mb-3 text-sm text-slate-500">Demo sayfanıza geri dönebilirsiniz:</p>
-            <a
-              href={`/p/${slug}`}
-              className="inline-flex items-center gap-2 rounded-full bg-slate-100 px-6 py-2.5 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-200"
-            >
-              <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
-              </svg>
-              Sayfaya Geri Dön
-            </a>
-          </div>
-        </div>
-      )}
+        {/* ── Tamamlandı ── */}
+        {step === 'done' && (
+          <motion.div
+            key="done-footer"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3, type: 'spring', stiffness: 200 }}
+            className="sticky bottom-0 z-10 border-t border-slate-200/80 bg-white/80 px-4 py-5 backdrop-blur-xl"
+          >
+            <div className="mx-auto max-w-xl text-center">
+              {/* Kutlama animasyonu */}
+              <motion.div
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ type: 'spring', stiffness: 300, damping: 15, delay: 0.4 }}
+                className="mb-3 text-4xl"
+              >
+                🎉
+              </motion.div>
+              <p className="mb-4 text-sm text-slate-500">Başvurunuz alındı! Demo sayfanıza geri dönebilirsiniz.</p>
+              <motion.a
+                href={`/p/${slug}`}
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.97 }}
+                className="inline-flex items-center gap-2 rounded-xl bg-slate-100 px-6 py-3 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-200"
+              >
+                <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+                </svg>
+                Sayfaya Geri Dön
+              </motion.a>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   )
 }

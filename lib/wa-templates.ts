@@ -419,17 +419,25 @@ export function detectIssue(lead: {
   return "Dijital varlığınız rakiplerinizin gerisinde kalıyor olabilir — bunu birlikte değerlendirelim";
 }
 
+// ── Bilgilendirme notu (KVKK / Şeffaflık) ──
+const DISCLOSURE_NOTE = `
+
+---
+Sayın firma yetkilisi, GSM numaranızı Google Haritalar'da halka açık olarak yayınlanan işletme bilgilerinizden aldık. Firmanızın Google Haritalar kaydında web sitesi bulunmadığını veya mevcut sitenizin iyileştirilebileceğini tespit ettiğimiz için sizinle iletişime geçiyoruz. Yanıt vermek istemezseniz bu mesajı görmezden gelebilirsiniz.`;
+
 // ── Şablon oluştur ──
 export function generateWaMessage(data: WaTemplateData): string {
   const group = sectorGroupMap[data.sektor] || "diger";
   const tpl = templates[group] || templates.diger;
 
-  return tpl
+  const message = tpl
     .replace(/\{firma\}/g, data.firma)
     .replace(/\{sektor\}/g, data.sektor.toLowerCase())
     .replace(/\{sehir\}/g, data.sehir)
     .replace(/\{sorun\}/g, data.sorun)
     .replace(/\{link\}/g, data.link);
+
+  return message + DISCLOSURE_NOTE;
 }
 
 // ── Demo link oluştur ──

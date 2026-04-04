@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { calculatePrice } from "@/lib/pricing-calculator";
 
 export const dynamic = "force-dynamic";
 
@@ -46,6 +47,47 @@ export async function POST(req: Request) {
       }
     }
 
+    // Fiyat hesapla (PricingConfig DB'den oku)
+    let calculatedPrice: number | null = null;
+    let estimatedHours: number | null = null;
+    let tokenCost: number | null = null;
+
+    try {
+      const configs = await prisma.pricingConfig.findMany({
+        where: { isActive: true },
+      });
+      const pricingItems = configs.map((c) => ({
+        id: c.id,
+        category: c.category,
+        key: c.key,
+        label: c.label,
+        value: c.value,
+        unit: c.unit,
+        sortOrder: c.sortOrder,
+        isActive: c.isActive,
+      }));
+
+      const freeQArr = Array.isArray(freeQuestions) ? freeQuestions : [];
+      const result = calculatePrice(
+        {
+          siteType: siteType || null,
+          features: features || [],
+          pageCount: pageCount || null,
+          contentStatus: contentStatus || null,
+          hostingStatus: hostingStatus || null,
+          timeline: timeline || null,
+          freeQuestionCount: freeQArr.length,
+        },
+        pricingItems
+      );
+
+      calculatedPrice = result.totalPrice;
+      estimatedHours = result.estimatedHours;
+      tokenCost = result.tokenCost;
+    } catch {
+      // Fiyat hesaplanamazsa sessiz devam et
+    }
+
     // ChatSubmission oluştur
     const submission = await prisma.chatSubmission.create({
       data: {
@@ -67,6 +109,9 @@ export async function POST(req: Request) {
         city: city || null,
         completedSteps: completedSteps || 0,
         score,
+        calculatedPrice,
+        estimatedHours,
+        tokenCost,
         freeQuestions: freeQuestions || [],
         leadId: leadId || null,
       },

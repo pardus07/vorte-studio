@@ -55,6 +55,13 @@ const sections = [
     ],
   },
   {
+    label: "Chatbot",
+    items: [
+      { name: "Başvurular", href: "/admin/chat-submissions", icon: ChatSubmissionIcon },
+      { name: "Fiyatlandırma", href: "/admin/pricing", icon: PricingIcon },
+    ],
+  },
+  {
     label: "Yönetim",
     items: [
       { name: "Ayarlar", href: "/admin/settings", icon: SettingsIcon },
@@ -62,9 +69,18 @@ const sections = [
   },
 ];
 
-export default function Sidebar() {
+export default function Sidebar({ unreadSubmissions = 0 }: { unreadSubmissions?: number }) {
   const pathname = usePathname();
   const { collapsed, toggle } = useSidebar();
+
+  // Dinamik badge'ler — okunmamış başvuru sayısı
+  const dynamicBadges: Record<string, { badge: string; badgeColor: "amber" | "red" }> = {};
+  if (unreadSubmissions > 0) {
+    dynamicBadges["/admin/chat-submissions"] = {
+      badge: String(unreadSubmissions),
+      badgeColor: unreadSubmissions >= 5 ? "red" : "amber",
+    };
+  }
 
   return (
     <aside
@@ -139,18 +155,24 @@ export default function Sidebar() {
                     >
                       {item.name}
                     </span>
-                    {"badge" in item && item.badge && !collapsed && (
-                      <span
-                        className={cn(
-                          "ml-auto flex h-5 min-w-5 items-center justify-center rounded-full px-1.5 text-[10px] font-semibold leading-none",
-                          item.badgeColor === "amber"
-                            ? "bg-admin-amber/15 text-admin-amber"
-                            : "bg-admin-red/15 text-admin-red animate-pulse"
-                        )}
-                      >
-                        {item.badge}
-                      </span>
-                    )}
+                    {(() => {
+                      const dynBadge = dynamicBadges[item.href];
+                      const badge = dynBadge?.badge || ("badge" in item ? item.badge : undefined);
+                      const badgeColor = dynBadge?.badgeColor || ("badgeColor" in item ? item.badgeColor : undefined);
+                      if (!badge || collapsed) return null;
+                      return (
+                        <span
+                          className={cn(
+                            "ml-auto flex h-5 min-w-5 items-center justify-center rounded-full px-1.5 text-[10px] font-semibold leading-none",
+                            badgeColor === "amber"
+                              ? "bg-admin-amber/15 text-admin-amber"
+                              : "bg-admin-red/15 text-admin-red animate-pulse"
+                          )}
+                        >
+                          {badge}
+                        </span>
+                      );
+                    })()}
                   </Link>
                 );
               })}
@@ -323,6 +345,26 @@ function SettingsIcon({ className }: { className?: string }) {
     <svg className={className} viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
       <circle cx="9" cy="9" r="2.5" />
       <path d="M9 1.5v2M9 14.5v2M1.5 9h2M14.5 9h2M3.4 3.4l1.4 1.4M13.2 13.2l1.4 1.4M3.4 14.6l1.4-1.4M13.2 4.8l1.4-1.4" />
+    </svg>
+  );
+}
+
+function ChatSubmissionIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M2 3h14a1 1 0 011 1v8a1 1 0 01-1 1h-4l-3 3-3-3H2a1 1 0 01-1-1V4a1 1 0 011-1z" />
+      <circle cx="6" cy="8" r="0.75" fill="currentColor" />
+      <circle cx="9" cy="8" r="0.75" fill="currentColor" />
+      <circle cx="12" cy="8" r="0.75" fill="currentColor" />
+    </svg>
+  );
+}
+
+function PricingIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M1 10.5L9 2l8 8.5" />
+      <path d="M5 14h8M7 11h4" />
     </svg>
   );
 }

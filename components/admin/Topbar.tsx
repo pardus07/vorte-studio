@@ -30,6 +30,8 @@ const titles: Record<string, { title: string; emoji: string }> = {
   "/admin/blog": { title: "Blog", emoji: "📝" },
   "/admin/templates": { title: "Şablonlar", emoji: "🎨" },
   "/admin/settings": { title: "Ayarlar", emoji: "⚙️" },
+  "/admin/chat-submissions": { title: "Chatbot Başvuruları", emoji: "💬" },
+  "/admin/pricing": { title: "Fiyatlandırma", emoji: "💲" },
 };
 
 export default function Topbar({ alerts = [] }: { alerts?: Alert[] }) {
