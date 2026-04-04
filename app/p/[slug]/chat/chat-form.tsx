@@ -40,6 +40,8 @@ type Step =
   | 'contentStatus'
   | 'hostingStatus'
   | 'hostingInfo'
+  | 'hostingChoice'
+  | 'hostingPackages'
   | 'domainStatus'
   | 'domainInfo'
   | 'timeline'
@@ -87,8 +89,7 @@ const FEATURES: ButtonOption[] = [
 ]
 
 // ── Hosting bilgi metinleri ──
-const HOSTING_INFO: Record<string, string> = {
-  var: `Harika! Mevcut hostinginizin uyumluluğunu kontrol edelim.
+const HOSTING_COMPAT_INFO = `Harika! Mevcut hostinginizin uyumluluğunu kontrol edelim.
 
 Web sitelerimiz Next.js teknolojisi ile yapılır. Bunun için:
 
@@ -100,11 +101,9 @@ Web sitelerimiz Next.js teknolojisi ile yapılır. Bunun için:
 ❌ cPanel'li shared hosting uygun değildir
 ❌ Sadece WordPress destekleyen sunucular uygun değildir
 
-Mevcut hostinginiz bu özelliklere sahip değilse endişelenmeyin — size uygun fiyatlı hosting paketlerimiz mevcut.`,
+Mevcut hostinginiz bu özelliklere sahip değilse endişelenmeyin — size uygun fiyatlı hosting paketlerimiz mevcut.`
 
-  yok: `Hosting konusunda endişelenmeyin — size uygun paketlerimiz var.
-
-Kendiniz almak isterseniz Türkiye lokasyonlu VPS önerilerimiz:
+const HOSTING_SELF_INFO = `Kendiniz almak isterseniz Türkiye lokasyonlu VPS önerilerimiz:
 
 • Hetzner Cloud — CX22 (~€4.5/ay)
 • Contabo İstanbul — VPS S (~€6/ay)
@@ -112,17 +111,23 @@ Kendiniz almak isterseniz Türkiye lokasyonlu VPS önerilerimiz:
 
 ⚠️ Önemli: cPanel'li shared hosting ALMAYIN. "VPS" veya "Cloud Server" kategorisinden seçin.
 
-Veya biz sizin için barındırma yapabiliriz — ekibimiz detayları paylaşacak.`,
+Kurulumu ve yapılandırmayı biz yaparız, sadece sunucuyu almanız yeterli.`
 
-  bilmiyor: `Hosting, web sitenizin yayında kalmasını sağlayan sunucu hizmetidir. Bir nevi sitenizin "evi".
+const HOSTING_PACKAGES_INFO = `Hosting paketlerimiz (Türkiye lokasyonlu VDS, yıllık, KDV dahil):
 
-Endişelenmenize gerek yok — iki seçeneğiniz var:
+📦 Starter — 2.650 TL/yıl
+   2 vCPU · 3 GB RAM · 30 GB SSD · Limitsiz bant genişliği
+   Tek site için ideal
 
-1. Biz barındırırız — her şeyi biz hallederiz, siz sadece sitenizi kullanırsınız
-2. Siz alırsınız — size uygun sunucuyu önerir, kurulumu yaparız
+📦 Business — 4.900 TL/yıl
+   4 vCPU · 6 GB RAM · 50 GB SSD · Limitsiz bant genişliği
+   Orta ölçekli siteler ve katalog siteleri için
 
-Detayları görüşmede konuşuruz.`,
-}
+📦 Pro — 6.150 TL/yıl
+   4 vCPU · 8 GB RAM · 60 GB SSD · Limitsiz bant genişliği
+   E-ticaret ve yoğun trafikli siteler için
+
+Tüm paketlere kurulum, SSL sertifikası ve teknik destek dahildir.`
 
 // ── Domain bilgi metinleri ──
 const DOMAIN_INFO: Record<string, string> = {
@@ -303,20 +308,57 @@ export default function ChatForm({ firmName, city, sector, slug }: Props) {
 
       case 'hostingStatus':
         setData((d) => ({ ...d, hostingStatus: value }))
-        if (HOSTING_INFO[value]) {
-          addBotMessage(HOSTING_INFO[value], 'hostingInfo', { infoBox: true })
+        if (value === 'var') {
+          // Mevcut hosting var — uyumluluk bilgisi göster
+          addBotMessage(HOSTING_COMPAT_INFO, 'hostingInfo', { infoBox: true })
         } else {
-          addBotMessage('Domain (alan adı) durumunuz nedir?', 'domainStatus', {
+          // Yok veya bilmiyor — seçenek sun
+          addBotMessage(
+            value === 'bilmiyor'
+              ? 'Hosting, web sitenizin yayında kalmasını sağlayan sunucu hizmetidir — sitenizin "evi". Nasıl ilerlemek istersiniz?'
+              : 'Hosting konusunda iki seçeneğiniz var:',
+            'hostingChoice',
+            {
+              buttons: [
+                { label: '🛒 Ben kendim alırım', value: 'self' },
+                { label: '📦 Siz sağlayın', value: 'provider' },
+              ],
+            },
+          )
+        }
+        break
+
+      case 'hostingChoice':
+        if (value === 'self') {
+          // Kendisi alacak — VPS önerileri
+          setData((d) => ({ ...d, hostingProvider: 'musteri' }))
+          addBotMessage(HOSTING_SELF_INFO, 'hostingInfo', { infoBox: true })
+        } else {
+          // Biz sağlayacağız — paketleri göster
+          addBotMessage(HOSTING_PACKAGES_INFO, 'hostingPackages', {
             buttons: [
-              { label: '✅ Domainim var', value: 'var' },
-              { label: '❌ Domainim yok', value: 'yok' },
-              { label: '❓ Ne olduğunu bilmiyorum', value: 'bilmiyor' },
+              { label: '📦 Starter — 2.650 TL/yıl', value: 'starter' },
+              { label: '📦 Business — 4.900 TL/yıl', value: 'business' },
+              { label: '📦 Pro — 6.150 TL/yıl', value: 'pro' },
+              { label: '🤔 Görüşmede karar veririm', value: 'belirsiz' },
             ],
           })
         }
         break
 
+      case 'hostingPackages':
+        setData((d) => ({ ...d, hostingProvider: `vorte-${value}` }))
+        addBotMessage('Domain (alan adı) durumunuz nedir?', 'domainStatus', {
+          buttons: [
+            { label: '✅ Domainim var', value: 'var' },
+            { label: '❌ Domainim yok', value: 'yok' },
+            { label: '❓ Ne olduğunu bilmiyorum', value: 'bilmiyor' },
+          ],
+        })
+        break
+
       case 'hostingInfo':
+        // Bilgi okundu → domain sorusuna geç
         addBotMessage('Domain (alan adı) durumunuz nedir?', 'domainStatus', {
           buttons: [
             { label: '✅ Domainim var', value: 'var' },
@@ -576,7 +618,7 @@ export default function ChatForm({ firmName, city, sector, slug }: Props) {
   // ── Buton gösterilecek mi ──
   const showButtons = !['intro', 'firmName', 'message', 'contact', 'done', 'freeQuestion'].includes(step)
   const showTextInput = ['firmName', 'message', 'contact', 'freeQuestion'].includes(step)
-  const showFreeQuestionBtn = !['intro', 'done', 'freeQuestion', 'hostingInfo', 'domainInfo'].includes(step)
+  const showFreeQuestionBtn = !['intro', 'done', 'freeQuestion', 'hostingInfo', 'hostingChoice', 'hostingPackages', 'domainInfo'].includes(step)
 
   // ── Placeholder ──
   const placeholders: Record<string, string> = {
