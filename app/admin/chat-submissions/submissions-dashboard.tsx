@@ -636,7 +636,7 @@ TEKLİF KURALLARI:
                     </div>
                     <div className="flex items-center gap-2">
                       <code className="flex-1 truncate rounded bg-admin-bg px-2 py-1 text-[11px] text-admin-text">
-                        /teklif/{proposalToken}
+                        {typeof window !== "undefined" ? `${window.location.origin}/teklif/${proposalToken}` : `/teklif/${proposalToken}`}
                       </code>
                       <button
                         onClick={() => {
