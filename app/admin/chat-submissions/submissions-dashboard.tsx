@@ -22,6 +22,11 @@ interface Submission {
   domainStatus: string | null;
   domainName: string | null;
   timeline: string | null;
+  businessGoals: string | null;
+  targetAudience: string | null;
+  referenceUrls: string[];
+  brandColors: string | null;
+  seoExpectations: string | null;
   message: string | null;
   sector: string | null;
   city: string | null;
@@ -221,6 +226,13 @@ PROJE DETAYLARI:
 - İstenen Özellikler: ${featureList}
 ${s.calculatedPrice ? `- Hesaplanan Fiyat: ${s.calculatedPrice.toLocaleString("tr-TR")} TL` : ""}
 ${s.estimatedHours ? `- Tahmini Süre: ${s.estimatedHours} saat` : ""}
+
+MÜŞTERİ HEDEFLERİ VE TERCİHLERİ:
+- İş Hedefleri: ${s.businessGoals || "Belirtilmedi"}
+- Hedef Kitle: ${s.targetAudience || "Belirtilmedi"}
+- Referans Siteler: ${s.referenceUrls?.length > 0 ? s.referenceUrls.join(", ") : "Belirtilmedi"}
+- Marka Renkleri / Stil: ${s.brandColors || "Belirtilmedi"}
+- SEO Beklentisi: ${s.seoExpectations || "Belirtilmedi"}
 
 ${s.message ? `MÜŞTERİ NOTU:\n"${s.message}"\n` : ""}${s.freeQuestions.length > 0 ? `\nMÜŞTERİ SORULARI:\n${s.freeQuestions.map((fq) => `S: ${fq.question}\nC: ${fq.answer}`).join("\n")}\n` : ""}
 LEAD SKORU: ${s.score === "hot" ? "Sıcak (acil)" : s.score === "warm" ? "Ilık" : "Soğuk"}
@@ -536,6 +548,36 @@ TEKLİF KURALLARI:
                         {FEATURE_LABELS[f] || f}
                       </span>
                     ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Müşteri Hedefleri & Tercihleri */}
+              {(selected.businessGoals || selected.targetAudience || selected.brandColors || selected.seoExpectations || (selected.referenceUrls && selected.referenceUrls.length > 0)) && (
+                <div>
+                  <div className="mb-2 text-[11px] uppercase tracking-wider text-admin-accent">
+                    Müşteri Hedefleri & Tercihleri
+                  </div>
+                  <div className="space-y-2">
+                    {[
+                      { label: "İş Hedefleri", value: selected.businessGoals },
+                      { label: "Hedef Kitle", value: selected.targetAudience },
+                      { label: "Referans Siteler", value: selected.referenceUrls?.length > 0 ? selected.referenceUrls.join(", ") : null },
+                      { label: "Marka Renkleri / Stil", value: selected.brandColors },
+                      { label: "SEO Beklentisi", value: selected.seoExpectations },
+                    ].map(
+                      (field) =>
+                        field.value && (
+                          <div key={field.label} className="rounded-lg border border-admin-accent/20 bg-admin-accent/5 p-2.5">
+                            <div className="text-[10px] uppercase tracking-wider text-admin-accent/70">
+                              {field.label}
+                            </div>
+                            <div className="mt-0.5 text-sm text-admin-text">
+                              {field.value}
+                            </div>
+                          </div>
+                        )
+                    )}
                   </div>
                 </div>
               )}

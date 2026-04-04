@@ -116,6 +116,11 @@ model ChatSubmission {
   domainStatus    String?               // var/yok/bilmiyor
   domainName      String?               // müşterinin mevcut domain'i
   timeline        String?               // acil/1-ay/2-3-ay/esnek
+  businessGoals   String?  @db.Text     // is hedefleri / site amaci
+  targetAudience  String?  @db.Text     // hedef kitle tanimi
+  referenceUrls   Json     @default("[]") // begenilen referans siteler (string array)
+  brandColors     String?               // marka renkleri / stil tercihi
+  seoExpectations String?               // SEO beklentileri
   message         String?  @db.Text     // ek not
   sector          String?
   city            String?

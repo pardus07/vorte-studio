@@ -45,6 +45,11 @@ type Step =
   | 'domainStatus'
   | 'domainInfo'
   | 'timeline'
+  | 'businessGoals'
+  | 'targetAudience'
+  | 'referenceUrls'
+  | 'brandColors'
+  | 'seoExpectations'
   | 'message'
   | 'contactName'
   | 'contactPhone'
@@ -53,13 +58,15 @@ type Step =
   | 'freeQuestion'
 
 // ── Toplam anlamlı adım sayısı (progress bar için) ──
-const TOTAL_STEPS = 10
+const TOTAL_STEPS = 15
 
 function stepToNumber(s: Step): number {
   const map: Record<string, number> = {
     firmName: 1, siteType: 2, features: 3, pageCount: 4,
     contentStatus: 5, hostingStatus: 6, domainStatus: 7,
-    timeline: 8, message: 9, contact: 10,
+    timeline: 8, businessGoals: 9, targetAudience: 10,
+    referenceUrls: 11, brandColors: 12, seoExpectations: 13,
+    message: 14, contact: 15,
   }
   return map[s] || 0
 }
@@ -283,6 +290,11 @@ export default function ChatForm({ firmName, city, sector, slug }: Props) {
     domainStatus: '',
     domainName: '',
     timeline: '',
+    businessGoals: '',
+    targetAudience: '',
+    referenceUrls: [] as string[],
+    brandColors: '',
+    seoExpectations: '',
     message: '',
     contactName: '',
     contactPhone: '',
@@ -302,7 +314,7 @@ export default function ChatForm({ firmName, city, sector, slug }: Props) {
 
   // Input focus
   useEffect(() => {
-    if (step === 'firmName' || step === 'message' || step === 'contactName' || step === 'contactPhone' || step === 'contactEmail' || step === 'freeQuestion') {
+    if (step === 'firmName' || step === 'message' || step === 'contactName' || step === 'contactPhone' || step === 'contactEmail' || step === 'businessGoals' || step === 'targetAudience' || step === 'referenceUrls' || step === 'brandColors' || step === 'freeQuestion') {
       setTimeout(() => inputRef.current?.focus(), 300)
     }
   }, [step])
@@ -488,6 +500,14 @@ export default function ChatForm({ firmName, city, sector, slug }: Props) {
       case 'timeline':
         setData((d) => ({ ...d, timeline: value }))
         addBotMessage(
+          'Harika! Şimdi projenizi daha iyi anlamamız için birkaç soru daha soracağım.\n\nWeb siteniz ile ne hedefliyorsunuz? (Daha fazla müşteri çekmek, online satış yapmak, kurumsal imaj oluşturmak vb.)',
+          'businessGoals',
+        )
+        break
+
+      case 'seoExpectations':
+        setData((d) => ({ ...d, seoExpectations: value }))
+        addBotMessage(
           'Eklemek istediğiniz özel bir not veya isteğiniz var mı?',
           'message',
         )
@@ -535,6 +555,49 @@ export default function ChatForm({ firmName, city, sector, slug }: Props) {
         addBotMessage(`Teşekkürler! ${value} için nasıl bir web sitesi düşünüyorsunuz?`, 'siteType', {
           buttons: SITE_TYPES,
         })
+        break
+
+      case 'businessGoals':
+        setData((d) => ({ ...d, businessGoals: value }))
+        addBotMessage(
+          'Hedef kitleniz kimler? Müşterileriniz hangi yaş grubu, meslek veya ilgi alanına sahip?',
+          'targetAudience',
+        )
+        break
+
+      case 'targetAudience':
+        setData((d) => ({ ...d, targetAudience: value }))
+        addBotMessage(
+          'Beğendiğiniz veya "böyle olsun" dediğiniz web siteleri var mı? Varsa URL\'lerini yazın (birden fazla ise virgülle ayırın). Yoksa "Yok" yazabilirsiniz.',
+          'referenceUrls',
+        )
+        break
+
+      case 'referenceUrls': {
+        const urls = value.toLowerCase() === 'yok' ? [] : value.split(/[,\s]+/).map(u => u.trim()).filter(Boolean)
+        setData((d) => ({ ...d, referenceUrls: urls }))
+        addBotMessage(
+          'Markanızın renkleri veya stil tercihiniz var mı? (Örn: "Koyu mavi ve altın rengi, modern ve minimal" veya "Henüz karar vermedim")',
+          'brandColors',
+        )
+        break
+      }
+
+      case 'brandColors':
+        setData((d) => ({ ...d, brandColors: value }))
+        addBotMessage(
+          'SEO (arama motoru optimizasyonu) beklentileriniz nelerdir?',
+          'seoExpectations',
+          {
+            buttons: [
+              { label: '🔍 Google\'da ilk sayfada çıkmak istiyorum', value: 'ilk-sayfa' },
+              { label: '📍 Yerel aramalarda öne çıkmak istiyorum', value: 'yerel-seo' },
+              { label: '🚀 Hem yerel hem genel SEO istiyorum', value: 'tam-seo' },
+              { label: '🤷 SEO hakkında bilgim yok, siz yönlendirin', value: 'bilmiyor' },
+              { label: '❌ SEO\'ya ihtiyacım yok', value: 'gerek-yok' },
+            ],
+          },
+        )
         break
 
       case 'message':
@@ -661,7 +724,7 @@ export default function ChatForm({ firmName, city, sector, slug }: Props) {
 
   // ── Form gönder ──
   async function submitForm(finalData: typeof data) {
-    const completedSteps = 10
+    const completedSteps = 15
 
     let leadId: string | undefined
     if (slug.startsWith('demo-')) {
@@ -717,6 +780,11 @@ export default function ChatForm({ firmName, city, sector, slug }: Props) {
           domainStatus: finalData.domainStatus,
           domainName: finalData.domainName,
           timeline: finalData.timeline,
+          businessGoals: finalData.businessGoals,
+          targetAudience: finalData.targetAudience,
+          referenceUrls: finalData.referenceUrls,
+          brandColors: finalData.brandColors,
+          seoExpectations: finalData.seoExpectations,
           message: finalData.message,
           sector,
           city,
@@ -739,13 +807,17 @@ export default function ChatForm({ firmName, city, sector, slug }: Props) {
   const progress = step === 'done' ? 100 : (stepToNumber(step) / TOTAL_STEPS) * 100
 
   // ── Buton gösterilecek mi ──
-  const showButtons = !['intro', 'firmName', 'message', 'contactName', 'contactPhone', 'done', 'freeQuestion'].includes(step)
-  const showTextInput = ['firmName', 'message', 'contactName', 'contactPhone', 'contactEmail', 'freeQuestion'].includes(step)
+  const showButtons = !['intro', 'firmName', 'message', 'contactName', 'contactPhone', 'businessGoals', 'targetAudience', 'referenceUrls', 'brandColors', 'done', 'freeQuestion'].includes(step)
+  const showTextInput = ['firmName', 'message', 'contactName', 'contactPhone', 'contactEmail', 'businessGoals', 'targetAudience', 'referenceUrls', 'brandColors', 'freeQuestion'].includes(step)
   const showFreeQuestionBtn = !['intro', 'done', 'freeQuestion', 'hostingInfo', 'hostingChoice', 'hostingPackages', 'domainInfo'].includes(step)
 
   // ── Placeholder ──
   const placeholders: Record<string, string> = {
     firmName: 'İşletmenizin adını yazın...',
+    businessGoals: 'Örn: Daha fazla müşteri çekmek, online satış...',
+    targetAudience: 'Örn: 25-45 yaş arası kadınlar, işletme sahipleri...',
+    referenceUrls: 'Örn: www.ornek.com, www.diger.com veya "Yok"',
+    brandColors: 'Örn: Koyu mavi ve beyaz, modern minimal...',
     message: 'Notunuzu yazın veya "Atla" butonuna basın...',
     contactName: 'Adınız ve soyadınız...',
     contactPhone: '05XX XXX XX XX',
