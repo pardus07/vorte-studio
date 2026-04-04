@@ -122,6 +122,7 @@ model ChatSubmission {
   calculatedPrice Float?                // otomatik hesaplanan fiyat (TL)
   estimatedHours  Float?                // tahmini toplam saat
   tokenCost       Float?                // AI token maliyeti (TL)
+  freeQuestions   Json     @default("[]")  // [{question, answer, step, timestamp}]
   isRead          Boolean  @default(false) // admin okudu mu
   createdAt       DateTime @default(now())
 }
