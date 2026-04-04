@@ -2,6 +2,7 @@
 
 import { useState, useTransition, useCallback } from "react";
 import { markSubmissionRead, markAllSubmissionsRead } from "@/actions/chat-submissions";
+import { createProposalFromSubmission } from "@/actions/proposals";
 import { generateProposalDraft, generateFollowUpMessage } from "@/lib/prompt-generator";
 import type { PricingItem } from "@/lib/pricing-constants";
 
@@ -79,6 +80,7 @@ export default function SubmissionsDashboard({ initialData, pricingConfigs }: Pr
   const [draftText, setDraftText] = useState<string | null>(null);
   const [aiPromptText, setAiPromptText] = useState<string | null>(null);
   const [copied, setCopied] = useState<"draft" | "ai" | "followup" | null>(null);
+  const [proposalToken, setProposalToken] = useState<string | null>(null);
 
   // Filtre
   const filtered = items.filter((s) => {
@@ -338,6 +340,9 @@ TEKLİF KURALLARI:
               key={s.id}
               onClick={() => {
                 setSelectedId(s.id);
+                setProposalToken(null);
+                setDraftText(null);
+                setAiPromptText(null);
                 if (!s.isRead) handleMarkRead(s.id);
               }}
               className={`w-full rounded-xl border p-4 text-left transition-all ${
@@ -603,6 +608,59 @@ TEKLİF KURALLARI:
                 <div className="text-[11px] uppercase tracking-wider text-admin-muted">
                   Aksiyonlar
                 </div>
+
+                {/* Teklif Oluştur — Ana CTA */}
+                <button
+                  onClick={() => {
+                    startTransition(async () => {
+                      const res = await createProposalFromSubmission(selected.id, pricingConfigs);
+                      if (res.success && res.token) {
+                        setProposalToken(res.token);
+                      }
+                    });
+                  }}
+                  disabled={isPending}
+                  className="flex w-full items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-admin-accent to-orange-600 px-4 py-3 text-sm font-semibold text-white shadow-lg shadow-admin-accent/20 transition-all hover:shadow-admin-accent/40 disabled:opacity-50"
+                >
+                  <svg className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
+                  </svg>
+                  {isPending ? "Oluşturuluyor..." : "Teklif Oluştur ve Gönder"}
+                </button>
+
+                {/* Teklif linki (oluşturulduysa) */}
+                {proposalToken && (
+                  <div className="rounded-lg border border-emerald-500/30 bg-emerald-500/5 p-3">
+                    <div className="mb-1.5 text-[10px] uppercase tracking-wider text-emerald-400">
+                      ✓ Teklif oluşturuldu
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <code className="flex-1 truncate rounded bg-admin-bg px-2 py-1 text-[11px] text-admin-text">
+                        /teklif/{proposalToken}
+                      </code>
+                      <button
+                        onClick={() => {
+                          const url = `${window.location.origin}/teklif/${proposalToken}`;
+                          navigator.clipboard.writeText(url);
+                          setCopied("draft");
+                          setTimeout(() => setCopied(null), 2000);
+                        }}
+                        className="shrink-0 rounded-md bg-emerald-500/10 px-2 py-1 text-[10px] font-medium text-emerald-400 hover:bg-emerald-500/20"
+                      >
+                        {copied === "draft" ? "✓ Kopyalandı" : "Link Kopyala"}
+                      </button>
+                      <a
+                        href={`/teklif/${proposalToken}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="shrink-0 rounded-md bg-emerald-500/10 px-2 py-1 text-[10px] font-medium text-emerald-400 hover:bg-emerald-500/20"
+                      >
+                        Önizle
+                      </a>
+                    </div>
+                  </div>
+                )}
+
                 <div className="grid grid-cols-2 gap-2">
                   {/* Teklif Taslağı */}
                   <button

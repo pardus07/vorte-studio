@@ -31,6 +31,7 @@ const titles: Record<string, { title: string; emoji: string }> = {
   "/admin/templates": { title: "Şablonlar", emoji: "🎨" },
   "/admin/settings": { title: "Ayarlar", emoji: "⚙️" },
   "/admin/chat-submissions": { title: "Chatbot Başvuruları", emoji: "💬" },
+  "/admin/proposals": { title: "Teklifler", emoji: "📄" },
   "/admin/pricing": { title: "Fiyatlandırma", emoji: "💲" },
 };
 

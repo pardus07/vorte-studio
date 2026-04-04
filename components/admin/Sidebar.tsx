@@ -58,6 +58,7 @@ const sections = [
     label: "Chatbot",
     items: [
       { name: "Başvurular", href: "/admin/chat-submissions", icon: ChatSubmissionIcon },
+      { name: "Teklifler", href: "/admin/proposals", icon: ProposalIcon },
       { name: "Fiyatlandırma", href: "/admin/pricing", icon: PricingIcon },
     ],
   },
@@ -356,6 +357,16 @@ function ChatSubmissionIcon({ className }: { className?: string }) {
       <circle cx="6" cy="8" r="0.75" fill="currentColor" />
       <circle cx="9" cy="8" r="0.75" fill="currentColor" />
       <circle cx="12" cy="8" r="0.75" fill="currentColor" />
+    </svg>
+  );
+}
+
+function ProposalIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M10 2H5a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7l-5-5z" />
+      <path d="M10 2v5h5" />
+      <path d="M7 10h4M7 13h2" />
     </svg>
   );
 }

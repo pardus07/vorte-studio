@@ -126,6 +126,63 @@ model ChatSubmission {
   freeQuestions   Json     @default("[]")  // [{question, answer, step, timestamp}]
   isRead          Boolean  @default(false) // admin okudu mu
   createdAt       DateTime @default(now())
+
+  proposals Proposal[]
+}
+
+// ── Teklif (Müşteriye gönderilen) ──
+model Proposal {
+  id              String         @id @default(cuid())
+  token           String         @unique @default(cuid()) // public URL token
+  submissionId    String?
+  submission      ChatSubmission? @relation(fields: [submissionId], references: [id], onDelete: SetNull)
+  leadId          String?
+
+  // Firma bilgileri (submission'dan kopyalanır, bağımsız kalır)
+  firmName        String
+  contactName     String?
+  contactPhone    String?
+  contactEmail    String?
+  sector          String?
+  city            String?
+
+  // Proje detayları
+  siteType        String?
+  features        Json           @default("[]")
+  pageCount       String?
+  contentStatus   String?
+  hostingStatus   String?
+  hostingProvider String?
+  domainStatus    String?
+  domainName      String?
+  timeline        String?
+
+  // Fiyatlandırma
+  items           Json           @default("[]") // fiyat kırılımı [{label, hours, cost}]
+  totalPrice      Float
+  estimatedHours  Float?
+  paymentPlan     Json           @default("[]") // [{label, percent, amount, description}]
+
+  // Durum
+  status          ProposalStatus @default(DRAFT)
+  validUntil      DateTime       // geçerlilik süresi
+  adminNotes      String?        @db.Text
+  viewedAt        DateTime?      // müşteri ilk görüntülediğinde
+  acceptedAt      DateTime?
+  rejectedAt      DateTime?
+  sentAt          DateTime?
+
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+}
+
+enum ProposalStatus {
+  DRAFT
+  SENT
+  VIEWED
+  ACCEPTED
+  REJECTED
+  EXPIRED
 }
 
 // ── Fiyat Ayarları ──
