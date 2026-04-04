@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { sendContractNotification } from "@/lib/email";
+import { sendContractNotification, sendContractEmail } from "@/lib/email";
+import { generateContractPDF } from "@/lib/contract-pdf";
 import { revalidatePath } from "next/cache";
 
 export const dynamic = "force-dynamic";
@@ -47,12 +48,21 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Sözleşmeyi imzala
+    const now = new Date();
+    const signedAtStr = now.toLocaleDateString("tr-TR", {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+
+    // 1. Sözleşmeyi imzala
     await prisma.contract.update({
       where: { id: contractId },
       data: {
         signatureData,
-        signedAt: new Date(),
+        signedAt: now,
         signerIp: ip,
         signerAgent: userAgent || "",
         signerDevice: device || "",
@@ -60,7 +70,80 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    // Admin'e bildirim gönder
+    // 2. KDV hesaplama
+    const kdvRate = 0.20;
+    const totalPrice = contract.proposal.totalPrice;
+    const kdvAmount = Math.round(totalPrice * kdvRate);
+    const totalWithKdv = totalPrice + kdvAmount;
+    const paymentPlan = contract.proposal.paymentPlan as Array<{
+      label: string;
+      percent: number;
+      amount: number;
+      description: string;
+    }>;
+    const items = contract.proposal.items as Array<{ label: string; cost: number }>;
+
+    // 3. Ödeme kayıtları oluştur (3 dilim)
+    const paymentRecords = paymentPlan.map((pay, i) => ({
+      proposalId: contract.proposal.id,
+      stage: i + 1,
+      label: `${pay.label} (%${pay.percent})`,
+      amount: pay.amount,
+      status: "PENDING",
+    }));
+
+    for (const record of paymentRecords) {
+      await prisma.proposalPayment.create({ data: record });
+    }
+
+    // 4. Lead durumunu CONTRACTED yap
+    if (contract.proposal.leadId) {
+      try {
+        await prisma.lead.update({
+          where: { id: contract.proposal.leadId },
+          data: { status: "CONTRACTED" },
+        });
+      } catch {
+        // Lead bulunamazsa sessizce devam et
+      }
+    }
+
+    // 5. PDF oluştur
+    let pdfBuffer: Buffer | null = null;
+    try {
+      pdfBuffer = await generateContractPDF({
+        contractText: contract.contractText,
+        firmName: contract.proposal.firmName,
+        signerName: contract.signerName,
+        signerCompany: contract.signerCompany || undefined,
+        signatureData,
+        signedAt: signedAtStr,
+        signerIp: ip,
+        signerAgent: userAgent || "bilinmiyor",
+        contractHash: contract.contractHash,
+        items,
+        totalPrice,
+        kdvAmount,
+        totalWithKdv,
+        paymentPlan,
+        ownerName: process.env.VORTE_OWNER_NAME || "Vorte Studio",
+        ownerIban: process.env.VORTE_IBAN || "",
+      });
+    } catch (pdfError) {
+      console.error("PDF olusturma hatasi:", pdfError);
+      // PDF oluşturulamazsa bile imzalama başarılı
+    }
+
+    // 6. Müşteriye e-posta gönder (PDF ekli)
+    if (pdfBuffer && contract.signerEmail) {
+      await sendContractEmail(
+        contract.signerEmail,
+        contract.proposal.firmName,
+        pdfBuffer
+      );
+    }
+
+    // 7. Admin'e bildirim gönder
     await sendContractNotification(
       contract.proposal.firmName,
       contract.signerName

@@ -26,7 +26,8 @@ const columns = [
   { key: "WA_SENT", label: "WA Gönderildi", icon: "📲" },
   { key: "CONTACTED", label: "İletişim Kuruldu", icon: "📞" },
   { key: "QUOTED", label: "Teklif Gönderildi", icon: "📄" },
-  { key: "WON", label: "Onaylandı", icon: "✅" },
+  { key: "CONTRACTED", label: "Sözleşme İmzalandı", icon: "📑" },
+  { key: "WON", label: "Tamamlandı", icon: "✅" },
   { key: "LOST", label: "Kapandı", icon: "❌" },
 ];
 
@@ -75,7 +76,7 @@ export default function KanbanBoard({ leads: initial }: { leads: Lead[] }) {
     const old = [...leads];
     setLeads((prev) => prev.map((l) => (l.id === id ? { ...l, status: newStatus } : l)));
     try {
-      await updateLeadStatus(id, newStatus as "COLD" | "TEMPLATE_ADDED" | "WA_SENT" | "CONTACTED" | "MEETING" | "QUOTED" | "WON" | "LOST");
+      await updateLeadStatus(id, newStatus as "COLD" | "TEMPLATE_ADDED" | "WA_SENT" | "CONTACTED" | "MEETING" | "QUOTED" | "CONTRACTED" | "WON" | "LOST");
     } catch {
       setLeads(old);
       showNotif("Durum güncellenemedi.", "error");
@@ -252,7 +253,7 @@ export default function KanbanBoard({ leads: initial }: { leads: Lead[] }) {
                   const daysAgo = Math.floor((Date.now() - new Date(lead.updatedAt).getTime()) / (1000 * 60 * 60 * 24));
                   const needsFollowup = daysAgo >= 3 && col.key !== "WON" && col.key !== "LOST";
                   const src = sourceLabels[lead.source] || sourceLabels.MANUAL;
-                  const canConvert = col.key === "QUOTED" || col.key === "WON";
+                  const canConvert = col.key === "QUOTED" || col.key === "CONTRACTED" || col.key === "WON";
                   const isCold = col.key === "COLD";
                   const isTemplateAdded = col.key === "TEMPLATE_ADDED";
                   const isWaSent = col.key === "WA_SENT";

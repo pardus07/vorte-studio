@@ -92,6 +92,7 @@ enum LeadStatus {
   CONTACTED
   MEETING
   QUOTED
+  CONTRACTED
   WON
   LOST
 }
@@ -176,6 +177,7 @@ model Proposal {
   updatedAt       DateTime       @updatedAt
 
   contract        Contract?
+  payments        ProposalPayment[]
 }
 
 enum ProposalStatus {
@@ -241,6 +243,21 @@ model VerificationCode {
   expiresAt DateTime             // Süre dolumu (10 dk)
   used      Boolean  @default(false)
   createdAt DateTime @default(now())
+}
+
+// ── Teklif Ödeme Takibi ──
+model ProposalPayment {
+  id         String   @id @default(cuid())
+  proposalId String
+  proposal   Proposal @relation(fields: [proposalId], references: [id], onDelete: Cascade)
+  stage      Int                  // 1=Peşinat, 2=Ara Ödeme, 3=Final
+  label      String               // "Peşinat (%40)"
+  amount     Float                // Beklenen tutar (KDV dahil)
+  paidAt     DateTime?            // Ödeme tarihi
+  status     String   @default("PENDING") // PENDING, PAID
+  notes      String?              // Ödeme notu
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 }
 
 // ── Fiyat Ayarları ──

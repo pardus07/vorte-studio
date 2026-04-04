@@ -145,9 +145,9 @@ MADDE 3 — BEDEL VE ÖDEME KOŞULLARI
 ${paymentLines}
 
 3.3. Ödemeler, aşağıdaki banka hesabına yapılacaktır:
-  Banka   : Türkiye İş Bankası
-  IBAN    : ${data.ownerIban}
-  Hesap Sahibi: ${data.ownerName}
+  Banka         : Türkiye İş Bankası
+  Hesap Sahibi  : ${data.ownerName}
+  IBAN          : ${data.ownerIban}
 
 3.4. MÜŞTERİ, ödeme açıklamasına firma adını, proje türünü ve ödemenin
 hangi aşamaya ait olduğunu yazacaktır.
