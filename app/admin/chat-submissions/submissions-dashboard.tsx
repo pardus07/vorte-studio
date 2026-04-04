@@ -84,8 +84,7 @@ export default function SubmissionsDashboard({ initialData, pricingConfigs }: Pr
   const [isPending, startTransition] = useTransition();
   const [draftText, setDraftText] = useState<string | null>(null);
   const [aiPromptText, setAiPromptText] = useState<string | null>(null);
-  const [sitePromptText, setSitePromptText] = useState<string | null>(null);
-  const [copied, setCopied] = useState<"draft" | "ai" | "site" | "followup" | null>(null);
+  const [copied, setCopied] = useState<"draft" | "ai" | "followup" | null>(null);
   const [proposalToken, setProposalToken] = useState<string | null>(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
@@ -141,7 +140,7 @@ export default function SubmissionsDashboard({ initialData, pricingConfigs }: Pr
   }
 
   // Panoya kopyala
-  const copyToClipboard = useCallback(async (text: string, type: "draft" | "ai" | "site" | "followup") => {
+  const copyToClipboard = useCallback(async (text: string, type: "draft" | "ai" | "followup") => {
     await navigator.clipboard.writeText(text);
     setCopied(type);
     setTimeout(() => setCopied(null), 2000);
@@ -172,7 +171,6 @@ export default function SubmissionsDashboard({ initialData, pricingConfigs }: Pr
     );
     setDraftText(draft);
     setAiPromptText(null);
-    setSitePromptText(null);
   }
 
   // AI Prompt oluştur
@@ -204,57 +202,8 @@ export default function SubmissionsDashboard({ initialData, pricingConfigs }: Pr
     "e-bulten": "E-Bülten Abonelik",
   };
 
+  // AI Prompt — Claude Code site geliştirme brief'i
   function handleGenerateAiPrompt(s: Submission) {
-    const featureList = s.features.length > 0
-      ? s.features.map((f) => FEATURE_LABELS[f] || f).join(", ")
-      : "belirtilmedi";
-    const prompt = `Sen profesyonel bir web tasarım ajansının teklif uzmanısın. Aşağıdaki müşteri bilgilerine göre detaylı, kişiselleştirilmiş ve ikna edici bir teklif metni hazırla.
-
-MÜŞTERİ BİLGİLERİ:
-- Firma: ${s.firmName}
-- Kişi: ${s.contactName || "Belirtilmedi"}
-- Telefon: ${s.contactPhone || "Belirtilmedi"}
-- E-posta: ${s.contactEmail || "Belirtilmedi"}
-- Sektör: ${s.sector || "Belirtilmedi"}
-- Şehir: ${s.city || "Belirtilmedi"}
-
-PROJE DETAYLARI:
-- Site Türü: ${s.siteType ? SITE_TYPE_LABELS[s.siteType] || s.siteType : "Belirtilmedi"}
-- Sayfa Sayısı: ${s.pageCount || "Belirtilmedi"}
-- İçerik Durumu: ${s.contentStatus || "Belirtilmedi"}
-- Hosting: ${s.hostingStatus || "Belirtilmedi"}${s.hostingProvider ? ` (${s.hostingProvider})` : ""}
-- Domain: ${s.domainStatus || "Belirtilmedi"}${s.domainName ? ` (${s.domainName})` : ""}
-- Zamanlama: ${s.timeline ? TIMELINE_LABELS[s.timeline] || s.timeline : "Belirtilmedi"}
-- İstenen Özellikler: ${featureList}
-${s.calculatedPrice ? `- Hesaplanan Fiyat: ${s.calculatedPrice.toLocaleString("tr-TR")} TL` : ""}
-${s.estimatedHours ? `- Tahmini Süre: ${s.estimatedHours} saat` : ""}
-
-MÜŞTERİ HEDEFLERİ VE TERCİHLERİ:
-- İş Hedefleri: ${s.businessGoals || "Belirtilmedi"}
-- Hedef Kitle: ${s.targetAudience || "Belirtilmedi"}
-- Referans Siteler: ${s.referenceUrls?.length > 0 ? s.referenceUrls.join(", ") : "Belirtilmedi"}
-- Marka Renkleri / Stil: ${s.brandColors || "Belirtilmedi"}
-- SEO Beklentisi: ${s.seoExpectations || "Belirtilmedi"}
-
-${s.message ? `MÜŞTERİ NOTU:\n"${s.message}"\n` : ""}${s.freeQuestions.length > 0 ? `\nMÜŞTERİ SORULARI:\n${s.freeQuestions.map((fq) => `S: ${fq.question}\nC: ${fq.answer}`).join("\n")}\n` : ""}
-LEAD SKORU: ${s.score === "hot" ? "Sıcak (acil)" : s.score === "warm" ? "Ilık" : "Soğuk"}
-
-TEKLİF KURALLARI:
-1. Türkçe yaz, profesyonel ve samimi tonda
-2. Firma adını ve sektörü özelleştirerek yaz
-3. Fiyatı aralık olarak ver (±%10)
-4. Ödeme planı: %40 peşin, %30 onay sonrası, %30 teslimde
-5. Teslim süresini belirt
-6. Neden Vorte Studio'yu seçmeliler — Next.js, AI destekli geliştirme, hız avantajı
-7. Sonunda net bir CTA (harekete geçirici mesaj) ekle`;
-
-    setAiPromptText(prompt);
-    setDraftText(null);
-    setSitePromptText(null);
-  }
-
-  // Claude Code site geliştirme prompt'u oluştur
-  function handleGenerateSitePrompt(s: Submission) {
     const prompt = generateClaudeCodePrompt({
       firmName: s.firmName,
       contactName: s.contactName,
@@ -278,9 +227,8 @@ TEKLİF KURALLARI:
       seoExpectations: s.seoExpectations,
       freeQuestions: s.freeQuestions,
     });
-    setSitePromptText(prompt);
+    setAiPromptText(prompt);
     setDraftText(null);
-    setAiPromptText(null);
   }
 
   // Prompt hazır mı kontrol et
@@ -792,7 +740,7 @@ TEKLİF KURALLARI:
                     Teklif Taslağı
                   </button>
 
-                  {/* AI Prompt (Teklif Metni) */}
+                  {/* AI Prompt — Claude Code site geliştirme brief'i */}
                   <button
                     onClick={() => handleGenerateAiPrompt(selected)}
                     className="flex items-center justify-center gap-2 rounded-lg border border-purple-500/30 bg-purple-500/10 px-3 py-2.5 text-xs font-medium text-purple-400 transition-colors hover:bg-purple-500/20"
@@ -802,38 +750,6 @@ TEKLİF KURALLARI:
                     </svg>
                     AI Prompt
                   </button>
-
-                  {/* Site Geliştirme Prompt'u (Claude Code) */}
-                  {(() => {
-                    const readiness = getPromptReadiness(selected);
-                    return (
-                      <button
-                        onClick={() => readiness.ready ? handleGenerateSitePrompt(selected) : null}
-                        disabled={!readiness.ready}
-                        className={`col-span-2 relative flex items-center justify-center gap-2 rounded-lg border px-3 py-2.5 text-xs font-medium transition-colors ${
-                          readiness.ready
-                            ? "border-cyan-500/30 bg-cyan-500/10 text-cyan-400 hover:bg-cyan-500/20"
-                            : "cursor-not-allowed border-zinc-700/30 bg-zinc-800/30 text-zinc-500"
-                        }`}
-                        title={readiness.ready ? "Claude Code için site geliştirme brief'i oluştur" : `Eksik: ${readiness.missing.join(", ")}`}
-                      >
-                        <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3l-4.5 16.5" />
-                        </svg>
-                        Site Geliştirme Prompt&apos;u
-                        {!readiness.ready && (
-                          <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-red-500 px-1.5 text-[10px] font-bold text-white">
-                            {readiness.missing.length}
-                          </span>
-                        )}
-                        {readiness.ready && (
-                          <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-emerald-500 px-1.5 text-[10px] font-bold text-white">
-                            ✓
-                          </span>
-                        )}
-                      </button>
-                    );
-                  })()}
 
                   {/* WA Takip Mesajı */}
                   {selected.contactName && (
@@ -857,33 +773,29 @@ TEKLİF KURALLARI:
                 </div>
               </div>
 
-              {/* ── Teklif Taslağı / AI Prompt / Site Prompt Çıktısı ── */}
-              {(draftText || aiPromptText || sitePromptText) && (
+              {/* ── Teklif Taslağı / AI Prompt Çıktısı ── */}
+              {(draftText || aiPromptText) && (
                 <div className={`rounded-lg border p-4 ${
-                  sitePromptText
-                    ? "border-cyan-500/30 bg-cyan-500/5"
+                  aiPromptText
+                    ? "border-purple-500/30 bg-purple-500/5"
                     : "border-admin-border bg-admin-bg"
                 }`}>
                   <div className="mb-3 flex items-center justify-between">
                     <span className={`text-[11px] uppercase tracking-wider ${
-                      sitePromptText ? "text-cyan-400" : "text-admin-muted"
+                      aiPromptText ? "text-purple-400" : "text-admin-muted"
                     }`}>
-                      {draftText ? "Teklif Taslağı" : aiPromptText ? "AI Prompt" : "Site Geliştirme Brief'i"}
+                      {draftText ? "Teklif Taslağı" : "AI Prompt — Site Geliştirme Brief'i"}
                     </span>
                     <div className="flex gap-2">
                       <button
-                        onClick={() => {
-                          const text = draftText || aiPromptText || sitePromptText || "";
-                          const type = draftText ? "draft" as const : aiPromptText ? "ai" as const : "site" as const;
-                          copyToClipboard(text, type);
-                        }}
+                        onClick={() => copyToClipboard(draftText || aiPromptText || "", draftText ? "draft" : "ai")}
                         className={`flex items-center gap-1 rounded-md px-2.5 py-1 text-[11px] font-medium transition-colors ${
-                          sitePromptText
-                            ? "bg-cyan-500/10 text-cyan-400 hover:bg-cyan-500/20"
+                          aiPromptText
+                            ? "bg-purple-500/10 text-purple-400 hover:bg-purple-500/20"
                             : "bg-admin-accent/10 text-admin-accent hover:bg-admin-accent/20"
                         }`}
                       >
-                        {(copied === "draft" && draftText) || (copied === "ai" && aiPromptText) || (copied === "site" && sitePromptText) ? (
+                        {(copied === "draft" && draftText) || (copied === "ai" && aiPromptText) ? (
                           <>
                             <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
@@ -900,7 +812,7 @@ TEKLİF KURALLARI:
                         )}
                       </button>
                       <button
-                        onClick={() => { setDraftText(null); setAiPromptText(null); setSitePromptText(null); }}
+                        onClick={() => { setDraftText(null); setAiPromptText(null); }}
                         className="rounded-md px-2 py-1 text-[11px] text-admin-muted transition-colors hover:text-admin-text"
                       >
                         Kapat
@@ -908,25 +820,25 @@ TEKLİF KURALLARI:
                     </div>
                   </div>
 
-                  {/* Eksik bilgi uyarısı (sadece site prompt'ta, eğer eksik varsa referans olarak) */}
-                  {sitePromptText && selected && (() => {
+                  {/* Eksik bilgi uyarısı (AI prompt'ta, eğer eksik alan varsa) */}
+                  {aiPromptText && selected && (() => {
                     const r = getPromptReadiness(selected);
                     return r.completionPercent < 100 ? (
                       <div className="mb-3 rounded-md border border-amber-500/30 bg-amber-500/5 p-2">
                         <div className="text-[10px] font-medium text-amber-400">
-                          ⚠ Bazı alanlar eksik — prompt yine de oluşturuldu ama kalitesi düşük olabilir
+                          ⚠ {r.missing.length} alan eksik — prompt oluşturuldu ama kalitesi düşük olabilir ({r.missing.join(", ")})
                         </div>
                       </div>
                     ) : null;
                   })()}
 
                   <pre className="max-h-[500px] overflow-auto whitespace-pre-wrap text-xs leading-relaxed text-admin-text">
-                    {draftText || aiPromptText || sitePromptText}
+                    {draftText || aiPromptText}
                   </pre>
                 </div>
               )}
 
-              {/* Eksik bilgi detayı (seçili başvuru için) */}
+              {/* Eksik bilgi detayı (seçili başvuru için — her zaman görünür) */}
               {selected && (() => {
                 const r = getPromptReadiness(selected);
                 if (r.ready) return null;
@@ -934,7 +846,7 @@ TEKLİF KURALLARI:
                   <div className="rounded-lg border border-red-500/20 bg-red-500/5 p-3">
                     <div className="mb-1.5 flex items-center gap-2">
                       <div className="text-[11px] font-medium text-red-400">
-                        Site Prompt İçin Eksik Bilgiler ({r.missing.length})
+                        AI Prompt İçin Eksik Bilgiler ({r.missing.length})
                       </div>
                       <div className="ml-auto flex items-center gap-1.5">
                         <div className="h-1.5 w-16 overflow-hidden rounded-full bg-zinc-800">
