@@ -80,6 +80,18 @@ export async function createPricingConfig(data: {
   }
 }
 
+export async function updatePricingByKey(key: string, value: number) {
+  try {
+    await prisma.pricingConfig.update({
+      where: { key },
+      data: { value },
+    });
+    return { success: true };
+  } catch {
+    return { success: false };
+  }
+}
+
 export async function deletePricingConfig(id: string) {
   try {
     await prisma.pricingConfig.delete({

@@ -1,4 +1,4 @@
-import { getPricingConfigs } from "@/actions/pricing";
+import { getPricingConfigs, updatePricingByKey } from "@/actions/pricing";
 import { getUsdTryRate } from "@/lib/exchange-rate";
 import PricingTable from "./pricing-table";
 
@@ -9,6 +9,17 @@ export default async function PricingPage() {
     getPricingConfigs(),
     getUsdTryRate(),
   ]);
+
+  // DB'deki dolar kurunu otomatik güncelle
+  if (usdTry.date !== "fallback") {
+    const current = configs.find((c) => c.key === "token_dolar_kuru");
+    if (current && Math.abs(current.value - usdTry.rate) > 0.5) {
+      await updatePricingByKey("token_dolar_kuru", Math.round(usdTry.rate * 100) / 100);
+      // Config'i de güncelle (UI'da doğru göster)
+      const idx = configs.findIndex((c) => c.key === "token_dolar_kuru");
+      if (idx >= 0) configs[idx].value = Math.round(usdTry.rate * 100) / 100;
+    }
+  }
 
   return (
     <div className="space-y-6">
