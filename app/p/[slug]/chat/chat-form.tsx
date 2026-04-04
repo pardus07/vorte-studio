@@ -46,7 +46,8 @@ type Step =
   | 'domainInfo'
   | 'timeline'
   | 'message'
-  | 'contact'
+  | 'contactName'
+  | 'contactPhone'
   | 'contactEmail'
   | 'done'
   | 'freeQuestion'
@@ -301,7 +302,7 @@ export default function ChatForm({ firmName, city, sector, slug }: Props) {
 
   // Input focus
   useEffect(() => {
-    if (step === 'firmName' || step === 'message' || step === 'contact' || step === 'contactEmail' || step === 'freeQuestion') {
+    if (step === 'firmName' || step === 'message' || step === 'contactName' || step === 'contactPhone' || step === 'contactEmail' || step === 'freeQuestion') {
       setTimeout(() => inputRef.current?.focus(), 300)
     }
   }, [step])
@@ -539,23 +540,36 @@ export default function ChatForm({ firmName, city, sector, slug }: Props) {
       case 'message':
         setData((d) => ({ ...d, message: value }))
         addBotMessage(
-          'Son adım! Teklifinizi hazırlayıp size iletebilmemiz için adınızı ve telefon numaranızı alabilir miyim?',
-          'contact',
+          'Son adım! Teklifinizi hazırlayıp size iletebilmemiz için adınızı ve soyadınızı alabilir miyim?',
+          'contactName',
         )
         break
 
-      case 'contact': {
+      case 'contactName': {
+        const name = value.trim()
+        if (!name) {
+          addBotMessage('Lütfen adınızı ve soyadınızı yazın.', 'contactName')
+          return
+        }
+        setData((d) => ({ ...d, contactName: name }))
+        addBotMessage(
+          `Teşekkürler ${name}! Şimdi telefon numaranızı alabilir miyim?`,
+          'contactPhone',
+        )
+        break
+      }
+
+      case 'contactPhone': {
         const phonePart = value.match(/0[5]\d{2}[\s.-]?\d{3}[\s.-]?\d{2}[\s.-]?\d{2}/)?.[0] || ''
-        const namePart = value.replace(phonePart, '').trim() || data.firmName
 
         if (!phonePart) {
-          addBotMessage('Telefon numaranızı alabilir miyim? (05XX XXX XX XX formatında)', 'contact')
+          addBotMessage('Lütfen geçerli bir telefon numarası girin. (05XX XXX XX XX)', 'contactPhone')
           return
         }
 
-        setData((d) => ({ ...d, contactName: namePart, contactPhone: phonePart }))
+        setData((d) => ({ ...d, contactPhone: phonePart }))
         addBotMessage(
-          `Teşekkürler ${namePart}! Teklifinizi e-posta ile de iletmemizi ister misiniz?`,
+          `Teşekkürler ${data.contactName}! Teklifinizi e-posta ile de iletmemizi ister misiniz?`,
           'contactEmail',
         )
         break
@@ -582,8 +596,8 @@ export default function ChatForm({ firmName, city, sector, slug }: Props) {
   function handleSkipMessage() {
     setMessages((prev) => [...prev, { role: 'user', text: 'Atla' }])
     addBotMessage(
-      'Son adım! Teklifinizi hazırlayıp size iletebilmemiz için adınızı ve telefon numaranızı alabilir miyim?',
-      'contact',
+      'Son adım! Teklifinizi hazırlayıp size iletebilmemiz için adınızı ve soyadınızı alabilir miyim?',
+      'contactName',
     )
   }
 
@@ -725,15 +739,16 @@ export default function ChatForm({ firmName, city, sector, slug }: Props) {
   const progress = step === 'done' ? 100 : (stepToNumber(step) / TOTAL_STEPS) * 100
 
   // ── Buton gösterilecek mi ──
-  const showButtons = !['intro', 'firmName', 'message', 'contact', 'done', 'freeQuestion'].includes(step)
-  const showTextInput = ['firmName', 'message', 'contact', 'contactEmail', 'freeQuestion'].includes(step)
+  const showButtons = !['intro', 'firmName', 'message', 'contactName', 'contactPhone', 'done', 'freeQuestion'].includes(step)
+  const showTextInput = ['firmName', 'message', 'contactName', 'contactPhone', 'contactEmail', 'freeQuestion'].includes(step)
   const showFreeQuestionBtn = !['intro', 'done', 'freeQuestion', 'hostingInfo', 'hostingChoice', 'hostingPackages', 'domainInfo'].includes(step)
 
   // ── Placeholder ──
   const placeholders: Record<string, string> = {
     firmName: 'İşletmenizin adını yazın...',
     message: 'Notunuzu yazın veya "Atla" butonuna basın...',
-    contact: 'Adınız ve telefon numaranız (Mehmet 0532...)',
+    contactName: 'Adınız ve soyadınız...',
+    contactPhone: '05XX XXX XX XX',
     contactEmail: 'E-posta adresiniz (örn: isim@firma.com)',
     freeQuestion: 'Sorunuzu yazın...',
   }
@@ -1050,7 +1065,7 @@ export default function ChatForm({ firmName, city, sector, slug }: Props) {
               <form onSubmit={handleSubmit} className="flex gap-2">
                 <input
                   ref={inputRef}
-                  type={step === 'contact' ? 'tel' : step === 'contactEmail' ? 'email' : 'text'}
+                  type={step === 'contactPhone' ? 'tel' : step === 'contactEmail' ? 'email' : 'text'}
                   value={inputValue}
                   onChange={(e) => setInputValue(e.target.value)}
                   placeholder={placeholders[step] ?? 'Yazın...'}
