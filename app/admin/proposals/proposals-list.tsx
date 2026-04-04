@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { updateProposalStatus } from "@/actions/proposals";
+import { updateProposalStatus, deleteProposal } from "@/actions/proposals";
 
 interface Proposal {
   id: string;
@@ -46,6 +46,7 @@ export default function ProposalsList({ initialData }: { initialData: Proposal[]
   const [items, setItems] = useState(initialData);
   const [isPending, startTransition] = useTransition();
   const [copied, setCopied] = useState<string | null>(null);
+  const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
 
   function formatDate(iso: string) {
     return new Date(iso).toLocaleDateString("tr-TR", {
@@ -228,6 +229,40 @@ export default function ProposalsList({ initialData }: { initialData: Proposal[]
                               Reddet
                             </button>
                           </>
+                        )}
+
+                        {/* Sil */}
+                        {deleteConfirm === p.id ? (
+                          <>
+                            <button
+                              onClick={() => {
+                                startTransition(async () => {
+                                  const res = await deleteProposal(p.id);
+                                  if (res.success) {
+                                    setItems((prev) => prev.filter((x) => x.id !== p.id));
+                                    setDeleteConfirm(null);
+                                  }
+                                });
+                              }}
+                              disabled={isPending}
+                              className="rounded-md bg-red-500/20 px-2 py-1 text-[10px] font-medium text-red-400 disabled:opacity-50"
+                            >
+                              Evet
+                            </button>
+                            <button
+                              onClick={() => setDeleteConfirm(null)}
+                              className="rounded-md px-2 py-1 text-[10px] text-admin-muted hover:text-admin-text"
+                            >
+                              Vazgec
+                            </button>
+                          </>
+                        ) : (
+                          <button
+                            onClick={() => setDeleteConfirm(p.id)}
+                            className="rounded-md px-2 py-1 text-[10px] text-admin-muted/40 transition-colors hover:bg-red-500/10 hover:text-red-400"
+                          >
+                            Sil
+                          </button>
                         )}
                       </div>
                     </td>

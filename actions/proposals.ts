@@ -31,11 +31,12 @@ export async function createProposalFromSubmission(
       pricingConfigs
     );
 
-    // Ödeme planı
-    const total = priceResult.totalPrice;
-    const pay1 = Math.round(total * 0.4);
-    const pay2 = Math.round(total * 0.3);
-    const pay3 = total - pay1 - pay2;
+    // Ödeme planı (KDV dahil toplam üzerinden)
+    const kdvRate = 0.20;
+    const totalWithKdv = Math.round(priceResult.totalPrice * (1 + kdvRate));
+    const pay1 = Math.round(totalWithKdv * 0.4);
+    const pay2 = Math.round(totalWithKdv * 0.3);
+    const pay3 = totalWithKdv - pay1 - pay2;
 
     const paymentPlan = [
       { label: "Peşinat", percent: 40, amount: pay1, description: "Sözleşme imzalandığında" },
@@ -265,6 +266,19 @@ export async function acceptProposal(token: string) {
     return { success: true };
   } catch {
     return { success: false, error: "İşlem başarısız" };
+  }
+}
+
+// ── Teklif sil ──
+export async function deleteProposal(proposalId: string) {
+  try {
+    await prisma.proposal.delete({
+      where: { id: proposalId },
+    });
+    revalidatePath("/admin/proposals");
+    return { success: true };
+  } catch {
+    return { success: false, error: "Teklif silinemedi" };
   }
 }
 
