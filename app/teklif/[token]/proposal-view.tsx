@@ -184,12 +184,7 @@ export default function ProposalView({ proposal }: { proposal: ProposalData }) {
           <div className="text-5xl font-bold tracking-tight text-[#FF4500] sm:text-6xl">
             {fmt(proposal.totalPrice)} <span className="text-2xl text-white/30">TL</span>
           </div>
-          {proposal.estimatedHours && (
-            <div className="mt-2 text-sm text-white/30">
-              Tahmini sure: ~{proposal.estimatedHours} saat
-            </div>
-          )}
-          <div className="mt-1 text-xs text-white/20">
+          <div className="mt-2 text-xs text-white/20">
             KDV haric · Gecerlilik: {validDate}
           </div>
         </motion.div>
@@ -304,9 +299,6 @@ export default function ProposalView({ proposal }: { proposal: ProposalData }) {
                 <div className="flex items-center gap-3">
                   <div className="h-1.5 w-1.5 rounded-full bg-[#FF4500]/60" />
                   <span className="text-sm text-white/60">{item.label}</span>
-                  {item.hours && (
-                    <span className="text-xs text-white/20">({item.hours} saat)</span>
-                  )}
                 </div>
                 <span className="text-sm font-medium text-white/80">
                   {fmt(item.cost)} TL

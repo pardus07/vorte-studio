@@ -174,9 +174,15 @@ export function calculatePrice(
   if (data.siteType) {
     const tokenKey = `token_${data.siteType === "e-ticaret" ? "eticaret" : data.siteType}`;
     tokenCost = getValue(configs, tokenKey);
-    if (tokenCost > 0) {
-      breakdown.push({ label: "AI/Claude Token", cost: tokenCost });
-    }
+  }
+
+  // 8. Token maliyetini "Yazılım Geliştirme & Teknik Altyapı" olarak ekle
+  // (İşçilik zaten her kalemin cost'unda: saat × saatlik ücret)
+  if (tokenCost > 0) {
+    breakdown.push({
+      label: "Yazılım Geliştirme & Teknik Altyapı",
+      cost: tokenCost,
+    });
   }
 
   // Toplam
