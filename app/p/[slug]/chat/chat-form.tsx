@@ -47,6 +47,7 @@ type Step =
   | 'timeline'
   | 'message'
   | 'contact'
+  | 'contactEmail'
   | 'done'
   | 'freeQuestion'
 
@@ -197,6 +198,7 @@ export default function ChatForm({ firmName, city, sector, slug }: Props) {
     message: '',
     contactName: '',
     contactPhone: '',
+    contactEmail: '',
   })
 
   const [selectedFeatures, setSelectedFeatures] = useState<string[]>([])
@@ -212,7 +214,7 @@ export default function ChatForm({ firmName, city, sector, slug }: Props) {
 
   // Input focus
   useEffect(() => {
-    if (step === 'firmName' || step === 'message' || step === 'contact' || step === 'freeQuestion') {
+    if (step === 'firmName' || step === 'message' || step === 'contact' || step === 'contactEmail' || step === 'freeQuestion') {
       setTimeout(() => inputRef.current?.focus(), 300)
     }
   }, [step])
@@ -465,7 +467,21 @@ export default function ChatForm({ firmName, city, sector, slug }: Props) {
         }
 
         setData((d) => ({ ...d, contactName: namePart, contactPhone: phonePart }))
-        submitForm({ ...data, contactName: namePart, contactPhone: phonePart })
+        addBotMessage(
+          `Teşekkürler ${namePart}! Teklifinizi e-posta ile de iletmemizi ister misiniz?`,
+          'contactEmail',
+        )
+        break
+      }
+
+      case 'contactEmail': {
+        const email = value.trim()
+        if (email && email.includes('@')) {
+          setData((d) => ({ ...d, contactEmail: email }))
+          submitForm({ ...data, contactEmail: email })
+        } else {
+          addBotMessage('Geçerli bir e-posta adresi girebilir misiniz? (örn: isim@firma.com)', 'contactEmail')
+        }
         break
       }
 
@@ -475,13 +491,18 @@ export default function ChatForm({ firmName, city, sector, slug }: Props) {
     }
   }
 
-  // ── Mesaj adımında "Atla" ──
+  // ── "Atla" butonları ──
   function handleSkipMessage() {
     setMessages((prev) => [...prev, { role: 'user', text: 'Atla' }])
     addBotMessage(
       'Son adım! Teklifinizi hazırlayıp size iletebilmemiz için adınızı ve telefon numaranızı alabilir miyim?',
       'contact',
     )
+  }
+
+  function handleSkipEmail() {
+    setMessages((prev) => [...prev, { role: 'user', text: 'Atla' }])
+    submitForm(data)
   }
 
   // ── "Bir sorum var" ──
@@ -585,6 +606,7 @@ export default function ChatForm({ firmName, city, sector, slug }: Props) {
           firmName: finalData.firmName || firmName,
           contactName: finalData.contactName,
           contactPhone: finalData.contactPhone,
+          contactEmail: finalData.contactEmail,
           siteType: finalData.siteType,
           features: finalData.features,
           pageCount: finalData.pageCount,
@@ -617,7 +639,7 @@ export default function ChatForm({ firmName, city, sector, slug }: Props) {
 
   // ── Buton gösterilecek mi ──
   const showButtons = !['intro', 'firmName', 'message', 'contact', 'done', 'freeQuestion'].includes(step)
-  const showTextInput = ['firmName', 'message', 'contact', 'freeQuestion'].includes(step)
+  const showTextInput = ['firmName', 'message', 'contact', 'contactEmail', 'freeQuestion'].includes(step)
   const showFreeQuestionBtn = !['intro', 'done', 'freeQuestion', 'hostingInfo', 'hostingChoice', 'hostingPackages', 'domainInfo'].includes(step)
 
   // ── Placeholder ──
@@ -625,6 +647,7 @@ export default function ChatForm({ firmName, city, sector, slug }: Props) {
     firmName: 'İşletmenizin adını yazın...',
     message: 'Notunuzu yazın veya "Atla" butonuna basın...',
     contact: 'Adınız ve telefon numaranız (Mehmet 0532...)',
+    contactEmail: 'E-posta adresiniz (örn: isim@firma.com)',
     freeQuestion: 'Sorunuzu yazın...',
   }
 
@@ -900,19 +923,19 @@ export default function ChatForm({ firmName, city, sector, slug }: Props) {
               <form onSubmit={handleSubmit} className="flex gap-2">
                 <input
                   ref={inputRef}
-                  type={step === 'contact' ? 'tel' : 'text'}
+                  type={step === 'contact' ? 'tel' : step === 'contactEmail' ? 'email' : 'text'}
                   value={inputValue}
                   onChange={(e) => setInputValue(e.target.value)}
                   placeholder={placeholders[step] ?? 'Yazın...'}
                   className="flex-1 rounded-xl border border-slate-200 bg-slate-50/80 px-4 py-3 text-sm text-slate-900 placeholder-slate-400 outline-none transition-all focus:border-orange-300 focus:bg-white focus:shadow-lg focus:shadow-orange-500/5 focus:ring-2 focus:ring-orange-100"
                   disabled={aiLoading}
                 />
-                {step === 'message' && (
+                {(step === 'message' || step === 'contactEmail') && (
                   <motion.button
                     type="button"
                     whileHover={{ scale: 1.03 }}
                     whileTap={{ scale: 0.97 }}
-                    onClick={handleSkipMessage}
+                    onClick={step === 'contactEmail' ? handleSkipEmail : handleSkipMessage}
                     className="rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-500 transition-colors hover:bg-slate-50"
                   >
                     Atla
