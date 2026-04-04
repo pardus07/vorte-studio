@@ -3,7 +3,7 @@
 import { useState, useTransition, useCallback } from "react";
 import { markSubmissionRead, markAllSubmissionsRead, deleteSubmission } from "@/actions/chat-submissions";
 import { createProposalFromSubmission, updateProposalStatus } from "@/actions/proposals";
-import { generateProposalDraft, generateFollowUpMessage } from "@/lib/prompt-generator";
+import { generateProposalDraft, generateFollowUpMessage, generateClaudeCodePrompt, checkPromptReadiness } from "@/lib/prompt-generator";
 import type { PricingItem } from "@/lib/pricing-constants";
 
 interface Submission {
@@ -84,7 +84,8 @@ export default function SubmissionsDashboard({ initialData, pricingConfigs }: Pr
   const [isPending, startTransition] = useTransition();
   const [draftText, setDraftText] = useState<string | null>(null);
   const [aiPromptText, setAiPromptText] = useState<string | null>(null);
-  const [copied, setCopied] = useState<"draft" | "ai" | "followup" | null>(null);
+  const [sitePromptText, setSitePromptText] = useState<string | null>(null);
+  const [copied, setCopied] = useState<"draft" | "ai" | "site" | "followup" | null>(null);
   const [proposalToken, setProposalToken] = useState<string | null>(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
@@ -140,7 +141,7 @@ export default function SubmissionsDashboard({ initialData, pricingConfigs }: Pr
   }
 
   // Panoya kopyala
-  const copyToClipboard = useCallback(async (text: string, type: "draft" | "ai" | "followup") => {
+  const copyToClipboard = useCallback(async (text: string, type: "draft" | "ai" | "site" | "followup") => {
     await navigator.clipboard.writeText(text);
     setCopied(type);
     setTimeout(() => setCopied(null), 2000);
@@ -171,6 +172,7 @@ export default function SubmissionsDashboard({ initialData, pricingConfigs }: Pr
     );
     setDraftText(draft);
     setAiPromptText(null);
+    setSitePromptText(null);
   }
 
   // AI Prompt oluştur
@@ -248,6 +250,64 @@ TEKLİF KURALLARI:
 
     setAiPromptText(prompt);
     setDraftText(null);
+    setSitePromptText(null);
+  }
+
+  // Claude Code site geliştirme prompt'u oluştur
+  function handleGenerateSitePrompt(s: Submission) {
+    const prompt = generateClaudeCodePrompt({
+      firmName: s.firmName,
+      contactName: s.contactName,
+      contactEmail: s.contactEmail,
+      siteType: s.siteType,
+      features: s.features,
+      pageCount: s.pageCount,
+      contentStatus: s.contentStatus,
+      hostingStatus: s.hostingStatus,
+      hostingProvider: s.hostingProvider,
+      domainStatus: s.domainStatus,
+      domainName: s.domainName,
+      timeline: s.timeline,
+      message: s.message,
+      sector: s.sector,
+      city: s.city,
+      businessGoals: s.businessGoals,
+      targetAudience: s.targetAudience,
+      referenceUrls: s.referenceUrls || [],
+      brandColors: s.brandColors,
+      seoExpectations: s.seoExpectations,
+      freeQuestions: s.freeQuestions,
+    });
+    setSitePromptText(prompt);
+    setDraftText(null);
+    setAiPromptText(null);
+  }
+
+  // Prompt hazır mı kontrol et
+  function getPromptReadiness(s: Submission) {
+    return checkPromptReadiness({
+      firmName: s.firmName,
+      contactName: s.contactName,
+      contactEmail: s.contactEmail,
+      siteType: s.siteType,
+      features: s.features,
+      pageCount: s.pageCount,
+      contentStatus: s.contentStatus,
+      hostingStatus: s.hostingStatus,
+      hostingProvider: s.hostingProvider,
+      domainStatus: s.domainStatus,
+      domainName: s.domainName,
+      timeline: s.timeline,
+      message: s.message,
+      sector: s.sector,
+      city: s.city,
+      businessGoals: s.businessGoals,
+      targetAudience: s.targetAudience,
+      referenceUrls: s.referenceUrls || [],
+      brandColors: s.brandColors,
+      seoExpectations: s.seoExpectations,
+      freeQuestions: s.freeQuestions,
+    });
   }
 
   // Tarih formatla
@@ -732,7 +792,7 @@ TEKLİF KURALLARI:
                     Teklif Taslağı
                   </button>
 
-                  {/* AI Prompt */}
+                  {/* AI Prompt (Teklif Metni) */}
                   <button
                     onClick={() => handleGenerateAiPrompt(selected)}
                     className="flex items-center justify-center gap-2 rounded-lg border border-purple-500/30 bg-purple-500/10 px-3 py-2.5 text-xs font-medium text-purple-400 transition-colors hover:bg-purple-500/20"
@@ -742,6 +802,38 @@ TEKLİF KURALLARI:
                     </svg>
                     AI Prompt
                   </button>
+
+                  {/* Site Geliştirme Prompt'u (Claude Code) */}
+                  {(() => {
+                    const readiness = getPromptReadiness(selected);
+                    return (
+                      <button
+                        onClick={() => readiness.ready ? handleGenerateSitePrompt(selected) : null}
+                        disabled={!readiness.ready}
+                        className={`col-span-2 relative flex items-center justify-center gap-2 rounded-lg border px-3 py-2.5 text-xs font-medium transition-colors ${
+                          readiness.ready
+                            ? "border-cyan-500/30 bg-cyan-500/10 text-cyan-400 hover:bg-cyan-500/20"
+                            : "cursor-not-allowed border-zinc-700/30 bg-zinc-800/30 text-zinc-500"
+                        }`}
+                        title={readiness.ready ? "Claude Code için site geliştirme brief'i oluştur" : `Eksik: ${readiness.missing.join(", ")}`}
+                      >
+                        <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3l-4.5 16.5" />
+                        </svg>
+                        Site Geliştirme Prompt&apos;u
+                        {!readiness.ready && (
+                          <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-red-500 px-1.5 text-[10px] font-bold text-white">
+                            {readiness.missing.length}
+                          </span>
+                        )}
+                        {readiness.ready && (
+                          <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-emerald-500 px-1.5 text-[10px] font-bold text-white">
+                            ✓
+                          </span>
+                        )}
+                      </button>
+                    );
+                  })()}
 
                   {/* WA Takip Mesajı */}
                   {selected.contactName && (
@@ -765,19 +857,33 @@ TEKLİF KURALLARI:
                 </div>
               </div>
 
-              {/* ── Teklif Taslağı / AI Prompt Çıktısı ── */}
-              {(draftText || aiPromptText) && (
-                <div className="rounded-lg border border-admin-border bg-admin-bg p-4">
+              {/* ── Teklif Taslağı / AI Prompt / Site Prompt Çıktısı ── */}
+              {(draftText || aiPromptText || sitePromptText) && (
+                <div className={`rounded-lg border p-4 ${
+                  sitePromptText
+                    ? "border-cyan-500/30 bg-cyan-500/5"
+                    : "border-admin-border bg-admin-bg"
+                }`}>
                   <div className="mb-3 flex items-center justify-between">
-                    <span className="text-[11px] uppercase tracking-wider text-admin-muted">
-                      {draftText ? "Teklif Taslağı" : "AI Prompt"}
+                    <span className={`text-[11px] uppercase tracking-wider ${
+                      sitePromptText ? "text-cyan-400" : "text-admin-muted"
+                    }`}>
+                      {draftText ? "Teklif Taslağı" : aiPromptText ? "AI Prompt" : "Site Geliştirme Brief'i"}
                     </span>
                     <div className="flex gap-2">
                       <button
-                        onClick={() => copyToClipboard(draftText || aiPromptText || "", draftText ? "draft" : "ai")}
-                        className="flex items-center gap-1 rounded-md bg-admin-accent/10 px-2.5 py-1 text-[11px] font-medium text-admin-accent transition-colors hover:bg-admin-accent/20"
+                        onClick={() => {
+                          const text = draftText || aiPromptText || sitePromptText || "";
+                          const type = draftText ? "draft" as const : aiPromptText ? "ai" as const : "site" as const;
+                          copyToClipboard(text, type);
+                        }}
+                        className={`flex items-center gap-1 rounded-md px-2.5 py-1 text-[11px] font-medium transition-colors ${
+                          sitePromptText
+                            ? "bg-cyan-500/10 text-cyan-400 hover:bg-cyan-500/20"
+                            : "bg-admin-accent/10 text-admin-accent hover:bg-admin-accent/20"
+                        }`}
                       >
-                        {(copied === "draft" && draftText) || (copied === "ai" && aiPromptText) ? (
+                        {(copied === "draft" && draftText) || (copied === "ai" && aiPromptText) || (copied === "site" && sitePromptText) ? (
                           <>
                             <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
@@ -794,18 +900,62 @@ TEKLİF KURALLARI:
                         )}
                       </button>
                       <button
-                        onClick={() => { setDraftText(null); setAiPromptText(null); }}
+                        onClick={() => { setDraftText(null); setAiPromptText(null); setSitePromptText(null); }}
                         className="rounded-md px-2 py-1 text-[11px] text-admin-muted transition-colors hover:text-admin-text"
                       >
                         Kapat
                       </button>
                     </div>
                   </div>
-                  <pre className="max-h-[400px] overflow-auto whitespace-pre-wrap text-xs leading-relaxed text-admin-text">
-                    {draftText || aiPromptText}
+
+                  {/* Eksik bilgi uyarısı (sadece site prompt'ta, eğer eksik varsa referans olarak) */}
+                  {sitePromptText && selected && (() => {
+                    const r = getPromptReadiness(selected);
+                    return r.completionPercent < 100 ? (
+                      <div className="mb-3 rounded-md border border-amber-500/30 bg-amber-500/5 p-2">
+                        <div className="text-[10px] font-medium text-amber-400">
+                          ⚠ Bazı alanlar eksik — prompt yine de oluşturuldu ama kalitesi düşük olabilir
+                        </div>
+                      </div>
+                    ) : null;
+                  })()}
+
+                  <pre className="max-h-[500px] overflow-auto whitespace-pre-wrap text-xs leading-relaxed text-admin-text">
+                    {draftText || aiPromptText || sitePromptText}
                   </pre>
                 </div>
               )}
+
+              {/* Eksik bilgi detayı (seçili başvuru için) */}
+              {selected && (() => {
+                const r = getPromptReadiness(selected);
+                if (r.ready) return null;
+                return (
+                  <div className="rounded-lg border border-red-500/20 bg-red-500/5 p-3">
+                    <div className="mb-1.5 flex items-center gap-2">
+                      <div className="text-[11px] font-medium text-red-400">
+                        Site Prompt İçin Eksik Bilgiler ({r.missing.length})
+                      </div>
+                      <div className="ml-auto flex items-center gap-1.5">
+                        <div className="h-1.5 w-16 overflow-hidden rounded-full bg-zinc-800">
+                          <div
+                            className="h-full rounded-full bg-gradient-to-r from-red-500 to-amber-500 transition-all"
+                            style={{ width: `${r.completionPercent}%` }}
+                          />
+                        </div>
+                        <span className="text-[10px] text-zinc-500">%{r.completionPercent}</span>
+                      </div>
+                    </div>
+                    <div className="flex flex-wrap gap-1.5">
+                      {r.missing.map((m) => (
+                        <span key={m} className="rounded-md bg-red-500/10 px-2 py-0.5 text-[10px] text-red-400">
+                          {m}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })()}
 
               {/* Slug */}
               <div className="text-[10px] text-admin-muted">

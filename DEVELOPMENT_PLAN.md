@@ -19,19 +19,19 @@
 
 ### Gorevler
 
-- [ ] 1.1 Chatbot'a "Is hedefleri / site amaci" sorusu ekle (site turundan sonra)
-- [ ] 1.2 "Hedef kitle tanimi" adimi ekle (metin girisi)
-- [ ] 1.3 "Begenilen referans siteler" adimi ekle (URL girisi, 1-3 site)
-- [ ] 1.4 "Marka renkleri / stil tercihi" adimi ekle (renk secici veya metin)
-- [ ] 1.5 "SEO beklentileri" adimi ekle (coktan secmeli)
-- [ ] 1.6 Yeni alanlari ChatSubmission modeline ekle (Prisma schema)
-- [ ] 1.7 chat-submit API'yi guncelle (yeni alanlar)
-- [ ] 1.8 Admin basvuru detayinda yeni alanlari goster
-- [ ] 1.9 TypeScript kontrol — sifir hata
-- [ ] 1.10 Build test — basarili
-- [ ] 1.11 Commit + Push
-- [ ] 1.12 Canli test — chatbot akisi kontrol
-- [ ] 1.13 **ONAY**
+- [x] 1.1 Chatbot'a "Is hedefleri / site amaci" sorusu ekle (site turundan sonra)
+- [x] 1.2 "Hedef kitle tanimi" adimi ekle (metin girisi)
+- [x] 1.3 "Begenilen referans siteler" adimi ekle (URL girisi, 1-3 site)
+- [x] 1.4 "Marka renkleri / stil tercihi" adimi ekle (renk secici veya metin)
+- [x] 1.5 "SEO beklentileri" adimi ekle (coktan secmeli)
+- [x] 1.6 Yeni alanlari ChatSubmission modeline ekle (Prisma schema)
+- [x] 1.7 chat-submit API'yi guncelle (yeni alanlar)
+- [x] 1.8 Admin basvuru detayinda yeni alanlari goster
+- [x] 1.9 TypeScript kontrol — sifir hata
+- [x] 1.10 Build test — basarili
+- [x] 1.11 Commit + Push (b1628ab)
+- [x] 1.12 Canli test — chatbot akisi kontrol
+- [x] 1.13 **ONAY** ✅
 
 ---
 
@@ -42,14 +42,14 @@
 
 ### Gorevler
 
-- [ ] 2.1 Bilgi tamamlanma kontrolu tasarla (hangi alanlar zorunlu?)
-- [ ] 2.2 AI prompt sablonu olustur (sektor, ozellikler, renkler, hedef kitle, referanslar, logo, SEO)
-- [ ] 2.3 Admin panelde "AI Prompt Olustur" butonunu guncelle
-- [ ] 2.4 Prompt onizleme ve kopyalama UI
-- [ ] 2.5 Eksik bilgi uyarisi — "Su bilgiler eksik, prompt olusturulamaz" mesaji
-- [ ] 2.6 Lead pipeline'da bilgi toplama sureci kontrolu
-- [ ] 2.7 TypeScript kontrol — sifir hata
-- [ ] 2.8 Build test — basarili
+- [x] 2.1 Bilgi tamamlanma kontrolu tasarla (hangi alanlar zorunlu?)
+- [x] 2.2 AI prompt sablonu olustur (sektor, ozellikler, renkler, hedef kitle, referanslar, logo, SEO)
+- [x] 2.3 Admin panelde "AI Prompt Olustur" butonunu guncelle
+- [x] 2.4 Prompt onizleme ve kopyalama UI
+- [x] 2.5 Eksik bilgi uyarisi — "Su bilgiler eksik, prompt olusturulamaz" mesaji
+- [x] 2.6 Lead pipeline'da bilgi toplama sureci kontrolu
+- [x] 2.7 TypeScript kontrol — sifir hata
+- [x] 2.8 Build test — basarili
 - [ ] 2.9 Commit + Push
 - [ ] 2.10 Canli test — prompt kalitesi kontrol
 - [ ] 2.11 **ONAY**
