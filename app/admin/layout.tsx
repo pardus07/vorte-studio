@@ -1,6 +1,7 @@
 import Sidebar from "@/components/admin/Sidebar";
 import Topbar from "@/components/admin/Topbar";
 import AiPanel from "@/components/admin/ai/AiPanel";
+import NotificationListener from "@/components/admin/NotificationListener";
 import { SidebarProvider } from "@/components/admin/SidebarContext";
 import { seedAlerts } from "@/lib/seed-data";
 import { prisma } from "@/lib/prisma";
@@ -31,6 +32,7 @@ export default async function AdminLayout({
           <main className="flex-1 overflow-y-auto p-6">{children}</main>
         </div>
         <AiPanel />
+        <NotificationListener />
       </div>
     </SidebarProvider>
   );
