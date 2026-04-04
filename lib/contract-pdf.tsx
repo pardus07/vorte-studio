@@ -1,4 +1,5 @@
 import React from "react";
+import path from "path";
 import {
   Document,
   Page,
@@ -10,12 +11,14 @@ import {
   renderToBuffer,
 } from "@react-pdf/renderer";
 
-// ── Google Fonts — Türkçe karakter desteği ──
+// ── Lokal font — Docker container'da dış CDN timeout sorununu önler ──
+const fontsDir = path.join(process.cwd(), "fonts");
+
 Font.register({
   family: "Roboto",
   fonts: [
-    { src: "https://fonts.gstatic.com/s/roboto/v47/KFOMCnqEu92Fr1ME7kSn66aGLdTylUAMQXC89YmC2DPNWubEbGmT.ttf", fontWeight: 400 },
-    { src: "https://fonts.gstatic.com/s/roboto/v47/KFOMCnqEu92Fr1ME7kSn66aGLdTylUAMQXC89YmC2DPNWubEbVmQ.ttf", fontWeight: 700 },
+    { src: path.join(fontsDir, "Roboto-Regular.ttf"), fontWeight: 400 },
+    { src: path.join(fontsDir, "Roboto-Bold.ttf"), fontWeight: 700 },
   ],
 });
 
