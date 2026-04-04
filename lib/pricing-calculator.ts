@@ -34,6 +34,22 @@ function getValue(configs: PricingItem[], key: string): number {
   return item?.value ?? 0;
 }
 
+// Chatbot feature value → Türkçe label mapping
+const FEATURE_LABEL_MAP: Record<string, string> = {
+  "online-randevu": "Online Randevu Sistemi",
+  "urun-katalogu": "Ürün Kataloğu / Admin Paneli",
+  whatsapp: "WhatsApp Entegrasyonu",
+  harita: "Google Harita",
+  galeri: "Fotoğraf Galerisi",
+  blog: "Blog Sistemi",
+  yorumlar: "Müşteri Yorumları",
+  "sosyal-medya": "Sosyal Medya Entegrasyonu",
+  "online-odeme": "Online Ödeme Sistemi",
+  "cok-dilli": "Çok Dilli Site",
+  "canli-destek": "Canlı Destek",
+  seo: "SEO Optimizasyonu",
+};
+
 // Chatbot feature value → DB key mapping
 const FEATURE_KEY_MAP: Record<string, string> = {
   "online-randevu": "feature_randevu",
@@ -108,7 +124,7 @@ export function calculatePrice(
     const hours = getValue(configs, dbKey);
     if (hours > 0) {
       featureHours += hours;
-      breakdown.push({ label: feat, hours, cost: hours * hourlyRate });
+      breakdown.push({ label: FEATURE_LABEL_MAP[feat] || feat, hours, cost: hours * hourlyRate });
     }
   }
 

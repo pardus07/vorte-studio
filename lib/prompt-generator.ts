@@ -25,6 +25,30 @@ const TIMELINE_MAP: Record<string, string> = {
   esnek: "Esnek zamanlama",
 };
 
+// ── Özellik etiketleri ──
+const FEATURE_LABEL_MAP: Record<string, string> = {
+  "online-randevu": "Online Randevu Sistemi",
+  "urun-katalogu": "Ürün Kataloğu / Admin Paneli",
+  whatsapp: "WhatsApp Entegrasyonu",
+  harita: "Google Harita",
+  galeri: "Fotoğraf Galerisi",
+  blog: "Blog Sistemi",
+  yorumlar: "Müşteri Yorumları",
+  "sosyal-medya": "Sosyal Medya Entegrasyonu",
+  "online-odeme": "Online Ödeme Sistemi",
+  "cok-dilli": "Çok Dilli Site",
+  "canli-destek": "Canlı Destek",
+  seo: "SEO Optimizasyonu",
+};
+
+// ── Sayfa sayısı etiketleri ──
+const PAGE_COUNT_MAP: Record<string, string> = {
+  "1-5": "1-5 sayfa",
+  "5-10": "5-10 sayfa",
+  "10+": "10+ sayfa",
+  "siz-karar-verin": "Siz karar verin",
+};
+
 // ── Content status etiketleri ──
 const CONTENT_MAP: Record<string, string> = {
   hazir: "İçerik hazır (logo, fotoğraf, metin mevcut)",
@@ -126,7 +150,7 @@ export function generateProposalDraft(
   if (data.features.length > 0) {
     lines.push("🧩 İSTENEN ÖZELLİKLER");
     for (const f of data.features) {
-      lines.push(`   ✓ ${f}`);
+      lines.push(`   ✓ ${FEATURE_LABEL_MAP[f] || f}`);
     }
     lines.push("");
   }

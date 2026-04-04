@@ -165,8 +165,26 @@ export default function SubmissionsDashboard({ initialData, pricingConfigs }: Pr
   }
 
   // AI Prompt oluştur
+  // Feature label map (AI prompt için)
+  const FEATURE_LABELS: Record<string, string> = {
+    "online-randevu": "Online Randevu Sistemi",
+    "urun-katalogu": "Ürün Kataloğu / Admin Paneli",
+    whatsapp: "WhatsApp Entegrasyonu",
+    harita: "Google Harita",
+    galeri: "Fotoğraf Galerisi",
+    blog: "Blog Sistemi",
+    yorumlar: "Müşteri Yorumları",
+    "sosyal-medya": "Sosyal Medya Entegrasyonu",
+    "online-odeme": "Online Ödeme Sistemi",
+    "cok-dilli": "Çok Dilli Site",
+    "canli-destek": "Canlı Destek",
+    seo: "SEO Optimizasyonu",
+  };
+
   function handleGenerateAiPrompt(s: Submission) {
-    const featureList = s.features.length > 0 ? s.features.join(", ") : "belirtilmedi";
+    const featureList = s.features.length > 0
+      ? s.features.map((f) => FEATURE_LABELS[f] || f).join(", ")
+      : "belirtilmedi";
     const prompt = `Sen profesyonel bir web tasarım ajansının teklif uzmanısın. Aşağıdaki müşteri bilgilerine göre detaylı, kişiselleştirilmiş ve ikna edici bir teklif metni hazırla.
 
 MÜŞTERİ BİLGİLERİ:
@@ -495,7 +513,7 @@ TEKLİF KURALLARI:
                         key={f}
                         className="rounded-full bg-admin-accent/10 px-2.5 py-1 text-[11px] text-admin-accent"
                       >
-                        {f}
+                        {FEATURE_LABELS[f] || f}
                       </span>
                     ))}
                   </div>
