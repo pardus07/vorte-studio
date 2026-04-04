@@ -31,9 +31,10 @@ const CATEGORY_ICONS: Record<string, string> = {
 
 interface Props {
   initialData: PricingItem[];
+  usdRate?: number;
 }
 
-export default function PricingTable({ initialData }: Props) {
+export default function PricingTable({ initialData, usdRate = 38 }: Props) {
   const [items, setItems] = useState(initialData);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editValue, setEditValue] = useState("");
@@ -158,10 +159,16 @@ export default function PricingTable({ initialData }: Props) {
 
   // Değer formatla
   function formatValue(val: number, unit: string | null): string {
-    if (unit === "tl") return `${val.toLocaleString("tr-TR")} TL`;
+    if (unit === "tl") {
+      const usd = (val / usdRate).toFixed(0);
+      return `${val.toLocaleString("tr-TR")} TL (~$${usd})`;
+    }
     if (unit === "saat") return `${val} saat`;
     if (unit === "carpan") return `${val}x`;
-    if (unit === "dolar") return `$${val}`;
+    if (unit === "dolar") {
+      const tl = (val * usdRate).toFixed(0);
+      return `$${val} (~${Number(tl).toLocaleString("tr-TR")} TL)`;
+    }
     return String(val);
   }
 

@@ -4,9 +4,7 @@ import type { PricingItem } from "@/lib/pricing-constants";
  * Chatbot başvurusundan otomatik fiyat hesaplar.
  *
  * Formül:
- * totalPrice = (baseHours + featureHours) × hourlyRate × urgencyMultiplier + contentCost + hostingCost + tokenCost
- *
- * Tüm değerler PricingConfig tablosundan okunur (admin panelden değiştirilebilir).
+ * totalPrice = (baseHours + featureHours) × hourlyRate × urgencyMultiplier + contentCost + tokenCost
  */
 
 interface SubmissionData {
@@ -20,9 +18,9 @@ interface SubmissionData {
 }
 
 interface PriceResult {
-  totalPrice: number; // TL
+  totalPrice: number;
   estimatedHours: number;
-  tokenCost: number; // TL
+  tokenCost: number;
   breakdown: {
     label: string;
     hours?: number;
@@ -36,36 +34,91 @@ function getValue(configs: PricingItem[], key: string): number {
   return item?.value ?? 0;
 }
 
+// Chatbot feature value → DB key mapping
+const FEATURE_KEY_MAP: Record<string, string> = {
+  "online-randevu": "feature_randevu",
+  "urun-katalogu": "feature_admin",
+  whatsapp: "feature_whatsapp",
+  harita: "feature_harita",
+  galeri: "feature_galeri",
+  blog: "feature_blog",
+  yorumlar: "feature_yorumlar",
+  "sosyal-medya": "feature_sosyalmedya",
+  "online-odeme": "feature_odeme",
+  "cok-dilli": "feature_cokdil",
+  "canli-destek": "feature_canlidestek",
+  seo: "feature_seo",
+};
+
+// Site türü → base key mapping
+const BASE_KEY_MAP: Record<string, string> = {
+  tanitim: "base_tanitim_kucuk",
+  "e-ticaret": "base_eticaret",
+  portfoy: "base_portfoy",
+  randevu: "base_randevu",
+  katalog: "base_katalog",
+  belirsiz: "base_tanitim_orta",
+};
+
+// Content status → DB key mapping
+const CONTENT_KEY_MAP: Record<string, string> = {
+  hazir: "content_hazir",
+  "logo-var": "content_logo_var",
+  "hicbir-sey-yok": "content_hicbir_sey",
+  "mevcut-site": "content_mevcut_site",
+};
+
+// Urgency → DB key mapping
+const URGENCY_KEY_MAP: Record<string, string> = {
+  acil: "urgency_acil",
+  "1-ay": "urgency_1ay",
+  "2-3-ay": "urgency_2_3ay",
+  esnek: "urgency_esnek",
+};
+
 export function calculatePrice(
   data: SubmissionData,
   configs: PricingItem[]
 ): PriceResult {
   const breakdown: PriceResult["breakdown"] = [];
 
-  // 1. İşçilik saatlik ücreti
-  const hourlyRate = getValue(configs, "labor_hourly_rate") || 1250;
+  // 1. Saatlik ücret: günlük / günlük saat
+  const dailyRate = getValue(configs, "labor_daily_rate") || 10000;
+  const dailyHours = getValue(configs, "labor_daily_hours") || 8;
+  const hourlyRate = dailyRate / dailyHours;
 
-  // 2. Base hours (site türüne göre)
-  const baseKey = data.siteType ? `base_${data.siteType}` : "base_tanitim";
-  const baseHours = getValue(configs, baseKey) || getValue(configs, "base_tanitim") || 16;
+  // 2. Base hours
+  const baseKey = data.siteType ? BASE_KEY_MAP[data.siteType] || "base_tanitim_kucuk" : "base_tanitim_kucuk";
+
+  // Sayfa sayısına göre tanıtım sitesi key'ini ayarla
+  let finalBaseKey = baseKey;
+  if (data.siteType === "tanitim" && data.pageCount) {
+    if (data.pageCount === "5-10") finalBaseKey = "base_tanitim_orta";
+    else if (data.pageCount === "10+") finalBaseKey = "base_tanitim_buyuk";
+  }
+
+  const baseHours = getValue(configs, finalBaseKey) || 3;
   breakdown.push({ label: "Temel Paket", hours: baseHours, cost: baseHours * hourlyRate });
 
-  // 3. Feature hours (her özellik için ek saat)
+  // 3. Feature hours
   let featureHours = 0;
   for (const feat of data.features) {
-    const featKey = `feature_${feat.replace(/-/g, "_")}`;
-    const hours = getValue(configs, featKey);
+    const dbKey = FEATURE_KEY_MAP[feat];
+    if (!dbKey) continue;
+    const hours = getValue(configs, dbKey);
     if (hours > 0) {
       featureHours += hours;
       breakdown.push({ label: feat, hours, cost: hours * hourlyRate });
     }
   }
 
-  // 4. Sayfa sayısı çarpanı
+  // 4. Sayfa çarpanı (tanıtım dışı siteler için)
   let pageMultiplier = 1;
-  if (data.pageCount === "5-10") pageMultiplier = 1.3;
-  else if (data.pageCount === "10+") pageMultiplier = 1.6;
-  else if (data.pageCount === "siz-karar-verin") pageMultiplier = 1.2;
+  if (data.siteType !== "tanitim") {
+    if (data.pageCount === "5-10") pageMultiplier = 1.3;
+    else if (data.pageCount === "10+") pageMultiplier = 1.6;
+    else if (data.pageCount === "siz-karar-verin") pageMultiplier = 1.2;
+  }
 
   const totalHoursRaw = (baseHours + featureHours) * pageMultiplier;
 
@@ -79,46 +132,40 @@ export function calculatePrice(
   }
 
   // 5. Aciliyet çarpanı
-  const urgencyKey = data.timeline ? `urgency_${data.timeline.replace(/-/g, "_")}` : "urgency_esnek";
+  const urgencyKey = data.timeline ? URGENCY_KEY_MAP[data.timeline] || "urgency_esnek" : "urgency_esnek";
   const urgencyMultiplier = getValue(configs, urgencyKey) || 1;
-
   const laborCost = totalHoursRaw * hourlyRate * urgencyMultiplier;
+
   if (urgencyMultiplier > 1) {
     breakdown.push({
-      label: `Aciliyet çarpanı (${data.timeline})`,
+      label: `Aciliyet (${data.timeline})`,
       cost: Math.round(totalHoursRaw * hourlyRate * (urgencyMultiplier - 1)),
     });
   }
 
-  // 6. İçerik üretim maliyeti
+  // 6. İçerik maliyeti
   let contentCost = 0;
   if (data.contentStatus) {
-    const contentKey = `content_${data.contentStatus.replace(/-/g, "_")}`;
-    contentCost = getValue(configs, contentKey);
+    const contentKey = CONTENT_KEY_MAP[data.contentStatus];
+    if (contentKey) contentCost = getValue(configs, contentKey);
     if (contentCost > 0) {
       breakdown.push({ label: "İçerik Üretim", cost: contentCost });
     }
   }
 
-  // 7. Hosting maliyeti (yıllık kurulum)
-  let hostingCost = 0;
-  if (data.hostingStatus === "yok" || data.hostingStatus === "bilmiyor") {
-    hostingCost = getValue(configs, "hosting_setup") || 0;
-    if (hostingCost > 0) {
-      breakdown.push({ label: "Hosting Kurulum", cost: hostingCost });
+  // 7. Token maliyeti (site türüne göre sabit)
+  let tokenCost = 0;
+  if (data.siteType) {
+    const tokenKey = `token_${data.siteType === "e-ticaret" ? "eticaret" : data.siteType}`;
+    tokenCost = getValue(configs, tokenKey);
+    if (tokenCost > 0) {
+      breakdown.push({ label: "AI/Claude Token", cost: tokenCost });
     }
   }
 
-  // 8. Token maliyeti (AI serbest soru başına)
-  const tokenPerQuestion = getValue(configs, "token_per_question") || 0.15;
-  const tokenCost = Math.round(data.freeQuestionCount * tokenPerQuestion * 100) / 100;
-  if (tokenCost > 0) {
-    breakdown.push({ label: `AI Token (${data.freeQuestionCount} soru)`, cost: tokenCost });
-  }
-
   // Toplam
-  const totalPrice = Math.round(laborCost + contentCost + hostingCost + tokenCost);
-  const estimatedHours = Math.round(totalHoursRaw * urgencyMultiplier * 10) / 10;
+  const totalPrice = Math.round(laborCost + contentCost + tokenCost);
+  const estimatedHours = Math.round(totalHoursRaw * 10) / 10;
 
   return {
     totalPrice,
@@ -129,28 +176,10 @@ export function calculatePrice(
 }
 
 /**
- * Fiyat aralığı formatla (müşteriye gösterilecek)
- * Min-Max aralığı: -%10 / +%20
+ * Fiyat aralığı: -%10 / +%20
  */
 export function formatPriceRange(totalPrice: number): string {
   const min = Math.round(totalPrice * 0.9);
   const max = Math.round(totalPrice * 1.2);
   return `${min.toLocaleString("tr-TR")} - ${max.toLocaleString("tr-TR")} TL`;
-}
-
-/**
- * Admin'e gösterilecek detaylı fiyat özeti
- */
-export function formatPriceBreakdown(result: PriceResult): string {
-  const lines = result.breakdown.map((b) => {
-    const hoursStr = b.hours ? ` (${b.hours} saat)` : "";
-    return `• ${b.label}${hoursStr}: ${b.cost.toLocaleString("tr-TR")} TL`;
-  });
-  lines.push("─".repeat(30));
-  lines.push(`TOPLAM: ${result.totalPrice.toLocaleString("tr-TR")} TL`);
-  lines.push(`Tahmini Süre: ${result.estimatedHours} saat`);
-  if (result.tokenCost > 0) {
-    lines.push(`AI Token Maliyeti: ${result.tokenCost.toLocaleString("tr-TR")} TL`);
-  }
-  return lines.join("\n");
 }
