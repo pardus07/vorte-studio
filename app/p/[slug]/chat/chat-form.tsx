@@ -73,8 +73,8 @@ const SITE_TYPES: ButtonOption[] = [
   { label: '🤔 Henüz Karar Vermedim', value: 'belirsiz' },
 ]
 
-// ── Özellik seçenekleri ──
-const FEATURES: ButtonOption[] = [
+// ── Tüm özellik seçenekleri (24 adet) ──
+const ALL_FEATURES: ButtonOption[] = [
   { label: '📅 Online Randevu', value: 'online-randevu' },
   { label: '📦 Ürün Kataloğu', value: 'urun-katalogu' },
   { label: '💬 WhatsApp İletişim', value: 'whatsapp' },
@@ -87,7 +87,94 @@ const FEATURES: ButtonOption[] = [
   { label: '🌐 Çok Dilli (TR/EN)', value: 'cok-dilli' },
   { label: '💬 Canlı Destek', value: 'canli-destek' },
   { label: '🔍 SEO Optimizasyon', value: 'seo' },
+  // ── Yeni özellikler ──
+  { label: '💰 Fiyat / Hizmet Listesi', value: 'fiyat-listesi' },
+  { label: '👥 Ekip / Kadro Tanıtımı', value: 'ekip-tanitim' },
+  { label: '🏆 Proje Portföyü / Referanslar', value: 'portfoy-referans' },
+  { label: '🛵 Online Sipariş / Paket Servis', value: 'online-siparis' },
+  { label: '📋 Teklif İsteme Formu', value: 'teklif-formu' },
+  { label: '❓ SSS (Sıkça Sorulan Sorular)', value: 'sss' },
+  { label: '🔄 Önce / Sonra Galerisi', value: 'once-sonra' },
+  { label: '🎬 Video Galeri', value: 'video-galeri' },
+  { label: '🗺️ Hizmet Bölgeleri Haritası', value: 'bolge-harita' },
+  { label: '🏷️ Kampanya / İndirim Sistemi', value: 'kampanya' },
+  { label: '📆 Rezervasyon Sistemi', value: 'rezervasyon' },
+  { label: '📧 E-Bülten Abonelik', value: 'e-bulten' },
 ]
+
+// ── Sektör grubu → önerilen özellikler ──
+const SECTOR_FEATURE_MAP: Record<string, string[]> = {
+  // Sağlık & Klinik
+  'saglik': ['online-randevu', 'ekip-tanitim', 'fiyat-listesi', 'once-sonra', 'sss', 'whatsapp', 'harita', 'blog', 'yorumlar', 'seo'],
+  // Güzellik & Bakım
+  'guzellik': ['online-randevu', 'fiyat-listesi', 'ekip-tanitim', 'once-sonra', 'galeri', 'whatsapp', 'yorumlar', 'sosyal-medya', 'seo'],
+  // Yeme-İçme
+  'yeme-icme': ['fiyat-listesi', 'online-siparis', 'rezervasyon', 'galeri', 'whatsapp', 'harita', 'sosyal-medya', 'yorumlar'],
+  // Gıda Perakende
+  'gida': ['online-siparis', 'fiyat-listesi', 'kampanya', 'whatsapp', 'harita', 'e-bulten', 'yorumlar'],
+  // Konaklama & Turizm
+  'konaklama': ['rezervasyon', 'galeri', 'video-galeri', 'fiyat-listesi', 'cok-dilli', 'harita', 'yorumlar', 'seo', 'e-bulten'],
+  // Eğitim
+  'egitim': ['ekip-tanitim', 'fiyat-listesi', 'teklif-formu', 'sss', 'blog', 'galeri', 'whatsapp', 'harita', 'yorumlar'],
+  // Spor & Fitness
+  'spor': ['ekip-tanitim', 'fiyat-listesi', 'online-randevu', 'galeri', 'video-galeri', 'whatsapp', 'sosyal-medya', 'yorumlar'],
+  // Otomotiv
+  'otomotiv': ['fiyat-listesi', 'galeri', 'online-randevu', 'teklif-formu', 'whatsapp', 'harita', 'yorumlar', 'seo'],
+  // İnşaat & Tadilat
+  'insaat': ['portfoy-referans', 'teklif-formu', 'bolge-harita', 'galeri', 'once-sonra', 'whatsapp', 'harita', 'seo'],
+  // Atölye & İmalat
+  'imalat': ['portfoy-referans', 'teklif-formu', 'fiyat-listesi', 'galeri', 'whatsapp', 'harita', 'seo'],
+  // Hizmet & Profesyonel
+  'profesyonel': ['ekip-tanitim', 'sss', 'blog', 'teklif-formu', 'fiyat-listesi', 'whatsapp', 'seo', 'yorumlar'],
+  // Perakende
+  'perakende': ['urun-katalogu', 'kampanya', 'fiyat-listesi', 'online-odeme', 'whatsapp', 'harita', 'sosyal-medya', 'e-bulten'],
+  // Teknik Servis & Bakım
+  'teknik-servis': ['bolge-harita', 'fiyat-listesi', 'teklif-formu', 'online-randevu', 'whatsapp', 'harita', 'yorumlar', 'seo'],
+  // Diğer Hizmetler
+  'diger': ['portfoy-referans', 'teklif-formu', 'bolge-harita', 'fiyat-listesi', 'whatsapp', 'harita', 'yorumlar', 'seo'],
+}
+
+// Sektör adından grup belirle
+function getSectorGroup(sector: string): string {
+  const s = sector.toLowerCase()
+  // Sağlık
+  if (['diş', 'veteriner', 'optik', 'fizik tedavi', 'tıp', 'psikolog', 'diyetisyen', 'estetik klinik', 'poliklinik', 'işitme', 'göz merkezi'].some(k => s.includes(k))) return 'saglik'
+  // Güzellik
+  if (['kuaför', 'berber', 'güzellik', 'spa', 'cilt bakım', 'epilasyon', 'tırnak', 'dövme', 'piercing'].some(k => s.includes(k))) return 'guzellik'
+  // Yeme-İçme
+  if (['restoran', 'kafe', 'pastane', 'fırın', 'catering', 'yemek'].some(k => s.includes(k))) return 'yeme-icme'
+  // Gıda
+  if (['kasap', 'manav', 'kuruyemiş', 'su bayi', 'şarküteri', 'delikatessen'].some(k => s.includes(k))) return 'gida'
+  // Konaklama
+  if (['otel', 'seyahat', 'acente', 'turizm'].some(k => s.includes(k))) return 'konaklama'
+  // Eğitim
+  if (['kurs', 'okul', 'kreş', 'etüt', 'sürücü', 'müzik', 'eğitim'].some(k => s.includes(k))) return 'egitim'
+  // Spor
+  if (['spor salon', 'pilates', 'yoga', 'fitness'].some(k => s.includes(k))) return 'spor'
+  // Otomotiv
+  if (['oto ', 'oto-', 'lastik', 'motosiklet', 'galeri'].some(k => s.includes(k))) return 'otomotiv'
+  // İnşaat
+  if (['inşaat', 'mimar', 'tadilat', 'dekorasyon', 'pvc', 'alüminyum', 'cam balkon', 'mermer', 'cephe', 'yalıtım', 'çatı', 'fayans', 'alçıpan', 'prefabrik', 'boya', 'elektrikçi', 'tesisatçı'].some(k => s.includes(k))) return 'insaat'
+  // İmalat
+  if (['parke', 'döşeme', 'çadır', 'tente', 'branda', 'kaynak', 'demir', 'marangoz', 'bobinaj', 'matbaa', 'ambalaj', 'plastik', 'terzi', 'dikiş'].some(k => s.includes(k))) return 'imalat'
+  // Profesyonel
+  if (['hukuk', 'avukat', 'muhasebe', 'emlak', 'sigorta'].some(k => s.includes(k))) return 'profesyonel'
+  // Perakende
+  if (['mobilya', 'elektronik', 'kırtasiye', 'pet shop', 'çiçek', 'kuyumcu', 'tekstil', 'giyim', 'spor malzeme', 'mağaza'].some(k => s.includes(k))) return 'perakende'
+  // Teknik Servis
+  if (['klima', 'kombi', 'beyaz eşya', 'asansör', 'jeneratör', 'güvenlik', 'çilingir', 'su arıtma', 'servis'].some(k => s.includes(k))) return 'teknik-servis'
+  // Diğer
+  return 'diger'
+}
+
+// Sektöre göre sıralı özellik listesi oluştur (öneriler üstte)
+function getOrderedFeatures(sector: string): { recommended: ButtonOption[], others: ButtonOption[] } {
+  const group = getSectorGroup(sector)
+  const recommendedKeys = SECTOR_FEATURE_MAP[group] || SECTOR_FEATURE_MAP['diger']
+  const recommended = ALL_FEATURES.filter(f => recommendedKeys.includes(f.value))
+  const others = ALL_FEATURES.filter(f => !recommendedKeys.includes(f.value))
+  return { recommended, others }
+}
 
 // ── Hosting bilgi metinleri ──
 const HOSTING_COMPAT_INFO = `Harika! Mevcut hostinginizin uyumluluğunu kontrol edelim.
@@ -279,9 +366,9 @@ export default function ChatForm({ firmName, city, sector, slug }: Props) {
       case 'siteType':
         setData((d) => ({ ...d, siteType: value }))
         addBotMessage(
-          'Sitenizde hangi özellikler olsun? Birden fazla seçebilirsiniz. Seçimlerinizi yaptıktan sonra "Devam Et" butonuna basın.',
+          `Sitenizde hangi özellikler olsun? Sektörünüze özel önerilerimiz en üstte yer alıyor. Birden fazla seçebilirsiniz, ardından "Devam Et" butonuna basın.`,
           'features',
-          { buttons: FEATURES, multiSelect: true },
+          { buttons: ALL_FEATURES, multiSelect: true },
         )
         break
 
@@ -411,7 +498,7 @@ export default function ChatForm({ firmName, city, sector, slug }: Props) {
   function handleFeaturesConfirm() {
     setData((d) => ({ ...d, features: selectedFeatures }))
     const labels = selectedFeatures.length > 0
-      ? selectedFeatures.map((v) => FEATURES.find((f) => f.value === v)?.label || v).join(', ')
+      ? selectedFeatures.map((v) => ALL_FEATURES.find((f) => f.value === v)?.label || v).join(', ')
       : 'Seçim yapılmadı'
     setMessages((prev) => [...prev, { role: 'user', text: labels }])
 
@@ -790,65 +877,105 @@ export default function ChatForm({ firmName, city, sector, slug }: Props) {
                 )}
 
                 {/* ── Multi-select butonlar ── */}
-                {msg.multiSelect && i === messages.length - 1 && (
-                  <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 0.15 }}
-                    className="mt-3 space-y-3 pl-9"
-                  >
-                    <div className="flex flex-wrap gap-2">
-                      {FEATURES.map((f, fi) => {
-                        const selected = selectedFeatures.includes(f.value)
-                        return (
-                          <motion.button
-                            key={f.value}
-                            custom={fi}
-                            variants={buttonVariants}
-                            initial="hidden"
-                            animate="visible"
-                            whileHover={{ scale: 1.03 }}
-                            whileTap={{ scale: 0.96 }}
-                            onClick={() => toggleFeature(f.value)}
-                            className={`relative rounded-xl border px-4 py-2.5 text-sm transition-all ${
-                              selected
-                                ? 'border-orange-400 bg-orange-50 text-orange-700 shadow-md shadow-orange-500/10'
-                                : 'border-slate-200 bg-white text-slate-700 hover:border-orange-300 hover:bg-orange-50/50'
-                            }`}
-                          >
-                            <span className="flex items-center gap-2">
-                              {selected && (
-                                <motion.svg
-                                  initial={{ scale: 0 }}
-                                  animate={{ scale: 1 }}
-                                  className="h-4 w-4 text-orange-500"
-                                  fill="none"
-                                  stroke="currentColor"
-                                  strokeWidth={2.5}
-                                  viewBox="0 0 24 24"
-                                >
-                                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                                </motion.svg>
-                              )}
-                              {f.label}
-                            </span>
-                          </motion.button>
-                        )
-                      })}
-                    </div>
-                    <motion.button
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.97 }}
-                      onClick={handleFeaturesConfirm}
-                      className="rounded-xl bg-gradient-to-r from-orange-500 to-orange-600 px-6 py-2.5 text-sm font-medium text-white shadow-lg shadow-orange-500/25 transition-shadow hover:shadow-xl hover:shadow-orange-500/30"
+                {msg.multiSelect && i === messages.length - 1 && (() => {
+                  const { recommended, others } = getOrderedFeatures(sector)
+                  return (
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ delay: 0.15 }}
+                      className="mt-3 space-y-3 pl-9"
                     >
-                      Devam Et
-                      <svg className="ml-2 inline h-4 w-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                      </svg>
-                    </motion.button>
-                  </motion.div>
-                )}
+                      {/* Sektöre özel öneriler */}
+                      {recommended.length > 0 && (
+                        <>
+                          <div className="text-xs font-medium text-orange-600">⭐ Sektörünüze Özel Öneriler</div>
+                          <div className="flex flex-wrap gap-2">
+                            {recommended.map((f, fi) => {
+                              const isSelected = selectedFeatures.includes(f.value)
+                              return (
+                                <motion.button
+                                  key={f.value}
+                                  custom={fi}
+                                  variants={buttonVariants}
+                                  initial="hidden"
+                                  animate="visible"
+                                  whileHover={{ scale: 1.03 }}
+                                  whileTap={{ scale: 0.96 }}
+                                  onClick={() => toggleFeature(f.value)}
+                                  className={`relative rounded-xl border px-4 py-2.5 text-sm transition-all ${
+                                    isSelected
+                                      ? 'border-orange-400 bg-orange-50 text-orange-700 shadow-md shadow-orange-500/10'
+                                      : 'border-orange-200 bg-orange-50/30 text-slate-700 hover:border-orange-300 hover:bg-orange-50/50'
+                                  }`}
+                                >
+                                  <span className="flex items-center gap-2">
+                                    {isSelected && (
+                                      <motion.svg initial={{ scale: 0 }} animate={{ scale: 1 }} className="h-4 w-4 text-orange-500" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                                      </motion.svg>
+                                    )}
+                                    {f.label}
+                                  </span>
+                                </motion.button>
+                              )
+                            })}
+                          </div>
+                        </>
+                      )}
+
+                      {/* Diğer özellikler */}
+                      {others.length > 0 && (
+                        <>
+                          <div className="text-xs font-medium text-slate-400 pt-1">Diğer Özellikler</div>
+                          <div className="flex flex-wrap gap-2">
+                            {others.map((f, fi) => {
+                              const isSelected = selectedFeatures.includes(f.value)
+                              return (
+                                <motion.button
+                                  key={f.value}
+                                  custom={fi}
+                                  variants={buttonVariants}
+                                  initial="hidden"
+                                  animate="visible"
+                                  whileHover={{ scale: 1.03 }}
+                                  whileTap={{ scale: 0.96 }}
+                                  onClick={() => toggleFeature(f.value)}
+                                  className={`relative rounded-xl border px-4 py-2.5 text-sm transition-all ${
+                                    isSelected
+                                      ? 'border-orange-400 bg-orange-50 text-orange-700 shadow-md shadow-orange-500/10'
+                                      : 'border-slate-200 bg-white text-slate-700 hover:border-orange-300 hover:bg-orange-50/50'
+                                  }`}
+                                >
+                                  <span className="flex items-center gap-2">
+                                    {isSelected && (
+                                      <motion.svg initial={{ scale: 0 }} animate={{ scale: 1 }} className="h-4 w-4 text-orange-500" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                                      </motion.svg>
+                                    )}
+                                    {f.label}
+                                  </span>
+                                </motion.button>
+                              )
+                            })}
+                          </div>
+                        </>
+                      )}
+
+                      <motion.button
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.97 }}
+                        onClick={handleFeaturesConfirm}
+                        className="rounded-xl bg-gradient-to-r from-orange-500 to-orange-600 px-6 py-2.5 text-sm font-medium text-white shadow-lg shadow-orange-500/25 transition-shadow hover:shadow-xl hover:shadow-orange-500/30"
+                      >
+                        Devam Et
+                        <svg className="ml-2 inline h-4 w-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                        </svg>
+                      </motion.button>
+                    </motion.div>
+                  )
+                })()}
 
                 {/* ── Info box — "Anladım" butonu ── */}
                 {msg.infoBox && i === messages.length - 1 && (

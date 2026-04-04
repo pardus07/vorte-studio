@@ -39,6 +39,18 @@ const FEATURE_LABEL_MAP: Record<string, string> = {
   "cok-dilli": "Çok Dilli Site",
   "canli-destek": "Canlı Destek",
   seo: "SEO Optimizasyonu",
+  "fiyat-listesi": "Fiyat / Hizmet Listesi",
+  "ekip-tanitim": "Ekip / Kadro Tanıtımı",
+  "portfoy-referans": "Proje Portföyü / Referanslar",
+  "online-siparis": "Online Sipariş / Paket Servis",
+  "teklif-formu": "Teklif İsteme Formu",
+  "sss": "SSS (Sıkça Sorulan Sorular)",
+  "once-sonra": "Önce / Sonra Galerisi",
+  "video-galeri": "Video Galeri",
+  "bolge-harita": "Hizmet Bölgeleri Haritası",
+  "kampanya": "Kampanya / İndirim Sistemi",
+  "rezervasyon": "Rezervasyon Sistemi",
+  "e-bulten": "E-Bülten Abonelik",
 };
 
 // ── Sayfa sayısı etiketleri ──
@@ -66,6 +78,7 @@ interface SubmissionSummaryInput {
   pageCount: string | null;
   contentStatus: string | null;
   hostingStatus: string | null;
+  hostingProvider: string | null;
   domainStatus: string | null;
   timeline: string | null;
   message: string | null;
@@ -113,6 +126,7 @@ export function generateProposalDraft(
       pageCount: data.pageCount,
       contentStatus: data.contentStatus,
       hostingStatus: data.hostingStatus,
+      hostingProvider: data.hostingProvider,
       timeline: data.timeline,
       freeQuestionCount: data.freeQuestions.length,
     },

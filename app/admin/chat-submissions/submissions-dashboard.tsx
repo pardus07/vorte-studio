@@ -152,6 +152,7 @@ export default function SubmissionsDashboard({ initialData, pricingConfigs }: Pr
         pageCount: s.pageCount,
         contentStatus: s.contentStatus,
         hostingStatus: s.hostingStatus,
+        hostingProvider: s.hostingProvider,
         domainStatus: s.domainStatus,
         timeline: s.timeline,
         message: s.message,
@@ -181,6 +182,18 @@ export default function SubmissionsDashboard({ initialData, pricingConfigs }: Pr
     "cok-dilli": "Çok Dilli Site",
     "canli-destek": "Canlı Destek",
     seo: "SEO Optimizasyonu",
+    "fiyat-listesi": "Fiyat / Hizmet Listesi",
+    "ekip-tanitim": "Ekip / Kadro Tanıtımı",
+    "portfoy-referans": "Proje Portföyü / Referanslar",
+    "online-siparis": "Online Sipariş / Paket Servis",
+    "teklif-formu": "Teklif İsteme Formu",
+    "sss": "SSS (Sıkça Sorulan Sorular)",
+    "once-sonra": "Önce / Sonra Galerisi",
+    "video-galeri": "Video Galeri",
+    "bolge-harita": "Hizmet Bölgeleri Haritası",
+    "kampanya": "Kampanya / İndirim Sistemi",
+    "rezervasyon": "Rezervasyon Sistemi",
+    "e-bulten": "E-Bülten Abonelik",
   };
 
   function handleGenerateAiPrompt(s: Submission) {

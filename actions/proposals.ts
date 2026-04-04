@@ -24,6 +24,7 @@ export async function createProposalFromSubmission(
         pageCount: submission.pageCount,
         contentStatus: submission.contentStatus,
         hostingStatus: submission.hostingStatus,
+        hostingProvider: submission.hostingProvider,
         timeline: submission.timeline,
         freeQuestionCount: (submission.freeQuestions as unknown[]).length,
       },

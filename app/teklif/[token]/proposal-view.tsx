@@ -27,6 +27,18 @@ const FEATURE_LABELS: Record<string, string> = {
   "cok-dilli": "Cok Dilli Site",
   "canli-destek": "Canli Destek",
   seo: "SEO Optimizasyonu",
+  "fiyat-listesi": "Fiyat / Hizmet Listesi",
+  "ekip-tanitim": "Ekip / Kadro Tanitimi",
+  "portfoy-referans": "Proje Portfoyu / Referanslar",
+  "online-siparis": "Online Siparis / Paket Servis",
+  "teklif-formu": "Teklif Isteme Formu",
+  "sss": "SSS (Sikca Sorulan Sorular)",
+  "once-sonra": "Once / Sonra Galerisi",
+  "video-galeri": "Video Galeri",
+  "bolge-harita": "Hizmet Bolgeleri Haritasi",
+  "kampanya": "Kampanya / Indirim Sistemi",
+  "rezervasyon": "Rezervasyon Sistemi",
+  "e-bulten": "E-Bulten Abonelik",
 };
 
 const TIMELINE_LABELS: Record<string, string> = {

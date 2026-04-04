@@ -76,6 +76,7 @@ export async function POST(req: Request) {
           pageCount: pageCount || null,
           contentStatus: contentStatus || null,
           hostingStatus: hostingStatus || null,
+          hostingProvider: hostingProvider || null,
           timeline: timeline || null,
           freeQuestionCount: freeQArr.length,
         },

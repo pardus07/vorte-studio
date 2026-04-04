@@ -13,6 +13,7 @@ interface SubmissionData {
   pageCount: string | null;
   contentStatus: string | null;
   hostingStatus: string | null;
+  hostingProvider: string | null;
   timeline: string | null;
   freeQuestionCount: number;
 }
@@ -48,6 +49,19 @@ const FEATURE_LABEL_MAP: Record<string, string> = {
   "cok-dilli": "Çok Dilli Site",
   "canli-destek": "Canlı Destek",
   seo: "SEO Optimizasyonu",
+  // Yeni özellikler
+  "fiyat-listesi": "Fiyat / Hizmet Listesi",
+  "ekip-tanitim": "Ekip / Kadro Tanıtımı",
+  "portfoy-referans": "Proje Portföyü / Referanslar",
+  "online-siparis": "Online Sipariş / Paket Servis",
+  "teklif-formu": "Teklif İsteme Formu",
+  "sss": "SSS (Sıkça Sorulan Sorular)",
+  "once-sonra": "Önce / Sonra Galerisi",
+  "video-galeri": "Video Galeri",
+  "bolge-harita": "Hizmet Bölgeleri Haritası",
+  "kampanya": "Kampanya / İndirim Sistemi",
+  "rezervasyon": "Rezervasyon Sistemi",
+  "e-bulten": "E-Bülten Abonelik",
 };
 
 // Chatbot feature value → DB key mapping
@@ -64,6 +78,19 @@ const FEATURE_KEY_MAP: Record<string, string> = {
   "cok-dilli": "feature_cokdil",
   "canli-destek": "feature_canlidestek",
   seo: "feature_seo",
+  // Yeni özellikler
+  "fiyat-listesi": "feature_fiyat_listesi",
+  "ekip-tanitim": "feature_ekip",
+  "portfoy-referans": "feature_portfoy_referans",
+  "online-siparis": "feature_siparis",
+  "teklif-formu": "feature_teklif_formu",
+  "sss": "feature_sss",
+  "once-sonra": "feature_once_sonra",
+  "video-galeri": "feature_video",
+  "bolge-harita": "feature_bolge_harita",
+  "kampanya": "feature_kampanya",
+  "rezervasyon": "feature_rezervasyon",
+  "e-bulten": "feature_bulten",
 };
 
 // Site türü → base key mapping
@@ -185,8 +212,27 @@ export function calculatePrice(
     });
   }
 
+  // 9. Hosting maliyeti (müşteri Vorte hosting seçtiyse)
+  let hostingCost = 0;
+  if (data.hostingProvider && data.hostingProvider.startsWith("vorte-")) {
+    const packageName = data.hostingProvider.replace("vorte-", "");
+    const hostingKey = `hosting_${packageName}`;
+    hostingCost = getValue(configs, hostingKey);
+    if (hostingCost > 0) {
+      const HOSTING_LABELS: Record<string, string> = {
+        starter: "Hosting — Starter Paket (Yıllık)",
+        business: "Hosting — Business Paket (Yıllık)",
+        pro: "Hosting — Pro Paket (Yıllık)",
+      };
+      breakdown.push({
+        label: HOSTING_LABELS[packageName] || "Hosting Paketi (Yıllık)",
+        cost: hostingCost,
+      });
+    }
+  }
+
   // Toplam
-  const totalPrice = Math.round(laborCost + contentCost + tokenCost);
+  const totalPrice = Math.round(laborCost + contentCost + tokenCost + hostingCost);
   const estimatedHours = Math.round(totalHoursRaw * 10) / 10;
 
   return {
