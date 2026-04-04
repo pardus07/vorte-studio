@@ -92,7 +92,7 @@ export async function getProposalsWithPayments() {
     const proposals = await prisma.proposal.findMany({
       orderBy: { createdAt: "desc" },
       include: {
-        contract: { select: { status: true, signedAt: true, signerName: true } },
+        contract: { select: { id: true, status: true, signedAt: true, signerName: true } },
         payments: { orderBy: { stage: "asc" } },
       },
     });
@@ -116,6 +116,7 @@ export async function getProposalsWithPayments() {
       sentAt: p.sentAt?.toISOString() || null,
       createdAt: p.createdAt.toISOString(),
       // Sözleşme bilgisi
+      contractId: p.contract?.id || null,
       contractStatus: p.contract?.status || null,
       contractSignedAt: p.contract?.signedAt?.toISOString() || null,
       contractSignerName: p.contract?.signerName || null,

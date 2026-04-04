@@ -47,7 +47,7 @@ export async function createLeadAction(data: LeadFormData) {
 
 export async function updateLeadStatus(
   id: string,
-  status: "COLD" | "TEMPLATE_ADDED" | "WA_SENT" | "CONTACTED" | "MEETING" | "QUOTED" | "WON" | "LOST"
+  status: "COLD" | "TEMPLATE_ADDED" | "WA_SENT" | "CONTACTED" | "MEETING" | "QUOTED" | "CONTRACTED" | "WON" | "LOST"
 ) {
   const lead = await prisma.lead.update({
     where: { id },
