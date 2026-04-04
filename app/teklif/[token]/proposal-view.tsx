@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { acceptProposal } from "@/actions/proposals";
+import { acceptProposal, rejectProposal } from "@/actions/proposals";
 
 // ── Label Maps ──
 const SITE_TYPE_LABELS: Record<string, string> = {
@@ -78,12 +78,13 @@ const fmt = (n: number) => n.toLocaleString("tr-TR");
 
 export default function ProposalView({ proposal }: { proposal: ProposalData }) {
   const [accepted, setAccepted] = useState(proposal.status === "ACCEPTED");
+  const [rejected, setRejected] = useState(proposal.status === "REJECTED");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showRejectConfirm, setShowRejectConfirm] = useState(false);
 
   const isExpired = new Date(proposal.validUntil) < new Date();
-  const isRejected = proposal.status === "REJECTED";
-  const canAccept = !accepted && !isExpired && !isRejected && proposal.status !== "DRAFT";
+  const canAccept = !accepted && !rejected && !isExpired && proposal.status !== "DRAFT";
   const validDate = new Date(proposal.validUntil).toLocaleDateString("tr-TR", {
     day: "numeric",
     month: "long",
@@ -100,12 +101,30 @@ export default function ProposalView({ proposal }: { proposal: ProposalData }) {
     Math.ceil((new Date(proposal.validUntil).getTime() - Date.now()) / (1000 * 60 * 60 * 24))
   );
 
+  // KDV hesaplama (%20)
+  const kdvRate = 0.20;
+  const kdvAmount = Math.round(proposal.totalPrice * kdvRate);
+  const totalWithKdv = proposal.totalPrice + kdvAmount;
+
   async function handleAccept() {
     setLoading(true);
     setError(null);
     const res = await acceptProposal(proposal.token);
     if (res.success) {
       setAccepted(true);
+    } else {
+      setError(res.error || "Bir hata olustu");
+    }
+    setLoading(false);
+  }
+
+  async function handleReject() {
+    setLoading(true);
+    setError(null);
+    const res = await rejectProposal(proposal.token);
+    if (res.success) {
+      setRejected(true);
+      setShowRejectConfirm(false);
     } else {
       setError(res.error || "Bir hata olustu");
     }
@@ -182,10 +201,15 @@ export default function ProposalView({ proposal }: { proposal: ProposalData }) {
             Toplam Proje Bedeli
           </div>
           <div className="text-5xl font-bold tracking-tight text-[#FF4500] sm:text-6xl">
-            {fmt(proposal.totalPrice)} <span className="text-2xl text-white/30">TL</span>
+            {fmt(totalWithKdv)} <span className="text-2xl text-white/30">TL</span>
           </div>
-          <div className="mt-2 text-xs text-white/20">
-            KDV haric · Gecerlilik: {validDate}
+          <div className="mt-2 space-y-1">
+            <div className="text-xs text-white/30">
+              {fmt(proposal.totalPrice)} TL + %{kdvRate * 100} KDV ({fmt(kdvAmount)} TL)
+            </div>
+            <div className="text-[10px] text-white/15">
+              Gecerlilik: {validDate}
+            </div>
           </div>
         </motion.div>
 
@@ -307,10 +331,20 @@ export default function ProposalView({ proposal }: { proposal: ProposalData }) {
             ))}
           </div>
 
-          {/* Toplam */}
-          <div className="flex items-center justify-between border-t border-white/10 bg-white/[0.03] px-6 py-4">
-            <span className="text-sm font-semibold text-white/70">TOPLAM</span>
-            <span className="text-xl font-bold text-[#FF4500]">{fmt(proposal.totalPrice)} TL</span>
+          {/* Ara Toplam + KDV + Toplam */}
+          <div className="border-t border-white/10 bg-white/[0.03] px-6 py-4 space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-white/40">Ara Toplam</span>
+              <span className="text-sm text-white/60">{fmt(proposal.totalPrice)} TL</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-white/40">KDV (%{kdvRate * 100})</span>
+              <span className="text-sm text-white/60">{fmt(kdvAmount)} TL</span>
+            </div>
+            <div className="flex items-center justify-between pt-2 border-t border-white/5">
+              <span className="text-sm font-semibold text-white/70">TOPLAM (KDV Dahil)</span>
+              <span className="text-xl font-bold text-[#FF4500]">{fmt(totalWithKdv)} TL</span>
+            </div>
           </div>
         </motion.div>
 
@@ -340,14 +374,61 @@ export default function ProposalView({ proposal }: { proposal: ProposalData }) {
                 En kisa surede sizinle iletisime gececegiz. Tesekkur ederiz.
               </p>
             </div>
+          ) : rejected ? (
+            <div className="rounded-2xl border border-red-500/20 bg-red-500/5 p-8 text-center">
+              <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-red-500/10">
+                <svg className="h-8 w-8 text-red-400" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </div>
+              <h3 className="text-lg font-semibold text-red-400">Teklif Reddedildi</h3>
+              <p className="mt-2 text-sm text-white/40">
+                Fikrinizi degistirirseniz bizimle iletisime gecebilirsiniz.
+              </p>
+            </div>
           ) : canAccept ? (
-            <button
-              onClick={handleAccept}
-              disabled={loading}
-              className="w-full rounded-2xl bg-gradient-to-r from-[#FF4500] to-orange-600 px-8 py-5 text-lg font-semibold text-white shadow-2xl shadow-[#FF4500]/20 transition-all hover:shadow-[#FF4500]/40 hover:scale-[1.01] active:scale-[0.99] disabled:opacity-50"
-            >
-              {loading ? "Isleniyor..." : "Teklifi Kabul Ediyorum"}
-            </button>
+            <div className="space-y-3">
+              {/* Red onay dialog'u */}
+              {showRejectConfirm && (
+                <div className="rounded-xl border border-red-500/20 bg-red-500/5 p-4">
+                  <p className="text-sm text-red-300 mb-3">Teklifi reddetmek istediginizden emin misiniz?</p>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={handleReject}
+                      disabled={loading}
+                      className="flex-1 rounded-lg bg-red-500/20 px-4 py-2.5 text-sm font-medium text-red-400 transition-colors hover:bg-red-500/30 disabled:opacity-50"
+                    >
+                      {loading ? "Isleniyor..." : "Evet, Reddet"}
+                    </button>
+                    <button
+                      onClick={() => setShowRejectConfirm(false)}
+                      className="flex-1 rounded-lg border border-white/10 px-4 py-2.5 text-sm text-white/40 transition-colors hover:bg-white/5"
+                    >
+                      Vazgec
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* Kabul butonu */}
+              <button
+                onClick={handleAccept}
+                disabled={loading}
+                className="w-full rounded-2xl bg-gradient-to-r from-[#FF4500] to-orange-600 px-8 py-5 text-lg font-semibold text-white shadow-2xl shadow-[#FF4500]/20 transition-all hover:shadow-[#FF4500]/40 hover:scale-[1.01] active:scale-[0.99] disabled:opacity-50"
+              >
+                {loading ? "Isleniyor..." : "Teklifi Kabul Ediyorum"}
+              </button>
+
+              {/* Red butonu */}
+              {!showRejectConfirm && (
+                <button
+                  onClick={() => setShowRejectConfirm(true)}
+                  className="w-full rounded-xl border border-white/10 px-4 py-3 text-sm text-white/30 transition-colors hover:border-red-500/20 hover:text-red-400/60"
+                >
+                  Teklifi Reddet
+                </button>
+              )}
+            </div>
           ) : isExpired ? (
             <div className="rounded-2xl border border-red-500/20 bg-red-500/5 p-8 text-center">
               <h3 className="text-lg font-semibold text-red-400">Teklifin suresi dolmustur</h3>

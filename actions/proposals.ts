@@ -266,3 +266,36 @@ export async function acceptProposal(token: string) {
     return { success: false, error: "İşlem başarısız" };
   }
 }
+
+// ── Müşteri teklifi reddetti (public) ──
+export async function rejectProposal(token: string) {
+  try {
+    const proposal = await prisma.proposal.findUnique({
+      where: { token },
+    });
+    if (!proposal) return { success: false, error: "Teklif bulunamadı" };
+
+    if (proposal.status === "ACCEPTED" || proposal.status === "REJECTED") {
+      return { success: false, error: "Bu teklif zaten işlem görmüş" };
+    }
+
+    await prisma.proposal.update({
+      where: { id: proposal.id },
+      data: { status: "REJECTED", rejectedAt: new Date() },
+    });
+
+    // Lead → LOST
+    if (proposal.leadId) {
+      await prisma.lead.update({
+        where: { id: proposal.leadId },
+        data: { status: "LOST" },
+      });
+    }
+
+    revalidatePath("/admin/proposals");
+    revalidatePath("/admin/leads");
+    return { success: true };
+  } catch {
+    return { success: false, error: "İşlem başarısız" };
+  }
+}

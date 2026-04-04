@@ -2,7 +2,7 @@
 
 import { useState, useTransition, useCallback } from "react";
 import { markSubmissionRead, markAllSubmissionsRead } from "@/actions/chat-submissions";
-import { createProposalFromSubmission } from "@/actions/proposals";
+import { createProposalFromSubmission, updateProposalStatus } from "@/actions/proposals";
 import { generateProposalDraft, generateFollowUpMessage } from "@/lib/prompt-generator";
 import type { PricingItem } from "@/lib/pricing-constants";
 
@@ -614,7 +614,9 @@ TEKLİF KURALLARI:
                   onClick={() => {
                     startTransition(async () => {
                       const res = await createProposalFromSubmission(selected.id, pricingConfigs);
-                      if (res.success && res.token) {
+                      if (res.success && res.proposalId && res.token) {
+                        // Otomatik SENT yap — müşteri açınca kabul/red butonları görünsün
+                        await updateProposalStatus(res.proposalId, "SENT");
                         setProposalToken(res.token);
                       }
                     });
