@@ -377,7 +377,7 @@ export default function ProposalView({ proposal }: { proposal: ProposalData }) {
           <p className="text-xs text-white/25 mb-3">Sorulariniz mi var?</p>
           <div className="flex flex-wrap items-center justify-center gap-4">
             <a
-              href="https://wa.me/905427313425"
+              href="https://wa.me/905431883425"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 rounded-lg border border-emerald-500/20 bg-emerald-500/5 px-4 py-2.5 text-sm text-emerald-400 transition-colors hover:bg-emerald-500/10"
