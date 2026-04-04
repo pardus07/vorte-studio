@@ -1,7 +1,9 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState, useTransition, useCallback } from "react";
 import { markSubmissionRead, markAllSubmissionsRead } from "@/actions/chat-submissions";
+import { generateProposalDraft, generateFollowUpMessage } from "@/lib/prompt-generator";
+import type { PricingItem } from "@/lib/pricing-constants";
 
 interface Submission {
   id: string;
@@ -9,12 +11,15 @@ interface Submission {
   firmName: string;
   contactName: string | null;
   contactPhone: string | null;
+  contactEmail: string | null;
   siteType: string | null;
   features: string[];
   pageCount: string | null;
   contentStatus: string | null;
   hostingStatus: string | null;
+  hostingProvider: string | null;
   domainStatus: string | null;
+  domainName: string | null;
   timeline: string | null;
   message: string | null;
   sector: string | null;
@@ -37,6 +42,7 @@ interface Submission {
 
 interface Props {
   initialData: Submission[];
+  pricingConfigs: PricingItem[];
 }
 
 // ── Score badge renkleri ──
@@ -64,12 +70,15 @@ const SITE_TYPE_LABELS: Record<string, string> = {
   belirsiz: "Belirsiz",
 };
 
-export default function SubmissionsDashboard({ initialData }: Props) {
+export default function SubmissionsDashboard({ initialData, pricingConfigs }: Props) {
   const [items, setItems] = useState(initialData);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [filter, setFilter] = useState<"all" | "hot" | "warm" | "cold" | "unread">("all");
   const [search, setSearch] = useState("");
   const [isPending, startTransition] = useTransition();
+  const [draftText, setDraftText] = useState<string | null>(null);
+  const [aiPromptText, setAiPromptText] = useState<string | null>(null);
+  const [copied, setCopied] = useState<"draft" | "ai" | "followup" | null>(null);
 
   // Filtre
   const filtered = items.filter((s) => {
@@ -120,6 +129,79 @@ export default function SubmissionsDashboard({ initialData }: Props) {
         setItems((prev) => prev.map((s) => ({ ...s, isRead: true })));
       }
     });
+  }
+
+  // Panoya kopyala
+  const copyToClipboard = useCallback(async (text: string, type: "draft" | "ai" | "followup") => {
+    await navigator.clipboard.writeText(text);
+    setCopied(type);
+    setTimeout(() => setCopied(null), 2000);
+  }, []);
+
+  // Teklif taslağı oluştur
+  function handleGenerateDraft(s: Submission) {
+    const draft = generateProposalDraft(
+      {
+        firmName: s.firmName,
+        contactName: s.contactName,
+        contactPhone: s.contactPhone,
+        siteType: s.siteType,
+        features: s.features,
+        pageCount: s.pageCount,
+        contentStatus: s.contentStatus,
+        hostingStatus: s.hostingStatus,
+        domainStatus: s.domainStatus,
+        timeline: s.timeline,
+        message: s.message,
+        sector: s.sector,
+        city: s.city,
+        score: s.score,
+        freeQuestions: s.freeQuestions,
+      },
+      pricingConfigs
+    );
+    setDraftText(draft);
+    setAiPromptText(null);
+  }
+
+  // AI Prompt oluştur
+  function handleGenerateAiPrompt(s: Submission) {
+    const featureList = s.features.length > 0 ? s.features.join(", ") : "belirtilmedi";
+    const prompt = `Sen profesyonel bir web tasarım ajansının teklif uzmanısın. Aşağıdaki müşteri bilgilerine göre detaylı, kişiselleştirilmiş ve ikna edici bir teklif metni hazırla.
+
+MÜŞTERİ BİLGİLERİ:
+- Firma: ${s.firmName}
+- Kişi: ${s.contactName || "Belirtilmedi"}
+- Telefon: ${s.contactPhone || "Belirtilmedi"}
+- E-posta: ${s.contactEmail || "Belirtilmedi"}
+- Sektör: ${s.sector || "Belirtilmedi"}
+- Şehir: ${s.city || "Belirtilmedi"}
+
+PROJE DETAYLARI:
+- Site Türü: ${s.siteType ? SITE_TYPE_LABELS[s.siteType] || s.siteType : "Belirtilmedi"}
+- Sayfa Sayısı: ${s.pageCount || "Belirtilmedi"}
+- İçerik Durumu: ${s.contentStatus || "Belirtilmedi"}
+- Hosting: ${s.hostingStatus || "Belirtilmedi"}${s.hostingProvider ? ` (${s.hostingProvider})` : ""}
+- Domain: ${s.domainStatus || "Belirtilmedi"}${s.domainName ? ` (${s.domainName})` : ""}
+- Zamanlama: ${s.timeline ? TIMELINE_LABELS[s.timeline] || s.timeline : "Belirtilmedi"}
+- İstenen Özellikler: ${featureList}
+${s.calculatedPrice ? `- Hesaplanan Fiyat: ${s.calculatedPrice.toLocaleString("tr-TR")} TL` : ""}
+${s.estimatedHours ? `- Tahmini Süre: ${s.estimatedHours} saat` : ""}
+
+${s.message ? `MÜŞTERİ NOTU:\n"${s.message}"\n` : ""}${s.freeQuestions.length > 0 ? `\nMÜŞTERİ SORULARI:\n${s.freeQuestions.map((fq) => `S: ${fq.question}\nC: ${fq.answer}`).join("\n")}\n` : ""}
+LEAD SKORU: ${s.score === "hot" ? "Sıcak (acil)" : s.score === "warm" ? "Ilık" : "Soğuk"}
+
+TEKLİF KURALLARI:
+1. Türkçe yaz, profesyonel ve samimi tonda
+2. Firma adını ve sektörü özelleştirerek yaz
+3. Fiyatı aralık olarak ver (±%10)
+4. Ödeme planı: %40 peşin, %30 onay sonrası, %30 teslimde
+5. Teslim süresini belirt
+6. Neden Vorte Studio'yu seçmeliler — Next.js, AI destekli geliştirme, hız avantajı
+7. Sonunda net bir CTA (harekete geçirici mesaj) ekle`;
+
+    setAiPromptText(prompt);
+    setDraftText(null);
   }
 
   // Tarih formatla
@@ -459,6 +541,27 @@ export default function SubmissionsDashboard({ initialData }: Props) {
                 </div>
               )}
 
+              {/* Fiyat bilgisi */}
+              {(selected.calculatedPrice || selected.estimatedHours) && (
+                <div className="rounded-lg border border-admin-accent/20 bg-admin-accent/5 p-3">
+                  <div className="text-[11px] uppercase tracking-wider text-admin-muted">
+                    Hesaplanan Fiyat
+                  </div>
+                  <div className="mt-1.5 flex items-baseline gap-3">
+                    {selected.calculatedPrice && (
+                      <span className="text-lg font-bold text-admin-accent">
+                        {selected.calculatedPrice.toLocaleString("tr-TR")} TL
+                      </span>
+                    )}
+                    {selected.estimatedHours && (
+                      <span className="text-xs text-admin-muted">
+                        ~{selected.estimatedHours} saat
+                      </span>
+                    )}
+                  </div>
+                </div>
+              )}
+
               {/* Lead bağlantısı */}
               {selected.lead && (
                 <div className="rounded-lg border border-emerald-500/20 bg-emerald-500/5 p-3">
@@ -474,6 +577,98 @@ export default function SubmissionsDashboard({ initialData }: Props) {
                       Lead&apos;e Git
                     </a>
                   </div>
+                </div>
+              )}
+
+              {/* ── Aksiyon Butonları ── */}
+              <div className="space-y-2">
+                <div className="text-[11px] uppercase tracking-wider text-admin-muted">
+                  Aksiyonlar
+                </div>
+                <div className="grid grid-cols-2 gap-2">
+                  {/* Teklif Taslağı */}
+                  <button
+                    onClick={() => handleGenerateDraft(selected)}
+                    className="flex items-center justify-center gap-2 rounded-lg border border-admin-accent/30 bg-admin-accent/10 px-3 py-2.5 text-xs font-medium text-admin-accent transition-colors hover:bg-admin-accent/20"
+                  >
+                    <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    Teklif Taslağı
+                  </button>
+
+                  {/* AI Prompt */}
+                  <button
+                    onClick={() => handleGenerateAiPrompt(selected)}
+                    className="flex items-center justify-center gap-2 rounded-lg border border-purple-500/30 bg-purple-500/10 px-3 py-2.5 text-xs font-medium text-purple-400 transition-colors hover:bg-purple-500/20"
+                  >
+                    <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.455 2.456L21.75 6l-1.036.259a3.375 3.375 0 00-2.455 2.456z" />
+                    </svg>
+                    AI Prompt
+                  </button>
+
+                  {/* WA Takip Mesajı */}
+                  {selected.contactName && (
+                    <button
+                      onClick={() => {
+                        const msg = generateFollowUpMessage({
+                          contactName: selected.contactName || selected.firmName,
+                          firmName: selected.firmName,
+                          siteType: selected.siteType,
+                        });
+                        copyToClipboard(msg, "followup");
+                      }}
+                      className="col-span-2 flex items-center justify-center gap-2 rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-3 py-2.5 text-xs font-medium text-emerald-400 transition-colors hover:bg-emerald-500/20"
+                    >
+                      <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z" />
+                      </svg>
+                      {copied === "followup" ? "✓ Kopyalandı!" : "WA Takip Mesajı Kopyala"}
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              {/* ── Teklif Taslağı / AI Prompt Çıktısı ── */}
+              {(draftText || aiPromptText) && (
+                <div className="rounded-lg border border-admin-border bg-admin-bg p-4">
+                  <div className="mb-3 flex items-center justify-between">
+                    <span className="text-[11px] uppercase tracking-wider text-admin-muted">
+                      {draftText ? "Teklif Taslağı" : "AI Prompt"}
+                    </span>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => copyToClipboard(draftText || aiPromptText || "", draftText ? "draft" : "ai")}
+                        className="flex items-center gap-1 rounded-md bg-admin-accent/10 px-2.5 py-1 text-[11px] font-medium text-admin-accent transition-colors hover:bg-admin-accent/20"
+                      >
+                        {(copied === "draft" && draftText) || (copied === "ai" && aiPromptText) ? (
+                          <>
+                            <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                            </svg>
+                            Kopyalandı!
+                          </>
+                        ) : (
+                          <>
+                            <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M15.666 3.888A2.25 2.25 0 0013.5 2.25h-3c-1.03 0-1.9.693-2.166 1.638m7.332 0c.055.194.084.4.084.612v0a.75.75 0 01-.75.75H9.75a.75.75 0 01-.75-.75v0c0-.212.03-.418.084-.612m7.332 0c.646.049 1.288.11 1.927.184 1.1.128 1.907 1.077 1.907 2.185V19.5a2.25 2.25 0 01-2.25 2.25H6.75A2.25 2.25 0 014.5 19.5V6.257c0-1.108.806-2.057 1.907-2.185a48.208 48.208 0 011.927-.184" />
+                            </svg>
+                            Kopyala
+                          </>
+                        )}
+                      </button>
+                      <button
+                        onClick={() => { setDraftText(null); setAiPromptText(null); }}
+                        className="rounded-md px-2 py-1 text-[11px] text-admin-muted transition-colors hover:text-admin-text"
+                      >
+                        Kapat
+                      </button>
+                    </div>
+                  </div>
+                  <pre className="max-h-[400px] overflow-auto whitespace-pre-wrap text-xs leading-relaxed text-admin-text">
+                    {draftText || aiPromptText}
+                  </pre>
                 </div>
               )}
 

@@ -1,10 +1,14 @@
 import { getChatSubmissions } from "@/actions/chat-submissions";
+import { getPricingConfigs } from "@/actions/pricing";
 import SubmissionsDashboard from "./submissions-dashboard";
 
 export const dynamic = "force-dynamic";
 
 export default async function ChatSubmissionsPage() {
-  const submissions = await getChatSubmissions();
+  const [submissions, pricingConfigs] = await Promise.all([
+    getChatSubmissions(),
+    getPricingConfigs(),
+  ]);
 
   return (
     <div className="space-y-6">
@@ -15,7 +19,7 @@ export default async function ChatSubmissionsPage() {
           inceleyin ve lead&apos;lere dönüştürün.
         </p>
       </div>
-      <SubmissionsDashboard initialData={submissions} />
+      <SubmissionsDashboard initialData={submissions} pricingConfigs={pricingConfigs} />
     </div>
   );
 }
