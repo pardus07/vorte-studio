@@ -1,8 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { acceptProposal, rejectProposal } from "@/actions/proposals";
+import { getContractByProposal } from "@/actions/contracts";
+import ContractSigning from "./contract-signing";
 
 // ── Label Maps ──
 const SITE_TYPE_LABELS: Record<string, string> = {
@@ -94,6 +96,16 @@ export default function ProposalView({ proposal }: { proposal: ProposalData }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showRejectConfirm, setShowRejectConfirm] = useState(false);
+  const [contractSigned, setContractSigned] = useState(false);
+
+  // Sözleşme durumunu kontrol et
+  useEffect(() => {
+    if (accepted) {
+      getContractByProposal(proposal.token).then((c) => {
+        if (c?.status === "SIGNED") setContractSigned(true);
+      });
+    }
+  }, [accepted, proposal.token]);
 
   const isExpired = new Date(proposal.validUntil) < new Date();
   const canAccept = !accepted && !rejected && !isExpired && proposal.status !== "DRAFT";
@@ -375,16 +387,44 @@ export default function ProposalView({ proposal }: { proposal: ProposalData }) {
           )}
 
           {accepted ? (
-            <div className="rounded-2xl border border-emerald-500/20 bg-emerald-500/5 p-8 text-center">
-              <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-emerald-500/10">
-                <svg className="h-8 w-8 text-emerald-400" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                </svg>
+            <div className="space-y-6">
+              {/* Teklif onay mesajı */}
+              <div className="rounded-2xl border border-emerald-500/20 bg-emerald-500/5 p-6 text-center">
+                <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-emerald-500/10">
+                  <svg className="h-6 w-6 text-emerald-400" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                  </svg>
+                </div>
+                <h3 className="text-lg font-semibold text-emerald-400">Teklif Onaylandi!</h3>
+                {!contractSigned && (
+                  <p className="mt-2 text-sm text-white/40">
+                    Projeye baslamak icin asagidaki sozlesmeyi imzalayin.
+                  </p>
+                )}
               </div>
-              <h3 className="text-lg font-semibold text-emerald-400">Teklif Onaylandi!</h3>
-              <p className="mt-2 text-sm text-white/40">
-                En kisa surede sizinle iletisime gececegiz. Tesekkur ederiz.
-              </p>
+
+              {/* Sözleşme imzalama bölümü */}
+              {!contractSigned ? (
+                <ContractSigning
+                  proposalToken={proposal.token}
+                  firmName={proposal.firmName}
+                  contactName={proposal.contactName}
+                  contactEmail={proposal.contactEmail}
+                  contactPhone={proposal.contactPhone}
+                />
+              ) : (
+                <div className="rounded-2xl border border-emerald-500/20 bg-emerald-500/5 p-6 text-center">
+                  <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-emerald-500/10">
+                    <svg className="h-6 w-6 text-emerald-400" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 01-1.043 3.296 3.745 3.745 0 01-3.296 1.043A3.745 3.745 0 0112 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 01-3.296-1.043 3.745 3.745 0 01-1.043-3.296A3.745 3.745 0 013 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 011.043-3.296 3.746 3.746 0 013.296-1.043A3.746 3.746 0 0112 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 013.296 1.043 3.746 3.746 0 011.043 3.296A3.745 3.745 0 0121 12z" />
+                    </svg>
+                  </div>
+                  <h3 className="text-lg font-semibold text-emerald-400">Sozlesme Imzalandi</h3>
+                  <p className="mt-2 text-sm text-white/40">
+                    Imzali sozlesme e-posta adresinize gonderilmistir. Projeniz en kisa surede baslatilacaktir.
+                  </p>
+                </div>
+              )}
             </div>
           ) : rejected ? (
             <div className="rounded-2xl border border-red-500/20 bg-red-500/5 p-8 text-center">

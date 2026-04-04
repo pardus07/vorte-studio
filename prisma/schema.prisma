@@ -174,6 +174,8 @@ model Proposal {
 
   createdAt       DateTime       @default(now())
   updatedAt       DateTime       @updatedAt
+
+  contract        Contract?
 }
 
 enum ProposalStatus {
@@ -183,6 +185,62 @@ enum ProposalStatus {
   ACCEPTED
   REJECTED
   EXPIRED
+}
+
+// ── Sözleşme (Dijital İmza) ──
+model Contract {
+  id            String         @id @default(cuid())
+  proposalId    String         @unique
+  proposal      Proposal       @relation(fields: [proposalId], references: [id], onDelete: Cascade)
+
+  // İmzalayan kişi bilgileri
+  signerName    String                // Ad Soyad
+  signerTcNo    String?               // TC Kimlik No (şahıs)
+  signerTaxNo   String?               // Vergi No (tüzel kişi)
+  signerTitle   String?               // Ünvan/Pozisyon (Şirket Sahibi, Müdür vb.)
+  signerCompany String?               // Şirket Ünvanı (tüzel kişi ise)
+  signerEmail   String                // Doğrulanmış e-posta
+  signerPhone   String?               // Telefon
+  signerAddress String?               // Adres
+
+  // Sözleşme içeriği
+  contractText  String         @db.Text   // Tam sözleşme metni
+  contractHash  String                    // SHA-256 hash (değiştirilmediğinin kanıtı)
+
+  // Dijital imza
+  signatureData String?        @db.Text   // base64 canvas imza görseli
+  signedAt      DateTime?               // İmza tarihi
+
+  // Metadata (hukuki delil)
+  signerIp      String?               // İmzalayanın IP adresi
+  signerAgent   String?               // User-Agent (tarayıcı/cihaz)
+  signerDevice  String?               // Ekran çözünürlüğü
+
+  // Doğrulama
+  emailVerified Boolean        @default(false)
+
+  // Durum
+  status        ContractStatus @default(PENDING)
+
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+}
+
+enum ContractStatus {
+  PENDING     // İmza bekleniyor
+  SIGNED      // İmzalandı
+  CANCELLED   // İptal edildi
+}
+
+// ── E-posta Doğrulama Kodu ──
+model VerificationCode {
+  id        String   @id @default(cuid())
+  email     String
+  code      String               // 6 haneli kod
+  type      String               // "contract"
+  expiresAt DateTime             // Süre dolumu (10 dk)
+  used      Boolean  @default(false)
+  createdAt DateTime @default(now())
 }
 
 // ── Fiyat Ayarları ──
