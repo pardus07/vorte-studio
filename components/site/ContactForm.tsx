@@ -12,12 +12,20 @@ const projectTypes = [
   "Diğer",
 ];
 
-export default function ContactForm({ onClose }: { onClose: () => void }) {
+export default function ContactForm({
+  onClose,
+  selectedPackage,
+}: {
+  onClose: () => void;
+  selectedPackage?: string;
+}) {
   const [form, setForm] = useState({
     name: "",
     phone: "",
     projectType: "Web Sitesi",
-    message: "",
+    message: selectedPackage
+      ? `${selectedPackage} paketi hakkında bilgi almak istiyorum.`
+      : "",
   });
   const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error">(
     "idle"
@@ -27,7 +35,7 @@ export default function ContactForm({ onClose }: { onClose: () => void }) {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setStatus("sending");
-    const result = await sendContactForm(form);
+    const result = await sendContactForm({ ...form, selectedPackage });
     if (result.success) {
       setStatus("sent");
     } else {
@@ -154,6 +162,23 @@ export default function ContactForm({ onClose }: { onClose: () => void }) {
             ✕
           </button>
         </div>
+
+        {selectedPackage && (
+          <div
+            style={{
+              marginBottom: 16,
+              padding: "10px 14px",
+              background: "rgba(249,115,22,0.08)",
+              border: "1px solid rgba(249,115,22,0.2)",
+              borderRadius: 8,
+              fontSize: 13,
+              color: "#f97316",
+              fontWeight: 500,
+            }}
+          >
+            Seçilen Paket: {selectedPackage}
+          </div>
+        )}
 
         <form
           onSubmit={handleSubmit}

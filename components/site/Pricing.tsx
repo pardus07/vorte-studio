@@ -1,6 +1,8 @@
 "use client";
 
+import { useState } from "react";
 import { motion } from "framer-motion";
+import ContactForm from "./ContactForm";
 
 const packages = [
   {
@@ -106,6 +108,8 @@ const cardVariants = {
 };
 
 export default function Pricing() {
+  const [selectedPackage, setSelectedPackage] = useState<string | null>(null);
+
   return (
     <section id="fiyatlandirma" className="px-6 py-24 md:px-12 lg:px-20 md:py-32">
       {/* Section header */}
@@ -262,9 +266,9 @@ export default function Pricing() {
             </ul>
 
             {/* CTA Butonu */}
-            <a
-              href="#contact"
-              className={`relative mt-8 flex items-center justify-center gap-2 overflow-hidden rounded-xl px-6 py-3.5 text-[14px] font-semibold transition-all duration-300 ${
+            <button
+              onClick={() => setSelectedPackage(`${pkg.name} — ${pkg.price}₺`)}
+              className={`relative mt-8 flex w-full items-center justify-center gap-2 overflow-hidden rounded-xl px-6 py-3.5 text-[14px] font-semibold transition-all duration-300 ${
                 pkg.popular
                   ? "bg-accent text-white shadow-lg shadow-accent/20 hover:shadow-xl hover:shadow-accent/30"
                   : "border border-border bg-white/[0.03] text-white/70 hover:border-accent/30 hover:text-white"
@@ -272,7 +276,7 @@ export default function Pricing() {
             >
               {/* Shine sweep */}
               <span className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/10 to-transparent transition-transform duration-700 group-hover:translate-x-full" />
-              <span className="relative">Teklif Al</span>
+              <span className="relative">Ücretsiz Teklif Al</span>
               <svg
                 className="relative h-4 w-4 transition-transform group-hover:translate-x-1"
                 viewBox="0 0 16 16"
@@ -284,7 +288,7 @@ export default function Pricing() {
               >
                 <path d="M3 8h10M10 4l4 4-4 4" />
               </svg>
-            </a>
+            </button>
           </motion.article>
         ))}
       </motion.div>
@@ -310,6 +314,14 @@ export default function Pricing() {
           Taksit seçenekleri mevcuttur
         </span>
       </motion.div>
+
+      {/* Paket seçildiğinde ContactForm aç */}
+      {selectedPackage && (
+        <ContactForm
+          onClose={() => setSelectedPackage(null)}
+          selectedPackage={selectedPackage}
+        />
+      )}
     </section>
   );
 }
