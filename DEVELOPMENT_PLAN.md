@@ -62,17 +62,17 @@
 
 ### Gorevler
 
-- [ ] 3.1 Renk paleti onizleme bolumu ekle (sektore/musteriye ozel)
-- [ ] 3.2 Problem → Cozum hikayesi bolumu (sektor bilgisine gore otomatik metin)
-- [ ] 3.3 Referans projeler bolumu (portfolyoden benzer sektor projeleri)
-- [ ] 3.4 3 Paket secenegi gosterimi (Temel / Profesyonel / Kurumsal)
-- [ ] 3.5 Surec aciklamasi bolumu ("4 adimda siteniz hazir" gorsel akis)
-- [ ] 3.6 Mobil uyumluluk kontrolu
-- [ ] 3.7 TypeScript kontrol — sifir hata
-- [ ] 3.8 Build test — basarili
-- [ ] 3.9 Commit + Push
-- [ ] 3.10 Canli test — teklif sayfasi kontrol
-- [ ] 3.11 **ONAY**
+- [x] 3.1 Renk paleti onizleme bolumu ekle (hex renk secici + teklif sayfasinda gosterim)
+- [x] 3.2 Problem → Cozum hikayesi bolumu (sektor bilgisine gore otomatik metin + web artilari)
+- [x] 3.3 Referans projeler bolumu (portfolyoden benzer sektor projeleri — kosullu gosterim)
+- [x] 3.4 3 Paket secenegi gosterimi (Baslangic %70 / Profesyonel %100 / Kurumsal %150)
+- [x] 3.5 Surec aciklamasi bolumu ("4 adimda siteniz hazir" + timeline'a gore hafta dagilimi)
+- [x] 3.6 Mobil uyumluluk kontrolu
+- [x] 3.7 TypeScript kontrol — sifir hata
+- [x] 3.8 Build test — basarili
+- [x] 3.9 Commit + Push (a17a120 + onceki 3 commit)
+- [x] 3.10 Canli test — teklif sayfasi kontrol ✅
+- [x] 3.11 **ONAY** ✅
 
 ---
 
