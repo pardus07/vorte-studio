@@ -283,6 +283,9 @@ function generatePackages(
         { label: "Sınırsız tasarım revizyonu", included: true },
         { label: "Performans & hız optimizasyonu", included: true },
         { label: "Aylık trafik & dönüşüm raporu", included: true },
+        { label: "Admin paneli özel tasarım", included: true },
+        { label: "AI chatbot entegrasyonu", included: true },
+        { label: "Profesyonel analiz dashboard", included: true },
       ],
       recommended: false,
       color: "purple" as const,
@@ -290,91 +293,27 @@ function generatePackages(
   ];
 }
 
-// ── Türkçe renk adı → HEX mapping ──
-const COLOR_NAME_MAP: Record<string, string> = {
-  siyah: "#1a1a1a",
-  beyaz: "#ffffff",
-  kirmizi: "#e53e3e",
-  kırmızı: "#e53e3e",
-  mavi: "#3b82f6",
-  yesil: "#22c55e",
-  yeşil: "#22c55e",
-  sari: "#eab308",
-  sarı: "#eab308",
-  turuncu: "#f97316",
-  mor: "#8b5cf6",
-  pembe: "#ec4899",
-  gri: "#6b7280",
-  lacivert: "#1e3a5f",
-  bordo: "#800020",
-  kahverengi: "#8B4513",
-  kahve: "#8B4513",
-  bej: "#F5F5DC",
-  krem: "#FFFDD0",
-  gold: "#FFD700",
-  altin: "#FFD700",
-  altın: "#FFD700",
-  gumus: "#C0C0C0",
-  gümüş: "#C0C0C0",
-  turkuaz: "#40E0D0",
-  eflatun: "#9966CC",
-  fuşya: "#FF00FF",
-  fusya: "#FF00FF",
-  indigo: "#4B0082",
-  mercan: "#FF7F50",
-  zeytin: "#808000",
-  antrasit: "#2C3539",
-};
-
-// ── Renk parse ──
-function parseColors(
-  brandColors: string | null
-): { color: string; label: string }[] {
+// ── Renk parse — artık hex kodları virgülle ayrılmış geliyor ──
+function parseColors(brandColors: string | null): string[] {
   if (!brandColors) return [];
-
-  // #hex kodlarını çıkar
+  // Hex kodlarını çıkar
   const hexMatches = brandColors.match(/#[0-9a-fA-F]{3,8}/g);
-  if (hexMatches && hexMatches.length > 0) {
-    return hexMatches.map((h) => ({ color: h, label: h }));
-  }
-
-  // Virgülle ayrılmış metinsel renkler → hex'e çevir
-  const results: { color: string; label: string }[] = [];
-
-  const parts = brandColors.split(/[,;/]/).map((c) => c.trim()).filter(Boolean);
-
-  for (const part of parts) {
-    // 4+ kelime ise cümle, renk değil — atla
-    if (part.split(/\s+/).length > 3) continue;
-
-    const normalized = part.toLowerCase().replace(/\s+/g, "");
-
-    // Mapping'te ara
-    const match = Object.entries(COLOR_NAME_MAP).find(([key]) =>
-      normalized.includes(key)
-    );
-
-    if (match) {
-      results.push({ color: match[1], label: part });
-    }
-    // Eşleşme yoksa ve tek kelimeyse yine göster
-    else if (part.split(/\s+/).length <= 2) {
-      results.push({ color: "#888888", label: part });
-    }
-  }
-
-  return results;
+  if (hexMatches && hexMatches.length > 0) return hexMatches;
+  // Virgülle ayrılmış hex kodları (# olmadan da olabilir)
+  return brandColors
+    .split(",")
+    .map((c) => c.trim())
+    .filter((c) => /^#?[0-9a-fA-F]{3,8}$/.test(c))
+    .map((c) => (c.startsWith("#") ? c : `#${c}`));
 }
 
-// ── Renk açıklığı hesapla (koyu/açık) ──
+// ── Renk açıklığı hesapla ──
 function isColorDark(hex: string): boolean {
   const c = hex.replace("#", "");
   const r = parseInt(c.substring(0, 2), 16) || 0;
   const g = parseInt(c.substring(2, 4), 16) || 0;
   const b = parseInt(c.substring(4, 6), 16) || 0;
-  // Luminance formülü
-  const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
-  return luminance < 0.4;
+  return (0.299 * r + 0.587 * g + 0.114 * b) / 255 < 0.4;
 }
 
 interface ProposalData {
@@ -728,37 +667,22 @@ export default function ProposalView({
               Marka Renk Paletiniz
             </h2>
             <div className="flex flex-wrap gap-5">
-              {colors.map((c, i) => {
-                const dark = isColorDark(c.color);
+              {colors.map((hex, i) => {
+                const dark = isColorDark(hex);
                 return (
                   <div key={i} className="text-center">
-                    {/* Açık çerçeve içinde renk kutusu */}
                     <div
-                      className="rounded-xl p-1"
+                      className="h-16 w-16 rounded-xl sm:h-20 sm:w-20"
                       style={{
-                        background: dark
-                          ? "linear-gradient(135deg, rgba(255,255,255,0.15), rgba(255,255,255,0.05))"
-                          : "transparent",
+                        backgroundColor: hex,
+                        border: dark
+                          ? "2px solid rgba(255,255,255,0.3)"
+                          : "1px solid rgba(255,255,255,0.1)",
+                        boxShadow: `0 4px 15px ${hex}40`,
                       }}
-                    >
-                      <div
-                        className="h-16 w-16 rounded-lg sm:h-20 sm:w-20"
-                        style={{
-                          backgroundColor: c.color,
-                          border: dark
-                            ? "2px solid rgba(255,255,255,0.3)"
-                            : "1px solid rgba(255,255,255,0.1)",
-                          boxShadow: dark
-                            ? "inset 0 0 20px rgba(255,255,255,0.05)"
-                            : `0 4px 15px ${c.color}30`,
-                        }}
-                      />
-                    </div>
-                    <div className="mt-2 text-xs text-white/60 font-medium capitalize">
-                      {c.label}
-                    </div>
-                    <div className="text-[9px] text-white/25 font-mono">
-                      {c.color}
+                    />
+                    <div className="mt-2 text-xs text-white/40 font-mono">
+                      {hex}
                     </div>
                   </div>
                 );

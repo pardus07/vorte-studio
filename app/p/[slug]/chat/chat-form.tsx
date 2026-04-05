@@ -268,6 +268,26 @@ const buttonVariants = {
   }),
 }
 
+// ── Renk paleti (color-hex.com'dan popüler renkler) ──
+const COLOR_PALETTE = [
+  // Kırmızılar & Turuncular
+  '#E53E3E', '#C53030', '#FF4500', '#F97316', '#EA580C', '#DC2626',
+  // Pembeler & Morlar
+  '#EC4899', '#D946EF', '#A855F7', '#8B5CF6', '#7C3AED', '#9333EA',
+  // Maviler
+  '#3B82F6', '#2563EB', '#1D4ED8', '#0EA5E9', '#06B6D4', '#0891B2',
+  // Yeşiller
+  '#22C55E', '#16A34A', '#15803D', '#10B981', '#059669', '#14B8A6',
+  // Sarılar & Altın
+  '#EAB308', '#F59E0B', '#D97706', '#FBBF24', '#F5A623', '#FFD700',
+  // Nötrler & Koyu
+  '#1A1A1A', '#374151', '#4B5563', '#6B7280', '#9CA3AF', '#D1D5DB',
+  // Kahveler & Bordo
+  '#800020', '#8B4513', '#92400E', '#78350F', '#451A03', '#7C2D12',
+  // Pastel & Açık
+  '#FFFFFF', '#F8FAFC', '#FEF3C7', '#DBEAFE', '#D1FAE5', '#FCE7F3',
+]
+
 const pulseKeyframes = `
 @keyframes dotPulse {
   0%, 80%, 100% { transform: scale(0.6); opacity: 0.4; }
@@ -299,7 +319,7 @@ export default function ChatForm({ firmName, city, sector, slug }: Props) {
     businessGoals: '',
     targetAudience: '',
     referenceUrls: [] as string[],
-    brandColors: '',
+    brandColors: [] as string[],
     seoExpectations: '',
     existingSiteUrl: '',
     logoStatus: '',
@@ -313,6 +333,7 @@ export default function ChatForm({ firmName, city, sector, slug }: Props) {
   })
 
   const [selectedFeatures, setSelectedFeatures] = useState<string[]>([])
+  const [selectedColors, setSelectedColors] = useState<string[]>([])
   const [freeQuestions, setFreeQuestions] = useState<FreeQuestion[]>([])
 
   const chatEndRef = useRef<HTMLDivElement>(null)
@@ -325,7 +346,7 @@ export default function ChatForm({ firmName, city, sector, slug }: Props) {
 
   // Input focus
   useEffect(() => {
-    if (step === 'firmName' || step === 'message' || step === 'contactName' || step === 'contactPhone' || step === 'contactEmail' || step === 'businessGoals' || step === 'targetAudience' || step === 'referenceUrls' || step === 'brandColors' || step === 'existingSiteUrl' || step === 'socialMediaLinks' || step === 'freeQuestion') {
+    if (step === 'firmName' || step === 'message' || step === 'contactName' || step === 'contactPhone' || step === 'contactEmail' || step === 'businessGoals' || step === 'targetAudience' || step === 'referenceUrls' || step === 'existingSiteUrl' || step === 'socialMediaLinks' || step === 'freeQuestion') {
       setTimeout(() => inputRef.current?.focus(), 300)
     }
   }, [step])
@@ -523,6 +544,24 @@ export default function ChatForm({ firmName, city, sector, slug }: Props) {
         )
         break
 
+      case 'brandColors':
+        // Renk seçici'den onaylanmış hex kodları gelir
+        setData((d) => ({ ...d, brandColors: selectedColors }))
+        addBotMessage(
+          'SEO (arama motoru optimizasyonu) beklentileriniz nelerdir?',
+          'seoExpectations',
+          {
+            buttons: [
+              { label: '🔍 Google\'da ilk sayfada çıkmak istiyorum', value: 'ilk-sayfa' },
+              { label: '📍 Yerel aramalarda öne çıkmak istiyorum', value: 'yerel-seo' },
+              { label: '🚀 Hem yerel hem genel SEO istiyorum', value: 'tam-seo' },
+              { label: '🤷 SEO hakkında bilgim yok, siz yönlendirin', value: 'bilmiyor' },
+              { label: '❌ SEO\'ya ihtiyacım yok', value: 'gerek-yok' },
+            ],
+          },
+        )
+        break
+
       case 'seoExpectations':
         setData((d) => ({ ...d, seoExpectations: value }))
         addBotMessage(
@@ -641,29 +680,13 @@ export default function ChatForm({ firmName, city, sector, slug }: Props) {
       case 'referenceUrls': {
         const urls = value.toLowerCase() === 'yok' ? [] : value.split(/[,\s]+/).map(u => u.trim()).filter(Boolean)
         setData((d) => ({ ...d, referenceUrls: urls }))
+        setSelectedColors([])
         addBotMessage(
-          'Markanızın renkleri veya stil tercihiniz var mı? (Örn: "Koyu mavi ve altın rengi, modern ve minimal" veya "Henüz karar vermedim")',
+          'Markanızın renk paletini seçin. Aşağıdaki renklerden sitenizde kullanılmasını istediğiniz renkleri seçin ve "Onayla" butonuna basın.',
           'brandColors',
         )
         break
       }
-
-      case 'brandColors':
-        setData((d) => ({ ...d, brandColors: value }))
-        addBotMessage(
-          'SEO (arama motoru optimizasyonu) beklentileriniz nelerdir?',
-          'seoExpectations',
-          {
-            buttons: [
-              { label: '🔍 Google\'da ilk sayfada çıkmak istiyorum', value: 'ilk-sayfa' },
-              { label: '📍 Yerel aramalarda öne çıkmak istiyorum', value: 'yerel-seo' },
-              { label: '🚀 Hem yerel hem genel SEO istiyorum', value: 'tam-seo' },
-              { label: '🤷 SEO hakkında bilgim yok, siz yönlendirin', value: 'bilmiyor' },
-              { label: '❌ SEO\'ya ihtiyacım yok', value: 'gerek-yok' },
-            ],
-          },
-        )
-        break
 
       case 'existingSiteUrl':
         setData((d) => ({ ...d, existingSiteUrl: value }))
@@ -898,7 +921,7 @@ export default function ChatForm({ firmName, city, sector, slug }: Props) {
           businessGoals: finalData.businessGoals,
           targetAudience: finalData.targetAudience,
           referenceUrls: finalData.referenceUrls,
-          brandColors: finalData.brandColors,
+          brandColors: finalData.brandColors.length > 0 ? finalData.brandColors.join(',') : '',
           seoExpectations: finalData.seoExpectations,
           existingSiteUrl: finalData.existingSiteUrl,
           logoStatus: finalData.logoStatus,
@@ -928,7 +951,8 @@ export default function ChatForm({ firmName, city, sector, slug }: Props) {
 
   // ── Buton gösterilecek mi ──
   const showButtons = !['intro', 'firmName', 'message', 'contactName', 'contactPhone', 'businessGoals', 'targetAudience', 'referenceUrls', 'brandColors', 'existingSiteUrl', 'socialMediaLinks', 'done', 'freeQuestion'].includes(step)
-  const showTextInput = ['firmName', 'message', 'contactName', 'contactPhone', 'contactEmail', 'businessGoals', 'targetAudience', 'referenceUrls', 'brandColors', 'existingSiteUrl', 'socialMediaLinks', 'freeQuestion'].includes(step)
+  const showTextInput = ['firmName', 'message', 'contactName', 'contactPhone', 'contactEmail', 'businessGoals', 'targetAudience', 'referenceUrls', 'existingSiteUrl', 'socialMediaLinks', 'freeQuestion'].includes(step)
+  const showColorPicker = step === 'brandColors'
   const showFreeQuestionBtn = !['intro', 'done', 'freeQuestion', 'hostingInfo', 'hostingChoice', 'hostingPackages', 'domainInfo'].includes(step)
 
   // ── Placeholder ──
@@ -937,7 +961,6 @@ export default function ChatForm({ firmName, city, sector, slug }: Props) {
     businessGoals: 'Örn: Daha fazla müşteri çekmek, online satış...',
     targetAudience: 'Örn: 25-45 yaş arası kadınlar, işletme sahipleri...',
     referenceUrls: 'Örn: www.ornek.com, www.diger.com veya "Yok"',
-    brandColors: 'Örn: Koyu mavi ve beyaz, modern minimal...',
     existingSiteUrl: 'Örn: www.firmaadi.com',
     socialMediaLinks: 'Örn: instagram.com/firma, facebook.com/firma veya "Yok"',
     message: 'Notunuzu yazın veya "Atla" butonuna basın...',
@@ -1185,6 +1208,99 @@ export default function ChatForm({ firmName, city, sector, slug }: Props) {
                     </motion.div>
                   )
                 })()}
+
+                {/* ── Renk Paleti Seçici ── */}
+                {step === 'brandColors' && i === messages.length - 1 && !msg.buttons && !msg.multiSelect && msg.role === 'assistant' && (
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.15 }}
+                    className="mt-3 space-y-3 pl-9"
+                  >
+                    <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+                      <div className="grid grid-cols-8 gap-1.5 sm:gap-2">
+                        {COLOR_PALETTE.map((hex) => {
+                          const isSelected = selectedColors.includes(hex)
+                          const isLight = parseInt(hex.replace('#', ''), 16) > 0xcccccc
+                          return (
+                            <button
+                              key={hex}
+                              onClick={() => {
+                                if (isSelected) {
+                                  setSelectedColors((prev) => prev.filter((c) => c !== hex))
+                                } else if (selectedColors.length < 5) {
+                                  setSelectedColors((prev) => [...prev, hex])
+                                }
+                              }}
+                              className={`relative aspect-square rounded-lg transition-all ${
+                                isSelected
+                                  ? 'ring-2 ring-orange-500 ring-offset-2 scale-110 z-10'
+                                  : 'hover:scale-105 hover:ring-1 hover:ring-slate-300'
+                              } ${selectedColors.length >= 5 && !isSelected ? 'opacity-40 cursor-not-allowed' : ''}`}
+                              style={{ backgroundColor: hex, border: isLight ? '1px solid #e2e8f0' : 'none' }}
+                              title={hex}
+                              disabled={selectedColors.length >= 5 && !isSelected}
+                            >
+                              {isSelected && (
+                                <motion.div
+                                  initial={{ scale: 0 }}
+                                  animate={{ scale: 1 }}
+                                  className="absolute inset-0 flex items-center justify-center"
+                                >
+                                  <svg className={`h-4 w-4 ${isLight ? 'text-slate-800' : 'text-white'}`} fill="none" stroke="currentColor" strokeWidth={3} viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                                  </svg>
+                                </motion.div>
+                              )}
+                            </button>
+                          )
+                        })}
+                      </div>
+
+                      {/* Seçilen renkler önizleme */}
+                      {selectedColors.length > 0 && (
+                        <div className="mt-3 flex items-center gap-2 border-t border-slate-100 pt-3">
+                          <span className="text-xs text-slate-400">Seçilen:</span>
+                          {selectedColors.map((hex) => (
+                            <div key={hex} className="flex items-center gap-1">
+                              <div
+                                className="h-6 w-6 rounded-md border border-slate-200"
+                                style={{ backgroundColor: hex }}
+                              />
+                              <span className="text-[10px] font-mono text-slate-400">{hex}</span>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+
+                      <p className="mt-2 text-xs text-slate-400 text-center">
+                        En az 2, en çok 5 renk seçin ve onayla butonuna basın
+                      </p>
+                    </div>
+
+                    <motion.button
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.97 }}
+                      onClick={() => {
+                        if (selectedColors.length >= 2) {
+                          const label = selectedColors.join(', ')
+                          handleButtonClick(label, `Seçilen renkler: ${label}`)
+                        }
+                      }}
+                      disabled={selectedColors.length < 2}
+                      className={`rounded-xl px-6 py-2.5 text-sm font-medium text-white shadow-lg transition-all ${
+                        selectedColors.length >= 2
+                          ? 'bg-gradient-to-r from-orange-500 to-orange-600 shadow-orange-500/25 hover:shadow-xl hover:shadow-orange-500/30'
+                          : 'bg-slate-300 cursor-not-allowed shadow-none'
+                      }`}
+                    >
+                      Renkleri Onayla ({selectedColors.length}/5)
+                      <svg className="ml-2 inline h-4 w-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                      </svg>
+                    </motion.button>
+                  </motion.div>
+                )}
 
                 {/* ── Info box — "Anladım" butonu ── */}
                 {msg.infoBox && i === messages.length - 1 && (
