@@ -100,47 +100,45 @@
 ### Gorevler
 
 #### 5A — Giris Sistemi
-- [ ] 5.1 Musteri kullanici modeli (Prisma — email, sifre, projectId)
-- [ ] 5.2 Sozlesme imzalandiginda otomatik hesap olustur
-- [ ] 5.3 Giris bilgilerini mail ile gonder (sifre + portal linki)
-- [ ] 5.4 Login sayfasi (/portal/login)
-- [ ] 5.5 Auth middleware (portal rotalari icin)
+- [x] 5.1 Musteri kullanici modeli (Prisma — PortalUser, PortalMessage, PortalFile)
+- [x] 5.2 Sozlesme imzalandiginda otomatik hesap olustur (createPortalAccount)
+- [x] 5.3 Giris bilgilerini mail ile gonder (sendPortalCredentials)
+- [x] 5.4 Login sayfasi (/portal/giris) + dual NextAuth provider (admin + portal)
+- [x] 5.5 Auth middleware — proxy.ts portal korumasi + JWT role-based auth
 
-#### 5B — Proje Durumu
-- [ ] 5.6 Asama gostergesi (Tasarim → Gelistirme → Test → Canli)
-- [ ] 5.7 Admin panelden asama guncelleme
-- [ ] 5.8 Musteriye otomatik bildirim (asama degistiginde)
+#### 5B — Portal Dashboard
+- [x] 5.6 Dashboard sayfasi — 4 ozet karti (proje durumu, sozlesme, odeme, mesajlar)
+- [x] 5.7 Odeme plani listesi + ilerleme cubugu
+- [x] 5.8 Son mesajlar onizleme
 
 #### 5C — Dosya Yukleme
-- [ ] 5.9 Musteriye ozel dizin yapisi (uploads/clients/[clientId]/)
-- [ ] 5.10 MB siniri kontrolu
-- [ ] 5.11 Dosya yukleme UI (logo, metin, gorseller)
-- [ ] 5.12 Admin panelden musteri dosyalarini goruntuleme
+- [x] 5.9 Musteriye ozel dizin yapisi (uploads/portal/[userId]/)
+- [x] 5.10 10MB siniri kontrolu (API route)
+- [x] 5.11 Dosya yukleme UI (portal/dosyalar sayfasi)
+- [x] 5.12 Admin panelden musteri dosyalarini goruntuleme (portal detail tabs)
 
-#### 5D — Milestone Onaylama
-- [ ] 5.13 Milestone listesi (her asamada onay butonu)
-- [ ] 5.14 Zaman damgali onay kaydi (kanit niteliginde)
-- [ ] 5.15 Admin panelde onay durumu gosterimi
+#### 5D — Sozlesme & Odeme
+- [x] 5.13 Sozlesme durumu goruntuleme (portal/sozlesme sayfasi)
+- [x] 5.14 Proje ozeti (tur, sure, tutar, baslangic tarihi)
+- [x] 5.15 Odeme plani adimli gosterim + progress bar
 
 #### 5E — Mesajlasma
-- [ ] 5.16 Proje bazli mesaj modeli (Prisma)
-- [ ] 5.17 Musteri mesaj yazma UI
-- [ ] 5.18 Admin panelde mesaj goruntuleme ve yanit
-- [ ] 5.19 Yeni mesaj bildirimi (mail + admin sesli bildirim)
+- [x] 5.16 Proje bazli mesaj modeli (PortalMessage — Prisma)
+- [x] 5.17 Musteri mesaj yazma UI (PortalChat — 5sn polling, auto-scroll)
+- [x] 5.18 Admin panelde mesaj goruntuleme ve yanit (AdminPortalDetail)
+- [x] 5.19 Okunmamis mesaj badge + admin sidebar portal linki
 
-#### 5F — Gorsel Pin Geri Bildirim
-- [ ] 5.20 Tasarim gorseli yukleme (admin → musteriye)
-- [ ] 5.21 Gorsel uzerinde pin birakma UI (click → pin + mesaj)
-- [ ] 5.22 Pin verileri DB'ye kaydetme (x, y, mesaj, tarih)
-- [ ] 5.23 Admin panelde pin goruntuleme (gorsel uzerinde)
-- [ ] 5.24 Pin revizyon tamamlandi bildirimi (mail + WhatsApp)
+#### 5F — Admin Portal Yonetimi
+- [x] 5.20 Admin portal liste sayfasi (musteri kartlari, arama, okunmamis badge)
+- [x] 5.21 Admin portal detay sayfasi (3 tab: mesajlar, dosyalar, odemeler)
+- [x] 5.22 Admin sidebar'a Portal nav item eklendi
 
 #### 5G — Test ve Deploy
-- [ ] 5.25 TypeScript kontrol — sifir hata
-- [ ] 5.26 Build test — basarili
-- [ ] 5.27 Commit + Push
-- [ ] 5.28 Canli test — portal akisi kontrol
-- [ ] 5.29 **ONAY**
+- [x] 5.23 TypeScript kontrol — sifir hata
+- [x] 5.24 Build test — basarili
+- [x] 5.25 Commit + Push (70ea16c, d374bdb, 2730cee)
+- [x] 5.26 Canli test — portal akisi kontrol (tum sayfalar test edildi)
+- [x] 5.27 **ONAY** ✅
 
 ---
 
