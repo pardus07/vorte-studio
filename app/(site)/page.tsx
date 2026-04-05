@@ -4,6 +4,7 @@ import Hero from "@/components/site/Hero";
 import Marquee from "@/components/site/Marquee";
 import Stats from "@/components/site/Stats";
 import Services from "@/components/site/Services";
+import Pricing from "@/components/site/Pricing";
 import Portfolio from "@/components/site/Portfolio";
 import Process from "@/components/site/Process";
 import TechStack from "@/components/site/TechStack";
@@ -90,6 +91,7 @@ export default async function HomePage() {
       <Marquee />
       <Stats />
       <Services />
+      <Pricing />
       <Portfolio items={portfolioItems} />
       <Process />
       <TechStack />
