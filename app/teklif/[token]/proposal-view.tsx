@@ -202,25 +202,24 @@ function generatePackages(
   const basicMultiplier = 0.7;
   const premiumMultiplier = 1.5;
 
-  // Temel özellikler — zorunlu olanları seç, lüks olanları çıkar
-  const luxuryFeatures = new Set([
-    "cok-dilli",
-    "online-odeme",
-    "kampanya",
-    "rezervasyon",
-    "e-bulten",
-    "video-galeri",
-    "once-sonra",
-    "canli-destek",
-    "blog",
-    "online-siparis",
+  // Temel özellikler — sadece en temel olanlar
+  const coreFeatures = new Set([
+    "urun-katalogu",
+    "whatsapp",
+    "harita",
+    "galeri",
+    "seo",
+    "teklif-formu",
+    "fiyat-listesi",
   ]);
-  const basicFeatures = features.filter((f) => !luxuryFeatures.has(f));
-  // En az 3, en çok features'ın yarısı kadar
-  const basicSlice = basicFeatures.slice(
-    0,
-    Math.max(3, Math.ceil(features.length * 0.4))
-  );
+
+  // Başlangıç: sadece core özellikler (müşterinin seçtiklerinden)
+  const basicSlice = features.filter((f) => coreFeatures.has(f));
+  // En az 2 özellik olsun
+  if (basicSlice.length < 2) {
+    const remaining = features.filter((f) => !coreFeatures.has(f));
+    basicSlice.push(...remaining.slice(0, 2 - basicSlice.length));
+  }
 
   // Başlangıçta olmayan ama Profesyonelde olan
   const proOnlyFeatures = features.filter(
@@ -239,14 +238,15 @@ function generatePackages(
   return [
     {
       name: "Başlangıç",
+      subtitle: "Temel ihtiyaçlar için",
       price: basicWithKdv,
       priceRaw: basicPrice,
       features: basicSlice.map((f) => FEATURE_LABELS[f] || f),
       excluded: proOnlyFeatures.map((f) => FEATURE_LABELS[f] || f),
       extras: [
-        { label: "Temel SEO", included: true },
+        { label: "Temel SEO ayarları", included: true },
         { label: "1 ay teknik destek", included: true },
-        { label: "2 tur revizyon", included: true },
+        { label: "2 tur tasarım revizyonu", included: true },
         { label: "Performans optimizasyonu", included: false },
         { label: "Aylık analiz raporu", included: false },
       ],
@@ -255,14 +255,15 @@ function generatePackages(
     },
     {
       name: "Profesyonel",
+      subtitle: "En çok tercih edilen",
       price: proWithKdv,
       priceRaw: proPrice,
       features: features.map((f) => FEATURE_LABELS[f] || f),
       excluded: [],
       extras: [
-        { label: "Standart SEO", included: true },
+        { label: "Kapsamlı SEO optimizasyonu", included: true },
         { label: "3 ay teknik destek", included: true },
-        { label: "4 tur revizyon", included: true },
+        { label: "4 tur tasarım revizyonu", included: true },
         { label: "Performans optimizasyonu", included: false },
         { label: "Aylık analiz raporu", included: false },
       ],
@@ -271,16 +272,17 @@ function generatePackages(
     },
     {
       name: "Kurumsal",
+      subtitle: "Tam kapsamlı çözüm",
       price: premiumWithKdv,
       priceRaw: premiumPrice,
       features: features.map((f) => FEATURE_LABELS[f] || f),
       excluded: [],
       extras: [
-        { label: "Gelişmiş SEO paketi", included: true },
-        { label: "6 ay teknik destek", included: true },
-        { label: "Sınırsız revizyon", included: true },
-        { label: "Performans optimizasyonu", included: true },
-        { label: "Aylık analiz raporu", included: true },
+        { label: "Gelişmiş SEO + Google Ads desteği", included: true },
+        { label: "6 ay teknik destek & bakım", included: true },
+        { label: "Sınırsız tasarım revizyonu", included: true },
+        { label: "Performans & hız optimizasyonu", included: true },
+        { label: "Aylık trafik & dönüşüm raporu", included: true },
       ],
       recommended: false,
       color: "purple" as const,
@@ -327,32 +329,52 @@ const COLOR_NAME_MAP: Record<string, string> = {
 // ── Renk parse ──
 function parseColors(
   brandColors: string | null
-): { color: string; label: string; isHex: boolean }[] {
+): { color: string; label: string }[] {
   if (!brandColors) return [];
 
   // #hex kodlarını çıkar
   const hexMatches = brandColors.match(/#[0-9a-fA-F]{3,8}/g);
   if (hexMatches && hexMatches.length > 0) {
-    return hexMatches.map((h) => ({ color: h, label: h, isHex: true }));
+    return hexMatches.map((h) => ({ color: h, label: h }));
   }
 
   // Virgülle ayrılmış metinsel renkler → hex'e çevir
-  return brandColors
-    .split(/[,;/]/)
-    .map((c) => c.trim())
-    .filter(Boolean)
-    .map((name) => {
-      const normalized = name.toLowerCase().replace(/\s+/g, "");
-      // Mapping'te ara
-      const hex = Object.entries(COLOR_NAME_MAP).find(([key]) =>
-        normalized.includes(key)
-      )?.[1];
-      return {
-        color: hex || "#666666",
-        label: name,
-        isHex: !!hex,
-      };
-    });
+  const results: { color: string; label: string }[] = [];
+
+  const parts = brandColors.split(/[,;/]/).map((c) => c.trim()).filter(Boolean);
+
+  for (const part of parts) {
+    // 4+ kelime ise cümle, renk değil — atla
+    if (part.split(/\s+/).length > 3) continue;
+
+    const normalized = part.toLowerCase().replace(/\s+/g, "");
+
+    // Mapping'te ara
+    const match = Object.entries(COLOR_NAME_MAP).find(([key]) =>
+      normalized.includes(key)
+    );
+
+    if (match) {
+      results.push({ color: match[1], label: part });
+    }
+    // Eşleşme yoksa ve tek kelimeyse yine göster
+    else if (part.split(/\s+/).length <= 2) {
+      results.push({ color: "#888888", label: part });
+    }
+  }
+
+  return results;
+}
+
+// ── Renk açıklığı hesapla (koyu/açık) ──
+function isColorDark(hex: string): boolean {
+  const c = hex.replace("#", "");
+  const r = parseInt(c.substring(0, 2), 16) || 0;
+  const g = parseInt(c.substring(2, 4), 16) || 0;
+  const b = parseInt(c.substring(4, 6), 16) || 0;
+  // Luminance formülü
+  const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+  return luminance < 0.4;
 }
 
 interface ProposalData {
@@ -705,29 +727,37 @@ export default function ProposalView({
             <h2 className="mb-4 text-sm font-semibold uppercase tracking-wider text-white/50">
               Marka Renk Paletiniz
             </h2>
-            <div className="flex flex-wrap gap-4">
+            <div className="flex flex-wrap gap-5">
               {colors.map((c, i) => {
-                // Koyu renklere parlak border ekle
-                const isDark =
-                  c.color === "#1a1a1a" ||
-                  c.color === "#2C3539" ||
-                  c.color.toLowerCase() <= "#444444";
+                const dark = isColorDark(c.color);
                 return (
                   <div key={i} className="text-center">
+                    {/* Açık çerçeve içinde renk kutusu */}
                     <div
-                      className="h-16 w-16 rounded-xl shadow-lg sm:h-20 sm:w-20 ring-1 ring-white/20"
+                      className="rounded-xl p-1"
                       style={{
-                        backgroundColor: c.color,
-                        boxShadow: `0 4px 20px ${c.color}40`,
-                        ...(isDark
-                          ? { border: "2px solid rgba(255,255,255,0.25)" }
-                          : {}),
+                        background: dark
+                          ? "linear-gradient(135deg, rgba(255,255,255,0.15), rgba(255,255,255,0.05))"
+                          : "transparent",
                       }}
-                    />
-                    <div className="mt-2 text-xs text-white/50 font-medium capitalize">
+                    >
+                      <div
+                        className="h-16 w-16 rounded-lg sm:h-20 sm:w-20"
+                        style={{
+                          backgroundColor: c.color,
+                          border: dark
+                            ? "2px solid rgba(255,255,255,0.3)"
+                            : "1px solid rgba(255,255,255,0.1)",
+                          boxShadow: dark
+                            ? "inset 0 0 20px rgba(255,255,255,0.05)"
+                            : `0 4px 15px ${c.color}30`,
+                        }}
+                      />
+                    </div>
+                    <div className="mt-2 text-xs text-white/60 font-medium capitalize">
                       {c.label}
                     </div>
-                    <div className="text-[9px] text-white/20 font-mono">
+                    <div className="text-[9px] text-white/25 font-mono">
                       {c.color}
                     </div>
                   </div>
@@ -868,6 +898,9 @@ export default function ProposalView({
                     >
                       {pkg.name}
                     </h3>
+                    <div className="text-[10px] text-white/30 mt-0.5">
+                      {pkg.subtitle}
+                    </div>
                     <div
                       className={`mt-2 text-3xl font-bold tracking-tight ${isRecommended ? "text-white" : "text-white/60"}`}
                     >
