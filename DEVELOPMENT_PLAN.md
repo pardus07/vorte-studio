@@ -78,21 +78,18 @@
 
 ## MODUL 4: Anasayfa Paket & Fiyatlandirma
 
-**Amac:** 103 sektor bazli paketler anasayfada gorunsun (KDV dahil).
+**Amac:** 4 paket karti anasayfada gorunsun ('den baslayan fiyatlarla).
 
 ### Gorevler
 
-- [ ] 4.1 3 paket tanimla (Temel / Pro / Kurumsal) — icerik ve fiyatlar
-- [ ] 4.2 Paket kartlari komponenti olustur (#080808 bg + #FF4500 accent)
-- [ ] 4.3 Online hesaplayici widget (sektor + ozellik secimi → anlik fiyat)
-- [ ] 4.4 Anasayfaya paket bolumu ekle (mevcut tasarima uygun)
-- [ ] 4.5 21st MCP ile tasarim kontrolu
-- [ ] 4.6 Mobil uyumluluk kontrolu
-- [ ] 4.7 TypeScript kontrol — sifir hata
-- [ ] 4.8 Build test — basarili
-- [ ] 4.9 Commit + Push
-- [ ] 4.10 Canli test — anasayfa kontrol
-- [ ] 4.11 **ONAY**
+- [x] 4.1 4 paket tanimla (Baslangic 14.990 / Profesyonel 29.990 / E-Ticaret 89.990 / Kurumsal B2B 139.990)
+- [x] 4.2 Paket kartlari komponenti olustur (#080808 bg + #FF4500 accent + 21st MCP)
+- [x] 4.3 Anasayfaya paket bolumu ekle (Services altina)
+- [x] 4.4 Navbar'a Fiyatlandirma linki ekle
+- [x] 4.5 Build test — basarili
+- [x] 4.6 Commit + Push (81c2fa9)
+- [x] 4.7 Canli test — anasayfa kontrol ✅
+- [x] 4.8 **ONAY** ✅
 
 ---
 
