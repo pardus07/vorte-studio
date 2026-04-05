@@ -149,21 +149,21 @@
 
 ### Gorevler
 
-- [ ] 6.1 Logo uretim API endpoint (Gemini Nano Banana 2 entegrasyonu)
-- [ ] 6.2 Logo prompt sablonu (firma adi, sektor, renk paleti, stil)
-- [ ] 6.3 3-5 alternatif logo uretimi (tek tek)
-- [ ] 6.4 Musteri portalinda logo sunumu (galeri gorunumu)
-- [ ] 6.5 Musteri geri bildirim yazma (revizyon istegi)
-- [ ] 6.6 Revizyon — prompt guncelleme + yeniden uretim
-- [ ] 6.7 Musteri onay butonu (onaylanan logo siteye uygun formatta kaydedilir)
-- [ ] 6.8 Marka kiti olusturma (renk paleti + font + kullanim kilavuzu)
-- [ ] 6.9 Marka kiti bilgilerini AI prompt'a entegre etme
-- [ ] 6.10 Admin panelde logo/marka yonetimi
-- [ ] 6.11 TypeScript kontrol — sifir hata
-- [ ] 6.12 Build test — basarili
-- [ ] 6.13 Commit + Push
-- [ ] 6.14 Canli test — logo uretim ve onay akisi
-- [ ] 6.15 **ONAY**
+- [x] 6.1 Logo uretim API endpoint (Gemini Nano Banana 2 entegrasyonu)
+- [x] 6.2 Logo prompt sablonu (firma adi, sektor, renk paleti, stil)
+- [x] 6.3 3-5 alternatif logo uretimi (tek tek)
+- [x] 6.4 Musteri portalinda logo sunumu (galeri gorunumu)
+- [x] 6.5 Musteri geri bildirim yazma (revizyon istegi)
+- [x] 6.6 Revizyon — prompt guncelleme + yeniden uretim
+- [x] 6.7 Musteri onay butonu (onaylanan logo siteye uygun formatta kaydedilir)
+- [x] 6.8 Marka kiti olusturma (renk paleti + font + kullanim kilavuzu)
+- [x] 6.9 Marka kiti bilgilerini AI prompt'a entegre etme
+- [x] 6.10 Admin panelde logo/marka yonetimi
+- [x] 6.11 TypeScript kontrol — sifir hata
+- [x] 6.12 Build test — basarili
+- [x] 6.13 Commit + Push (4cb58f2)
+- [x] 6.14 Canli test — admin/logo + portal/logo sayfalari calisıyor
+- [x] 6.15 **ONAY** ✅
 
 ---
 

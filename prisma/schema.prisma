@@ -632,3 +632,17 @@ model BlogPost {
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
 }
+
+// ── WhatsApp Mesaj Logu ──
+model WhatsAppLog {
+  id          String   @id @default(cuid())
+  phone       String              // hedef telefon (90XXXXXXXXXX)
+  recipientName String?           // alıcı adı
+  template    String              // şablon adı (teklif_gonderildi, sozlesme_imzalandi vb.)
+  message     String   @db.Text   // gönderilen mesaj metni
+  context     String?             // bağlam (lead ID, proposal ID vb.)
+  contextType String?             // LEAD, PROPOSAL, CONTRACT, PORTAL
+  contextId   String?             // ilgili kaydın ID'si
+  sentBy      String   @default("ADMIN") // ADMIN | SYSTEM
+  createdAt   DateTime @default(now())
+}

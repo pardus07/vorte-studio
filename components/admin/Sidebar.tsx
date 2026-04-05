@@ -11,6 +11,7 @@ const sections = [
     label: "Genel",
     items: [
       { name: "Dashboard", href: "/admin/dashboard", icon: DashboardIcon },
+      { name: "Raporlar", href: "/admin/reports", icon: ReportsIcon },
     ],
   },
   {
@@ -67,6 +68,12 @@ const sections = [
     items: [
       { name: "Müşteri Portalı", href: "/admin/portal", icon: PortalIcon },
       { name: "Logo & Marka", href: "/admin/logo", icon: LogoIcon },
+    ],
+  },
+  {
+    label: "İletişim",
+    items: [
+      { name: "WhatsApp", href: "/admin/whatsapp", icon: WhatsAppIcon },
     ],
   },
   {
@@ -402,6 +409,26 @@ function LogoIcon({ className }: { className?: string }) {
       <rect x="2" y="2" width="14" height="14" rx="3" />
       <circle cx="7" cy="7" r="2" />
       <path d="M16 12l-4-4-6 8" />
+    </svg>
+  );
+}
+
+function WhatsAppIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 18 18" fill="currentColor">
+      <path d="M13.104 10.787c-.223-.112-1.319-.65-1.523-.725-.204-.074-.353-.111-.502.112-.149.223-.575.725-.706.874-.13.149-.26.167-.483.056-.223-.112-.941-.347-1.793-1.106-.662-.591-1.11-1.321-1.24-1.544-.13-.223-.014-.344.098-.455.1-.1.223-.26.335-.39.111-.131.148-.224.223-.373.074-.149.037-.279-.019-.39-.056-.112-.502-1.21-.688-1.657-.181-.434-.365-.375-.502-.383-.13-.006-.279-.007-.428-.007-.149 0-.39.056-.594.279-.204.223-.78.763-.78 1.861 0 1.097.799 2.157.91 2.306.112.149 1.572 2.4 3.81 3.366.533.23.949.367 1.272.47.535.17 1.021.146 1.405.089.429-.064 1.319-.54 1.505-1.061.186-.521.186-.968.13-1.061-.056-.093-.205-.149-.428-.26M9.036 15.375h-.003a7.404 7.404 0 01-3.772-1.034l-.27-.161-2.808.737.749-2.738-.177-.281a7.39 7.39 0 01-1.133-3.945C1.623 4.087 5.17.544 9.04.544a7.362 7.362 0 015.241 2.174 7.37 7.37 0 012.17 5.246c-.002 4.088-3.549 7.411-7.415 7.411" />
+    </svg>
+  );
+}
+
+function ReportsIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M16 12V4a1 1 0 00-1-1H3a1 1 0 00-1 1v8a1 1 0 001 1h12a1 1 0 001-1z" />
+      <path d="M2 16h14" />
+      <path d="M6 9V7" />
+      <path d="M9 9V5" />
+      <path d="M12 9V8" />
     </svg>
   );
 }
