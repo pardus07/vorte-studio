@@ -67,6 +67,9 @@ export async function createProposalFromSubmission(
         domainStatus: submission.domainStatus,
         domainName: submission.domainName,
         timeline: submission.timeline,
+        brandColors: submission.brandColors,
+        businessGoals: submission.businessGoals,
+        targetAudience: submission.targetAudience,
         items: priceResult.breakdown,
         totalPrice: priceResult.totalPrice,
         estimatedHours: priceResult.estimatedHours,
@@ -171,6 +174,9 @@ export async function getProposalByToken(token: string) {
       domainStatus: proposal.domainStatus,
       domainName: proposal.domainName,
       timeline: proposal.timeline,
+      brandColors: proposal.brandColors,
+      businessGoals: proposal.businessGoals,
+      targetAudience: proposal.targetAudience,
       items: proposal.items as Array<{ label: string; hours?: number; cost: number }>,
       totalPrice: proposal.totalPrice,
       estimatedHours: proposal.estimatedHours,
@@ -279,6 +285,32 @@ export async function deleteProposal(proposalId: string) {
     return { success: true };
   } catch {
     return { success: false, error: "Teklif silinemedi" };
+  }
+}
+
+// ── Benzer sektör portföy projeleri getir ──
+export async function getSimilarPortfolioItems(category: string | null) {
+  try {
+    if (!category) return [];
+    const items = await prisma.portfolioItem.findMany({
+      where: {
+        isPublished: true,
+        category: { contains: category, mode: "insensitive" },
+      },
+      take: 3,
+      orderBy: { order: "asc" },
+      select: {
+        id: true,
+        title: true,
+        slug: true,
+        thumbnail: true,
+        liveUrl: true,
+        category: true,
+      },
+    });
+    return items;
+  } catch {
+    return [];
   }
 }
 

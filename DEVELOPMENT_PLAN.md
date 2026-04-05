@@ -50,9 +50,9 @@
 - [x] 2.6 Lead pipeline'da bilgi toplama sureci kontrolu
 - [x] 2.7 TypeScript kontrol — sifir hata
 - [x] 2.8 Build test — basarili
-- [ ] 2.9 Commit + Push
-- [ ] 2.10 Canli test — prompt kalitesi kontrol
-- [ ] 2.11 **ONAY**
+- [x] 2.9 Commit + Push (148f7d4 + önceki 3 commit)
+- [x] 2.10 Canli test — prompt kalitesi kontrol ✅
+- [x] 2.11 **ONAY** ✅
 
 ---
 

@@ -168,6 +168,11 @@ model Proposal {
   domainName      String?
   timeline        String?
 
+  // Zenginleştirilmiş bilgiler (submission'dan kopyalanır)
+  brandColors     String?
+  businessGoals   String?        @db.Text
+  targetAudience  String?        @db.Text
+
   // Fiyatlandırma
   items           Json           @default("[]") // fiyat kırılımı [{label, hours, cost}]
   totalPrice      Float

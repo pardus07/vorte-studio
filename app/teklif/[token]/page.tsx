@@ -1,4 +1,4 @@
-import { getProposalByToken } from "@/actions/proposals";
+import { getProposalByToken, getSimilarPortfolioItems } from "@/actions/proposals";
 import { notFound } from "next/navigation";
 import ProposalView from "./proposal-view";
 
@@ -14,5 +14,8 @@ export default async function ProposalPage({
 
   if (!proposal) notFound();
 
-  return <ProposalView proposal={proposal} />;
+  // Benzer sektör projeleri (varsa göster, yoksa boş)
+  const portfolioItems = await getSimilarPortfolioItems(proposal.sector);
+
+  return <ProposalView proposal={proposal} portfolioItems={portfolioItems} />;
 }
