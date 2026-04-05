@@ -88,6 +88,17 @@ interface SubmissionSummaryInput {
   freeQuestions: Array<{ question: string; answer: string }>;
 }
 
+// ── Marka Kiti (Logo Projesi'nden gelen bilgiler) ──
+interface BrandKitInput {
+  approvedLogoUrl?: string | null;
+  primaryColor?: string | null;
+  secondaryColor?: string | null;
+  accentColor?: string | null;
+  fontDisplay?: string | null;
+  fontBody?: string | null;
+  brandGuidelines?: string | null;
+}
+
 // ── Claude Code Site Geliştirme Prompt Input ──
 interface ClaudeCodePromptInput {
   firmName: string;
@@ -117,6 +128,7 @@ interface ClaudeCodePromptInput {
   liveSupportType: string | null;
   paymentProvider: string | null;
   freeQuestions: Array<{ question: string; answer: string }>;
+  brandKit?: BrandKitInput | null;
 }
 
 // ── SEO beklentisi etiketleri ──
@@ -375,18 +387,44 @@ export function generateClaudeCodePrompt(data: ClaudeCodePromptInput): string {
   lines.push("");
 
   // ── Logo Durumu ──
-  if (data.logoStatus) {
-    lines.push("═══ LOGO DURUMU ═══");
-    if (data.logoStatus === "var") {
-      lines.push("✅ Müşterinin logosu mevcut — müşteriden alınacak");
-    } else if (data.logoStatus === "yok") {
-      lines.push("🎨 Logo YOK — AI ile üretilecek (Gemini)");
-      lines.push("  - Site yapılırken logo alanına placeholder koy");
-      lines.push("  - Logo üretildikten sonra entegre edilecek");
-    } else if (data.logoStatus === "tasarimci") {
-      lines.push("👨‍🎨 Müşteri tasarımcıya yaptıracak — placeholder bırak");
+  lines.push("═══ LOGO DURUMU ═══");
+  if (data.brandKit?.approvedLogoUrl) {
+    lines.push("✅ Logo ONAYLANDI — AI ile üretildi ve müşteri onayladı");
+    lines.push(`  - Logo dosya yolu: ${data.brandKit.approvedLogoUrl}`);
+    lines.push("  - Bu dosyayı header, footer ve favicon olarak kullan");
+    lines.push("  - Logo beyaz arka plan üzerinde, 1024x1024 (1:1) boyutunda");
+  } else if (data.logoStatus === "var") {
+    lines.push("✅ Müşterinin logosu mevcut — müşteriden alınacak");
+  } else if (data.logoStatus === "yok") {
+    lines.push("🎨 Logo YOK — AI ile üretilecek (Gemini)");
+    lines.push("  - Site yapılırken logo alanına placeholder koy");
+    lines.push("  - Logo üretildikten sonra entegre edilecek");
+  } else if (data.logoStatus === "tasarimci") {
+    lines.push("👨‍🎨 Müşteri tasarımcıya yaptıracak — placeholder bırak");
+  } else {
+    lines.push("Logo durumu belirtilmedi — placeholder bırak");
+  }
+  lines.push("");
+
+  // ── Marka Kiti (AI logo projesinden) ──
+  if (data.brandKit) {
+    const bk = data.brandKit;
+    if (bk.primaryColor || bk.secondaryColor || bk.accentColor || bk.fontDisplay || bk.fontBody) {
+      lines.push("═══ MARKA KİTİ (Onaylanmış) ═══");
+      if (bk.primaryColor) lines.push(`  Ana Renk: ${bk.primaryColor}`);
+      if (bk.secondaryColor) lines.push(`  İkincil Renk: ${bk.secondaryColor}`);
+      if (bk.accentColor) lines.push(`  Aksent/CTA Renk: ${bk.accentColor}`);
+      if (bk.fontDisplay) lines.push(`  Başlık Fontu: ${bk.fontDisplay}`);
+      if (bk.fontBody) lines.push(`  Gövde Fontu: ${bk.fontBody}`);
+      lines.push("  → Bu renkleri globals.css @theme bloğunda tanımla");
+      lines.push("  → Müşteri tarafından onaylanmış değerler — değiştirme");
+      if (bk.brandGuidelines) {
+        lines.push("");
+        lines.push("  Kullanım Kuralları:");
+        lines.push(`  ${bk.brandGuidelines}`);
+      }
+      lines.push("");
     }
-    lines.push("");
   }
 
   // ── Sosyal Medya ──

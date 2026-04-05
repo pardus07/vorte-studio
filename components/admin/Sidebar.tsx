@@ -66,6 +66,7 @@ const sections = [
     label: "Portal",
     items: [
       { name: "Müşteri Portalı", href: "/admin/portal", icon: PortalIcon },
+      { name: "Logo & Marka", href: "/admin/logo", icon: LogoIcon },
     ],
   },
   {
@@ -391,6 +392,16 @@ function PortalIcon({ className }: { className?: string }) {
     <svg className={className} viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
       <circle cx="9" cy="6" r="3" />
       <path d="M3 16c0-3.3 2.7-6 6-6s6 2.7 6 6" />
+    </svg>
+  );
+}
+
+function LogoIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="2" y="2" width="14" height="14" rx="3" />
+      <circle cx="7" cy="7" r="2" />
+      <path d="M16 12l-4-4-6 8" />
     </svg>
   );
 }

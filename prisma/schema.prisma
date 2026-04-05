@@ -291,8 +291,9 @@ model PortalUser {
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
-  messages PortalMessage[]
-  files    PortalFile[]
+  messages    PortalMessage[]
+  files       PortalFile[]
+  logoProject LogoProject?
 }
 
 // ── Portal Mesajları ──
@@ -318,6 +319,51 @@ model PortalFile {
   uploadedBy   String     // CUSTOMER | ADMIN
   description  String?
   createdAt    DateTime   @default(now())
+}
+
+// ── Logo Projesi ──
+model LogoProject {
+  id              String   @id @default(cuid())
+  portalUserId    String   @unique
+  portalUser      PortalUser @relation(fields: [portalUserId], references: [id], onDelete: Cascade)
+  firmName        String
+  sector          String?
+  style           String?           // minimal, modern, vintage, playful
+  brandColors     String?           // müşterinin istediği renkler
+  includeText     Boolean  @default(true) // logoda firma adı olsun mu
+  notes           String?  @db.Text // admin notları
+
+  // Marka kiti
+  primaryColor    String?           // #hex
+  secondaryColor  String?           // #hex
+  accentColor     String?           // #hex
+  fontDisplay     String?           // başlık fontu
+  fontBody        String?           // gövde fontu
+  brandGuidelines String?  @db.Text // kullanım kuralları
+
+  // Onaylanan logo
+  approvedLogoUrl String?           // /uploads/logos/[id]/approved.png
+  approvedAt      DateTime?
+
+  status          String   @default("DRAFT") // DRAFT, GENERATING, REVIEW, APPROVED
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  variants LogoVariant[]
+}
+
+// ── Logo Varyantları ──
+model LogoVariant {
+  id            String      @id @default(cuid())
+  logoProjectId String
+  logoProject   LogoProject @relation(fields: [logoProjectId], references: [id], onDelete: Cascade)
+  url           String                // /uploads/logos/[projectId]/variant-X.png
+  prompt        String?    @db.Text   // kullanılan AI prompt
+  model         String?               // hangi AI modeli üretti
+  isApproved    Boolean    @default(false)
+  feedback      String?    @db.Text   // müşteri geri bildirimi
+  feedbackAt    DateTime?
+  createdAt     DateTime   @default(now())
 }
 
 // ── Fiyat Ayarları ──
