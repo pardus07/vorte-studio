@@ -193,6 +193,7 @@ model Proposal {
 
   contract        Contract?
   payments        ProposalPayment[]
+  portalUser      PortalUser?
 }
 
 enum ProposalStatus {
@@ -273,6 +274,50 @@ model ProposalPayment {
   notes      String?              // Ödeme notu
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
+}
+
+// ── Müşteri Portal Kullanıcısı ──
+model PortalUser {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  passwordHash  String
+  name          String
+  phone         String?
+  proposalId    String    @unique
+  proposal      Proposal  @relation(fields: [proposalId], references: [id], onDelete: Cascade)
+  firmName      String
+  isActive      Boolean   @default(true)
+  lastLoginAt   DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  messages PortalMessage[]
+  files    PortalFile[]
+}
+
+// ── Portal Mesajları ──
+model PortalMessage {
+  id           String     @id @default(cuid())
+  portalUserId String
+  portalUser   PortalUser @relation(fields: [portalUserId], references: [id], onDelete: Cascade)
+  content      String     @db.Text
+  senderType   String     // CUSTOMER | ADMIN
+  isRead       Boolean    @default(false)
+  createdAt    DateTime   @default(now())
+}
+
+// ── Portal Dosyaları ──
+model PortalFile {
+  id           String     @id @default(cuid())
+  portalUserId String
+  portalUser   PortalUser @relation(fields: [portalUserId], references: [id], onDelete: Cascade)
+  fileName     String
+  filePath     String
+  fileSize     Int        // byte
+  fileType     String     // mime type
+  uploadedBy   String     // CUSTOMER | ADMIN
+  description  String?
+  createdAt    DateTime   @default(now())
 }
 
 // ── Fiyat Ayarları ──
@@ -410,9 +455,12 @@ model Milestone {
   projectId   String
   project     Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
   title       String
+  description String?
   completed   Boolean   @default(false)
   dueDate     DateTime?
   completedAt DateTime?
+  approvedAt  DateTime?            // müşteri onay tarihi
+  approvedBy  String?              // onaylayan müşteri adı
 }
 
 // ── Teklif ──

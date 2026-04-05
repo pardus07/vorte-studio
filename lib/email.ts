@@ -109,6 +109,53 @@ export async function sendContractEmail(
   }
 }
 
+/** Musteri portal giris bilgilerini gonder */
+export async function sendPortalCredentials(
+  to: string,
+  password: string,
+  firmName: string
+): Promise<boolean> {
+  const portalUrl = `${process.env.NEXTAUTH_URL || "https://vortestudio.com"}/portal/giris`;
+  try {
+    await transporter.sendMail({
+      from: FROM,
+      to,
+      subject: `Vorte Studio - Proje Portaliniz Hazir`,
+      html: `
+        <div style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:32px;background:#fafafa;border-radius:12px">
+          <div style="text-align:center;margin-bottom:24px">
+            <div style="display:inline-block;background:#FF4500;color:#fff;font-weight:800;font-size:18px;padding:8px 16px;border-radius:8px">V</div>
+            <span style="font-size:16px;font-weight:700;margin-left:8px;color:#1a1a1a">VORTE<span style="color:#FF4500">.</span>STUDIO</span>
+          </div>
+          <h2 style="color:#1a1a1a;font-size:20px;margin-bottom:8px;text-align:center">Proje Portaliniz Hazir!</h2>
+          <p style="color:#666;font-size:14px;text-align:center;margin-bottom:24px">
+            <strong>${escapeHtml(firmName)}</strong> projenizi takip edebileceginiz portal hesabiniz olusturuldu.
+          </p>
+          <div style="background:#fff;border:1px solid #e5e5e5;border-radius:8px;padding:20px;margin-bottom:24px">
+            <table style="width:100%;font-size:14px;border-collapse:collapse">
+              <tr><td style="padding:8px 0;color:#666">E-posta</td><td style="padding:8px 0;font-weight:600;text-align:right">${escapeHtml(to)}</td></tr>
+              <tr><td style="padding:8px 0;color:#666">Sifre</td><td style="padding:8px 0;font-weight:600;font-family:monospace;font-size:16px;text-align:right;color:#FF4500">${escapeHtml(password)}</td></tr>
+            </table>
+          </div>
+          <div style="text-align:center;margin-bottom:24px">
+            <a href="${portalUrl}" style="display:inline-block;background:#FF4500;color:#fff;font-weight:700;font-size:14px;padding:12px 32px;border-radius:8px;text-decoration:none">Portala Giris Yap</a>
+          </div>
+          <p style="color:#999;font-size:12px;text-align:center">
+            Giris yaptiktan sonra sifrenizi degistirebilirsiniz.<br>
+            Bu e-postayi guvenli bir yerde saklayin.
+          </p>
+          <hr style="border:none;border-top:1px solid #eee;margin:24px 0">
+          <p style="color:#bbb;font-size:11px;text-align:center">Vorte Studio · vortestudio.com</p>
+        </div>
+      `,
+    });
+    return true;
+  } catch (err) {
+    console.error("Portal bilgi maili gonderilemedi:", err);
+    return false;
+  }
+}
+
 /** Admin'e bildirim maili gonder */
 export async function sendContractNotification(
   firmName: string,

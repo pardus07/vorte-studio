@@ -63,6 +63,12 @@ const sections = [
     ],
   },
   {
+    label: "Portal",
+    items: [
+      { name: "Müşteri Portalı", href: "/admin/portal", icon: PortalIcon },
+    ],
+  },
+  {
     label: "Yönetim",
     items: [
       { name: "Ayarlar", href: "/admin/settings", icon: SettingsIcon },
@@ -376,6 +382,15 @@ function PricingIcon({ className }: { className?: string }) {
     <svg className={className} viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
       <path d="M1 10.5L9 2l8 8.5" />
       <path d="M5 14h8M7 11h4" />
+    </svg>
+  );
+}
+
+function PortalIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="9" cy="6" r="3" />
+      <path d="M3 16c0-3.3 2.7-6 6-6s6 2.7 6 6" />
     </svg>
   );
 }

@@ -7,6 +7,7 @@ import {
   sendVerificationEmail,
   sendContractNotification,
 } from "@/lib/email";
+import { createPortalAccount } from "@/actions/portal";
 
 // ── Feature labels (sözleşme metni için) ──
 const FEATURE_LABELS: Record<string, string> = {
@@ -261,8 +262,12 @@ export async function signContract(
       contract.signerName
     );
 
+    // Portal hesabı oluştur ve müşteriye giriş bilgilerini gönder
+    await createPortalAccount(contract.proposalId);
+
     revalidatePath("/admin/proposals");
     revalidatePath("/admin/leads");
+    revalidatePath("/admin/portal");
 
     return { success: true };
   } catch (error) {
