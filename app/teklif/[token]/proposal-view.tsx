@@ -202,18 +202,30 @@ function generatePackages(
   const basicMultiplier = 0.7;
   const premiumMultiplier = 1.5;
 
-  // Temel özellikler (ilk 4 veya yarısı)
-  const basicFeatureCount = Math.max(2, Math.ceil(features.length * 0.5));
-  const basicFeatures = features.slice(0, basicFeatureCount);
+  // Temel özellikler — zorunlu olanları seç, lüks olanları çıkar
+  const luxuryFeatures = new Set([
+    "cok-dilli",
+    "online-odeme",
+    "kampanya",
+    "rezervasyon",
+    "e-bulten",
+    "video-galeri",
+    "once-sonra",
+    "canli-destek",
+    "blog",
+    "online-siparis",
+  ]);
+  const basicFeatures = features.filter((f) => !luxuryFeatures.has(f));
+  // En az 3, en çok features'ın yarısı kadar
+  const basicSlice = basicFeatures.slice(
+    0,
+    Math.max(3, Math.ceil(features.length * 0.4))
+  );
 
-  // Premium ekstra özellikler
-  const premiumExtras = [
-    "Gelişmiş SEO paketi",
-    "6 ay teknik destek",
-    "Sınırsız revizyon",
-    "Performans optimizasyonu",
-    "Aylık analiz raporu",
-  ];
+  // Başlangıçta olmayan ama Profesyonelde olan
+  const proOnlyFeatures = features.filter(
+    (f) => !basicSlice.includes(f)
+  );
 
   const kdvRate = 0.2;
 
@@ -229,43 +241,118 @@ function generatePackages(
       name: "Başlangıç",
       price: basicWithKdv,
       priceRaw: basicPrice,
-      features: basicFeatures.map((f) => FEATURE_LABELS[f] || f),
-      extras: ["Temel SEO", "1 ay teknik destek", "2 tur revizyon"],
+      features: basicSlice.map((f) => FEATURE_LABELS[f] || f),
+      excluded: proOnlyFeatures.map((f) => FEATURE_LABELS[f] || f),
+      extras: [
+        { label: "Temel SEO", included: true },
+        { label: "1 ay teknik destek", included: true },
+        { label: "2 tur revizyon", included: true },
+        { label: "Performans optimizasyonu", included: false },
+        { label: "Aylık analiz raporu", included: false },
+      ],
       recommended: false,
-      color: "white",
+      color: "white" as const,
     },
     {
       name: "Profesyonel",
       price: proWithKdv,
       priceRaw: proPrice,
       features: features.map((f) => FEATURE_LABELS[f] || f),
-      extras: ["Standart SEO", "3 ay teknik destek", "4 tur revizyon"],
+      excluded: [],
+      extras: [
+        { label: "Standart SEO", included: true },
+        { label: "3 ay teknik destek", included: true },
+        { label: "4 tur revizyon", included: true },
+        { label: "Performans optimizasyonu", included: false },
+        { label: "Aylık analiz raporu", included: false },
+      ],
       recommended: true,
-      color: "orange",
+      color: "orange" as const,
     },
     {
       name: "Kurumsal",
       price: premiumWithKdv,
       priceRaw: premiumPrice,
       features: features.map((f) => FEATURE_LABELS[f] || f),
-      extras: premiumExtras,
+      excluded: [],
+      extras: [
+        { label: "Gelişmiş SEO paketi", included: true },
+        { label: "6 ay teknik destek", included: true },
+        { label: "Sınırsız revizyon", included: true },
+        { label: "Performans optimizasyonu", included: true },
+        { label: "Aylık analiz raporu", included: true },
+      ],
       recommended: false,
-      color: "purple",
+      color: "purple" as const,
     },
   ];
 }
 
+// ── Türkçe renk adı → HEX mapping ──
+const COLOR_NAME_MAP: Record<string, string> = {
+  siyah: "#1a1a1a",
+  beyaz: "#ffffff",
+  kirmizi: "#e53e3e",
+  kırmızı: "#e53e3e",
+  mavi: "#3b82f6",
+  yesil: "#22c55e",
+  yeşil: "#22c55e",
+  sari: "#eab308",
+  sarı: "#eab308",
+  turuncu: "#f97316",
+  mor: "#8b5cf6",
+  pembe: "#ec4899",
+  gri: "#6b7280",
+  lacivert: "#1e3a5f",
+  bordo: "#800020",
+  kahverengi: "#8B4513",
+  kahve: "#8B4513",
+  bej: "#F5F5DC",
+  krem: "#FFFDD0",
+  gold: "#FFD700",
+  altin: "#FFD700",
+  altın: "#FFD700",
+  gumus: "#C0C0C0",
+  gümüş: "#C0C0C0",
+  turkuaz: "#40E0D0",
+  eflatun: "#9966CC",
+  fuşya: "#FF00FF",
+  fusya: "#FF00FF",
+  indigo: "#4B0082",
+  mercan: "#FF7F50",
+  zeytin: "#808000",
+  antrasit: "#2C3539",
+};
+
 // ── Renk parse ──
-function parseColors(brandColors: string | null): string[] {
+function parseColors(
+  brandColors: string | null
+): { color: string; label: string; isHex: boolean }[] {
   if (!brandColors) return [];
-  // #hex kodlarını veya virgülle ayrılmış renkleri çıkar
+
+  // #hex kodlarını çıkar
   const hexMatches = brandColors.match(/#[0-9a-fA-F]{3,8}/g);
-  if (hexMatches && hexMatches.length > 0) return hexMatches;
-  // Virgülle ayrılmış metinsel renkler
+  if (hexMatches && hexMatches.length > 0) {
+    return hexMatches.map((h) => ({ color: h, label: h, isHex: true }));
+  }
+
+  // Virgülle ayrılmış metinsel renkler → hex'e çevir
   return brandColors
     .split(/[,;/]/)
     .map((c) => c.trim())
-    .filter(Boolean);
+    .filter(Boolean)
+    .map((name) => {
+      const normalized = name.toLowerCase().replace(/\s+/g, "");
+      // Mapping'te ara
+      const hex = Object.entries(COLOR_NAME_MAP).find(([key]) =>
+        normalized.includes(key)
+      )?.[1];
+      return {
+        color: hex || "#666666",
+        label: name,
+        isHex: !!hex,
+      };
+    });
 }
 
 interface ProposalData {
@@ -618,29 +705,37 @@ export default function ProposalView({
             <h2 className="mb-4 text-sm font-semibold uppercase tracking-wider text-white/50">
               Marka Renk Paletiniz
             </h2>
-            <div className="flex flex-wrap gap-3">
-              {colors.map((color, i) => {
-                const isHex = color.startsWith("#");
+            <div className="flex flex-wrap gap-4">
+              {colors.map((c, i) => {
+                // Koyu renklere parlak border ekle
+                const isDark =
+                  c.color === "#1a1a1a" ||
+                  c.color === "#2C3539" ||
+                  c.color.toLowerCase() <= "#444444";
                 return (
                   <div key={i} className="text-center">
                     <div
-                      className="h-16 w-16 rounded-xl border border-white/10 shadow-lg sm:h-20 sm:w-20"
+                      className="h-16 w-16 rounded-xl shadow-lg sm:h-20 sm:w-20 ring-1 ring-white/20"
                       style={{
-                        backgroundColor: isHex ? color : undefined,
-                        background: !isHex
-                          ? "linear-gradient(135deg, #333, #555)"
-                          : undefined,
+                        backgroundColor: c.color,
+                        boxShadow: `0 4px 20px ${c.color}40`,
+                        ...(isDark
+                          ? { border: "2px solid rgba(255,255,255,0.25)" }
+                          : {}),
                       }}
                     />
-                    <div className="mt-2 text-[10px] text-white/30 font-mono">
-                      {color}
+                    <div className="mt-2 text-xs text-white/50 font-medium capitalize">
+                      {c.label}
+                    </div>
+                    <div className="text-[9px] text-white/20 font-mono">
+                      {c.color}
                     </div>
                   </div>
                 );
               })}
             </div>
-            <p className="mt-3 text-xs text-white/20">
-              Bu renkler sitenizin tasarımında kullanılacaktır.
+            <p className="mt-4 text-xs text-white/25">
+              Bu renkler sitenizin tasarımında ana palet olarak kullanılacaktır.
             </p>
           </motion.div>
         )}
@@ -784,15 +879,15 @@ export default function ProposalView({
                     </div>
                   </div>
 
-                  {/* Özellikler */}
-                  <div className="space-y-1.5 mb-4">
-                    {pkg.features.slice(0, 5).map((f) => (
+                  {/* Dahil özellikler */}
+                  <div className="space-y-1.5 mb-3">
+                    {pkg.features.slice(0, 6).map((f) => (
                       <div
                         key={f}
-                        className="flex items-start gap-2 text-xs text-white/50"
+                        className="flex items-start gap-2 text-xs text-white/60"
                       >
                         <svg
-                          className="h-3.5 w-3.5 shrink-0 mt-0.5 text-[#FF4500]/60"
+                          className="h-3.5 w-3.5 shrink-0 mt-0.5 text-emerald-400/70"
                           fill="none"
                           stroke="currentColor"
                           strokeWidth={2.5}
@@ -807,22 +902,82 @@ export default function ProposalView({
                         {f}
                       </div>
                     ))}
-                    {pkg.features.length > 5 && (
-                      <div className="text-[10px] text-white/20 pl-5">
-                        +{pkg.features.length - 5} özellik daha
+                    {pkg.features.length > 6 && (
+                      <div className="text-[10px] text-emerald-400/40 pl-5.5">
+                        +{pkg.features.length - 6} özellik daha
                       </div>
                     )}
                   </div>
 
-                  {/* Ekstralar */}
-                  <div className="border-t border-white/5 pt-3 space-y-1.5">
+                  {/* Hariç özellikler (Başlangıçta) */}
+                  {pkg.excluded.length > 0 && (
+                    <div className="space-y-1.5 mb-3">
+                      {pkg.excluded.slice(0, 3).map((f) => (
+                        <div
+                          key={f}
+                          className="flex items-start gap-2 text-xs text-white/25 line-through"
+                        >
+                          <svg
+                            className="h-3.5 w-3.5 shrink-0 mt-0.5 text-red-400/40"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth={2.5}
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              d="M6 18L18 6M6 6l12 12"
+                            />
+                          </svg>
+                          {f}
+                        </div>
+                      ))}
+                      {pkg.excluded.length > 3 && (
+                        <div className="text-[10px] text-red-400/30 pl-5.5">
+                          +{pkg.excluded.length - 3} özellik dahil değil
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Ekstralar — daha okunaklı */}
+                  <div className="border-t border-white/5 pt-3 space-y-2">
                     {pkg.extras.map((e) => (
                       <div
-                        key={e}
-                        className="flex items-start gap-2 text-xs text-white/35"
+                        key={e.label}
+                        className={`flex items-center gap-2 text-xs ${e.included ? "text-white/50" : "text-white/20 line-through"}`}
                       >
-                        <span className="text-[#FF4500]/40">+</span>
-                        {e}
+                        {e.included ? (
+                          <svg
+                            className="h-3 w-3 shrink-0 text-[#FF4500]/60"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth={2.5}
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              d="M5 13l4 4L19 7"
+                            />
+                          </svg>
+                        ) : (
+                          <svg
+                            className="h-3 w-3 shrink-0 text-white/15"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth={2}
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              d="M6 18L18 6M6 6l12 12"
+                            />
+                          </svg>
+                        )}
+                        {e.label}
                       </div>
                     ))}
                   </div>
