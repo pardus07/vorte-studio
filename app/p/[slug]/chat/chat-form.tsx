@@ -38,6 +38,7 @@ type Step =
   | 'features'
   | 'pageCount'
   | 'contentStatus'
+  | 'existingSiteUrl'
   | 'hostingStatus'
   | 'hostingInfo'
   | 'hostingChoice'
@@ -50,6 +51,10 @@ type Step =
   | 'referenceUrls'
   | 'brandColors'
   | 'seoExpectations'
+  | 'logoStatus'
+  | 'socialMediaLinks'
+  | 'liveSupportType'
+  | 'paymentProvider'
   | 'message'
   | 'contactName'
   | 'contactPhone'
@@ -58,15 +63,16 @@ type Step =
   | 'freeQuestion'
 
 // ── Toplam anlamlı adım sayısı (progress bar için) ──
-const TOTAL_STEPS = 15
+const TOTAL_STEPS = 20
 
 function stepToNumber(s: Step): number {
   const map: Record<string, number> = {
     firmName: 1, siteType: 2, features: 3, pageCount: 4,
-    contentStatus: 5, hostingStatus: 6, domainStatus: 7,
-    timeline: 8, businessGoals: 9, targetAudience: 10,
-    referenceUrls: 11, brandColors: 12, seoExpectations: 13,
-    message: 14, contact: 15,
+    contentStatus: 5, existingSiteUrl: 6, hostingStatus: 7, domainStatus: 8,
+    timeline: 9, businessGoals: 10, targetAudience: 11,
+    referenceUrls: 12, brandColors: 13, seoExpectations: 14,
+    logoStatus: 15, socialMediaLinks: 16, liveSupportType: 17,
+    paymentProvider: 18, message: 19, contact: 20,
   }
   return map[s] || 0
 }
@@ -295,6 +301,11 @@ export default function ChatForm({ firmName, city, sector, slug }: Props) {
     referenceUrls: [] as string[],
     brandColors: '',
     seoExpectations: '',
+    existingSiteUrl: '',
+    logoStatus: '',
+    socialMediaLinks: '',
+    liveSupportType: '',
+    paymentProvider: '',
     message: '',
     contactName: '',
     contactPhone: '',
@@ -314,7 +325,7 @@ export default function ChatForm({ firmName, city, sector, slug }: Props) {
 
   // Input focus
   useEffect(() => {
-    if (step === 'firmName' || step === 'message' || step === 'contactName' || step === 'contactPhone' || step === 'contactEmail' || step === 'businessGoals' || step === 'targetAudience' || step === 'referenceUrls' || step === 'brandColors' || step === 'freeQuestion') {
+    if (step === 'firmName' || step === 'message' || step === 'contactName' || step === 'contactPhone' || step === 'contactEmail' || step === 'businessGoals' || step === 'targetAudience' || step === 'referenceUrls' || step === 'brandColors' || step === 'existingSiteUrl' || step === 'socialMediaLinks' || step === 'freeQuestion') {
       setTimeout(() => inputRef.current?.focus(), 300)
     }
   }, [step])
@@ -399,13 +410,20 @@ export default function ChatForm({ firmName, city, sector, slug }: Props) {
 
       case 'contentStatus':
         setData((d) => ({ ...d, contentStatus: value }))
-        addBotMessage('Hosting (sunucu barındırma) durumunuz nedir?', 'hostingStatus', {
-          buttons: [
-            { label: '✅ Hostingim var', value: 'var' },
-            { label: '❌ Hostingim yok', value: 'yok' },
-            { label: '❓ Ne olduğunu bilmiyorum', value: 'bilmiyor' },
-          ],
-        })
+        if (value === 'mevcut-site') {
+          addBotMessage(
+            'Mevcut web sitenizin adresini (URL) yazar mısınız? (Örn: www.firmaadi.com)',
+            'existingSiteUrl',
+          )
+        } else {
+          addBotMessage('Hosting (sunucu barındırma) durumunuz nedir?', 'hostingStatus', {
+            buttons: [
+              { label: '✅ Hostingim var', value: 'var' },
+              { label: '❌ Hostingim yok', value: 'yok' },
+              { label: '❓ Ne olduğunu bilmiyorum', value: 'bilmiyor' },
+            ],
+          })
+        }
         break
 
       case 'hostingStatus':
@@ -508,6 +526,53 @@ export default function ChatForm({ firmName, city, sector, slug }: Props) {
       case 'seoExpectations':
         setData((d) => ({ ...d, seoExpectations: value }))
         addBotMessage(
+          'Firmanızın logosu var mı?',
+          'logoStatus',
+          {
+            buttons: [
+              { label: '✅ Logom var', value: 'var' },
+              { label: '🎨 Logom yok, üretilmeli', value: 'yok' },
+              { label: '👨‍🎨 Tasarımcıya yaptıracağım', value: 'tasarimci' },
+            ],
+          },
+        )
+        break
+
+      case 'logoStatus':
+        setData((d) => ({ ...d, logoStatus: value }))
+        addBotMessage(
+          'Sosyal medya hesaplarınızın linklerini yazabilir misiniz? (Instagram, Facebook, TikTok vb.)\n\nYoksa "Yok" yazabilirsiniz.',
+          'socialMediaLinks',
+        )
+        break
+
+      case 'liveSupportType':
+        setData((d) => ({ ...d, liveSupportType: value }))
+        // online-odeme seçildiyse sor
+        if (data.features.includes('online-odeme')) {
+          addBotMessage(
+            'Online ödeme için hangi altyapıyı tercih edersiniz?',
+            'paymentProvider',
+            {
+              buttons: [
+                { label: '💳 Iyzico', value: 'iyzico' },
+                { label: '💳 PayTR', value: 'paytr' },
+                { label: '🔄 Başka', value: 'baska' },
+                { label: '🤷 Karar veremedim', value: 'kararsiz' },
+              ],
+            },
+          )
+        } else {
+          addBotMessage(
+            'Eklemek istediğiniz özel bir not veya isteğiniz var mı?',
+            'message',
+          )
+        }
+        break
+
+      case 'paymentProvider':
+        setData((d) => ({ ...d, paymentProvider: value }))
+        addBotMessage(
           'Eklemek istediğiniz özel bir not veya isteğiniz var mı?',
           'message',
         )
@@ -599,6 +664,56 @@ export default function ChatForm({ firmName, city, sector, slug }: Props) {
           },
         )
         break
+
+      case 'existingSiteUrl':
+        setData((d) => ({ ...d, existingSiteUrl: value }))
+        addBotMessage('Hosting (sunucu barındırma) durumunuz nedir?', 'hostingStatus', {
+          buttons: [
+            { label: '✅ Hostingim var', value: 'var' },
+            { label: '❌ Hostingim yok', value: 'yok' },
+            { label: '❓ Ne olduğunu bilmiyorum', value: 'bilmiyor' },
+          ],
+        })
+        break
+
+      case 'socialMediaLinks': {
+        const smValue = value.toLowerCase() === 'yok' ? '' : value
+        setData((d) => ({ ...d, socialMediaLinks: smValue }))
+        // canli-destek seçildiyse sor
+        if (data.features.includes('canli-destek')) {
+          addBotMessage(
+            'Canlı destek için hangi sistemi tercih edersiniz?',
+            'liveSupportType',
+            {
+              buttons: [
+                { label: '💬 WhatsApp', value: 'whatsapp' },
+                { label: '🟢 Tawk.to (Ücretsiz)', value: 'tawkto' },
+                { label: '🔵 Crisp', value: 'crisp' },
+                { label: '🤷 Karar veremedim', value: 'kararsiz' },
+              ],
+            },
+          )
+        } else if (data.features.includes('online-odeme')) {
+          addBotMessage(
+            'Online ödeme için hangi altyapıyı tercih edersiniz?',
+            'paymentProvider',
+            {
+              buttons: [
+                { label: '💳 Iyzico', value: 'iyzico' },
+                { label: '💳 PayTR', value: 'paytr' },
+                { label: '🔄 Başka', value: 'baska' },
+                { label: '🤷 Karar veremedim', value: 'kararsiz' },
+              ],
+            },
+          )
+        } else {
+          addBotMessage(
+            'Eklemek istediğiniz özel bir not veya isteğiniz var mı?',
+            'message',
+          )
+        }
+        break
+      }
 
       case 'message':
         setData((d) => ({ ...d, message: value }))
@@ -724,7 +839,7 @@ export default function ChatForm({ firmName, city, sector, slug }: Props) {
 
   // ── Form gönder ──
   async function submitForm(finalData: typeof data) {
-    const completedSteps = 15
+    const completedSteps = 20
 
     let leadId: string | undefined
     if (slug.startsWith('demo-')) {
@@ -785,6 +900,11 @@ export default function ChatForm({ firmName, city, sector, slug }: Props) {
           referenceUrls: finalData.referenceUrls,
           brandColors: finalData.brandColors,
           seoExpectations: finalData.seoExpectations,
+          existingSiteUrl: finalData.existingSiteUrl,
+          logoStatus: finalData.logoStatus,
+          socialMediaLinks: finalData.socialMediaLinks,
+          liveSupportType: finalData.liveSupportType,
+          paymentProvider: finalData.paymentProvider,
           message: finalData.message,
           sector,
           city,
@@ -807,8 +927,8 @@ export default function ChatForm({ firmName, city, sector, slug }: Props) {
   const progress = step === 'done' ? 100 : (stepToNumber(step) / TOTAL_STEPS) * 100
 
   // ── Buton gösterilecek mi ──
-  const showButtons = !['intro', 'firmName', 'message', 'contactName', 'contactPhone', 'businessGoals', 'targetAudience', 'referenceUrls', 'brandColors', 'done', 'freeQuestion'].includes(step)
-  const showTextInput = ['firmName', 'message', 'contactName', 'contactPhone', 'contactEmail', 'businessGoals', 'targetAudience', 'referenceUrls', 'brandColors', 'freeQuestion'].includes(step)
+  const showButtons = !['intro', 'firmName', 'message', 'contactName', 'contactPhone', 'businessGoals', 'targetAudience', 'referenceUrls', 'brandColors', 'existingSiteUrl', 'socialMediaLinks', 'done', 'freeQuestion'].includes(step)
+  const showTextInput = ['firmName', 'message', 'contactName', 'contactPhone', 'contactEmail', 'businessGoals', 'targetAudience', 'referenceUrls', 'brandColors', 'existingSiteUrl', 'socialMediaLinks', 'freeQuestion'].includes(step)
   const showFreeQuestionBtn = !['intro', 'done', 'freeQuestion', 'hostingInfo', 'hostingChoice', 'hostingPackages', 'domainInfo'].includes(step)
 
   // ── Placeholder ──
@@ -818,6 +938,8 @@ export default function ChatForm({ firmName, city, sector, slug }: Props) {
     targetAudience: 'Örn: 25-45 yaş arası kadınlar, işletme sahipleri...',
     referenceUrls: 'Örn: www.ornek.com, www.diger.com veya "Yok"',
     brandColors: 'Örn: Koyu mavi ve beyaz, modern minimal...',
+    existingSiteUrl: 'Örn: www.firmaadi.com',
+    socialMediaLinks: 'Örn: instagram.com/firma, facebook.com/firma veya "Yok"',
     message: 'Notunuzu yazın veya "Atla" butonuna basın...',
     contactName: 'Adınız ve soyadınız...',
     contactPhone: '05XX XXX XX XX',

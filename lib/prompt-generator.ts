@@ -92,6 +92,7 @@ interface SubmissionSummaryInput {
 interface ClaudeCodePromptInput {
   firmName: string;
   contactName: string | null;
+  contactPhone: string | null;
   contactEmail: string | null;
   siteType: string | null;
   features: string[];
@@ -110,6 +111,11 @@ interface ClaudeCodePromptInput {
   referenceUrls: string[];
   brandColors: string | null;
   seoExpectations: string | null;
+  existingSiteUrl: string | null;
+  logoStatus: string | null;
+  socialMediaLinks: string | null;
+  liveSupportType: string | null;
+  paymentProvider: string | null;
   freeQuestions: Array<{ question: string; answer: string }>;
 }
 
@@ -180,6 +186,14 @@ export function generateClaudeCodePrompt(data: ClaudeCodePromptInput): string {
   if (data.timeline) lines.push(`Teslim Süresi: ${TIMELINE_MAP[data.timeline] || data.timeline}`);
   lines.push("");
 
+  // ── İletişim Bilgileri ──
+  lines.push("═══ İLETİŞİM BİLGİLERİ ═══");
+  if (data.contactName) lines.push(`Kişi: ${data.contactName}`);
+  if (data.contactPhone) lines.push(`Telefon: ${data.contactPhone}`);
+  if (data.contactEmail) lines.push(`E-posta: ${data.contactEmail}`);
+  lines.push("(Bu bilgiler sitenin footer ve iletişim sayfasında kullanılacak)");
+  lines.push("");
+
   // ── Teknik Altyapı ──
   lines.push("═══ 2. TEKNİK ALTYAPI ═══");
   lines.push("Framework: Next.js 16 (App Router) + React 19");
@@ -195,15 +209,15 @@ export function generateClaudeCodePrompt(data: ClaudeCodePromptInput): string {
   // ── Tasarım Gereksinimleri ──
   lines.push("═══ 3. TASARIM GEREKSİNİMLERİ ═══");
   if (data.brandColors) {
-    lines.push(`Müşteri Tercihi: ${data.brandColors}`);
+    lines.push(`Müşteri Stil Tercihi: ${data.brandColors}`);
+    lines.push("");
+    lines.push("Renk paleti (müşteri tercihine göre oluştur):");
+    lines.push(`  - Müşterinin belirttiği renkler ve stil: ${data.brandColors}`);
+    lines.push("  - Bu renklere uygun Primary, Secondary, Background, Text ve Accent/CTA renkleri belirle");
+    lines.push("  - globals.css @theme bloğunda tanımla");
+  } else {
+    lines.push("Müşteri renk tercihi belirtmedi — sektöre uygun profesyonel palet seç.");
   }
-  lines.push("");
-  lines.push("Renk paleti oluştur:");
-  lines.push("  - Primary: [müşteri tercihinden çıkar]");
-  lines.push("  - Secondary: [tamamlayıcı renk]");
-  lines.push("  - Background: [koyu veya açık — müşteri stiline göre]");
-  lines.push("  - Text: [okunabilir kontrast]");
-  lines.push("  - Accent/CTA: [dikkat çekici]");
   lines.push("");
 
   if (data.referenceUrls.length > 0) {
@@ -352,10 +366,62 @@ export function generateClaudeCodePrompt(data: ClaudeCodePromptInput): string {
     lines.push("  - Logo alanı için placeholder bırak");
   } else if (data.contentStatus === "mevcut-site") {
     lines.push("📋 Mevcut siteden içerik alınacak:");
+    if (data.existingSiteUrl) {
+      lines.push(`  - Mevcut site: ${data.existingSiteUrl}`);
+    }
     lines.push("  - Mevcut siteyi incele, içerikleri taşı");
     lines.push("  - Görsel kalitesini kontrol et, düşükse placeholder kullan");
   }
   lines.push("");
+
+  // ── Logo Durumu ──
+  if (data.logoStatus) {
+    lines.push("═══ LOGO DURUMU ═══");
+    if (data.logoStatus === "var") {
+      lines.push("✅ Müşterinin logosu mevcut — müşteriden alınacak");
+    } else if (data.logoStatus === "yok") {
+      lines.push("🎨 Logo YOK — AI ile üretilecek (Gemini)");
+      lines.push("  - Site yapılırken logo alanına placeholder koy");
+      lines.push("  - Logo üretildikten sonra entegre edilecek");
+    } else if (data.logoStatus === "tasarimci") {
+      lines.push("👨‍🎨 Müşteri tasarımcıya yaptıracak — placeholder bırak");
+    }
+    lines.push("");
+  }
+
+  // ── Sosyal Medya ──
+  if (data.socialMediaLinks) {
+    lines.push("═══ SOSYAL MEDYA HESAPLARI ═══");
+    lines.push(data.socialMediaLinks);
+    lines.push("  - Bu hesapları header/footer'daki sosyal medya ikonlarına bağla");
+    lines.push("");
+  }
+
+  // ── Canlı Destek ──
+  if (data.liveSupportType) {
+    lines.push("═══ CANLI DESTEK ═══");
+    const lsLabels: Record<string, string> = {
+      whatsapp: "WhatsApp — floating button + chat widget",
+      tawkto: "Tawk.to — ücretsiz canlı destek widget'ı entegre et",
+      crisp: "Crisp — canlı destek widget'ı entegre et",
+      kararsiz: "Karar verilmedi — WhatsApp floating button ile başla",
+    };
+    lines.push(`Tercih: ${lsLabels[data.liveSupportType] || data.liveSupportType}`);
+    lines.push("");
+  }
+
+  // ── Ödeme Altyapısı ──
+  if (data.paymentProvider) {
+    lines.push("═══ ÖDEME ALTYAPISI ═══");
+    const ppLabels: Record<string, string> = {
+      iyzico: "Iyzico — API entegrasyonu",
+      paytr: "PayTR — API entegrasyonu",
+      baska: "Farklı sağlayıcı — müşteriden detay alınacak",
+      kararsiz: "Karar verilmedi — Iyzico varsayılan olarak hazırla",
+    };
+    lines.push(`Tercih: ${ppLabels[data.paymentProvider] || data.paymentProvider}`);
+    lines.push("");
+  }
 
   // ── Müşteri Notları ──
   if (data.message) {
@@ -374,11 +440,14 @@ export function generateClaudeCodePrompt(data: ClaudeCodePromptInput): string {
     }
   }
 
+  // CTA metni sektöre göre belirle
+  const ctaText = getCTAText(data.siteType);
+
   // ── Son Notlar ──
   lines.push("═══ ÖNEMLİ KURALLAR ═══");
   lines.push("1. Tüm UI metinleri Türkçe olacak (ş, ç, ö, ü, ğ, ı, İ doğru kullanılmalı)");
   lines.push("2. Slug ve dosya adlarında Türkçe karakter YASAK (sadece a-z, 0-9, tire)");
-  lines.push("3. Tüm CTA butonları 'Ücretsiz Teklif Al' + chatbot yönlendirme");
+  lines.push(`3. Ana CTA buton metni: "${ctaText}"`);
   lines.push("4. WhatsApp floating button zorunlu");
   lines.push("5. KVKK uyumlu çerez bildirimi + gizlilik politikası sayfası");
   lines.push("6. Responsive: mobil, tablet, desktop");
@@ -389,6 +458,19 @@ export function generateClaudeCodePrompt(data: ClaudeCodePromptInput): string {
   lines.push(`Müşteri: ${data.firmName} | İletişim: ${data.contactName || "-"} | ${data.contactEmail || "-"}`);
 
   return lines.join("\n");
+}
+
+/**
+ * Site türüne göre CTA buton metni belirler
+ */
+function getCTAText(siteType: string | null): string {
+  switch (siteType) {
+    case "e-ticaret": return "Sipariş Ver";
+    case "randevu": return "Randevu Al";
+    case "katalog": return "Fiyat İste";
+    case "portfoy": return "Proje Teklifi Al";
+    default: return "İletişime Geç";
+  }
 }
 
 /**

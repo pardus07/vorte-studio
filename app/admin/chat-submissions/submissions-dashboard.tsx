@@ -27,6 +27,11 @@ interface Submission {
   referenceUrls: string[];
   brandColors: string | null;
   seoExpectations: string | null;
+  existingSiteUrl: string | null;
+  logoStatus: string | null;
+  socialMediaLinks: string | null;
+  liveSupportType: string | null;
+  paymentProvider: string | null;
   message: string | null;
   sector: string | null;
   city: string | null;
@@ -207,6 +212,7 @@ export default function SubmissionsDashboard({ initialData, pricingConfigs }: Pr
     const prompt = generateClaudeCodePrompt({
       firmName: s.firmName,
       contactName: s.contactName,
+      contactPhone: s.contactPhone,
       contactEmail: s.contactEmail,
       siteType: s.siteType,
       features: s.features,
@@ -225,6 +231,11 @@ export default function SubmissionsDashboard({ initialData, pricingConfigs }: Pr
       referenceUrls: s.referenceUrls || [],
       brandColors: s.brandColors,
       seoExpectations: s.seoExpectations,
+      existingSiteUrl: s.existingSiteUrl,
+      logoStatus: s.logoStatus,
+      socialMediaLinks: s.socialMediaLinks,
+      liveSupportType: s.liveSupportType,
+      paymentProvider: s.paymentProvider,
       freeQuestions: s.freeQuestions,
     });
     setAiPromptText(prompt);
@@ -236,6 +247,7 @@ export default function SubmissionsDashboard({ initialData, pricingConfigs }: Pr
     return checkPromptReadiness({
       firmName: s.firmName,
       contactName: s.contactName,
+      contactPhone: s.contactPhone,
       contactEmail: s.contactEmail,
       siteType: s.siteType,
       features: s.features,
@@ -254,6 +266,11 @@ export default function SubmissionsDashboard({ initialData, pricingConfigs }: Pr
       referenceUrls: s.referenceUrls || [],
       brandColors: s.brandColors,
       seoExpectations: s.seoExpectations,
+      existingSiteUrl: s.existingSiteUrl,
+      logoStatus: s.logoStatus,
+      socialMediaLinks: s.socialMediaLinks,
+      liveSupportType: s.liveSupportType,
+      paymentProvider: s.paymentProvider,
       freeQuestions: s.freeQuestions,
     });
   }
@@ -573,6 +590,11 @@ export default function SubmissionsDashboard({ initialData, pricingConfigs }: Pr
                       { label: "Referans Siteler", value: selected.referenceUrls?.length > 0 ? selected.referenceUrls.join(", ") : null },
                       { label: "Marka Renkleri / Stil", value: selected.brandColors },
                       { label: "SEO Beklentisi", value: selected.seoExpectations },
+                      { label: "Mevcut Site URL", value: selected.existingSiteUrl },
+                      { label: "Logo Durumu", value: selected.logoStatus === "var" ? "Logosu var" : selected.logoStatus === "yok" ? "Logo üretilmeli" : selected.logoStatus === "tasarimci" ? "Tasarımcıya yaptıracak" : selected.logoStatus },
+                      { label: "Sosyal Medya", value: selected.socialMediaLinks },
+                      { label: "Canlı Destek Tercihi", value: selected.liveSupportType },
+                      { label: "Ödeme Altyapısı", value: selected.paymentProvider },
                     ].map(
                       (field) =>
                         field.value && (

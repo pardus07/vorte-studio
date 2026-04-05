@@ -121,6 +121,11 @@ model ChatSubmission {
   referenceUrls   Json     @default("[]") // begenilen referans siteler (string array)
   brandColors     String?               // marka renkleri / stil tercihi
   seoExpectations String?               // SEO beklentileri
+  existingSiteUrl String?               // mevcut site URL (contentStatus=mevcut-site ise)
+  logoStatus      String?               // var, yok, tasarimci
+  socialMediaLinks String? @db.Text     // sosyal medya hesap linkleri
+  liveSupportType String?               // whatsapp, tawkto, crisp, kararsiz
+  paymentProvider String?               // iyzico, paytr, baska, kararsiz
   message         String?  @db.Text     // ek not
   sector          String?
   city            String?
