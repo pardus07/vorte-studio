@@ -59,16 +59,16 @@ export default function PortalShell({ user, children }: PortalShellProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
-    <div className="flex min-h-screen bg-[#080808] text-white/90">
+    <div className="flex min-h-screen bg-bg text-white/90">
       {/* Desktop Sidebar */}
-      <aside className="hidden w-64 flex-shrink-0 border-r border-white/[0.07] bg-[#0c0c0e] lg:flex lg:flex-col">
+      <aside className="hidden w-64 flex-shrink-0 border-r border-white/[0.07] bg-bg2 lg:flex lg:flex-col">
         {/* Logo */}
         <div className="flex h-16 items-center gap-2 border-b border-white/[0.07] px-6">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#FF4500] text-sm font-extrabold text-white">
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-accent text-sm font-extrabold text-white">
             V
           </div>
           <span className="text-sm font-bold tracking-tight">
-            VORTE<span className="text-[#FF4500]">.</span>PORTAL
+            VORTE<span className="text-accent">.</span>PORTAL
           </span>
         </div>
 
@@ -88,7 +88,7 @@ export default function PortalShell({ user, children }: PortalShellProps) {
                 href={item.href}
                 className={`mb-1 flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition-all duration-200 ${
                   active
-                    ? "bg-[#FF4500]/10 text-[#FF4500] font-semibold"
+                    ? "bg-accent/10 text-accent font-semibold"
                     : "text-white/50 hover:bg-white/[0.04] hover:text-white/80"
                 }`}
               >
@@ -118,12 +118,12 @@ export default function PortalShell({ user, children }: PortalShellProps) {
       {/* Mobile Header + Content */}
       <div className="flex flex-1 flex-col">
         {/* Mobile Header */}
-        <header className="flex h-14 items-center justify-between border-b border-white/[0.07] bg-[#0c0c0e] px-4 lg:hidden">
+        <header className="flex h-14 items-center justify-between border-b border-white/[0.07] bg-bg2 px-4 lg:hidden">
           <div className="flex items-center gap-2">
-            <div className="flex h-7 w-7 items-center justify-center rounded-md bg-[#FF4500] text-xs font-extrabold text-white">
+            <div className="flex h-7 w-7 items-center justify-center rounded-md bg-accent text-xs font-extrabold text-white">
               V
             </div>
-            <span className="text-xs font-bold">VORTE<span className="text-[#FF4500]">.</span>PORTAL</span>
+            <span className="text-xs font-bold">VORTE<span className="text-accent">.</span>PORTAL</span>
           </div>
           <button
             onClick={() => setMobileOpen(!mobileOpen)}
@@ -143,7 +143,7 @@ export default function PortalShell({ user, children }: PortalShellProps) {
         {/* Mobile Nav Overlay */}
         {mobileOpen && (
           <div className="fixed inset-0 z-50 bg-black/60 lg:hidden" onClick={() => setMobileOpen(false)}>
-            <div className="absolute left-0 top-0 h-full w-64 bg-[#0c0c0e] p-4" onClick={(e) => e.stopPropagation()}>
+            <div className="absolute left-0 top-0 h-full w-64 bg-bg2 p-4" onClick={(e) => e.stopPropagation()}>
               <div className="mb-6 border-b border-white/[0.07] pb-4">
                 <p className="text-sm font-semibold">{user.firmName}</p>
                 <p className="mt-0.5 text-xs text-white/40">{user.email}</p>
@@ -158,7 +158,7 @@ export default function PortalShell({ user, children }: PortalShellProps) {
                       onClick={() => setMobileOpen(false)}
                       className={`mb-1 flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm ${
                         active
-                          ? "bg-[#FF4500]/10 text-[#FF4500] font-semibold"
+                          ? "bg-accent/10 text-accent font-semibold"
                           : "text-white/50 hover:text-white/80"
                       }`}
                     >

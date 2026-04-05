@@ -9,9 +9,9 @@ export default async function PortalLayout({
   children: React.ReactNode;
 }) {
   const session = await auth();
-  const user = session?.user as Record<string, unknown> | undefined;
+  const user = session?.user;
 
-  // Giriş sayfasında shell gösterme
+  // Giriş sayfasında veya oturum yoksa shell gösterme
   if (!user || user.role !== "portal") {
     return <>{children}</>;
   }
@@ -19,9 +19,9 @@ export default async function PortalLayout({
   return (
     <PortalShell
       user={{
-        name: (user.name as string) || "",
-        email: (user.email as string) || "",
-        firmName: (user.firmName as string) || "",
+        name: user.name || "",
+        email: user.email || "",
+        firmName: user.firmName || "",
       }}
     >
       {children}

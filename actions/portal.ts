@@ -10,14 +10,14 @@ import { sendPortalCredentials } from "@/lib/email";
 async function getPortalUser() {
   const session = await auth();
   if (!session?.user) return null;
-  const user = session.user as Record<string, unknown>;
+  const user = session.user;
   if (user.role !== "portal" || !user.portalUserId) return null;
   return {
-    id: user.portalUserId as string,
-    email: user.email as string,
-    name: user.name as string,
-    firmName: user.firmName as string,
-    proposalId: user.proposalId as string,
+    id: user.portalUserId,
+    email: user.email || "",
+    name: user.name || "",
+    firmName: user.firmName || "",
+    proposalId: user.proposalId || "",
   };
 }
 
@@ -25,7 +25,7 @@ async function getPortalUser() {
 async function requireAdmin() {
   const session = await auth();
   if (!session?.user) return false;
-  return (session.user as Record<string, unknown>).role === "admin";
+  return session.user.role === "admin";
 }
 
 // ── Rastgele şifre oluştur ──

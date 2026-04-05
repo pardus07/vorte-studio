@@ -36,7 +36,7 @@ export default function PortalLoginPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-[#080808] px-4">
+    <div className="flex min-h-screen items-center justify-center bg-bg px-4">
       {/* Arkaplan efektleri */}
       <div
         className="pointer-events-none fixed inset-0"
@@ -48,11 +48,11 @@ export default function PortalLoginPage() {
       <div className="relative w-full max-w-sm">
         {/* Logo */}
         <div className="mb-10 text-center">
-          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-[#FF4500] text-lg font-extrabold text-white shadow-lg shadow-[#FF4500]/20">
+          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-accent text-lg font-extrabold text-white shadow-lg shadow-accent/20">
             V
           </div>
           <h1 className="text-xl font-bold text-white">
-            VORTE<span className="text-[#FF4500]">.</span>PORTAL
+            VORTE<span className="text-accent">.</span>PORTAL
           </h1>
           <p className="mt-2 text-sm text-white/40">
             Projenizi takip edin
@@ -62,7 +62,7 @@ export default function PortalLoginPage() {
         {/* Form */}
         <form
           onSubmit={handleSubmit}
-          className="rounded-2xl border border-white/[0.07] bg-[#0f0f0f] p-8"
+          className="rounded-2xl border border-white/[0.07] bg-bg2 p-8"
         >
           {error && (
             <div className="mb-6 rounded-xl bg-red-500/10 border border-red-500/20 px-4 py-3 text-sm text-red-400">
@@ -80,7 +80,7 @@ export default function PortalLoginPage() {
               onChange={(e) => setEmail(e.target.value)}
               required
               autoFocus
-              className="w-full rounded-xl border border-white/[0.07] bg-white/[0.03] px-4 py-3 text-sm text-white placeholder-white/20 outline-none transition-colors focus:border-[#FF4500]/40 focus:bg-white/[0.05]"
+              className="w-full rounded-xl border border-white/[0.07] bg-white/[0.03] px-4 py-3 text-sm text-white placeholder-white/20 outline-none transition-colors focus:border-accent/40 focus:bg-white/[0.05]"
               placeholder="ornek@firma.com"
             />
           </div>
@@ -94,7 +94,7 @@ export default function PortalLoginPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              className="w-full rounded-xl border border-white/[0.07] bg-white/[0.03] px-4 py-3 text-sm text-white placeholder-white/20 outline-none transition-colors focus:border-[#FF4500]/40 focus:bg-white/[0.05]"
+              className="w-full rounded-xl border border-white/[0.07] bg-white/[0.03] px-4 py-3 text-sm text-white placeholder-white/20 outline-none transition-colors focus:border-accent/40 focus:bg-white/[0.05]"
               placeholder="••••••••••"
             />
           </div>
@@ -102,7 +102,7 @@ export default function PortalLoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full rounded-xl bg-[#FF4500] px-6 py-3.5 text-sm font-semibold text-white shadow-lg shadow-[#FF4500]/20 transition-all hover:shadow-xl hover:shadow-[#FF4500]/30 disabled:opacity-50"
+            className="w-full rounded-xl bg-accent px-6 py-3.5 text-sm font-semibold text-white shadow-lg shadow-accent/20 transition-all hover:shadow-xl hover:shadow-accent/30 disabled:opacity-50"
           >
             {loading ? (
               <span className="flex items-center justify-center gap-2">

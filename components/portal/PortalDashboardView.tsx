@@ -67,7 +67,7 @@ export default function PortalDashboardView({ data }: { data: DashboardData }) {
       {/* Hoş geldin */}
       <div className="mb-8">
         <h1 className="text-2xl font-bold">
-          Merhaba, <span className="text-[#FF4500]">{user.name}</span>
+          Merhaba, <span className="text-accent">{user.name}</span>
         </h1>
         <p className="mt-1 text-sm text-white/40">
           {user.firmName} projesi — Portal paneli
@@ -77,7 +77,7 @@ export default function PortalDashboardView({ data }: { data: DashboardData }) {
       {/* Özet Kartları */}
       <div className="mb-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {/* Proje Durumu */}
-        <div className="rounded-2xl border border-white/[0.07] bg-[#0f0f0f] p-5">
+        <div className="rounded-2xl border border-white/[0.07] bg-bg2 p-5">
           <p className="text-xs text-white/40 uppercase tracking-wider">Proje Durumu</p>
           <p className={`mt-2 text-lg font-bold ${STATUS_MAP[proposal.status]?.color || "text-white"}`}>
             {STATUS_MAP[proposal.status]?.label || proposal.status}
@@ -85,7 +85,7 @@ export default function PortalDashboardView({ data }: { data: DashboardData }) {
         </div>
 
         {/* Sözleşme */}
-        <div className="rounded-2xl border border-white/[0.07] bg-[#0f0f0f] p-5">
+        <div className="rounded-2xl border border-white/[0.07] bg-bg2 p-5">
           <p className="text-xs text-white/40 uppercase tracking-wider">Sözleşme</p>
           <p className={`mt-2 text-lg font-bold ${contract ? (STATUS_MAP[contract.status]?.color || "text-white") : "text-white/30"}`}>
             {contract ? STATUS_MAP[contract.status]?.label || contract.status : "Henüz yok"}
@@ -93,26 +93,26 @@ export default function PortalDashboardView({ data }: { data: DashboardData }) {
         </div>
 
         {/* Ödeme */}
-        <div className="rounded-2xl border border-white/[0.07] bg-[#0f0f0f] p-5">
+        <div className="rounded-2xl border border-white/[0.07] bg-bg2 p-5">
           <p className="text-xs text-white/40 uppercase tracking-wider">Ödeme Durumu</p>
           <p className="mt-2 text-lg font-bold text-white">
             {formatPrice(paidTotal)} <span className="text-sm text-white/30">/ {formatPrice(totalDue)} ₺</span>
           </p>
           <div className="mt-2 h-1.5 w-full rounded-full bg-white/[0.06]">
             <div
-              className="h-full rounded-full bg-[#FF4500] transition-all duration-500"
+              className="h-full rounded-full bg-accent transition-all duration-500"
               style={{ width: `${progressPercent}%` }}
             />
           </div>
         </div>
 
         {/* Mesajlar */}
-        <Link href="/portal/mesajlar" className="group rounded-2xl border border-white/[0.07] bg-[#0f0f0f] p-5 transition-colors hover:border-[#FF4500]/30">
+        <Link href="/portal/mesajlar" className="group rounded-2xl border border-white/[0.07] bg-bg2 p-5 transition-colors hover:border-accent/30">
           <p className="text-xs text-white/40 uppercase tracking-wider">Mesajlar</p>
           <div className="mt-2 flex items-center gap-2">
             <p className="text-lg font-bold text-white">{unreadCount}</p>
             {unreadCount > 0 && (
-              <span className="rounded-full bg-[#FF4500] px-2 py-0.5 text-[10px] font-bold text-white animate-pulse">
+              <span className="rounded-full bg-accent px-2 py-0.5 text-[10px] font-bold text-white animate-pulse">
                 Yeni
               </span>
             )}
@@ -122,7 +122,7 @@ export default function PortalDashboardView({ data }: { data: DashboardData }) {
       </div>
 
       {/* Ödeme Planı */}
-      <div className="mb-8 rounded-2xl border border-white/[0.07] bg-[#0f0f0f] p-6">
+      <div className="mb-8 rounded-2xl border border-white/[0.07] bg-bg2 p-6">
         <h2 className="mb-4 text-sm font-semibold text-white/60 uppercase tracking-wider">Ödeme Planı</h2>
         <div className="space-y-3">
           {payments.map((p) => (
@@ -147,17 +147,17 @@ export default function PortalDashboardView({ data }: { data: DashboardData }) {
 
       {/* Son Mesajlar */}
       {recentMessages.length > 0 && (
-        <div className="rounded-2xl border border-white/[0.07] bg-[#0f0f0f] p-6">
+        <div className="rounded-2xl border border-white/[0.07] bg-bg2 p-6">
           <div className="mb-4 flex items-center justify-between">
             <h2 className="text-sm font-semibold text-white/60 uppercase tracking-wider">Son Mesajlar</h2>
-            <Link href="/portal/mesajlar" className="text-xs text-[#FF4500] hover:underline">
+            <Link href="/portal/mesajlar" className="text-xs text-accent hover:underline">
               Tümünü gör →
             </Link>
           </div>
           <div className="space-y-3">
             {recentMessages.map((m) => (
               <div key={m.id} className="flex gap-3 rounded-xl bg-white/[0.02] px-4 py-3">
-                <div className={`mt-1 h-2 w-2 flex-shrink-0 rounded-full ${m.senderType === "ADMIN" ? "bg-[#FF4500]" : "bg-blue-400"}`} />
+                <div className={`mt-1 h-2 w-2 flex-shrink-0 rounded-full ${m.senderType === "ADMIN" ? "bg-accent" : "bg-blue-400"}`} />
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
                     <p className="text-xs font-medium text-white/50">

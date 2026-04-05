@@ -44,8 +44,8 @@ export default function PortalContractView({ proposal, contract, payments }: Con
     <div className="mx-auto max-w-3xl">
       {/* Header */}
       <div className="mb-6 flex items-center gap-3">
-        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#FF4500]/10">
-          <svg className="h-5 w-5 text-[#FF4500]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-accent/10">
+          <svg className="h-5 w-5 text-accent" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
             <path d="M9 12l2 2 4-4" />
             <path d="M12 3c7.2 0 9 1.8 9 9s-1.8 9-9 9-9-1.8-9-9 1.8-9 9-9z" />
           </svg>
@@ -57,7 +57,7 @@ export default function PortalContractView({ proposal, contract, payments }: Con
       </div>
 
       {/* Proje Özeti */}
-      <div className="mb-6 rounded-2xl border border-white/[0.07] bg-[#0f0f0f] p-6">
+      <div className="mb-6 rounded-2xl border border-white/[0.07] bg-bg2 p-6">
         <h2 className="mb-4 text-sm font-semibold text-white/60 uppercase tracking-wider">Proje Özeti</h2>
         <div className="grid gap-4 sm:grid-cols-2">
           <div>
@@ -70,7 +70,7 @@ export default function PortalContractView({ proposal, contract, payments }: Con
           </div>
           <div>
             <p className="text-xs text-white/30">Toplam Tutar</p>
-            <p className="mt-1 text-lg font-bold text-[#FF4500]">{formatPrice(proposal.totalPrice)} ₺</p>
+            <p className="mt-1 text-lg font-bold text-accent">{formatPrice(proposal.totalPrice)} ₺</p>
           </div>
           <div>
             <p className="text-xs text-white/30">Başlangıç Tarihi</p>
@@ -80,7 +80,7 @@ export default function PortalContractView({ proposal, contract, payments }: Con
       </div>
 
       {/* Sözleşme Durumu */}
-      <div className="mb-6 rounded-2xl border border-white/[0.07] bg-[#0f0f0f] p-6">
+      <div className="mb-6 rounded-2xl border border-white/[0.07] bg-bg2 p-6">
         <h2 className="mb-4 text-sm font-semibold text-white/60 uppercase tracking-wider">Sözleşme</h2>
         {contract ? (
           <div className="flex items-center gap-4">
@@ -113,7 +113,7 @@ export default function PortalContractView({ proposal, contract, payments }: Con
                 href={`/teklif/${proposal.token}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="ml-auto text-xs text-[#FF4500] hover:underline"
+                className="ml-auto text-xs text-accent hover:underline"
               >
                 Teklifi görüntüle →
               </a>
@@ -125,7 +125,7 @@ export default function PortalContractView({ proposal, contract, payments }: Con
       </div>
 
       {/* Ödeme Planı */}
-      <div className="rounded-2xl border border-white/[0.07] bg-[#0f0f0f] p-6">
+      <div className="rounded-2xl border border-white/[0.07] bg-bg2 p-6">
         <div className="mb-4 flex items-center justify-between">
           <h2 className="text-sm font-semibold text-white/60 uppercase tracking-wider">Ödeme Planı</h2>
           <div className="text-right">
@@ -139,7 +139,7 @@ export default function PortalContractView({ proposal, contract, payments }: Con
         {/* Progress bar */}
         <div className="mb-6 h-2 w-full rounded-full bg-white/[0.06]">
           <div
-            className="h-full rounded-full bg-gradient-to-r from-[#FF4500] to-[#ff6b35] transition-all duration-700"
+            className="h-full rounded-full bg-gradient-to-r from-accent to-accent2 transition-all duration-700"
             style={{ width: `${totalDue > 0 ? (paidTotal / totalDue) * 100 : 0}%` }}
           />
         </div>
@@ -192,7 +192,7 @@ export default function PortalContractView({ proposal, contract, payments }: Con
         <div className="mt-6 rounded-xl bg-white/[0.02] border border-white/[0.05] px-4 py-3">
           <p className="text-xs text-white/30">
             Ödeme bilgileri için{" "}
-            <a href="/portal/mesajlar" className="text-[#FF4500] hover:underline">mesajlar</a>
+            <a href="/portal/mesajlar" className="text-accent hover:underline">mesajlar</a>
             {" "}bölümünden bizimle iletişime geçebilirsiniz.
           </p>
         </div>

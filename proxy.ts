@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 
 export default auth((req) => {
   const isLoggedIn = !!req.auth;
-  const role = (req.auth?.user as Record<string, unknown>)?.role as string | undefined;
+  const role = req.auth?.user?.role;
   const isAdminRoute = req.nextUrl.pathname.startsWith("/admin");
   const isLoginPage = req.nextUrl.pathname === "/login";
   const isPortalRoute = req.nextUrl.pathname.startsWith("/portal");

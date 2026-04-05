@@ -69,8 +69,8 @@ export default function PortalFilesView({ initialFiles }: { initialFiles: Portal
       {/* Header */}
       <div className="mb-6 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#FF4500]/10">
-            <svg className="h-5 w-5 text-[#FF4500]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-accent/10">
+            <svg className="h-5 w-5 text-accent" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
               <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
               <polyline points="14 2 14 8 20 8" />
             </svg>
@@ -94,7 +94,7 @@ export default function PortalFilesView({ initialFiles }: { initialFiles: Portal
           <button
             onClick={() => fileInputRef.current?.click()}
             disabled={uploading}
-            className="flex items-center gap-2 rounded-xl bg-[#FF4500] px-4 py-2.5 text-sm font-semibold text-white transition-opacity disabled:opacity-50"
+            className="flex items-center gap-2 rounded-xl bg-accent px-4 py-2.5 text-sm font-semibold text-white transition-opacity disabled:opacity-50"
           >
             {uploading ? (
               <svg className="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none">
@@ -115,7 +115,7 @@ export default function PortalFilesView({ initialFiles }: { initialFiles: Portal
 
       {/* Dosya listesi */}
       {files.length === 0 ? (
-        <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-white/[0.1] bg-[#0c0c0e] py-20">
+        <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-white/[0.1] bg-bg2 py-20">
           <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-white/[0.03]">
             <svg className="h-8 w-8 text-white/15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
               <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
@@ -128,7 +128,7 @@ export default function PortalFilesView({ initialFiles }: { initialFiles: Portal
       ) : (
         <div className="space-y-2">
           {files.map((f) => (
-            <div key={f.id} className="flex items-center gap-4 rounded-xl border border-white/[0.07] bg-[#0f0f0f] px-4 py-3 transition-colors hover:bg-[#161616]">
+            <div key={f.id} className="flex items-center gap-4 rounded-xl border border-white/[0.07] bg-bg2 px-4 py-3 transition-colors hover:bg-bg3">
               <span className="text-2xl">{getFileIcon(f.fileType)}</span>
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium truncate">{f.fileName}</p>
@@ -137,7 +137,7 @@ export default function PortalFilesView({ initialFiles }: { initialFiles: Portal
                   <span>·</span>
                   <span>{formatDate(f.createdAt)}</span>
                   <span>·</span>
-                  <span className={f.uploadedBy === "ADMIN" ? "text-[#FF4500]/60" : "text-blue-400/60"}>
+                  <span className={f.uploadedBy === "ADMIN" ? "text-accent/60" : "text-blue-400/60"}>
                     {f.uploadedBy === "ADMIN" ? "Vorte Studio" : "Siz"}
                   </span>
                 </div>

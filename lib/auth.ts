@@ -78,20 +78,19 @@ const nextAuth = NextAuth({
   callbacks: {
     jwt({ token, user }) {
       if (user) {
-        token.role = (user as Record<string, unknown>).role as string;
-        token.portalUserId = (user as Record<string, unknown>).portalUserId as string | undefined;
-        token.firmName = (user as Record<string, unknown>).firmName as string | undefined;
-        token.proposalId = (user as Record<string, unknown>).proposalId as string | undefined;
+        token.role = user.role;
+        token.portalUserId = user.portalUserId;
+        token.firmName = user.firmName;
+        token.proposalId = user.proposalId;
       }
       return token;
     },
     session({ session, token }) {
       if (session.user) {
-        const u = session.user as unknown as Record<string, unknown>;
-        u.role = token.role;
-        u.portalUserId = token.portalUserId;
-        u.firmName = token.firmName;
-        u.proposalId = token.proposalId;
+        session.user.role = token.role;
+        session.user.portalUserId = token.portalUserId;
+        session.user.firmName = token.firmName;
+        session.user.proposalId = token.proposalId;
       }
       return session;
     },
