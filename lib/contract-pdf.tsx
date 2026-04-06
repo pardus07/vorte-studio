@@ -12,19 +12,31 @@ import {
 } from "@react-pdf/renderer";
 
 // ── Lokal font — Docker container'da dış CDN timeout sorununu önler ──
+// DM Sans (Vorte brand font) — Roboto'daki fi/fl ligature substitution
+// sorununu yaşamıyor; Türkçe karakterleri (ş, ç, ö, ü, ğ, ı, İ) tam destekler.
 const fontsDir = path.join(process.cwd(), "fonts");
 
 Font.register({
-  family: "Roboto",
+  family: "DMSans",
   fonts: [
-    { src: path.join(fontsDir, "Roboto-Regular.ttf"), fontWeight: 400 },
-    { src: path.join(fontsDir, "Roboto-Bold.ttf"), fontWeight: 700 },
+    { src: path.join(fontsDir, "DMSans-Regular.ttf"), fontWeight: 400 },
+    { src: path.join(fontsDir, "DMSans-Bold.ttf"), fontWeight: 700 },
   ],
 });
 
+// Hyphenation'ı kapat — react-pdf default kelime bölme algoritması
+// bazı Türkçe harfleri yanlış işliyor.
+Font.registerHyphenationCallback((word) => [word]);
+
+/** Null-safe string normalize helper */
+const nl = (s: string | number | null | undefined): string => {
+  if (s === null || s === undefined) return "";
+  return String(s);
+};
+
 const styles = StyleSheet.create({
   page: {
-    fontFamily: "Roboto",
+    fontFamily: "DMSans",
     fontSize: 9,
     paddingTop: 40,
     paddingBottom: 60,
@@ -240,16 +252,16 @@ function ContractPDF({ data }: { data: ContractPDFData }) {
         <View style={styles.header}>
           <View>
             <Text style={styles.logo}>VORTE STUDIO</Text>
-            <Text style={styles.logoSub}>Web Tasarim & Gelistirme</Text>
+            <Text style={styles.logoSub}>{nl("Web Tasarım & Geliştirme")}</Text>
           </View>
           <View style={{ textAlign: "right" }}>
-            <Text style={{ fontSize: 8, color: "#999" }}>Sozlesme Tarihi</Text>
-            <Text style={{ fontSize: 9, fontWeight: 700 }}>{data.signedAt}</Text>
+            <Text style={{ fontSize: 8, color: "#999" }}>{nl("Sözleşme Tarihi")}</Text>
+            <Text style={{ fontSize: 9, fontWeight: 700 }}>{nl(data.signedAt)}</Text>
           </View>
         </View>
 
         <Text style={styles.title}>
-          Web Tasarim ve Gelistirme Hizmet Sozlesmesi
+          {nl("Web Tasarım ve Geliştirme Hizmet Sözleşmesi")}
         </Text>
 
         {/* Sözleşme bölümlerini render et */}
@@ -261,25 +273,25 @@ function ContractPDF({ data }: { data: ContractPDFData }) {
             const body = lines.slice(1).join("\n").trim();
             return (
               <View key={i} wrap={true}>
-                <Text style={styles.sectionTitle}>{title}</Text>
-                <Text style={styles.text}>{body}</Text>
+                <Text style={styles.sectionTitle}>{nl(title)}</Text>
+                <Text style={styles.text}>{nl(body)}</Text>
               </View>
             );
           }
           // İMZA bölümü - ayrı render
-          if (section.startsWith("IMZA") || section.includes("imzalanmis")) {
+          if (section.startsWith("İMZA") || section.startsWith("IMZA") || section.includes("imzalanmış") || section.includes("imzalanmis")) {
             return null; // İmza bölümünü kendimiz render edeceğiz
           }
           // Diğer bölümler
           return (
             <View key={i} wrap={true}>
-              <Text style={styles.text}>{section}</Text>
+              <Text style={styles.text}>{nl(section)}</Text>
             </View>
           );
         })}
 
         <Text style={styles.footer}>
-          Vorte Studio · vortestudio.com · Bu belge dijital ortamda olusturulmus ve imzalanmistir.
+          {nl("Vorte Studio · vortestudio.com · Bu belge dijital ortamda oluşturulmuş ve imzalanmıştır.")}
         </Text>
       </Page>
 
@@ -287,10 +299,10 @@ function ContractPDF({ data }: { data: ContractPDFData }) {
       <Page size="A4" style={styles.page}>
         <View style={styles.header}>
           <Text style={styles.logo}>VORTE STUDIO</Text>
-          <Text style={{ fontSize: 8, color: "#999" }}>Fiyat Kirilimi</Text>
+          <Text style={{ fontSize: 8, color: "#999" }}>{nl("Fiyat Kırılımı")}</Text>
         </View>
 
-        <Text style={styles.sectionTitle}>FIYAT KIRILIMI</Text>
+        <Text style={styles.sectionTitle}>{nl("FİYAT KIRILIMI")}</Text>
         <View style={styles.table}>
           <View style={[styles.tableRow, styles.tableHeader]}>
             <Text style={[styles.tableCell, { fontWeight: 700 }]}>Kalem</Text>
@@ -298,7 +310,7 @@ function ContractPDF({ data }: { data: ContractPDFData }) {
           </View>
           {data.items.map((item, i) => (
             <View key={i} style={styles.tableRow}>
-              <Text style={styles.tableCell}>{item.label}</Text>
+              <Text style={styles.tableCell}>{nl(item.label)}</Text>
               <Text style={styles.tableCellRight}>{fmt(item.cost)} TL</Text>
             </View>
           ))}
@@ -318,20 +330,20 @@ function ContractPDF({ data }: { data: ContractPDFData }) {
         </View>
 
         {/* Ödeme Planı */}
-        <Text style={styles.sectionTitle}>ODEME PLANI</Text>
+        <Text style={styles.sectionTitle}>{nl("ÖDEME PLANI")}</Text>
         <View style={styles.paymentBox}>
           {data.paymentPlan.map((pay, i) => {
             const colors = ["#22c55e", "#f59e0b", "#3b82f6"];
             return (
               <View key={i} style={[styles.paymentCard, { borderColor: colors[i] || "#ddd" }]}>
                 <Text style={{ fontSize: 7, color: "#999", marginBottom: 2 }}>
-                  {pay.label} (%{pay.percent})
+                  {nl(pay.label)} (%{pay.percent})
                 </Text>
                 <Text style={{ fontSize: 12, fontWeight: 700, color: colors[i] }}>
                   {fmt(pay.amount)} TL
                 </Text>
                 <Text style={{ fontSize: 7, color: "#999", marginTop: 2 }}>
-                  {pay.description}
+                  {nl(pay.description)}
                 </Text>
               </View>
             );
@@ -339,25 +351,25 @@ function ContractPDF({ data }: { data: ContractPDFData }) {
         </View>
 
         {/* Banka Bilgileri */}
-        <Text style={styles.sectionTitle}>BANKA BILGILERI</Text>
+        <Text style={styles.sectionTitle}>{nl("BANKA BİLGİLERİ")}</Text>
         <View style={styles.infoRow}>
           <Text style={styles.infoLabel}>Banka</Text>
-          <Text style={styles.infoValue}>Turkiye Is Bankasi</Text>
+          <Text style={styles.infoValue}>{nl("Türkiye İş Bankası")}</Text>
         </View>
         <View style={styles.infoRow}>
           <Text style={styles.infoLabel}>Hesap Sahibi</Text>
-          <Text style={styles.infoValue}>{data.ownerName}</Text>
+          <Text style={styles.infoValue}>{nl(data.ownerName)}</Text>
         </View>
         <View style={styles.infoRow}>
           <Text style={styles.infoLabel}>IBAN</Text>
           <Text style={styles.infoValue}>{data.ownerIban}</Text>
         </View>
         <Text style={[styles.text, { marginTop: 8, color: "#666" }]}>
-          Odeme aciklamasina firma adinizi, proje turunu ve odemenin hangi asamaya ait oldugunu yaziniz.
+          {nl("Ödeme açıklamasına firma adınızı, proje türünü ve ödemenin hangi aşamaya ait olduğunu yazınız.")}
         </Text>
 
         <Text style={styles.footer}>
-          Vorte Studio · vortestudio.com · Bu belge dijital ortamda olusturulmus ve imzalanmistir.
+          {nl("Vorte Studio · vortestudio.com · Bu belge dijital ortamda oluşturulmuş ve imzalanmıştır.")}
         </Text>
       </Page>
 
@@ -365,37 +377,37 @@ function ContractPDF({ data }: { data: ContractPDFData }) {
       <Page size="A4" style={styles.page}>
         <View style={styles.header}>
           <Text style={styles.logo}>VORTE STUDIO</Text>
-          <Text style={{ fontSize: 8, color: "#999" }}>Imza Sayfasi</Text>
+          <Text style={{ fontSize: 8, color: "#999" }}>{nl("İmza Sayfası")}</Text>
         </View>
 
         <View style={styles.signatureSection}>
           <Text style={[styles.sectionTitle, { borderBottomWidth: 0 }]}>
-            DIJITAL IMZA
+            {nl("DİJİTAL İMZA")}
           </Text>
 
           <View style={styles.signatureGrid}>
             {/* Hizmet Sağlayıcı */}
             <View style={styles.signatureBox}>
-              <Text style={[styles.textBold, { marginBottom: 4 }]}>HIZMET SAGLAYICI</Text>
-              <Text style={styles.text}>{data.ownerName}</Text>
+              <Text style={[styles.textBold, { marginBottom: 4 }]}>{nl("HİZMET SAĞLAYICI")}</Text>
+              <Text style={styles.text}>{nl(data.ownerName)}</Text>
               <Text style={styles.text}>Vorte Studio</Text>
               <View style={{ marginTop: 20, borderTopWidth: 1, borderTopColor: "#ddd", paddingTop: 4 }}>
-                <Text style={{ fontSize: 7, color: "#999" }}>Dijital onay ile imzalanmistir</Text>
+                <Text style={{ fontSize: 7, color: "#999" }}>{nl("Dijital onay ile imzalanmıştır")}</Text>
               </View>
             </View>
 
             {/* Müşteri */}
             <View style={styles.signatureBox}>
-              <Text style={[styles.textBold, { marginBottom: 4 }]}>MUSTERI</Text>
-              <Text style={styles.text}>{data.signerName}</Text>
+              <Text style={[styles.textBold, { marginBottom: 4 }]}>{nl("MÜŞTERİ")}</Text>
+              <Text style={styles.text}>{nl(data.signerName)}</Text>
               {data.signerCompany && (
-                <Text style={styles.text}>{data.signerCompany}</Text>
+                <Text style={styles.text}>{nl(data.signerCompany)}</Text>
               )}
               {data.signatureData && (
                 <Image src={data.signatureData} style={styles.signatureImage} />
               )}
               <Text style={{ fontSize: 7, color: "#999", marginTop: 4 }}>
-                Imza Tarihi: {data.signedAt}
+                {nl(`İmza Tarihi: ${data.signedAt}`)}
               </Text>
             </View>
           </View>
@@ -404,20 +416,19 @@ function ContractPDF({ data }: { data: ContractPDFData }) {
         {/* Metadata — Hukuki delil */}
         <View style={styles.metadata}>
           <Text style={[styles.textBold, { fontSize: 8, marginBottom: 4 }]}>
-            DIJITAL IMZA METADATA (Hukuki Delil — HMK m. 193)
+            {nl("DİJİTAL İMZA METADATA (Hukuki Delil — HMK m. 193)")}
           </Text>
-          <Text style={styles.metaText}>Imza Tarihi    : {data.signedAt}</Text>
+          <Text style={styles.metaText}>{nl(`İmza Tarihi    : ${data.signedAt}`)}</Text>
           <Text style={styles.metaText}>IP Adresi      : {data.signerIp}</Text>
-          <Text style={styles.metaText}>Cihaz Bilgisi  : {data.signerAgent}</Text>
-          <Text style={styles.metaText}>Sozlesme Hash  : {data.contractHash}</Text>
+          <Text style={styles.metaText}>{nl(`Cihaz Bilgisi  : ${data.signerAgent}`)}</Text>
+          <Text style={styles.metaText}>{nl(`Sözleşme Hash  : ${data.contractHash}`)}</Text>
           <Text style={[styles.metaText, { marginTop: 4 }]}>
-            Bu sozlesme dijital ortamda imzalanmis olup, yukaridaki metadata bilgileri
-            HMK m. 193 uyarinca kesin delil niteligindedir.
+            {nl("Bu sözleşme dijital ortamda imzalanmış olup, yukarıdaki metadata bilgileri HMK m. 193 uyarınca kesin delil niteliğindedir.")}
           </Text>
         </View>
 
         <Text style={styles.footer}>
-          Vorte Studio · vortestudio.com · Bu belge dijital ortamda olusturulmus ve imzalanmistir.
+          {nl("Vorte Studio · vortestudio.com · Bu belge dijital ortamda oluşturulmuş ve imzalanmıştır.")}
         </Text>
       </Page>
     </Document>
