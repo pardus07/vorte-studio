@@ -12,8 +12,9 @@ import {
 } from "@react-pdf/renderer";
 
 // ── Lokal font — Docker container'da dış CDN timeout sorununu önler ──
-// DM Sans (Vorte brand font) — Roboto'daki fi/fl ligature substitution
-// sorununu yaşamıyor; Türkçe karakterleri (ş, ç, ö, ü, ğ, ı, İ) tam destekler.
+// DM Sans (Vorte brand font) — Türkçe karakterleri (ş, ç, ö, ü, ğ, ı, İ) tam
+// destekler. NOT: fi/fl ligature substitution sorunu yaşıyor — `nl()` helper'ı
+// U+200C ZWNJ ile bu sorunu kırıyor (aşağıya bak).
 const fontsDir = path.join(process.cwd(), "fonts");
 
 Font.register({
@@ -28,19 +29,29 @@ Font.register({
 // bazı Türkçe harfleri yanlış işliyor.
 Font.registerHyphenationCallback((word) => [word]);
 
-/** Null-safe string normalize helper */
+/** Null-safe string normalize helper
+ *
+ * fontkit (react-pdf'in alt katmanı) GSUB tablosundaki `liga` feature'ını
+ * otomatik uyguluyor — DM Sans'ta fi/fl ligature mapping var ama glyph render
+ * edilemiyor ve karakter tamamen düşüyor. Çözüm: U+200C (Zero-Width Non-Joiner)
+ * ekleyerek ligature substitution'ı kır. Görsel etki yok, dosya boyutu etkilenmez.
+ */
 const nl = (s: string | number | null | undefined): string => {
   if (s === null || s === undefined) return "";
-  return String(s);
+  return String(s)
+    .replace(/fi/g, "f\u200Ci")
+    .replace(/fl/g, "f\u200Cl")
+    .replace(/Fi/g, "F\u200Ci")
+    .replace(/Fl/g, "F\u200Cl");
 };
 
 const styles = StyleSheet.create({
   page: {
     fontFamily: "DMSans",
     fontSize: 9,
-    paddingTop: 40,
-    paddingBottom: 60,
-    paddingHorizontal: 50,
+    paddingTop: 35,
+    paddingBottom: 50,
+    paddingHorizontal: 45,
     color: "#1a1a1a",
   },
   header: {
@@ -68,14 +79,16 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginBottom: 15,
     color: "#1a1a1a",
-    textTransform: "uppercase",
+    // textTransform: "uppercase" KULLANMA — JS toUpperCase() locale-aware değil,
+    // Türkçe "i" → "İ" dönüşümünü yapamıyor (yanlışlıkla "I" üretiyor).
+    // Onun yerine direkt UPPERCASE Türkçe metin kullan.
     letterSpacing: 1,
   },
   sectionTitle: {
     fontSize: 10,
     fontWeight: 700,
-    marginTop: 14,
-    marginBottom: 6,
+    marginTop: 10,
+    marginBottom: 4,
     paddingBottom: 3,
     borderBottomWidth: 1,
     borderBottomColor: "#ddd",
@@ -115,7 +128,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     borderBottomWidth: 0.5,
     borderBottomColor: "#eee",
-    paddingVertical: 3,
+    paddingVertical: 2,
   },
   tableHeader: {
     backgroundColor: "#f5f5f5",
@@ -261,13 +274,26 @@ function ContractPDF({ data }: { data: ContractPDFData }) {
         </View>
 
         <Text style={styles.title}>
-          {nl("Web Tasarım ve Geliştirme Hizmet Sözleşmesi")}
+          {nl("WEB TASARIM VE GELİŞTİRME HİZMET SÖZLEŞMESİ")}
         </Text>
 
         {/* Sözleşme bölümlerini render et */}
         {sections.map((section, i) => {
+          // WEB TASARIM başlıklı section'ı SKIP et — title olarak yukarıda zaten render edildi
+          // Sadece tarih + sözleşme no body'sini koru
+          if (section.startsWith("WEB TASARIM")) {
+            const lines = section.split("\n");
+            // İlk satır (başlık) atla, gerisini body olarak göster
+            const body = lines.slice(1).join("\n").trim();
+            if (!body) return null;
+            return (
+              <View key={i} wrap={true}>
+                <Text style={styles.text}>{nl(body)}</Text>
+              </View>
+            );
+          }
           // MADDE başlıkları
-          if (section.startsWith("MADDE") || section.startsWith("WEB TASARIM")) {
+          if (section.startsWith("MADDE")) {
             const lines = section.split("\n");
             const title = lines[0];
             const body = lines.slice(1).join("\n").trim();
@@ -290,18 +316,19 @@ function ContractPDF({ data }: { data: ContractPDFData }) {
           );
         })}
 
-        <Text style={styles.footer}>
+        <Text style={styles.footer} fixed>
           {nl("Vorte Studio · vortestudio.com · Bu belge dijital ortamda oluşturulmuş ve imzalanmıştır.")}
         </Text>
       </Page>
 
-      {/* Sayfa 2: Fiyat Kırılımı + Ödeme Planı */}
+      {/* Sayfa 2: Fiyat Kırılımı + Ödeme Planı + Banka Bilgileri */}
       <Page size="A4" style={styles.page}>
         <View style={styles.header}>
           <Text style={styles.logo}>VORTE STUDIO</Text>
           <Text style={{ fontSize: 8, color: "#999" }}>{nl("Fiyat Kırılımı")}</Text>
         </View>
 
+        {/* Fiyat tablosu — break edilebilir, satır sayısı dinamik */}
         <Text style={styles.sectionTitle}>{nl("FİYAT KIRILIMI")}</Text>
         <View style={styles.table}>
           <View style={[styles.tableRow, styles.tableHeader]}>
@@ -309,66 +336,72 @@ function ContractPDF({ data }: { data: ContractPDFData }) {
             <Text style={[styles.tableCellRight, { fontWeight: 700 }]}>Tutar</Text>
           </View>
           {data.items.map((item, i) => (
-            <View key={i} style={styles.tableRow}>
+            <View key={i} style={styles.tableRow} wrap={false}>
               <Text style={styles.tableCell}>{nl(item.label)}</Text>
               <Text style={styles.tableCellRight}>{fmt(item.cost)} TL</Text>
             </View>
           ))}
-          {/* Ara Toplam */}
-          <View style={[styles.tableRow, { borderBottomWidth: 0 }]}>
-            <Text style={[styles.tableCell, { color: "#666" }]}>Ara Toplam</Text>
-            <Text style={[styles.tableCellRight, { color: "#666" }]}>{fmt(data.totalPrice)} TL</Text>
-          </View>
-          <View style={[styles.tableRow, { borderBottomWidth: 0 }]}>
-            <Text style={[styles.tableCell, { color: "#666" }]}>KDV (%20)</Text>
-            <Text style={[styles.tableCellRight, { color: "#666" }]}>{fmt(data.kdvAmount)} TL</Text>
-          </View>
-          <View style={styles.totalRow}>
-            <Text style={styles.totalLabel}>TOPLAM (KDV Dahil)</Text>
-            <Text style={styles.totalValue}>{fmt(data.totalWithKdv)} TL</Text>
+          {/* Ara Toplam — atomik blok, sayfa kayması olmasın */}
+          <View wrap={false}>
+            <View style={[styles.tableRow, { borderBottomWidth: 0 }]}>
+              <Text style={[styles.tableCell, { color: "#666" }]}>Ara Toplam</Text>
+              <Text style={[styles.tableCellRight, { color: "#666" }]}>{fmt(data.totalPrice)} TL</Text>
+            </View>
+            <View style={[styles.tableRow, { borderBottomWidth: 0 }]}>
+              <Text style={[styles.tableCell, { color: "#666" }]}>KDV (%20)</Text>
+              <Text style={[styles.tableCellRight, { color: "#666" }]}>{fmt(data.kdvAmount)} TL</Text>
+            </View>
+            <View style={styles.totalRow}>
+              <Text style={styles.totalLabel}>TOPLAM (KDV Dahil)</Text>
+              <Text style={styles.totalValue}>{fmt(data.totalWithKdv)} TL</Text>
+            </View>
           </View>
         </View>
 
-        {/* Ödeme Planı */}
-        <Text style={styles.sectionTitle}>{nl("ÖDEME PLANI")}</Text>
-        <View style={styles.paymentBox}>
-          {data.paymentPlan.map((pay, i) => {
-            const colors = ["#22c55e", "#f59e0b", "#3b82f6"];
-            return (
-              <View key={i} style={[styles.paymentCard, { borderColor: colors[i] || "#ddd" }]}>
-                <Text style={{ fontSize: 7, color: "#999", marginBottom: 2 }}>
-                  {nl(pay.label)} (%{pay.percent})
-                </Text>
-                <Text style={{ fontSize: 12, fontWeight: 700, color: colors[i] }}>
-                  {fmt(pay.amount)} TL
-                </Text>
-                <Text style={{ fontSize: 7, color: "#999", marginTop: 2 }}>
-                  {nl(pay.description)}
-                </Text>
-              </View>
-            );
-          })}
+        {/* Ödeme Planı — atomik blok */}
+        <View wrap={false}>
+          <Text style={styles.sectionTitle}>{nl("ÖDEME PLANI")}</Text>
+          <View style={styles.paymentBox}>
+            {data.paymentPlan.map((pay, i) => {
+              const colors = ["#22c55e", "#f59e0b", "#3b82f6"];
+              return (
+                <View key={i} style={[styles.paymentCard, { borderColor: colors[i] || "#ddd" }]}>
+                  <Text style={{ fontSize: 7, color: "#999", marginBottom: 2 }}>
+                    {nl(pay.label)} (%{pay.percent})
+                  </Text>
+                  <Text style={{ fontSize: 12, fontWeight: 700, color: colors[i] }}>
+                    {fmt(pay.amount)} TL
+                  </Text>
+                  <Text style={{ fontSize: 7, color: "#999", marginTop: 2 }}>
+                    {nl(pay.description)}
+                  </Text>
+                </View>
+              );
+            })}
+          </View>
         </View>
 
-        {/* Banka Bilgileri */}
-        <Text style={styles.sectionTitle}>{nl("BANKA BİLGİLERİ")}</Text>
-        <View style={styles.infoRow}>
-          <Text style={styles.infoLabel}>Banka</Text>
-          <Text style={styles.infoValue}>{nl("Türkiye İş Bankası")}</Text>
+        {/* Banka Bilgileri — atomik blok, orphan oluşmasın */}
+        <View wrap={false}>
+          <Text style={styles.sectionTitle}>{nl("BANKA BİLGİLERİ")}</Text>
+          <View style={styles.infoRow}>
+            <Text style={styles.infoLabel}>Banka</Text>
+            <Text style={styles.infoValue}>{nl("Türkiye İş Bankası")}</Text>
+          </View>
+          <View style={styles.infoRow}>
+            <Text style={styles.infoLabel}>Hesap Sahibi</Text>
+            <Text style={styles.infoValue}>{nl(data.ownerName)}</Text>
+          </View>
+          <View style={styles.infoRow}>
+            <Text style={styles.infoLabel}>IBAN</Text>
+            <Text style={styles.infoValue}>{data.ownerIban}</Text>
+          </View>
+          <Text style={[styles.text, { marginTop: 6, color: "#666" }]}>
+            {nl("Ödeme açıklamasına firma adınızı, proje türünü ve ödemenin hangi aşamaya ait olduğunu yazınız.")}
+          </Text>
         </View>
-        <View style={styles.infoRow}>
-          <Text style={styles.infoLabel}>Hesap Sahibi</Text>
-          <Text style={styles.infoValue}>{nl(data.ownerName)}</Text>
-        </View>
-        <View style={styles.infoRow}>
-          <Text style={styles.infoLabel}>IBAN</Text>
-          <Text style={styles.infoValue}>{data.ownerIban}</Text>
-        </View>
-        <Text style={[styles.text, { marginTop: 8, color: "#666" }]}>
-          {nl("Ödeme açıklamasına firma adınızı, proje türünü ve ödemenin hangi aşamaya ait olduğunu yazınız.")}
-        </Text>
 
-        <Text style={styles.footer}>
+        <Text style={styles.footer} fixed>
           {nl("Vorte Studio · vortestudio.com · Bu belge dijital ortamda oluşturulmuş ve imzalanmıştır.")}
         </Text>
       </Page>
@@ -427,7 +460,7 @@ function ContractPDF({ data }: { data: ContractPDFData }) {
           </Text>
         </View>
 
-        <Text style={styles.footer}>
+        <Text style={styles.footer} fixed>
           {nl("Vorte Studio · vortestudio.com · Bu belge dijital ortamda oluşturulmuş ve imzalanmıştır.")}
         </Text>
       </Page>
