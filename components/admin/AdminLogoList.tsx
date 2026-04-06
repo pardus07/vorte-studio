@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createLogoProject } from "@/actions/logo";
+import { parseBrandColors } from "@/lib/brand-colors";
 
 interface LogoProjectItem {
   id: string;
@@ -25,6 +26,11 @@ interface PortalUserOption {
   email: string;
   firmName: string;
   hasLogoProject: boolean;
+  // Chatbot intake'inden tasinan veriler
+  chatbotBrandColors?: string | null;
+  chatbotSector?: string | null;
+  chatbotBusinessGoals?: string | null;
+  chatbotTargetAudience?: string | null;
 }
 
 const STATUS_MAP: Record<string, { label: string; color: string }> = {
@@ -202,13 +208,68 @@ function CreateLogoModal({
   const [portalUserId, setPortalUserId] = useState(availableUsers[0]?.id || "");
   const [sector, setSector] = useState("");
   const [style, setStyle] = useState("modern");
-  const [primaryColor, setPrimaryColor] = useState("#FF4500");
-  const [secondaryColor, setSecondaryColor] = useState("#1A1A1A");
-  const [accentColor, setAccentColor] = useState("#FFFFFF");
+  // Notr default'lar: admin musterinin kendi renklerini secsin diye Vorte
+  // marka rengi (#FF4500) burada KULLANILMAZ. Siyah/beyaz/gri = brand-neutral.
+  // useEffect asagida secili musterinin chatbot renklerini varsa override eder.
+  const [primaryColor, setPrimaryColor] = useState("#000000");
+  const [secondaryColor, setSecondaryColor] = useState("#FFFFFF");
+  const [accentColor, setAccentColor] = useState("#808080");
   const [includeText, setIncludeText] = useState(true);
   const [notes, setNotes] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  // Hangi alanlarin chatbot'tan otomatik dolduruldugunu UI'da gosterelim
+  const [autofilled, setAutofilled] = useState({
+    colors: false,
+    sector: false,
+    notes: false,
+  });
+
+  // ── Musteri secimi degistiginde chatbot intake'inden prefill ──
+  // Proposal modelinde (chatbot'tan kopyalanan) brandColors/sector/businessGoals
+  // varsa form alanlarini otomatik doldur. Admin yine elle override edebilir.
+  useEffect(() => {
+    const selected = availableUsers.find((u) => u.id === portalUserId);
+    if (!selected) {
+      setAutofilled({ colors: false, sector: false, notes: false });
+      return;
+    }
+
+    const colorsFromChatbot = selected.chatbotBrandColors;
+    const colorsFilled = !!(colorsFromChatbot && colorsFromChatbot.trim());
+    if (colorsFilled) {
+      const tuple = parseBrandColors(colorsFromChatbot);
+      setPrimaryColor(tuple.primary);
+      setSecondaryColor(tuple.secondary);
+      setAccentColor(tuple.accent);
+    } else {
+      // Notr fallback'e geri don
+      setPrimaryColor("#000000");
+      setSecondaryColor("#FFFFFF");
+      setAccentColor("#808080");
+    }
+
+    const sectorFilled = !!(selected.chatbotSector && selected.chatbotSector.trim());
+    setSector(sectorFilled ? selected.chatbotSector! : "");
+
+    // Notlar: hedef + hedef kitle birlestirilir
+    const goals = selected.chatbotBusinessGoals?.trim();
+    const audience = selected.chatbotTargetAudience?.trim();
+    let notesPrefill = "";
+    if (goals) notesPrefill += `Hedef: ${goals}`;
+    if (audience) {
+      if (notesPrefill) notesPrefill += "\n\n";
+      notesPrefill += `Hedef kitle: ${audience}`;
+    }
+    const notesFilled = !!notesPrefill;
+    setNotes(notesPrefill);
+
+    setAutofilled({
+      colors: colorsFilled,
+      sector: sectorFilled,
+      notes: notesFilled,
+    });
+  }, [portalUserId, availableUsers]);
 
   // HEX renkleri gelistirilebilir okunakli text birlesimi (legacy brandColors icin)
   const brandColorsText = `Birincil ${primaryColor}, ikincil ${secondaryColor}, vurgu ${accentColor}`;
@@ -273,7 +334,10 @@ function CreateLogoModal({
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="mb-1.5 block text-xs font-medium text-admin-muted uppercase tracking-wider">Sektör</label>
+              <label className="mb-1.5 flex items-center gap-2 text-xs font-medium text-admin-muted uppercase tracking-wider">
+                Sektör
+                {autofilled.sector && <ChatbotBadge />}
+              </label>
               <input
                 value={sector}
                 onChange={(e) => setSector(e.target.value)}
@@ -299,8 +363,9 @@ function CreateLogoModal({
           </div>
 
           <div>
-            <label className="mb-1.5 block text-xs font-medium text-admin-muted uppercase tracking-wider">
+            <label className="mb-1.5 flex items-center gap-2 text-xs font-medium text-admin-muted uppercase tracking-wider">
               Marka Renkleri (HEX)
+              {autofilled.colors && <ChatbotBadge />}
             </label>
             <div className="grid grid-cols-3 gap-3">
               {/* Birincil */}
@@ -318,7 +383,7 @@ function CreateLogoModal({
                     type="text"
                     value={primaryColor}
                     onChange={(e) => setPrimaryColor(e.target.value.toUpperCase())}
-                    placeholder="#FF4500"
+                    placeholder="#000000"
                     className="w-full min-w-0 rounded-lg border border-admin-border bg-admin-bg3 px-2 py-1.5 font-mono text-[11px] text-admin-text outline-none focus:border-admin-accent/40"
                   />
                 </div>
@@ -339,7 +404,7 @@ function CreateLogoModal({
                     type="text"
                     value={secondaryColor}
                     onChange={(e) => setSecondaryColor(e.target.value.toUpperCase())}
-                    placeholder="#1A1A1A"
+                    placeholder="#FFFFFF"
                     className="w-full min-w-0 rounded-lg border border-admin-border bg-admin-bg3 px-2 py-1.5 font-mono text-[11px] text-admin-text outline-none focus:border-admin-accent/40"
                   />
                 </div>
@@ -360,7 +425,7 @@ function CreateLogoModal({
                     type="text"
                     value={accentColor}
                     onChange={(e) => setAccentColor(e.target.value.toUpperCase())}
-                    placeholder="#FFFFFF"
+                    placeholder="#808080"
                     className="w-full min-w-0 rounded-lg border border-admin-border bg-admin-bg3 px-2 py-1.5 font-mono text-[11px] text-admin-text outline-none focus:border-admin-accent/40"
                   />
                 </div>
@@ -383,7 +448,10 @@ function CreateLogoModal({
           </div>
 
           <div>
-            <label className="mb-1.5 block text-xs font-medium text-admin-muted uppercase tracking-wider">Ek Notlar</label>
+            <label className="mb-1.5 flex items-center gap-2 text-xs font-medium text-admin-muted uppercase tracking-wider">
+              Ek Notlar
+              {autofilled.notes && <ChatbotBadge />}
+            </label>
             <textarea
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
@@ -408,5 +476,20 @@ function CreateLogoModal({
         </div>
       </div>
     </div>
+  );
+}
+
+// ── Kucuk badge: alanin chatbot intake'inden otomatik dolduruldugunu gosterir ──
+function ChatbotBadge() {
+  return (
+    <span
+      title="Bu değer müşterinin chatbot başvurusundan otomatik dolduruldu — gerekirse elle değiştirebilirsin."
+      className="inline-flex items-center gap-1 rounded-full border border-admin-accent/30 bg-admin-accent/10 px-2 py-0.5 text-[9px] font-semibold normal-case tracking-normal text-admin-accent"
+    >
+      <svg className="h-2.5 w-2.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+      </svg>
+      chatbot
+    </span>
   );
 }

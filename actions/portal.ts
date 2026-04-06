@@ -459,7 +459,13 @@ export async function getPortalUsers() {
   }
 }
 
-/** Hafif lookup — logo modal vb. dropdown'lar için (admin) */
+/** Hafif lookup — logo modal vb. dropdown'lar için (admin)
+ *
+ * Logo modal'i acildiginda her musterinin chatbot'tan gelen marka verisi
+ * (renkler, sektor, hedefler) on-the-fly olarak prefill edilebilsin diye
+ * Proposal alanlarini da geri donduruyoruz. Schema'ya yeni alan eklemiyoruz
+ * — Proposal zaten ChatSubmission'dan kopyalanan bu verileri tasiyor.
+ */
 export async function getPortalUsersLite() {
   const isAdmin = await requireAdmin();
   if (!isAdmin) return [];
@@ -474,6 +480,14 @@ export async function getPortalUsersLite() {
         email: true,
         firmName: true,
         logoProject: { select: { id: true } },
+        proposal: {
+          select: {
+            brandColors: true,
+            sector: true,
+            businessGoals: true,
+            targetAudience: true,
+          },
+        },
       },
     });
     return users.map((u) => ({
@@ -482,6 +496,11 @@ export async function getPortalUsersLite() {
       email: u.email,
       firmName: u.firmName,
       hasLogoProject: !!u.logoProject,
+      // Chatbot intake'inden tasinan veriler (Proposal uzerinden)
+      chatbotBrandColors: u.proposal?.brandColors ?? null,
+      chatbotSector: u.proposal?.sector ?? null,
+      chatbotBusinessGoals: u.proposal?.businessGoals ?? null,
+      chatbotTargetAudience: u.proposal?.targetAudience ?? null,
     }));
   } catch {
     return [];
