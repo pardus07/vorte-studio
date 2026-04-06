@@ -90,6 +90,24 @@ Bcrypt hash'lerindeki `$` işareti Coolify'da `dotenv-expand` tarafından
 değişken referansı olarak yorumlanır.
 Coolify env panelinde hash değerini tırnak içine al veya `\$` ile escape et.
 
+### 8. Google "Aldatıcı Sayfalar" Önleme
+Scraper tabanlı dinamik sayfalar (`/p/`, `/demo/`) gerçek firma verisi
+gösterdiği için Google tarafından brand impersonation / deceptive pages
+olarak algılanabilir. Her yeni dinamik rota için **dört katmanlı savunma**
+zorunlu:
+
+1. **generateMetadata**'da `robots: { index: false, follow: false }`
+2. **next.config.ts**'de `X-Robots-Tag: noindex, nofollow, noarchive, nosnippet` header
+3. **app/robots.ts**'de rotayı `disallow` listesine ekle
+4. **/p/** sayfalarında `<ProspectDisclaimer>` bantı (components/site/ProspectDisclaimer.tsx)
+
+Tek katman yeterli DEĞİL — Google metadata ve header'ı ayrı doğrular.
+Disclaimer bantı SSR'da render edilmeli (initial state `dismissed=false`)
+aksi halde Googlebot ilk HTML'de göremez.
+
+Sitemap hatası: Search Console'a **sadece `sitemap.xml`** gönder,
+`robots.txt`'yi sitemap olarak gönderme ("Desteklenmeyen dosya biçimi" hatası).
+
 ---
 
 ## 🏗️ PROJE MİMARİSİ
