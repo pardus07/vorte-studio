@@ -4,15 +4,20 @@
  * Pure function: state in → step out, side-effect yok.
  * Hem server (proposals-list) hem client (NextStepBadge) tarafından kullanılır.
  *
- * Akış (8 adım):
+ * Akış (9 adım):
  *   1. Lead alındı
  *   2. Teklif gönderildi
  *   3. Teklif onaylandı
  *   4. Sözleşme imzalandı
- *   5. Peşinat alındı  ← burada portal aktif olur, project açılır
- *   6. Tasarım & geliştirme (ara ödemeler, milestone'lar)
- *   7. Final ödeme alındı
- *   8. Tamamlandı (yayında)
+ *   5. Peşinat alındı  ← burada portal aktif olur, logo çalışması başlar
+ *   6. Logo onaylandı, ara ödeme bekleniyor  ← logoStatus === APPROVED
+ *   7. Ara ödeme alındı, geliştirme sürüyor
+ *   8. Final ödeme alındı, yayın hazırlığı
+ *   9. Tamamlandı (yayında)
+ *
+ * Adım 6 logo onayına bağlı: stage1 ödendi + LogoProject.status === "APPROVED"
+ * olduğunda otomatik geçer. Logo onaylanmadan ara ödemeyi beklemek anlamsız
+ * çünkü onay alınmadan geliştirme başlamamalı.
  */
 
 export type WorkflowStepKey =
@@ -21,6 +26,7 @@ export type WorkflowStepKey =
   | "proposal_accepted"
   | "contract_signed"
   | "deposit_paid"
+  | "logo_approved"
   | "in_progress"
   | "final_paid"
   | "completed";
@@ -74,14 +80,22 @@ export const WORKFLOW_STEPS: WorkflowStep[] = [
   {
     key: "deposit_paid",
     order: 5,
-    label: "Logo & Tasarım",
-    description: "Peşinat alındı. Portal aktif. Logo ve tasarım çalışmasına başlanabilir.",
+    label: "Logo & Marka",
+    description: "Peşinat alındı. Portal aktif. Logo ve marka kimliği çalışması sürüyor, müşteri onayı bekleniyor.",
     href: "/admin/logo",
     icon: "🎨",
   },
   {
-    key: "in_progress",
+    key: "logo_approved",
     order: 6,
+    label: "Ara Ödeme",
+    description: "Logo onaylandı ve marka kiti hazır. Geliştirmeye başlamak için ara ödemenin yapılması bekleniyor.",
+    href: "/admin/proposals",
+    icon: "💸",
+  },
+  {
+    key: "in_progress",
+    order: 7,
     label: "Geliştirme",
     description: "Ara ödeme alındı. Frontend ve backend geliştirmesi sürüyor.",
     href: "/admin/projects",
@@ -89,7 +103,7 @@ export const WORKFLOW_STEPS: WorkflowStep[] = [
   },
   {
     key: "final_paid",
-    order: 7,
+    order: 8,
     label: "Yayın Hazırlığı",
     description: "Final ödeme alındı. Test ve canlıya alma aşaması.",
     href: "/admin/projects",
@@ -97,7 +111,7 @@ export const WORKFLOW_STEPS: WorkflowStep[] = [
   },
   {
     key: "completed",
-    order: 8,
+    order: 9,
     label: "Tamamlandı",
     description: "Proje canlıda. Bakım sözleşmesine geçilebilir.",
     href: "/admin/projects",
@@ -105,10 +119,15 @@ export const WORKFLOW_STEPS: WorkflowStep[] = [
   },
 ];
 
+/** Toplam adım sayısı — UI'da "X/9" göstermek için tek nokta */
+export const TOTAL_WORKFLOW_STEPS = WORKFLOW_STEPS.length;
+
 /** Proposal/Lead state'inden current step'i çıkar */
 export interface WorkflowState {
   proposalStatus: string | null;       // DRAFT, SENT, VIEWED, ACCEPTED, REJECTED
   contractStatus: string | null;       // null, PENDING, SIGNED
+  /** LogoProject.status — null, DRAFT, GENERATING, REVIEW, APPROVED */
+  logoStatus: string | null;
   payments: Array<{ stage: number; status: string }>;
 }
 
@@ -117,13 +136,14 @@ export interface WorkflowState {
  * Mantık: ilk tamamlanmamış adım = şu anki adım.
  */
 export function getCurrentStep(state: WorkflowState): WorkflowStep {
-  const { proposalStatus, contractStatus, payments } = state;
+  const { proposalStatus, contractStatus, logoStatus, payments } = state;
 
   // Tamamlanma kuralları (sırayla kontrol edilir)
   const stage1Paid = payments.some((p) => p.stage === 1 && p.status === "PAID");
   const stage2Paid = payments.some((p) => p.stage === 2 && p.status === "PAID");
   const stage3Paid = payments.some((p) => p.stage === 3 && p.status === "PAID");
   const allPaid = payments.length > 0 && payments.every((p) => p.status === "PAID");
+  const logoApproved = logoStatus === "APPROVED";
 
   // En ileri adımdan başlayıp geriye doğru kontrol et
   if (allPaid && stage3Paid) {
@@ -134,6 +154,10 @@ export function getCurrentStep(state: WorkflowState): WorkflowStep {
   }
   if (stage2Paid) {
     return WORKFLOW_STEPS.find((s) => s.key === "in_progress")!;
+  }
+  // Logo onaylandı + peşinat ödendi + ara ödeme henüz gelmedi → ara ödeme bekleniyor
+  if (stage1Paid && logoApproved) {
+    return WORKFLOW_STEPS.find((s) => s.key === "logo_approved")!;
   }
   if (stage1Paid) {
     return WORKFLOW_STEPS.find((s) => s.key === "deposit_paid")!;

@@ -170,6 +170,10 @@ export async function getPortalDashboard() {
         include: {
           contract: true,
           payments: { orderBy: { stage: "asc" } },
+          // Workflow logoStatus için — onaylandıysa adım 6'ya geçer
+          portalUser: {
+            include: { logoProject: { select: { status: true } } },
+          },
         },
       }),
       prisma.portalMessage.findMany({
@@ -233,6 +237,7 @@ export async function getPortalDashboard() {
         uploadedBy: f.uploadedBy,
         createdAt: f.createdAt.toISOString(),
       })),
+      logoStatus: proposal.portalUser?.logoProject?.status || null,
       unreadCount,
     };
   } catch (error) {

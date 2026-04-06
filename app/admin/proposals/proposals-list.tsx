@@ -38,6 +38,8 @@ interface Proposal {
   contractStatus: string | null;
   contractSignedAt: string | null;
   contractSignerName: string | null;
+  // Logo (workflow step 6 için)
+  logoStatus: string | null;
   // Ödemeler
   payments: PaymentItem[];
 }
@@ -232,6 +234,7 @@ export default function ProposalsList({ initialData }: { initialData: Proposal[]
                             state={{
                               proposalStatus: p.status,
                               contractStatus: p.contractStatus,
+                              logoStatus: p.logoStatus,
                               payments: p.payments.map((pay) => ({ stage: pay.stage, status: pay.status })),
                             }}
                             variant="compact"
@@ -352,6 +355,7 @@ export default function ProposalsList({ initialData }: { initialData: Proposal[]
                               state={{
                                 proposalStatus: p.status,
                                 contractStatus: p.contractStatus,
+                                logoStatus: p.logoStatus,
                                 payments: p.payments.map((pay) => ({ stage: pay.stage, status: pay.status })),
                               }}
                               variant="full"

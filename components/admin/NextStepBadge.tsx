@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { getCurrentStep, type WorkflowState } from "@/lib/workflow";
+import { getCurrentStep, TOTAL_WORKFLOW_STEPS, type WorkflowState } from "@/lib/workflow";
 
 interface Props {
   state: WorkflowState;
@@ -16,6 +16,7 @@ const STEP_COLORS: Record<string, { bg: string; border: string; text: string; do
   proposal_accepted:  { bg: "bg-purple-500/10",   border: "border-purple-500/20",     text: "text-purple-400", dot: "bg-purple-400" },
   contract_signed:    { bg: "bg-rose-500/10",     border: "border-rose-500/30",       text: "text-rose-400",   dot: "bg-rose-400" },
   deposit_paid:       { bg: "bg-cyan-500/10",     border: "border-cyan-500/20",       text: "text-cyan-400",   dot: "bg-cyan-400" },
+  logo_approved:      { bg: "bg-yellow-500/10",   border: "border-yellow-500/30",     text: "text-yellow-400", dot: "bg-yellow-400" },
   in_progress:        { bg: "bg-blue-500/10",     border: "border-blue-500/20",       text: "text-blue-400",   dot: "bg-blue-400" },
   final_paid:         { bg: "bg-orange-500/10",   border: "border-orange-500/20",     text: "text-orange-400", dot: "bg-orange-400" },
   completed:          { bg: "bg-emerald-500/10",  border: "border-emerald-500/30",    text: "text-emerald-400",dot: "bg-emerald-400" },
@@ -55,7 +56,7 @@ export default function NextStepBadge({ state, variant = "compact" }: Props) {
           <div className="flex items-center gap-2">
             <span className="text-[10px] uppercase tracking-wider text-admin-muted">Sıradaki Adım</span>
             <span className="text-[10px] text-admin-muted/60">·</span>
-            <span className="text-[10px] text-admin-muted">{step.order}/8</span>
+            <span className="text-[10px] text-admin-muted">{step.order}/{TOTAL_WORKFLOW_STEPS}</span>
           </div>
           <div className={`mt-0.5 text-sm font-bold ${colors.text}`}>{step.label}</div>
           <p className="mt-1 text-[11px] leading-relaxed text-admin-muted">{step.description}</p>

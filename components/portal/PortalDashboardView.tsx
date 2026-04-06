@@ -23,6 +23,7 @@ interface DashboardData {
     id: string; fileName: string; fileSize: number;
     uploadedBy: string; createdAt: string;
   }[];
+  logoStatus: string | null;
   unreadCount: number;
 }
 
@@ -57,7 +58,7 @@ function timeAgo(iso: string) {
 }
 
 export default function PortalDashboardView({ data }: { data: DashboardData }) {
-  const { user, proposal, contract, payments, recentMessages, unreadCount } = data;
+  const { user, proposal, contract, payments, recentMessages, logoStatus, unreadCount } = data;
 
   const paidTotal = payments.filter((p) => p.status === "PAID").reduce((s, p) => s + p.amount, 0);
   const totalDue = payments.reduce((s, p) => s + p.amount, 0);
@@ -128,6 +129,7 @@ export default function PortalDashboardView({ data }: { data: DashboardData }) {
           state={{
             proposalStatus: proposal.status,
             contractStatus: contract?.status || null,
+            logoStatus,
             payments: payments.map((p) => ({ stage: p.stage, status: p.status })),
           }}
         />

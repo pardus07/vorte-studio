@@ -2,6 +2,7 @@
 
 import {
   WORKFLOW_STEPS,
+  TOTAL_WORKFLOW_STEPS,
   getCurrentStep,
   isStepCompleted,
   isStepActive,
@@ -22,7 +23,7 @@ export default function WorkflowTimeline({ state }: Props) {
           Proje Yol Haritası
         </h2>
         <span className="text-xs text-white/40">
-          {current.order}/8 — {current.label}
+          {current.order}/{TOTAL_WORKFLOW_STEPS} — {current.label}
         </span>
       </div>
       <p className="mb-6 text-xs text-white/40">{current.description}</p>

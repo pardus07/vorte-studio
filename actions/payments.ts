@@ -231,6 +231,10 @@ export async function getProposalsWithPayments() {
       include: {
         contract: { select: { id: true, status: true, signedAt: true, signerName: true } },
         payments: { orderBy: { stage: "asc" } },
+        // Workflow logo step'i için — admin teklif kartlarındaki NextStepBadge
+        portalUser: {
+          include: { logoProject: { select: { status: true } } },
+        },
       },
     });
 
@@ -257,6 +261,8 @@ export async function getProposalsWithPayments() {
       contractStatus: p.contract?.status || null,
       contractSignedAt: p.contract?.signedAt?.toISOString() || null,
       contractSignerName: p.contract?.signerName || null,
+      // Logo durumu — workflow step 6 (Ara Ödeme) için
+      logoStatus: p.portalUser?.logoProject?.status || null,
       // Ödeme bilgileri
       payments: p.payments.map((pay) => ({
         id: pay.id,
