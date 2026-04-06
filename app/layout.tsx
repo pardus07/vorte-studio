@@ -56,7 +56,7 @@ export const metadata: Metadata = {
   creator: "Vorte Studio",
   publisher: "Vorte Studio",
   formatDetection: { telephone: true, email: true },
-  alternates: { canonical: SITE_URL },
+  alternates: { canonical: "/" },
   openGraph: {
     type: "website",
     locale: "tr_TR",

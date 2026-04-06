@@ -28,6 +28,13 @@ const nextConfig: NextConfig = {
             key: "Permissions-Policy",
             value: "camera=(), microphone=(), geolocation=()",
           },
+          // HSTS — HTTP'yi tamamen kapat, Google "Yönlendirmeli sayfa"
+          // uyarısını uzun vadede çözer (tarayıcılar ve Googlebot 2 yıl
+          // boyunca HTTP denemez). Bonus: SSL Labs skorunu A+ yapar.
+          {
+            key: "Strict-Transport-Security",
+            value: "max-age=63072000; includeSubDomains; preload",
+          },
         ],
       },
       // Özel/dinamik rotalar — arama motorlarından tamamen gizle
