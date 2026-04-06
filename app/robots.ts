@@ -6,7 +6,15 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: "*",
         allow: "/",
-        disallow: ["/admin/", "/api/", "/login"],
+        disallow: [
+          "/admin/",
+          "/api/",
+          "/login",
+          "/p/",
+          "/demo/",
+          "/teklif/",
+          "/portal/",
+        ],
       },
     ],
     sitemap: "https://www.vortestudio.com/sitemap.xml",
