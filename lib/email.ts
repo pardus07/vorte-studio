@@ -60,7 +60,6 @@ export async function sendVerificationEmail(
         </body>
         </html>
       `,
-      headers: { "Content-Type": "text/html; charset=UTF-8" },
     });
     return true;
   } catch (err) {
@@ -118,7 +117,6 @@ export async function sendContractEmail(
         </body>
         </html>
       `,
-      headers: { "Content-Type": "text/html; charset=UTF-8" },
       attachments: [
         {
           filename: `Vorte_Studio_Sozlesme_${safeFileName}.pdf`,
@@ -179,7 +177,6 @@ export async function sendPortalCredentials(
         </body>
         </html>
       `,
-      headers: { "Content-Type": "text/html; charset=UTF-8" },
     });
     return true;
   } catch (err) {
@@ -215,7 +212,6 @@ export async function sendContractNotification(
         </body>
         </html>
       `,
-      headers: { "Content-Type": "text/html; charset=UTF-8" },
     });
     return true;
   } catch {
