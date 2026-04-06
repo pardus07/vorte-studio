@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { updateClientStatus } from "@/actions/crm";
 import { isGSM, formatWANumber } from "@/lib/phone-utils";
 import ClientFormModal from "./client-form-modal";
+import DeleteClientModal from "./delete-client-modal";
 
 type Client = {
   id: string;
@@ -92,6 +93,7 @@ export default function CrmClientList({ clients: initialClients }: { clients: Cl
   const [search, setSearch] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [clients, setClients] = useState(initialClients);
+  const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
 
   async function handleStatusChange(id: string, newStatus: string) {
     // Optimistic update
@@ -233,6 +235,13 @@ export default function CrmClientList({ clients: initialClients }: { clients: Cl
                             WA
                           </button>
                         )}
+                        <button
+                          onClick={() => setDeleteTargetId(client.id)}
+                          className="rounded border border-admin-red/30 bg-admin-red-dim px-2 py-1 text-[10px] font-medium text-admin-red hover:bg-admin-red hover:text-white transition-colors"
+                          title="Müşteriyi sil"
+                        >
+                          Sil
+                        </button>
                       </div>
                     </td>
                   </tr>
@@ -243,8 +252,22 @@ export default function CrmClientList({ clients: initialClients }: { clients: Cl
         </div>
       </div>
 
-      {/* Modal */}
+      {/* Yeni müşteri modal */}
       {showModal && <ClientFormModal onClose={() => { setShowModal(false); router.refresh(); }} />}
+
+      {/* Silme modal */}
+      {deleteTargetId && (
+        <DeleteClientModal
+          clientId={deleteTargetId}
+          onClose={() => setDeleteTargetId(null)}
+          onDeleted={() => {
+            // Optimistic — listeden hemen kaldır
+            setClients((prev) => prev.filter((c) => c.id !== deleteTargetId));
+            setDeleteTargetId(null);
+            router.refresh();
+          }}
+        />
+      )}
     </div>
   );
 }

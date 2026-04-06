@@ -82,8 +82,63 @@ export async function updateClientStatus(id: string, status: string) {
   }
 }
 
-export async function deleteClient(id: string) {
+export async function getClientDeletionInfo(id: string) {
   try {
+    const client = await prisma.client.findUnique({
+      where: { id },
+      select: {
+        id: true,
+        name: true,
+        company: true,
+        status: true,
+        totalRevenue: true,
+        _count: {
+          select: {
+            projects: true,
+            quotes: true,
+            maintenance: true,
+            activities: true,
+          },
+        },
+      },
+    });
+    if (!client) return { success: false, error: "Müşteri bulunamadı." };
+    return {
+      success: true as const,
+      data: {
+        id: client.id,
+        name: client.name,
+        company: client.company,
+        status: client.status,
+        totalRevenue: client.totalRevenue,
+        projectCount: client._count.projects,
+        quoteCount: client._count.quotes,
+        maintenanceCount: client._count.maintenance,
+        activityCount: client._count.activities,
+      },
+    };
+  } catch (err) {
+    console.error("Silme bilgisi alma hatası:", err);
+    return { success: false, error: "Bilgi alınamadı." };
+  }
+}
+
+export async function deleteClient(id: string, force: boolean = false) {
+  try {
+    // Sunucu tarafı koruması — UI atlatılsa bile aktif müşteri silinemez
+    const client = await prisma.client.findUnique({
+      where: { id },
+      select: { status: true, name: true },
+    });
+    if (!client) {
+      return { success: false, error: "Müşteri bulunamadı." };
+    }
+    if (!force && (client.status === "ACTIVE" || client.status === "MAINTENANCE")) {
+      return {
+        success: false,
+        error: `${client.name} aktif/bakım durumunda. Önce 'Eski' durumuna taşıyın veya zorla silin.`,
+      };
+    }
     await prisma.client.delete({ where: { id } });
     revalidatePath("/admin/crm");
     return { success: true };
