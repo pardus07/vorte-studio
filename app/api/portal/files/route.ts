@@ -82,7 +82,9 @@ export async function POST(req: Request) {
         data: {
           portalUserId,
           fileName: file.name,
-          filePath: `/uploads/portal/${portalUserId}/${safeName}`,
+          // /api/uploads/[...path] generic handler üzerinden serve edilir.
+          // Direkt /uploads/* path'leri Coolify volume mount yüzünden 404 verir.
+          filePath: `/api/uploads/portal/${portalUserId}/${safeName}`,
           fileSize: file.size,
           fileType: file.type || "application/octet-stream",
           uploadedBy: "CUSTOMER",
