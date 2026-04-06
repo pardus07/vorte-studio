@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation'
 import { prisma } from '@/lib/prisma'
 import { getTemplateName } from '@/lib/template-selector'
+import ProspectDisclaimer from '@/components/site/ProspectDisclaimer'
 import type { Metadata } from 'next'
 
 export const dynamic = 'force-dynamic'
@@ -287,18 +288,21 @@ export default async function ProspectLandingPage({ params }: PageProps) {
     }
 
     return (
-      <TemplateComponent
-        firmName={demo.firmName}
-        city={demo.city}
-        address="Atatürk Caddesi No:42/A"
-        phone="0532 000 00 00"
-        googleRating={demo.rating}
-        googleReviews={demo.reviews}
-        score={85}
-        slug={slug}
-        sector={demo.sector}
-        images={Object.keys(previewImages).length > 0 ? previewImages : undefined}
-      />
+      <>
+        <ProspectDisclaimer firmName={demo.firmName} />
+        <TemplateComponent
+          firmName={demo.firmName}
+          city={demo.city}
+          address="Atatürk Caddesi No:42/A"
+          phone="0532 000 00 00"
+          googleRating={demo.rating}
+          googleReviews={demo.reviews}
+          score={85}
+          slug={slug}
+          sector={demo.sector}
+          images={Object.keys(previewImages).length > 0 ? previewImages : undefined}
+        />
+      </>
     )
   }
 
@@ -339,17 +343,20 @@ export default async function ProspectLandingPage({ params }: PageProps) {
   }
 
   return (
-    <TemplateComponent
-      firmName={prospect.name}
-      city={page.city}
-      address={prospect.address ?? undefined}
-      phone={prospect.phone ?? undefined}
-      googleRating={prospect.googleRating ?? undefined}
-      googleReviews={prospect.googleReviews ?? undefined}
-      score={prospect.score}
-      slug={slug}
-      sector={page.sector}
-      images={Object.keys(templateImages).length > 0 ? templateImages : undefined}
-    />
+    <>
+      <ProspectDisclaimer firmName={prospect.name} />
+      <TemplateComponent
+        firmName={prospect.name}
+        city={page.city}
+        address={prospect.address ?? undefined}
+        phone={prospect.phone ?? undefined}
+        googleRating={prospect.googleRating ?? undefined}
+        googleReviews={prospect.googleReviews ?? undefined}
+        score={prospect.score}
+        slug={slug}
+        sector={page.sector}
+        images={Object.keys(templateImages).length > 0 ? templateImages : undefined}
+      />
+    </>
   )
 }
