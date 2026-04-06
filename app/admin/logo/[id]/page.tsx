@@ -1,4 +1,5 @@
 import { getLogoProjectDetail } from "@/actions/logo";
+import { getBrandAssetsBySlug } from "@/lib/brand-assets";
 import { redirect } from "next/navigation";
 import AdminLogoDetail from "@/components/admin/AdminLogoDetail";
 
@@ -23,5 +24,15 @@ export default async function AdminLogoDetailPage({
   // Date -> string serialization
   const serialized = JSON.parse(JSON.stringify(project));
 
-  return <AdminLogoDetail project={serialized} />;
+  // Brand manifest'i diskten oku — versionlu URL'ler component'te gosterilecek
+  let brandManifest = null;
+  if (project.firmSlug) {
+    try {
+      brandManifest = await getBrandAssetsBySlug(project.firmSlug);
+    } catch {
+      brandManifest = null;
+    }
+  }
+
+  return <AdminLogoDetail project={serialized} brandManifest={brandManifest} />;
 }

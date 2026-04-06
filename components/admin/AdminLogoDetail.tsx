@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { updateLogoProject, deleteLogoVariant } from "@/actions/logo";
+import type { BrandManifest } from "@/lib/brand-processor";
 
 interface LogoVariantItem {
   id: string;
@@ -46,7 +47,13 @@ const STATUS_MAP: Record<string, { label: string; color: string; bg: string }> =
   APPROVED: { label: "Onaylandı", color: "text-admin-green", bg: "bg-admin-green-dim" },
 };
 
-export default function AdminLogoDetail({ project }: { project: LogoProjectDetail }) {
+export default function AdminLogoDetail({
+  project,
+  brandManifest,
+}: {
+  project: LogoProjectDetail;
+  brandManifest?: BrandManifest | null;
+}) {
   const router = useRouter();
   const [tab, setTab] = useState<"variants" | "brandkit">("variants");
   const [generating, setGenerating] = useState(false);
@@ -158,35 +165,39 @@ export default function AdminLogoDetail({ project }: { project: LogoProjectDetai
             )}
           </div>
 
-          {/* Asset grid: 5 standart varyant */}
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-5">
-            {[
-              { key: "primary-1024.png", label: "Master 1024", bg: "bg-white" },
-              { key: "primary-512.png", label: "Square 512", bg: "bg-white" },
-              { key: "horizontal-1200x400.png", label: "Header", bg: "bg-white" },
-              { key: "favicon-64.png", label: "Favicon", bg: "bg-white" },
-              { key: "light-on-dark-1024.png", label: "Dark", bg: "bg-[#0a0a0a]" },
-            ].map((asset) => (
-              <a
-                key={asset.key}
-                href={`/api/uploads/brand/${project.firmSlug}/${asset.key}`}
-                target="_blank"
-                rel="noreferrer"
-                className="group rounded-xl border border-admin-border bg-admin-bg2 p-2 transition-colors hover:border-admin-accent/30"
-              >
-                <div className={`mb-2 flex h-20 items-center justify-center rounded-lg ${asset.bg}`}>
-                  <img
-                    src={`/api/uploads/brand/${project.firmSlug}/${asset.key}`}
-                    alt={asset.label}
-                    className="max-h-16 max-w-full object-contain"
-                  />
-                </div>
-                <p className="text-center text-[10px] font-medium text-admin-muted group-hover:text-admin-text">
-                  {asset.label}
-                </p>
-              </a>
-            ))}
-          </div>
+          {/* Asset grid: 5 standart varyant — URL'ler manifest'ten okunur (versionlu) */}
+          {brandManifest ? (
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-5">
+              {[
+                { url: brandManifest.assets.primary.url, label: "Master 1024", bg: "bg-white" },
+                { url: brandManifest.assets.primary512.url, label: "Square 512", bg: "bg-white" },
+                { url: brandManifest.assets.horizontal.url, label: "Header", bg: "bg-white" },
+                { url: brandManifest.assets.favicon.url, label: "Favicon", bg: "bg-white" },
+                { url: brandManifest.assets.lightOnDark.url, label: "Dark", bg: "bg-[#0a0a0a]" },
+              ].map((asset) => (
+                <a
+                  key={asset.url}
+                  href={asset.url}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="group rounded-xl border border-admin-border bg-admin-bg2 p-2 transition-colors hover:border-admin-accent/30"
+                >
+                  <div className={`mb-2 flex h-20 items-center justify-center rounded-lg ${asset.bg}`}>
+                    <img
+                      src={asset.url}
+                      alt={asset.label}
+                      className="max-h-16 max-w-full object-contain"
+                    />
+                  </div>
+                  <p className="text-center text-[10px] font-medium text-admin-muted group-hover:text-admin-text">
+                    {asset.label}
+                  </p>
+                </a>
+              ))}
+            </div>
+          ) : (
+            <p className="text-xs text-admin-muted">Marka kiti henüz yüklenemedi.</p>
+          )}
 
           <p className="mt-3 text-[10px] text-admin-muted/60">
             Bu varyantlar sharp ile post-process edilmiştir. Site oluşturulurken{" "}
