@@ -160,7 +160,7 @@ export default function DeleteClientModal({
               }}
             >
               {level === "danger" && (
-                <strong>⚠ TEHLİKELİ İŞLEM — Bu müşteri aktif veya yüksek değerli.</strong>
+                <strong>⚠ TEHLİKELİ İŞLEM — Bu müşteri aktif/bakım durumunda.</strong>
               )}
               {level === "warning" && (
                 <strong>⚠ Bağlı kayıtlar silinecek. Geri alınamaz.</strong>
