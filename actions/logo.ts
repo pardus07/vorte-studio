@@ -3,8 +3,10 @@
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { revalidatePath } from "next/cache";
-import { copyFile, mkdir } from "fs/promises";
+import { readFile } from "fs/promises";
 import { join } from "path";
+import { uniqueSlug } from "@/lib/slug";
+import { processLogoToBrandAssets } from "@/lib/brand-processor";
 
 // ── Yardımcı: admin oturumu ──
 async function requireAdmin() {
@@ -33,7 +35,10 @@ async function getPortalUser() {
 export async function createLogoProject(portalUserId: string, data: {
   sector?: string;
   style?: string;
-  brandColors?: string;
+  brandColors?: string;       // serbest metin (legacy / fallback)
+  primaryColor?: string;      // #hex
+  secondaryColor?: string;    // #hex
+  accentColor?: string;       // #hex
   includeText?: boolean;
   notes?: string;
 }) {
@@ -50,13 +55,27 @@ export async function createLogoProject(portalUserId: string, data: {
   });
   if (existing) throw new Error("Bu müşteri için zaten logo projesi var");
 
+  // Cakisma-aware slug uret
+  const allSlugs = await prisma.logoProject.findMany({
+    select: { firmSlug: true },
+    where: { firmSlug: { not: null } },
+  });
+  const slug = uniqueSlug(
+    portalUser.firmName,
+    allSlugs.map((s) => s.firmSlug as string)
+  );
+
   const project = await prisma.logoProject.create({
     data: {
       portalUserId,
       firmName: portalUser.firmName,
+      firmSlug: slug,
       sector: data.sector || null,
       style: data.style || "modern",
       brandColors: data.brandColors || null,
+      primaryColor: data.primaryColor || null,
+      secondaryColor: data.secondaryColor || null,
+      accentColor: data.accentColor || null,
       includeText: data.includeText ?? true,
       notes: data.notes || null,
     },
@@ -181,7 +200,15 @@ export async function submitLogoFeedback(variantId: string, feedback: string) {
   return { success: true };
 }
 
-/** Logo varyantını onayla (portal) */
+/** Logo varyantını onayla (portal)
+ *
+ * Onay sirasinda brand-processor cagrilir:
+ *   1. Master PNG buffer'i diskten oku
+ *   2. sharp ile standart olculere donusturup transparent BG uygula
+ *   3. public/uploads/brand/{slug}/ altina butun varyantlari yaz
+ *   4. manifest.json olustur
+ *   5. LogoProject.brandManifestUrl + approvedLogoUrl guncelle
+ */
 export async function approveLogoVariant(variantId: string) {
   const user = await getPortalUser();
   if (!user) throw new Error("Yetkisiz");
@@ -193,6 +220,22 @@ export async function approveLogoVariant(variantId: string) {
 
   if (!variant || variant.logoProject.portalUserId !== user.id) {
     throw new Error("Yetkisiz");
+  }
+
+  const project = variant.logoProject;
+
+  // Slug yoksa (legacy projeler icin) simdi olustur
+  let firmSlug = project.firmSlug;
+  if (!firmSlug) {
+    const { uniqueSlug } = await import("@/lib/slug");
+    const allSlugs = await prisma.logoProject.findMany({
+      select: { firmSlug: true },
+      where: { firmSlug: { not: null } },
+    });
+    firmSlug = uniqueSlug(
+      project.firmName,
+      allSlugs.map((s) => s.firmSlug as string)
+    );
   }
 
   // Önceki onayları kaldır
@@ -207,39 +250,52 @@ export async function approveLogoVariant(variantId: string) {
     data: { isApproved: true },
   });
 
-  // Onaylanan logoyu approved.png olarak kopyala
-  const approvedUrl = variant.url;
+  // Master PNG'yi diskten oku ve brand-processor ile islet
+  const fallbackUrl = variant.url;
+  let primaryUrl = fallbackUrl;
+  let manifestUrl: string | null = null;
 
-  // Dosyayı kopyala
   try {
-    const srcPath = join(process.cwd(), "public", variant.url.replace("/api/uploads/", "uploads/"));
-    const destDir = join(process.cwd(), "public", "uploads", "logos", variant.logoProjectId);
-    await mkdir(destDir, { recursive: true });
-    const destPath = join(destDir, "approved.png");
-    await copyFile(srcPath, destPath);
+    // variant.url ornegi: "/api/uploads/logos/{projectId}/ai-1234.png"
+    // Disk path: public/uploads/logos/{projectId}/ai-1234.png
+    const relPath = variant.url.replace("/api/uploads/", "uploads/");
+    const srcPath = join(process.cwd(), "public", relPath);
+    const masterPng = await readFile(srcPath);
 
-    const finalUrl = `/api/uploads/logos/${variant.logoProjectId}/approved.png`;
-
-    // Proje durumunu güncelle
-    await prisma.logoProject.update({
-      where: { id: variant.logoProjectId },
-      data: {
-        status: "APPROVED",
-        approvedLogoUrl: finalUrl,
-        approvedAt: new Date(),
+    const manifest = await processLogoToBrandAssets(masterPng, {
+      firmName: project.firmName,
+      firmSlug,
+      portalUserId: project.portalUserId,
+      logoProjectId: project.id,
+      colors: {
+        primary: project.primaryColor,
+        secondary: project.secondaryColor,
+        accent: project.accentColor,
+      },
+      fonts: {
+        display: project.fontDisplay,
+        body: project.fontBody,
       },
     });
-  } catch {
-    // Dosya kopyalama başarısız olursa orijinal URL'yi kullan
-    await prisma.logoProject.update({
-      where: { id: variant.logoProjectId },
-      data: {
-        status: "APPROVED",
-        approvedLogoUrl: approvedUrl,
-        approvedAt: new Date(),
-      },
-    });
+
+    primaryUrl = manifest.assets.primary.url;
+    manifestUrl = `/api/uploads/brand/${firmSlug}/manifest.json`;
+  } catch (err) {
+    console.error("[approveLogoVariant] brand-processor hatasi, fallback URL kullaniliyor:", err);
+    // İşleme basarisiz olursa orijinal URL ile devam — workflow durmasin
   }
+
+  // Proje durumunu güncelle
+  await prisma.logoProject.update({
+    where: { id: variant.logoProjectId },
+    data: {
+      status: "APPROVED",
+      firmSlug,
+      approvedLogoUrl: primaryUrl,
+      brandManifestUrl: manifestUrl,
+      approvedAt: new Date(),
+    },
+  });
 
   revalidatePath("/portal/logo");
   revalidatePath(`/admin/logo/${variant.logoProjectId}`);

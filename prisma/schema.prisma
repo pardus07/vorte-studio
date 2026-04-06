@@ -327,23 +327,27 @@ model LogoProject {
   portalUserId    String   @unique
   portalUser      PortalUser @relation(fields: [portalUserId], references: [id], onDelete: Cascade)
   firmName        String
+  firmSlug        String?  @unique     // ASCII slug — brand asset klasoru icin (orn. "vorte-tekstil")
   sector          String?
   style           String?           // minimal, modern, vintage, playful
-  brandColors     String?           // müşterinin istediği renkler
+  brandColors     String?           // serbest metin (legacy / fallback)
   includeText     Boolean  @default(true) // logoda firma adı olsun mu
   notes           String?  @db.Text // admin notları
 
-  // Marka kiti
-  primaryColor    String?           // #hex
-  secondaryColor  String?           // #hex
-  accentColor     String?           // #hex
+  // Marka kiti — HEX renkler (yeni primary kanal)
+  primaryColor    String?           // #hex (ana marka rengi)
+  secondaryColor  String?           // #hex (ikincil marka rengi)
+  accentColor     String?           // #hex (vurgu rengi)
   fontDisplay     String?           // başlık fontu
   fontBody        String?           // gövde fontu
   brandGuidelines String?  @db.Text // kullanım kuralları
 
-  // Onaylanan logo
-  approvedLogoUrl String?           // /uploads/logos/[id]/approved.png
+  // Onaylanan logo (legacy: tek dosya yolu)
+  approvedLogoUrl String?           // /uploads/brand/[slug]/primary-1024.png
   approvedAt      DateTime?
+
+  // Brand asset bundle manifest yolu (post-process sonrasi)
+  brandManifestUrl String?          // /uploads/brand/[slug]/manifest.json
 
   status          String   @default("DRAFT") // DRAFT, GENERATING, REVIEW, APPROVED
   createdAt       DateTime @default(now())

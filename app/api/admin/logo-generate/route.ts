@@ -34,12 +34,15 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Logo projesi bulunamadı" }, { status: 404 });
     }
 
-    // Prompt oluştur
+    // Prompt oluştur (HEX renkler dahil — v2 pro prompt)
     const prompt = generateLogoPrompt({
       firmName: project.firmName,
       sector: project.sector,
       style: project.style,
       brandColors: project.brandColors,
+      primaryColor: project.primaryColor,
+      secondaryColor: project.secondaryColor,
+      accentColor: project.accentColor,
       includeText: project.includeText,
       notes: project.notes,
       revisionFeedback,

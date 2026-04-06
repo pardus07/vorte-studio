@@ -18,6 +18,7 @@ interface LogoVariantItem {
 interface LogoProjectDetail {
   id: string;
   firmName: string;
+  firmSlug: string | null;
   sector: string | null;
   style: string | null;
   brandColors: string | null;
@@ -30,6 +31,7 @@ interface LogoProjectDetail {
   fontBody: string | null;
   brandGuidelines: string | null;
   approvedLogoUrl: string | null;
+  brandManifestUrl: string | null;
   approvedAt: string | null;
   status: string;
   createdAt: string;
@@ -134,13 +136,74 @@ export default function AdminLogoDetail({ project }: { project: LogoProjectDetai
         </div>
       </div>
 
-      {/* Onaylı logo */}
-      {project.approvedLogoUrl && (
-        <div className="mb-6 flex items-center gap-4 rounded-2xl border border-admin-green/20 bg-admin-green-dim p-4">
+      {/* Onaylı logo + brand asset bundle */}
+      {project.approvedLogoUrl && project.firmSlug && (
+        <div className="mb-6 rounded-2xl border border-admin-green/20 bg-admin-green-dim p-5">
+          <div className="mb-4 flex items-center justify-between">
+            <div>
+              <p className="text-sm font-semibold text-admin-green">Onaylanmış Marka Kiti</p>
+              <p className="mt-0.5 text-xs text-admin-muted">
+                Slug: <span className="font-mono text-admin-text">{project.firmSlug}</span>
+              </p>
+            </div>
+            {project.brandManifestUrl && (
+              <a
+                href={project.brandManifestUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="rounded-lg border border-admin-green/30 px-3 py-1.5 text-[11px] font-medium text-admin-green hover:bg-admin-green/10 transition-colors"
+              >
+                manifest.json
+              </a>
+            )}
+          </div>
+
+          {/* Asset grid: 5 standart varyant */}
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-5">
+            {[
+              { key: "primary-1024.png", label: "Master 1024", bg: "bg-white" },
+              { key: "primary-512.png", label: "Square 512", bg: "bg-white" },
+              { key: "horizontal-1200x400.png", label: "Header", bg: "bg-white" },
+              { key: "favicon-64.png", label: "Favicon", bg: "bg-white" },
+              { key: "light-on-dark-1024.png", label: "Dark", bg: "bg-[#0a0a0a]" },
+            ].map((asset) => (
+              <a
+                key={asset.key}
+                href={`/api/uploads/brand/${project.firmSlug}/${asset.key}`}
+                target="_blank"
+                rel="noreferrer"
+                className="group rounded-xl border border-admin-border bg-admin-bg2 p-2 transition-colors hover:border-admin-accent/30"
+              >
+                <div className={`mb-2 flex h-20 items-center justify-center rounded-lg ${asset.bg}`}>
+                  <img
+                    src={`/api/uploads/brand/${project.firmSlug}/${asset.key}`}
+                    alt={asset.label}
+                    className="max-h-16 max-w-full object-contain"
+                  />
+                </div>
+                <p className="text-center text-[10px] font-medium text-admin-muted group-hover:text-admin-text">
+                  {asset.label}
+                </p>
+              </a>
+            ))}
+          </div>
+
+          <p className="mt-3 text-[10px] text-admin-muted/60">
+            Bu varyantlar sharp ile post-process edilmiştir. Site oluşturulurken{" "}
+            <code className="font-mono text-admin-text">getBrandAssetsBySlug(&quot;{project.firmSlug}&quot;)</code> ile çekilebilir.
+          </p>
+        </div>
+      )}
+
+      {/* Legacy fallback: brandManifestUrl yok ama eski approved.png varsa */}
+      {project.approvedLogoUrl && !project.firmSlug && (
+        <div className="mb-6 flex items-center gap-4 rounded-2xl border border-admin-amber/20 bg-admin-amber-dim p-4">
           <img src={project.approvedLogoUrl} alt="Onaylı logo" className="h-16 w-16 rounded-xl bg-white object-contain p-1" />
-          <div>
-            <p className="text-sm font-semibold text-admin-green">Onaylanmış Logo</p>
-            <p className="mt-0.5 text-xs text-admin-muted">{project.approvedLogoUrl}</p>
+          <div className="flex-1">
+            <p className="text-sm font-semibold text-admin-amber">Eski Format Onaylı Logo</p>
+            <p className="mt-0.5 text-xs text-admin-muted">
+              Brand kit henüz oluşturulmamış. Yeniden onaylama yapılırsa otomatik üretilir.
+            </p>
           </div>
         </div>
       )}

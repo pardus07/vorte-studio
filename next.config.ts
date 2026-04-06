@@ -3,6 +3,10 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   output: "standalone",
 
+  // sharp native binary'sini server externals'a al — Next standalone build'in
+  // sharp'i bundle'a almaya calismasini engelle (libvips native lib gerekiyor)
+  serverExternalPackages: ["sharp", "@react-pdf/renderer"],
+
   async headers() {
     return [
       {

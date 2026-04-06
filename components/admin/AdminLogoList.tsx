@@ -202,11 +202,16 @@ function CreateLogoModal({
   const [portalUserId, setPortalUserId] = useState(availableUsers[0]?.id || "");
   const [sector, setSector] = useState("");
   const [style, setStyle] = useState("modern");
-  const [brandColors, setBrandColors] = useState("");
+  const [primaryColor, setPrimaryColor] = useState("#FF4500");
+  const [secondaryColor, setSecondaryColor] = useState("#1A1A1A");
+  const [accentColor, setAccentColor] = useState("#FFFFFF");
   const [includeText, setIncludeText] = useState(true);
   const [notes, setNotes] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
+  // HEX renkleri gelistirilebilir okunakli text birlesimi (legacy brandColors icin)
+  const brandColorsText = `Birincil ${primaryColor}, ikincil ${secondaryColor}, vurgu ${accentColor}`;
 
   async function handleCreate() {
     if (!portalUserId.trim()) {
@@ -219,7 +224,10 @@ function CreateLogoModal({
       const project = await createLogoProject(portalUserId.trim(), {
         sector: sector || undefined,
         style: style || undefined,
-        brandColors: brandColors || undefined,
+        brandColors: brandColorsText,
+        primaryColor,
+        secondaryColor,
+        accentColor,
         includeText,
         notes: notes || undefined,
       });
@@ -291,13 +299,76 @@ function CreateLogoModal({
           </div>
 
           <div>
-            <label className="mb-1.5 block text-xs font-medium text-admin-muted uppercase tracking-wider">Marka Renkleri</label>
-            <input
-              value={brandColors}
-              onChange={(e) => setBrandColors(e.target.value)}
-              placeholder="ör: Lacivert ve altın sarısı"
-              className="w-full rounded-xl border border-admin-border bg-admin-bg2 px-4 py-2.5 text-sm text-admin-text outline-none focus:border-admin-accent/40"
-            />
+            <label className="mb-1.5 block text-xs font-medium text-admin-muted uppercase tracking-wider">
+              Marka Renkleri (HEX)
+            </label>
+            <div className="grid grid-cols-3 gap-3">
+              {/* Birincil */}
+              <div className="rounded-xl border border-admin-border bg-admin-bg2 p-3">
+                <p className="mb-2 text-[10px] font-medium text-admin-muted2 uppercase tracking-wider">Birincil</p>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="color"
+                    value={primaryColor}
+                    onChange={(e) => setPrimaryColor(e.target.value.toUpperCase())}
+                    className="h-9 w-9 cursor-pointer rounded-lg border border-admin-border bg-transparent"
+                    title="Birincil renk seç"
+                  />
+                  <input
+                    type="text"
+                    value={primaryColor}
+                    onChange={(e) => setPrimaryColor(e.target.value.toUpperCase())}
+                    placeholder="#FF4500"
+                    className="w-full min-w-0 rounded-lg border border-admin-border bg-admin-bg3 px-2 py-1.5 font-mono text-[11px] text-admin-text outline-none focus:border-admin-accent/40"
+                  />
+                </div>
+              </div>
+
+              {/* İkincil */}
+              <div className="rounded-xl border border-admin-border bg-admin-bg2 p-3">
+                <p className="mb-2 text-[10px] font-medium text-admin-muted2 uppercase tracking-wider">İkincil</p>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="color"
+                    value={secondaryColor}
+                    onChange={(e) => setSecondaryColor(e.target.value.toUpperCase())}
+                    className="h-9 w-9 cursor-pointer rounded-lg border border-admin-border bg-transparent"
+                    title="İkincil renk seç"
+                  />
+                  <input
+                    type="text"
+                    value={secondaryColor}
+                    onChange={(e) => setSecondaryColor(e.target.value.toUpperCase())}
+                    placeholder="#1A1A1A"
+                    className="w-full min-w-0 rounded-lg border border-admin-border bg-admin-bg3 px-2 py-1.5 font-mono text-[11px] text-admin-text outline-none focus:border-admin-accent/40"
+                  />
+                </div>
+              </div>
+
+              {/* Vurgu */}
+              <div className="rounded-xl border border-admin-border bg-admin-bg2 p-3">
+                <p className="mb-2 text-[10px] font-medium text-admin-muted2 uppercase tracking-wider">Vurgu</p>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="color"
+                    value={accentColor}
+                    onChange={(e) => setAccentColor(e.target.value.toUpperCase())}
+                    className="h-9 w-9 cursor-pointer rounded-lg border border-admin-border bg-transparent"
+                    title="Vurgu rengi seç"
+                  />
+                  <input
+                    type="text"
+                    value={accentColor}
+                    onChange={(e) => setAccentColor(e.target.value.toUpperCase())}
+                    placeholder="#FFFFFF"
+                    className="w-full min-w-0 rounded-lg border border-admin-border bg-admin-bg3 px-2 py-1.5 font-mono text-[11px] text-admin-text outline-none focus:border-admin-accent/40"
+                  />
+                </div>
+              </div>
+            </div>
+            <p className="mt-1.5 text-[10px] text-admin-muted/60">
+              Bu HEX değerleri AI prompt&apos;a doğrudan aktarılır — Gemini tam olarak bu renkleri kullanır.
+            </p>
           </div>
 
           <div className="flex items-center gap-3">
