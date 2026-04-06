@@ -2,6 +2,121 @@
 
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
+import { activatePortalAccount } from "./portal";
+
+// ── Yeni proje için varsayılan milestone'lar ──
+const DEFAULT_MILESTONES = [
+  { title: "Discovery & Planlama", description: "Brief analizi, kapsam netleştirme" },
+  { title: "Tasarım Onayı", description: "Mockup ve revizyon turları" },
+  { title: "Frontend Geliştirme", description: "Sayfaların kodlanması" },
+  { title: "Backend Entegrasyon", description: "API, form, ödeme entegrasyonları" },
+  { title: "Test & Yayın", description: "QA ve canlıya alma" },
+];
+
+// ── Proposal siteType → ProjectType mapping ──
+function mapSiteTypeToProjectType(siteType: string | null): "WEBSITE" | "ECOMMERCE" | "MOBILE_APP" | "REDESIGN" | "CUSTOM" {
+  if (!siteType) return "WEBSITE";
+  const t = siteType.toLowerCase();
+  if (t.includes("ticaret") || t === "e-ticaret") return "ECOMMERCE";
+  if (t.includes("mobil")) return "MOBILE_APP";
+  if (t.includes("redesign") || t.includes("yeniden")) return "REDESIGN";
+  return "WEBSITE";
+}
+
+/**
+ * Peşinat ödemesi alındığında Client + Project'i otomatik oluştur.
+ * Idempotent: zaten varsa yenisini oluşturmaz.
+ */
+async function ensureProjectFromProposal(proposalId: string): Promise<void> {
+  const proposal = await prisma.proposal.findUnique({
+    where: { id: proposalId },
+    include: { contract: true },
+  });
+  if (!proposal) return;
+
+  // Bu proposal için Project zaten oluşturulmuş mu? (notes alanından lookup)
+  const existingProject = await prisma.project.findFirst({
+    where: { notes: { contains: `proposalId:${proposalId}` } },
+  });
+  if (existingProject) return;
+
+  const email = (proposal.contactEmail || proposal.contract?.signerEmail || "").toLowerCase();
+  const phone = proposal.contactPhone || undefined;
+
+  // Client'ı bul veya oluştur (email öncelikli, yoksa firma adı + telefon)
+  let client = email
+    ? await prisma.client.findFirst({ where: { email } })
+    : null;
+
+  if (!client) {
+    client = await prisma.client.create({
+      data: {
+        name: proposal.contactName || proposal.firmName,
+        company: proposal.firmName,
+        email: email || null,
+        phone,
+        sector: proposal.sector,
+        status: "ACTIVE",
+      },
+    });
+  } else if (client.status !== "ACTIVE") {
+    // Mevcut Client varsa ACTIVE'e çek
+    await prisma.client.update({
+      where: { id: client.id },
+      data: { status: "ACTIVE" },
+    });
+  }
+
+  // Tahmini deadline: timeline'dan ay sayısı çıkar (ör: "1 ay" → 30 gün)
+  let deadline: Date | null = null;
+  if (proposal.timeline) {
+    const monthMatch = proposal.timeline.match(/(\d+)\s*ay/i);
+    if (monthMatch) {
+      const months = parseInt(monthMatch[1], 10);
+      deadline = new Date();
+      deadline.setMonth(deadline.getMonth() + months);
+    }
+  }
+
+  // KDV dahil toplam tutarı budget olarak yaz
+  const budget = Math.round(proposal.totalPrice * 1.2);
+
+  const project = await prisma.project.create({
+    data: {
+      title: proposal.firmName,
+      clientId: client.id,
+      type: mapSiteTypeToProjectType(proposal.siteType),
+      status: "DISCOVERY",
+      budget,
+      startDate: new Date(),
+      deadline,
+      progress: 0,
+      techStack: ["Next.js", "Prisma", "Tailwind"],
+      notes: `proposalId:${proposalId}`,
+      milestones: {
+        create: DEFAULT_MILESTONES.map((m) => ({
+          title: m.title,
+          description: m.description,
+          completed: false,
+        })),
+      },
+    },
+  });
+
+  // Aktivite logu
+  try {
+    await prisma.activity.create({
+      data: {
+        clientId: client.id,
+        projectId: project.id,
+        type: "PROJECT_CREATED",
+        description: `Sözleşme imzalandı ve peşinat alındı, proje açıldı: ${proposal.firmName}`,
+      },
+    });
+  } catch {
+    // Activity şeması farklıysa sessizce geç
+  }
+}
 
 // ── Teklif ödemelerini getir ──
 export async function getProposalPayments(proposalId: string) {
@@ -37,6 +152,26 @@ export async function markPaymentPaid(paymentId: string, notes?: string) {
       include: { proposal: true },
     });
 
+    // ── PEŞİNAT ÖDENDİ İSE: Portal aktivasyonu + Project oluşturma ──
+    // Sadece stage 1 (peşinat) için ve sadece ilk ödendiği anda yapılacak.
+    // activatePortalAccount ve ensureProjectFromProposal idempotent — tekrar çağrılırsa bozulmaz.
+    let portalActivated = false;
+    let projectCreated = false;
+    if (payment.stage === 1) {
+      try {
+        const result = await activatePortalAccount(payment.proposalId);
+        portalActivated = !!result.success && !result.alreadyActive;
+      } catch (err) {
+        console.error("Portal aktivasyon hatasi:", err);
+      }
+      try {
+        await ensureProjectFromProposal(payment.proposalId);
+        projectCreated = true;
+      } catch (err) {
+        console.error("Proje olusturma hatasi:", err);
+      }
+    }
+
     // Tüm ödemeler yapıldı mı kontrol et
     const allPayments = await prisma.proposalPayment.findMany({
       where: { proposalId: payment.proposalId },
@@ -58,8 +193,10 @@ export async function markPaymentPaid(paymentId: string, notes?: string) {
 
     revalidatePath("/admin/proposals");
     revalidatePath("/admin/leads");
+    revalidatePath("/admin/portal");
+    revalidatePath("/admin/projects");
 
-    return { success: true, allPaid };
+    return { success: true, allPaid, portalActivated, projectCreated };
   } catch (error) {
     console.error("Odeme guncelleme hatasi:", error);
     return { success: false, error: "Odeme guncellenemedi" };

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { sendContractNotification, sendContractEmail } from "@/lib/email";
 import { generateContractPDF } from "@/lib/contract-pdf";
+import { createPortalAccount } from "@/actions/portal";
 import { revalidatePath } from "next/cache";
 
 export const dynamic = "force-dynamic";
@@ -149,8 +150,21 @@ export async function POST(req: NextRequest) {
       contract.signerName
     );
 
+    // 8. Portal hesabını PASİF olarak oluştur (peşinat ödenince aktive olacak)
+    //    Mail HENÜZ atılmıyor — müşteri önce ödemeli, sonra giriş bilgisi gelir.
+    try {
+      await createPortalAccount(contract.proposal.id, {
+        activateImmediately: false,
+      });
+    } catch (portalError) {
+      console.error("Portal hesap oluşturma hatası (kritik değil):", portalError);
+      // Portal oluşturulamazsa imzalama yine başarılı sayılır;
+      // admin daha sonra manuel oluşturabilir.
+    }
+
     revalidatePath("/admin/proposals");
     revalidatePath("/admin/leads");
+    revalidatePath("/admin/portal");
 
     return NextResponse.json({ success: true });
   } catch (error) {

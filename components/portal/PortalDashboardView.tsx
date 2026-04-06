@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import WorkflowTimeline from "./WorkflowTimeline";
 
 interface DashboardData {
   user: { id: string; name: string; email: string; firmName: string };
@@ -119,6 +120,17 @@ export default function PortalDashboardView({ data }: { data: DashboardData }) {
           </div>
           <p className="mt-1 text-xs text-white/30 group-hover:text-white/50">Okunmamış mesaj →</p>
         </Link>
+      </div>
+
+      {/* Proje Yol Haritası — Sıradaki adımlar timeline'ı */}
+      <div className="mb-8">
+        <WorkflowTimeline
+          state={{
+            proposalStatus: proposal.status,
+            contractStatus: contract?.status || null,
+            payments: payments.map((p) => ({ stage: p.stage, status: p.status })),
+          }}
+        />
       </div>
 
       {/* Ödeme Planı */}

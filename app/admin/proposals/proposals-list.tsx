@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react";
 import { updateProposalStatus, deleteProposal } from "@/actions/proposals";
 import { markPaymentPaid, revertPayment } from "@/actions/payments";
+import NextStepBadge from "@/components/admin/NextStepBadge";
 
 interface PaymentItem {
   id: string;
@@ -226,6 +227,16 @@ export default function ProposalsList({ initialData }: { initialData: Proposal[]
                         <span className={`rounded-full px-2.5 py-1 text-[10px] font-semibold ${style.bg} ${style.text}`}>
                           {style.label}
                         </span>
+                        <div className="mt-1.5">
+                          <NextStepBadge
+                            state={{
+                              proposalStatus: p.status,
+                              contractStatus: p.contractStatus,
+                              payments: p.payments.map((pay) => ({ stage: pay.stage, status: pay.status })),
+                            }}
+                            variant="compact"
+                          />
+                        </div>
                       </td>
                       <td className="px-4 py-3.5">
                         {p.contractStatus === "SIGNED" ? (
@@ -336,6 +347,16 @@ export default function ProposalsList({ initialData }: { initialData: Proposal[]
                       <tr key={`${p.id}-detail`}>
                         <td colSpan={6} className="bg-admin-bg/20 px-6 py-4">
                           <div className="space-y-4">
+                            {/* Sıradaki Adım — full kart */}
+                            <NextStepBadge
+                              state={{
+                                proposalStatus: p.status,
+                                contractStatus: p.contractStatus,
+                                payments: p.payments.map((pay) => ({ stage: pay.stage, status: pay.status })),
+                              }}
+                              variant="full"
+                            />
+
                             {/* Sözleşme bilgisi */}
                             {p.contractStatus === "SIGNED" && (
                               <div className="rounded-lg border border-blue-500/20 bg-blue-500/5 px-4 py-3">

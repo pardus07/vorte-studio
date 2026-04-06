@@ -42,8 +42,20 @@ function generatePassword(length = 10): string {
 // PORTAL HESAP YÖNETİMİ
 // ══════════════════════════════════════════════
 
-/** Sözleşme imzalandığında portal hesabı oluştur */
-export async function createPortalAccount(proposalId: string) {
+/**
+ * Sözleşme imzalandığında portal hesabı oluştur
+ *
+ * @param proposalId - Teklif ID
+ * @param options.activateImmediately - true ise hesap aktif olarak açılır ve
+ *   credentials maili anında atılır. false ise hesap pasif (isActive=false)
+ *   olarak açılır, mail atılmaz — peşinat ödendikten sonra
+ *   `activatePortalAccount` ile aktif edilir. Default: true (geriye dönük uyum)
+ */
+export async function createPortalAccount(
+  proposalId: string,
+  options: { activateImmediately?: boolean } = {}
+) {
+  const activateImmediately = options.activateImmediately ?? true;
   try {
     const proposal = await prisma.proposal.findUnique({
       where: { id: proposalId },
@@ -74,18 +86,71 @@ export async function createPortalAccount(proposalId: string) {
         phone: proposal.contactPhone,
         proposalId: proposal.id,
         firmName: proposal.firmName,
+        isActive: activateImmediately,
       },
     });
 
-    // Müşteriye giriş bilgilerini gönder
-    await sendPortalCredentials(email, password, proposal.firmName);
+    // Sadece anında aktivasyon istenirse maili gönder
+    if (activateImmediately) {
+      await sendPortalCredentials(email, password, proposal.firmName);
+    }
 
     revalidatePath("/admin/portal");
 
-    return { success: true, email: portalUser.email, password };
+    return {
+      success: true,
+      email: portalUser.email,
+      password: activateImmediately ? password : undefined,
+      pendingActivation: !activateImmediately,
+    };
   } catch (error) {
     console.error("Portal hesap oluşturma hatası:", error);
     return { success: false, error: "Portal hesabı oluşturulamadı" };
+  }
+}
+
+/**
+ * Portal hesabını aktive et — peşinat ödendiğinde çağrılır.
+ * isActive=true yapar, yeni şifre üretir (eski hash erişilemez olduğu için)
+ * ve credentials mailini atar.
+ */
+export async function activatePortalAccount(proposalId: string) {
+  try {
+    const proposal = await prisma.proposal.findUnique({
+      where: { id: proposalId },
+      include: { portalUser: true },
+    });
+    if (!proposal) return { success: false, error: "Teklif bulunamadı" };
+    if (!proposal.portalUser) {
+      return { success: false, error: "Portal hesabı henüz oluşturulmamış" };
+    }
+    if (proposal.portalUser.isActive) {
+      return { success: true, alreadyActive: true };
+    }
+
+    // Yeni şifre üret — eski hash bcrypt nedeniyle geri okunamaz
+    const newPassword = generatePassword();
+    const passwordHash = await bcrypt.hash(newPassword, 12);
+
+    await prisma.portalUser.update({
+      where: { id: proposal.portalUser.id },
+      data: { isActive: true, passwordHash },
+    });
+
+    // Hoş geldin / giriş bilgileri maili
+    await sendPortalCredentials(
+      proposal.portalUser.email,
+      newPassword,
+      proposal.firmName
+    );
+
+    revalidatePath("/admin/portal");
+    revalidatePath("/admin/proposals");
+
+    return { success: true, email: proposal.portalUser.email };
+  } catch (error) {
+    console.error("Portal aktivasyon hatası:", error);
+    return { success: false, error: "Portal hesabı aktive edilemedi" };
   }
 }
 
@@ -388,6 +453,35 @@ export async function getPortalUsers() {
       paidAmount: u.proposal.payments
         .filter((p) => p.status === "PAID")
         .reduce((sum, p) => sum + p.amount, 0),
+    }));
+  } catch {
+    return [];
+  }
+}
+
+/** Hafif lookup — logo modal vb. dropdown'lar için (admin) */
+export async function getPortalUsersLite() {
+  const isAdmin = await requireAdmin();
+  if (!isAdmin) return [];
+
+  try {
+    const users = await prisma.portalUser.findMany({
+      where: { isActive: true }, // sadece aktif (peşinatı ödenmiş) müşteriler
+      orderBy: { createdAt: "desc" },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        firmName: true,
+        logoProject: { select: { id: true } },
+      },
+    });
+    return users.map((u) => ({
+      id: u.id,
+      name: u.name,
+      email: u.email,
+      firmName: u.firmName,
+      hasLogoProject: !!u.logoProject,
     }));
   } catch {
     return [];

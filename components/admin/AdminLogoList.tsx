@@ -19,6 +19,14 @@ interface LogoProjectItem {
   variants: { id: string; url: string }[];
 }
 
+interface PortalUserOption {
+  id: string;
+  name: string;
+  email: string;
+  firmName: string;
+  hasLogoProject: boolean;
+}
+
 const STATUS_MAP: Record<string, { label: string; color: string }> = {
   DRAFT: { label: "Taslak", color: "text-admin-muted" },
   GENERATING: { label: "Üretiliyor", color: "text-admin-amber" },
@@ -35,7 +43,13 @@ const STYLE_LABELS: Record<string, string> = {
   tech: "Teknolojik",
 };
 
-export default function AdminLogoList({ projects }: { projects: LogoProjectItem[] }) {
+export default function AdminLogoList({
+  projects,
+  portalUsers = [],
+}: {
+  projects: LogoProjectItem[];
+  portalUsers?: PortalUserOption[];
+}) {
   const [search, setSearch] = useState("");
   const [showCreate, setShowCreate] = useState(false);
 
@@ -44,6 +58,10 @@ export default function AdminLogoList({ projects }: { projects: LogoProjectItem[
       p.firmName.toLowerCase().includes(search.toLowerCase()) ||
       p.portalUser.name.toLowerCase().includes(search.toLowerCase())
   );
+
+  // Logo projesi henüz açılmamış müşteriler — modal dropdown'unda gözükecek
+  const availableUsers = portalUsers.filter((u) => !u.hasLogoProject);
+  const canCreateNew = availableUsers.length > 0;
 
   return (
     <div className="mx-auto max-w-6xl">
@@ -56,8 +74,14 @@ export default function AdminLogoList({ projects }: { projects: LogoProjectItem[
           </p>
         </div>
         <button
-          onClick={() => setShowCreate(true)}
-          className="flex items-center gap-2 rounded-xl bg-admin-accent px-4 py-2.5 text-sm font-semibold text-white transition-opacity hover:opacity-90"
+          onClick={() => canCreateNew && setShowCreate(true)}
+          disabled={!canCreateNew}
+          title={canCreateNew ? "Yeni logo projesi başlat" : "Aktif müşteri yok — peşinatı ödenmiş bir müşteri olmalı"}
+          className={`flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold transition-opacity ${
+            canCreateNew
+              ? "bg-admin-accent text-white hover:opacity-90"
+              : "cursor-not-allowed bg-white/5 text-admin-muted"
+          }`}
         >
           <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
             <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
@@ -79,13 +103,37 @@ export default function AdminLogoList({ projects }: { projects: LogoProjectItem[
 
       {/* Proje kartları */}
       {filtered.length === 0 ? (
-        <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-admin-border bg-admin-bg2 py-20">
+        <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-admin-border bg-admin-bg2 px-6 py-16 text-center">
           <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-white/[0.03]">
             <svg className="h-8 w-8 text-admin-muted2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
               <circle cx="12" cy="12" r="10" /><path d="M8 14s1.5 2 4 2 4-2 4-2" /><line x1="9" y1="9" x2="9.01" y2="9" /><line x1="15" y1="9" x2="15.01" y2="9" />
             </svg>
           </div>
-          <p className="text-sm text-admin-muted">Henüz logo projesi yok</p>
+          <p className="text-sm text-admin-muted mb-2">Henüz logo projesi yok</p>
+
+          {canCreateNew ? (
+            <p className="max-w-md text-xs text-admin-muted/70">
+              <strong className="text-admin-text">{availableUsers.length}</strong> aktif müşteriniz var.
+              Yeni Logo Projesi butonuna basarak başlayabilirsiniz.
+            </p>
+          ) : (
+            <div className="mt-2 max-w-md space-y-2">
+              <p className="text-xs text-admin-muted/70">
+                Logo projesi açabilmek için önce <strong className="text-admin-text">aktif bir müşteri</strong> olmalı.
+              </p>
+              <p className="text-[11px] leading-relaxed text-admin-muted/60">
+                Müşteri otomatik aktive olur:
+                <br />
+                <span className="text-admin-text">1.</span> Müşteri sözleşmeyi imzalar
+                <br />
+                <span className="text-admin-text">2.</span> Peşinatı tarafınızca <a href="/admin/proposals" className="text-admin-accent underline">Teklifler</a> sayfasında &quot;Ödeme Yapıldı&quot; işaretlenir
+                <br />
+                <span className="text-admin-text">3.</span> Portal otomatik aktif olur, müşteriye login bilgileri mailine gider
+                <br />
+                <span className="text-admin-text">4.</span> Bu sayfada yeni logo projesi açılabilir hale gelir
+              </p>
+            </div>
+          )}
         </div>
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -133,16 +181,25 @@ export default function AdminLogoList({ projects }: { projects: LogoProjectItem[
 
       {/* Yeni proje oluşturma modal */}
       {showCreate && (
-        <CreateLogoModal onClose={() => setShowCreate(false)} />
+        <CreateLogoModal
+          onClose={() => setShowCreate(false)}
+          availableUsers={availableUsers}
+        />
       )}
     </div>
   );
 }
 
 // ── Yeni Logo Projesi Modal ──
-function CreateLogoModal({ onClose }: { onClose: () => void }) {
+function CreateLogoModal({
+  onClose,
+  availableUsers,
+}: {
+  onClose: () => void;
+  availableUsers: PortalUserOption[];
+}) {
   const router = useRouter();
-  const [portalUserId, setPortalUserId] = useState("");
+  const [portalUserId, setPortalUserId] = useState(availableUsers[0]?.id || "");
   const [sector, setSector] = useState("");
   const [style, setStyle] = useState("modern");
   const [brandColors, setBrandColors] = useState("");
@@ -186,13 +243,24 @@ function CreateLogoModal({ onClose }: { onClose: () => void }) {
 
         <div className="space-y-4">
           <div>
-            <label className="mb-1.5 block text-xs font-medium text-admin-muted uppercase tracking-wider">Portal Kullanıcı ID *</label>
-            <input
+            <label className="mb-1.5 block text-xs font-medium text-admin-muted uppercase tracking-wider">Müşteri *</label>
+            <select
               value={portalUserId}
               onChange={(e) => setPortalUserId(e.target.value)}
-              placeholder="Portal kullanıcısının ID'si"
               className="w-full rounded-xl border border-admin-border bg-admin-bg2 px-4 py-2.5 text-sm text-admin-text outline-none focus:border-admin-accent/40"
-            />
+            >
+              {availableUsers.length === 0 && (
+                <option value="">Aktif müşteri yok</option>
+              )}
+              {availableUsers.map((u) => (
+                <option key={u.id} value={u.id}>
+                  {u.firmName} — {u.name} ({u.email})
+                </option>
+              ))}
+            </select>
+            <p className="mt-1.5 text-[10px] text-admin-muted/60">
+              Sadece peşinatı ödenmiş ve henüz logo projesi olmayan müşteriler listelenir.
+            </p>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
