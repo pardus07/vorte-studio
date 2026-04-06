@@ -3,6 +3,17 @@ import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 import { writeFile, mkdir } from "fs/promises";
 import path from "path";
+import {
+  validateFile,
+  MAX_TOTAL_REQUEST_BYTES,
+  MAX_TOTAL_REQUEST_LABEL,
+  MAX_FILES_PER_REQUEST,
+} from "@/lib/file-constraints";
+
+interface RejectedFile {
+  fileName: string;
+  reason: string;
+}
 
 export async function POST(req: Request) {
   try {
@@ -24,15 +35,43 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Dosya seçilmedi" }, { status: 400 });
     }
 
-    // Max 10MB per file
-    const MAX_SIZE = 10 * 1024 * 1024;
+    if (fileEntries.length > MAX_FILES_PER_REQUEST) {
+      return NextResponse.json(
+        {
+          error: `Tek seferde en fazla ${MAX_FILES_PER_REQUEST} dosya yükleyebilirsiniz (${fileEntries.length} dosya seçildi).`,
+        },
+        { status: 400 }
+      );
+    }
+
+    // Toplam request boyutu kontrolü — RAM koruması
+    const totalBytes = fileEntries.reduce((sum, f) => sum + f.size, 0);
+    if (totalBytes > MAX_TOTAL_REQUEST_BYTES) {
+      const totalMb = (totalBytes / (1024 * 1024)).toFixed(1);
+      return NextResponse.json(
+        {
+          error: `Toplam yükleme boyutu ${totalMb} MB — limit ${MAX_TOTAL_REQUEST_LABEL}. Daha az dosya seçin.`,
+        },
+        { status: 413 }
+      );
+    }
+
     const uploadDir = path.join(process.cwd(), "public", "uploads", "portal", portalUserId);
     await mkdir(uploadDir, { recursive: true });
 
     const savedFiles = [];
+    const rejected: RejectedFile[] = [];
 
     for (const file of fileEntries) {
-      if (file.size > MAX_SIZE) continue;
+      // Validasyon: kategori tespiti + boyut kontrolü
+      const result = validateFile(file.name, file.type || "", file.size);
+      if (!result.ok) {
+        rejected.push({
+          fileName: file.name,
+          reason: result.reason!.message,
+        });
+        continue;
+      }
 
       const buffer = Buffer.from(await file.arrayBuffer());
       const safeName = `${Date.now()}-${file.name.replace(/[^a-zA-Z0-9._-]/g, "_")}`;
@@ -62,7 +101,7 @@ export async function POST(req: Request) {
       });
     }
 
-    return NextResponse.json({ files: savedFiles });
+    return NextResponse.json({ files: savedFiles, rejected });
   } catch (error) {
     console.error("Dosya yükleme hatası:", error);
     return NextResponse.json({ error: "Dosya yüklenemedi" }, { status: 500 });
