@@ -324,6 +324,7 @@ export default function ProspectSearch({
       address: prospect.address, googleRating: prospect.googleRating,
       googleReviews: prospect.googleReviews, score: prospect.score,
       issue: prospect.issue, hasWebsite: prospect.hasWebsite, mobileScore: prospect.mobileScore,
+      sector,
     });
     if (result.success) {
       setProspects((prev) => prev.map((p) => (p.id === id ? { ...p, addedToLeads: true } : p)));
@@ -348,6 +349,7 @@ export default function ProspectSearch({
         address: prospect.address, googleRating: prospect.googleRating,
         googleReviews: prospect.googleReviews, score: prospect.score,
         issue: prospect.issue, hasWebsite: prospect.hasWebsite, mobileScore: prospect.mobileScore,
+        sector,
       });
       if (result.success) { added++; setExistingLeads((prev) => new Set([...prev, prospect.name])); setProspects((prev) => prev.map((p) => (p.id === prospect.id ? { ...p, addedToLeads: true } : p))); }
     }

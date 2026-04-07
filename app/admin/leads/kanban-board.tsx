@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { updateLeadStatus, convertLeadToClient, deleteLeadAction, addWaTemplateToLead, markWaSent, updateLeadSector } from "@/actions/leads";
+import { updateLeadStatus, convertLeadToClient, deleteLeadAction, addWaTemplateToLead, markWaSent, updateLeadSector, bulkUpdateLeadsSector } from "@/actions/leads";
 import { isGSM, formatWANumber } from "@/lib/phone-utils";
 import { generateWaMessage, buildDemoLink, buildWaUrl, detectIssue, extractCity } from "@/lib/wa-templates";
 import { getTemplateName } from "@/lib/template-selector";
@@ -58,6 +58,13 @@ export default function KanbanBoard({ leads: initial }: { leads: Lead[] }) {
   const [sectorPickLead, setSectorPickLead] = useState<Lead | null>(null);
   const [selectedSector, setSelectedSector] = useState("");
   const [sectorSearch, setSectorSearch] = useState("");
+
+  // Toplu sektör atama — multi-select state
+  const [bulkSelection, setBulkSelection] = useState<Set<string>>(new Set());
+  const [bulkSectorOpen, setBulkSectorOpen] = useState(false);
+  const [bulkSelectedSector, setBulkSelectedSector] = useState("");
+  const [bulkSectorSearch, setBulkSectorSearch] = useState("");
+  const [bulkLoading, setBulkLoading] = useState(false);
 
   // URL'de ?new=1 varsa otomatik olarak yeni lead modal'ını aç
   useEffect(() => {
@@ -146,6 +153,37 @@ export default function KanbanBoard({ leads: initial }: { leads: Lead[] }) {
     await handleAddTemplate(updatedLead, selectedSector);
   }
 
+  // ── Toplu seçim toggle (checkbox) ──
+  function toggleBulkSelection(id: string) {
+    setBulkSelection((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  }
+
+  // ── Toplu sektör atama onayı ──
+  async function handleBulkSectorConfirm() {
+    if (!bulkSelectedSector || bulkSelection.size === 0) return;
+    setBulkLoading(true);
+    const ids = Array.from(bulkSelection);
+    const result = await bulkUpdateLeadsSector(ids, bulkSelectedSector);
+    setBulkLoading(false);
+    if (!result.success) {
+      showNotif(result.error || "Toplu güncelleme başarısız.", "error");
+      return;
+    }
+    // UI'ı güncelle
+    setLeads((prev) => prev.map((l) => (bulkSelection.has(l.id) ? { ...l, sector: bulkSelectedSector } : l)));
+    showNotif(`${result.count ?? ids.length} lead'e "${bulkSelectedSector}" sektörü atandı.`, "success");
+    // Reset state
+    setBulkSelection(new Set());
+    setBulkSectorOpen(false);
+    setBulkSelectedSector("");
+    setBulkSectorSearch("");
+  }
+
   // ── Şablon Ekle (asıl işlem) ──
   async function handleAddTemplate(lead: Lead, sector: string) {
     setTemplating(lead.id);
@@ -220,6 +258,11 @@ export default function KanbanBoard({ leads: initial }: { leads: Lead[] }) {
     ? sectors.filter((s) => s.toLowerCase().includes(sectorSearch.toLowerCase()))
     : sectors;
 
+  // Toplu sektör modal için ayrı arama filtresi
+  const filteredBulkSectors = bulkSectorSearch
+    ? sectors.filter((s) => s.toLowerCase().includes(bulkSectorSearch.toLowerCase()))
+    : sectors;
+
   return (
     <div className="space-y-4">
       {notification && (
@@ -227,10 +270,35 @@ export default function KanbanBoard({ leads: initial }: { leads: Lead[] }) {
       )}
 
       <div className="flex items-center justify-between">
-        <span className="text-[13px] text-admin-muted">{leads.length} lead</span>
-        <button onClick={() => setShowNewModal(true)} className="rounded-lg bg-admin-accent px-4 py-2 text-[12px] font-medium text-white hover:brightness-110 transition-colors">
-          + Yeni Lead
-        </button>
+        <div className="flex items-center gap-3">
+          <span className="text-[13px] text-admin-muted">{leads.length} lead</span>
+          {bulkSelection.size > 0 && (
+            <span className="rounded-full bg-admin-purple/15 px-2.5 py-0.5 text-[11px] font-medium text-admin-purple">
+              {bulkSelection.size} seçili
+            </span>
+          )}
+        </div>
+        <div className="flex items-center gap-2">
+          {bulkSelection.size > 0 && (
+            <>
+              <button
+                onClick={() => setBulkSectorOpen(true)}
+                className="rounded-lg bg-admin-purple px-4 py-2 text-[12px] font-medium text-white hover:brightness-110 transition-colors"
+              >
+                Toplu Sektör Ata ({bulkSelection.size})
+              </button>
+              <button
+                onClick={() => setBulkSelection(new Set())}
+                className="rounded-lg border border-admin-border px-3 py-2 text-[12px] text-admin-muted hover:text-admin-text transition-colors"
+              >
+                Seçimi Temizle
+              </button>
+            </>
+          )}
+          <button onClick={() => setShowNewModal(true)} className="rounded-lg bg-admin-accent px-4 py-2 text-[12px] font-medium text-white hover:brightness-110 transition-colors">
+            + Yeni Lead
+          </button>
+        </div>
       </div>
 
       <div className="flex gap-3 overflow-x-auto pb-2" style={{ minWidth: "max-content" }}>
@@ -258,14 +326,31 @@ export default function KanbanBoard({ leads: initial }: { leads: Lead[] }) {
                   const isTemplateAdded = col.key === "TEMPLATE_ADDED";
                   const isWaSent = col.key === "WA_SENT";
 
+                  const isSelected = bulkSelection.has(lead.id);
                   return (
-                    <div key={lead.id} className="rounded-lg border bg-admin-bg3 p-3"
-                      style={{ borderColor: needsFollowup ? "var(--color-admin-amber)" : "var(--color-admin-border)" }}>
-                      {/* Başlık — tıklanabilir */}
-                      <div className="flex items-start justify-between">
-                        <button onClick={() => setDetailLead(lead)} className="text-left text-[12px] font-medium hover:text-admin-accent transition-colors">
-                          {lead.name}
-                        </button>
+                    <div key={lead.id} className="rounded-lg border bg-admin-bg3 p-3 transition-all"
+                      style={{
+                        borderColor: isSelected
+                          ? "var(--color-admin-purple)"
+                          : needsFollowup
+                          ? "var(--color-admin-amber)"
+                          : "var(--color-admin-border)",
+                        boxShadow: isSelected ? "0 0 0 1px var(--color-admin-purple)" : undefined,
+                      }}>
+                      {/* Başlık — tıklanabilir + multi-select checkbox */}
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="flex min-w-0 items-start gap-2">
+                          <input
+                            type="checkbox"
+                            checked={isSelected}
+                            onChange={() => toggleBulkSelection(lead.id)}
+                            className="mt-0.5 h-3.5 w-3.5 shrink-0 cursor-pointer accent-admin-purple"
+                            title="Toplu sektör ata için seç"
+                          />
+                          <button onClick={() => setDetailLead(lead)} className="text-left text-[12px] font-medium hover:text-admin-accent transition-colors">
+                            {lead.name}
+                          </button>
+                        </div>
                         <span className={`shrink-0 rounded-full px-1.5 py-0.5 text-[9px] font-medium ${src.color}`}>{src.label}</span>
                       </div>
 
@@ -459,6 +544,77 @@ export default function KanbanBoard({ leads: initial }: { leads: Lead[] }) {
               <button
                 onClick={() => setSectorPickLead(null)}
                 className="rounded-lg border border-admin-border px-4 py-2.5 text-[12px] text-admin-muted hover:text-admin-text transition-colors"
+              >
+                İptal
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── Toplu Sektör Atama Modal ── */}
+      {bulkSectorOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm" onClick={() => !bulkLoading && setBulkSectorOpen(false)}>
+          <div className="mx-4 w-full max-w-md rounded-2xl border border-admin-border bg-admin-bg2 shadow-2xl" onClick={(e) => e.stopPropagation()}>
+            {/* Header */}
+            <div className="border-b border-admin-border px-5 py-4">
+              <h3 className="text-[14px] font-semibold text-admin-text">Toplu Sektör Ata</h3>
+              <p className="mt-1 text-[11px] text-admin-muted">
+                <span className="font-medium text-admin-purple">{bulkSelection.size} lead</span> için sektör belirleyin — hepsine aynı sektör atanacak
+              </p>
+            </div>
+
+            {/* Arama */}
+            <div className="border-b border-admin-border px-5 py-3">
+              <input
+                type="text"
+                placeholder="Sektör ara..."
+                value={bulkSectorSearch}
+                onChange={(e) => setBulkSectorSearch(e.target.value)}
+                autoFocus
+                className="w-full rounded-lg border border-admin-border bg-admin-bg3 px-3 py-2 text-[12px] text-admin-text placeholder:text-admin-muted2 focus:border-admin-purple focus:outline-none"
+              />
+            </div>
+
+            {/* Liste */}
+            <div className="max-h-[300px] overflow-y-auto p-2">
+              {filteredBulkSectors.length === 0 ? (
+                <div className="py-6 text-center text-[12px] text-admin-muted">Sonuç bulunamadı</div>
+              ) : (
+                filteredBulkSectors.map((s) => (
+                  <button
+                    key={s}
+                    onClick={() => setBulkSelectedSector(s)}
+                    className={`w-full rounded-lg px-3 py-2 text-left text-[12px] transition-colors ${
+                      bulkSelectedSector === s
+                        ? "bg-admin-purple/15 font-medium text-admin-purple"
+                        : "text-admin-text hover:bg-admin-bg3"
+                    }`}
+                  >
+                    {s}
+                    {bulkSelectedSector === s && <span className="ml-2">✓</span>}
+                  </button>
+                ))
+              )}
+            </div>
+
+            {/* Footer */}
+            <div className="flex gap-2 border-t border-admin-border px-5 py-4">
+              <button
+                onClick={handleBulkSectorConfirm}
+                disabled={!bulkSelectedSector || bulkLoading}
+                className="flex-1 rounded-lg bg-admin-purple py-2.5 text-[12px] font-semibold text-white transition-colors hover:brightness-110 disabled:opacity-40"
+              >
+                {bulkLoading
+                  ? "Güncelleniyor..."
+                  : bulkSelectedSector
+                  ? `${bulkSelection.size} lead'e "${bulkSelectedSector}" ata`
+                  : "Sektör seçin"}
+              </button>
+              <button
+                onClick={() => setBulkSectorOpen(false)}
+                disabled={bulkLoading}
+                className="rounded-lg border border-admin-border px-4 py-2.5 text-[12px] text-admin-muted hover:text-admin-text transition-colors disabled:opacity-40"
               >
                 İptal
               </button>

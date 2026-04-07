@@ -143,6 +143,7 @@ export async function addRawProspectToLead(data: {
   issue: string | null;
   hasWebsite: boolean;
   mobileScore: number | null;
+  sector: string | null;
 }) {
   try {
     // Dublike kontrol — aynı isimde lead var mı?
@@ -165,6 +166,7 @@ export async function addRawProspectToLead(data: {
         mobileScore: data.mobileScore,
         hasWebsite: data.hasWebsite,
         score: data.score,
+        sector: data.sector,
         source: "MAPS_SCRAPER",
         status: "COLD",
       },

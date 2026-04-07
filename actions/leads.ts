@@ -113,6 +113,24 @@ export async function updateLeadSector(id: string, sector: string) {
   }
 }
 
+// Birden fazla lead'e aynı sektörü topluca atar.
+// Boş/geçersiz id dizisi gelirse güvenli şekilde 0 döner.
+export async function bulkUpdateLeadsSector(ids: string[], sector: string) {
+  try {
+    if (!ids.length || !sector.trim()) {
+      return { success: false, error: "ID listesi veya sektör boş." };
+    }
+    const result = await prisma.lead.updateMany({
+      where: { id: { in: ids } },
+      data: { sector },
+    });
+    revalidatePath("/admin/leads");
+    return { success: true, count: result.count };
+  } catch {
+    return { success: false, error: "Sektörler güncellenemedi." };
+  }
+}
+
 export async function updateLeadNotes(id: string, notes: string) {
   try {
     await prisma.lead.update({
