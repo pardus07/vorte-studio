@@ -12,6 +12,7 @@ type Prospect = {
   googleMapsUrl: string | null; mobileScore: number | null; sslValid: boolean;
   hasWebsite: boolean; score: number; issue: string | null; addedToLeads: boolean;
   waPhone?: string | null; // Manuel eklenen WhatsApp numarası
+  sector?: string | null;  // Arama anındaki sektör snapshot'ı (stale state bug fix)
 };
 
 const filters = ["Tümü", "Sitesi olmayanlar", "Sitesi olanlar"];
@@ -229,8 +230,11 @@ export default function ProspectSearch({
       queries.push(`${sector} in ${city}${selectedDistrict ? ` ${selectedDistrict}` : ""}`);
     }
 
+    // Arama anındaki sektörü snapshot al — sonradan dropdown değişse bile bu kullanılır
+    const searchSector = sector;
+
     setSearching(true);
-    setQuery(`${sector} in ${city} ${selectedDistrict}`);
+    setQuery(`${searchSector} in ${city} ${selectedDistrict}`);
     setProgress({ current: 0, total: queries.length, currentName: "" });
 
     const allResults: Prospect[] = [];
@@ -277,6 +281,7 @@ export default function ProspectSearch({
                 googleReviews: r.reviews || null, googleMapsUrl: r.place_url || null,
                 mobileScore: null, sslValid: true, hasWebsite: !!r.website,
                 score, issue, addedToLeads: leadSet.has(r.title),
+                sector: searchSector, // ← arama anındaki sektör
               });
             }
           }
@@ -286,7 +291,7 @@ export default function ProspectSearch({
       // Her mahalle sonrası sonuçları göster
       const sorted = [...allResults].sort((a, b) => b.score - a.score);
       setProspects(sorted);
-      saveToStorage(sorted, `${sector} in ${city} ${selectedDistrict}`);
+      saveToStorage(sorted, `${searchSector} in ${city} ${selectedDistrict}`);
     }
 
     setSearching(false);
@@ -304,7 +309,7 @@ export default function ProspectSearch({
         setProspects((prev) => {
           const updated = prev.map((p) => p.id === prospect.id ? { ...p, mobileScore, sslValid, score, issue } : p);
           updated.sort((a, b) => b.score - a.score);
-          saveToStorage(updated, `${sector} in ${city} ${selectedDistrict}`);
+          saveToStorage(updated, `${searchSector} in ${city} ${selectedDistrict}`);
           return updated;
         });
       }).catch(() => {});
@@ -324,7 +329,7 @@ export default function ProspectSearch({
       address: prospect.address, googleRating: prospect.googleRating,
       googleReviews: prospect.googleReviews, score: prospect.score,
       issue: prospect.issue, hasWebsite: prospect.hasWebsite, mobileScore: prospect.mobileScore,
-      sector,
+      sector: prospect.sector ?? sector, // arama anındaki sektör (yoksa live state — eski localStorage için)
     });
     if (result.success) {
       setProspects((prev) => prev.map((p) => (p.id === id ? { ...p, addedToLeads: true } : p)));
@@ -349,7 +354,7 @@ export default function ProspectSearch({
         address: prospect.address, googleRating: prospect.googleRating,
         googleReviews: prospect.googleReviews, score: prospect.score,
         issue: prospect.issue, hasWebsite: prospect.hasWebsite, mobileScore: prospect.mobileScore,
-        sector,
+        sector: prospect.sector ?? sector, // arama anındaki sektör snapshot
       });
       if (result.success) { added++; setExistingLeads((prev) => new Set([...prev, prospect.name])); setProspects((prev) => prev.map((p) => (p.id === prospect.id ? { ...p, addedToLeads: true } : p))); }
     }
