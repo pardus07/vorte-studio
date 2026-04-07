@@ -11,6 +11,9 @@ RUN NODE_ENV=development npm ci
 COPY . .
 RUN npx prisma generate
 ENV NODE_ENV=production
+# TypeScript checker heap'i Coolify VPS'te default limite (~1.5GB) sıkışırsa
+# "Running TypeScript..." adımında sessizce OOM ile ölür. 4GB'a çıkarıyoruz.
+ENV NODE_OPTIONS=--max-old-space-size=4096
 RUN npm run build
 
 FROM base AS runner
