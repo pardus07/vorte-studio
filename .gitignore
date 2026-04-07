@@ -48,3 +48,10 @@ next-env.d.ts
 
 # Upload dosyaları
 public/uploads/
+
+# Yerel talimat / snapshot dosyaları (commit edilmez)
+FIYATLANDIRMA_GUNCELLEME_TALIMATI.md
+VORTE_STUDIO_SNAPSHOT.md
+FIYAT_HESAPLAMA_KALIBRASYON_TALIMATI.md
+*_TALIMATI.md
+*_SNAPSHOT.md
