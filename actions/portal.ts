@@ -198,6 +198,37 @@ export async function getPortalDashboard() {
       where: { portalUserId: user.id, senderType: "ADMIN", isRead: false },
     });
 
+    // Bakım kaydı (proposal email → client → maintenance)
+    let maintenance: {
+      plan: string | null;
+      yearlyFee: number;
+      renewalDate: string | null;
+    } | null = null;
+    try {
+      if (proposal.contactEmail) {
+        const client = await prisma.client.findFirst({
+          where: { email: proposal.contactEmail },
+          include: {
+            maintenance: {
+              where: { isActive: true },
+              orderBy: { createdAt: "desc" },
+              take: 1,
+            },
+          },
+        });
+        const m = client?.maintenance[0];
+        if (m) {
+          maintenance = {
+            plan: m.plan,
+            yearlyFee: Math.round(m.monthlyFee * 12),
+            renewalDate: m.renewalDate?.toISOString() || null,
+          };
+        }
+      }
+    } catch {
+      maintenance = null;
+    }
+
     return {
       user: { id: user.id, name: user.name, email: user.email, firmName: user.firmName },
       proposal: {
@@ -246,6 +277,7 @@ export async function getPortalDashboard() {
         designApprovedAt: proposal.portalUser?.designApprovedAt?.toISOString() || null,
         usedRevisions: proposal.portalUser?.designRevisions.length || 0,
       },
+      maintenance,
       unreadCount,
     };
   } catch (error) {

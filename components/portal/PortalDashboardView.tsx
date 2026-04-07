@@ -29,8 +29,22 @@ interface DashboardData {
     designApprovedAt: string | null;
     usedRevisions: number;
   };
+  maintenance: {
+    plan: string | null;
+    yearlyFee: number;
+    renewalDate: string | null;
+  } | null;
   unreadCount: number;
 }
+
+const PLAN_LABELS: Record<string, string> = {
+  starter: "Starter",
+  business: "Profesyonel",
+  pro: "E-Ticaret",
+  standard: "Standart",
+  premium: "Premium",
+  basic: "Temel",
+};
 
 const STATUS_MAP: Record<string, { label: string; color: string }> = {
   DRAFT: { label: "Taslak", color: "text-white/40" },
@@ -63,7 +77,7 @@ function timeAgo(iso: string) {
 }
 
 export default function PortalDashboardView({ data }: { data: DashboardData }) {
-  const { user, proposal, contract, payments, recentMessages, logoStatus, design, unreadCount } = data;
+  const { user, proposal, contract, payments, recentMessages, logoStatus, design, maintenance, unreadCount } = data;
   const designIsApproved = Boolean(design.designApprovedAt);
   const designHasUrl = Boolean(design.stagingUrl);
 
@@ -204,6 +218,77 @@ export default function PortalDashboardView({ data }: { data: DashboardData }) {
               </svg>
             </div>
           </Link>
+        </div>
+      )}
+
+      {/* Hosting & Bakım — bakım kaydı açıldıysa göster */}
+      {maintenance && (
+        <div className="mb-8 rounded-2xl border border-green-500/20 bg-green-500/[0.03] p-6">
+          <div className="flex items-start gap-4">
+            <div className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-xl bg-green-500/10">
+              <svg
+                className="h-5 w-5 text-green-400"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.8"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M12 2L4 6v6c0 5 3.5 9.5 8 10 4.5-.5 8-5 8-10V6l-8-4z" />
+                <polyline points="9 12 11 14 15 10" />
+              </svg>
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="flex flex-wrap items-center gap-2">
+                <h2 className="text-sm font-semibold">Hosting & Bakım Paketi</h2>
+                <span className="rounded-full bg-green-500/15 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-green-400">
+                  Aktif
+                </span>
+              </div>
+              <p className="mt-1 text-xs text-white/50">
+                Siteniz Vorte Studio altyapısında yayınlanıyor. Hosting, domain ve SSL yönetimi
+                tarafımızda; yenileme zamanı geldiğinde sizi önceden bilgilendireceğiz.
+              </p>
+
+              <div className="mt-4 grid gap-3 sm:grid-cols-3">
+                <div className="rounded-xl bg-white/[0.02] px-4 py-3">
+                  <p className="text-[10px] uppercase tracking-wider text-white/40">Paket</p>
+                  <p className="mt-1 text-sm font-semibold text-white">
+                    {PLAN_LABELS[maintenance.plan || "standard"] || maintenance.plan || "Standart"}
+                  </p>
+                </div>
+                <div className="rounded-xl bg-white/[0.02] px-4 py-3">
+                  <p className="text-[10px] uppercase tracking-wider text-white/40">Yıllık Yenileme</p>
+                  <p className="mt-1 text-sm font-semibold text-white">
+                    {formatPrice(maintenance.yearlyFee)} ₺
+                    <span className="ml-1 text-[10px] font-normal text-white/40">/yıl</span>
+                  </p>
+                </div>
+                <div className="rounded-xl bg-white/[0.02] px-4 py-3">
+                  <p className="text-[10px] uppercase tracking-wider text-white/40">Sonraki Yenileme</p>
+                  <p className="mt-1 text-sm font-semibold text-white">
+                    {maintenance.renewalDate ? formatDate(maintenance.renewalDate) : "—"}
+                  </p>
+                </div>
+              </div>
+
+              <ul className="mt-4 grid gap-1.5 text-xs text-white/60 sm:grid-cols-2">
+                <li className="flex items-center gap-1.5">
+                  <span className="text-green-400">✓</span> Sunucu yönetimi ve güncellemeler
+                </li>
+                <li className="flex items-center gap-1.5">
+                  <span className="text-green-400">✓</span> Domain ve SSL yenileme
+                </li>
+                <li className="flex items-center gap-1.5">
+                  <span className="text-green-400">✓</span> Yedekleme ve güvenlik
+                </li>
+                <li className="flex items-center gap-1.5">
+                  <span className="text-green-400">✓</span> Teknik destek
+                </li>
+              </ul>
+            </div>
+          </div>
         </div>
       )}
 
