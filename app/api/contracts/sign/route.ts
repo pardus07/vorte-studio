@@ -4,17 +4,33 @@ import { sendContractNotification, sendContractEmail } from "@/lib/email";
 import { generateContractPDF } from "@/lib/contract-pdf";
 import { createPortalAccount } from "@/actions/portal";
 import { revalidatePath } from "next/cache";
+import { checkRateLimit } from "@/lib/rate-limit";
 
 export const dynamic = "force-dynamic";
 
 export async function POST(req: NextRequest) {
+  // Rate limit: 3 imza denemesi/saat/IP — hassas işlem, brute force koruması
+  const limited = checkRateLimit(req, "contract-sign", 3, 60 * 60 * 1000);
+  if (limited) return limited;
+
   try {
     const body = await req.json();
-    const { contractId, signatureData, userAgent, device } = body;
+    const { contractId, signatureData, userAgent, device, mesafeliAccepted } = body;
 
     if (!contractId || !signatureData) {
       return NextResponse.json(
         { success: false, error: "Eksik bilgi" },
+        { status: 400 }
+      );
+    }
+
+    // Mesafeli Satış Sözleşmesi onayı zorunlu (Mesafeli Sözleşmeler Yönetmeliği)
+    if (!mesafeliAccepted) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: "Mesafeli Satış Sözleşmesini kabul etmeniz gerekmektedir.",
+        },
         { status: 400 }
       );
     }

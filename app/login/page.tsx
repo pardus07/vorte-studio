@@ -22,7 +22,14 @@ export default function LoginPage() {
     });
 
     if (result?.error) {
-      setError("E-posta veya sifre hatali.");
+      // NextAuth v5 hata kodları: "Locked" = brute force kilidi, diğerleri = genel hata
+      if (result.code === "Locked" || result.error.includes("Locked")) {
+        setError(
+          "Çok fazla başarısız deneme. Hesabınız 15 dakika boyunca kilitlendi. Lütfen daha sonra tekrar deneyin."
+        );
+      } else {
+        setError("E-posta veya şifre hatalı.");
+      }
       setLoading(false);
       return;
     }

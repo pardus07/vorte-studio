@@ -900,7 +900,7 @@ export default function ChatForm({ firmName, city, sector, slug }: Props) {
     }
 
     try {
-      await fetch('/api/chat-submit', {
+      const res = await fetch('/api/chat-submit', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -936,6 +936,15 @@ export default function ChatForm({ firmName, city, sector, slug }: Props) {
           leadId,
         }),
       })
+
+      // Rate limit (429): kullanıcıya net mesaj göster
+      if (res.status === 429) {
+        addBotMessage(
+          'Çok fazla istek gönderdiniz. Bilgilerinizi aldık ancak sistem koruması nedeniyle bir saat sonra tekrar deneyebilirsiniz. Acil iletişim için: studio@vorte.com.tr',
+          'done',
+        )
+        return
+      }
     } catch {
       // Sessiz hata — UX'i bozma
     }
@@ -1422,6 +1431,22 @@ export default function ChatForm({ firmName, city, sector, slug }: Props) {
                     Bir sorum var
                   </span>
                 </motion.button>
+              )}
+
+              {/* KVKK Aydınlatma bilgilendirmesi — kişisel veri toplandığı adımlarda */}
+              {(step === 'contactName' || step === 'contactPhone' || step === 'contactEmail') && (
+                <p className="mt-2 text-center text-[10px] text-slate-400">
+                  Devam ederek{' '}
+                  <a
+                    href="/kvkk"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-orange-500 underline hover:text-orange-600"
+                  >
+                    KVKK Aydınlatma Metnini
+                  </a>{' '}
+                  okumuş sayılırsınız.
+                </p>
               )}
             </div>
           </motion.div>

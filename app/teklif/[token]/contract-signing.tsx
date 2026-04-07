@@ -51,6 +51,8 @@ export default function ContractSigning({
   // İmza
   const [signatureData, setSignatureData] = useState<string | null>(null);
   const [accepted, setAccepted] = useState(false);
+  // Mesafeli Satış Sözleşmesi onayı (KVKK 2026/347 — ayrı checkbox zorunlu)
+  const [mesafeliAccepted, setMesafeliAccepted] = useState(false);
 
   // ── Adım 1: Bilgi formu gönder ──
   async function handleInfoSubmit(e: React.FormEvent) {
@@ -138,8 +140,21 @@ export default function ContractSigning({
           signatureData,
           userAgent: navigator.userAgent,
           device: `${window.screen.width}x${window.screen.height}`,
+          mesafeliAccepted,
         }),
       });
+
+      // Rate limit kontrolü (429 = çok fazla deneme)
+      if (res.status === 429) {
+        const data = await res.json();
+        setError(
+          data.error ||
+            "Çok fazla imza denemesi yapıldı. Lütfen bir saat sonra tekrar deneyin."
+        );
+        setLoading(false);
+        return;
+      }
+
       const data = await res.json();
       if (data.success) {
         setStep("done");
@@ -527,7 +542,7 @@ export default function ContractSigning({
 
             <SignatureCanvas onSignatureChange={setSignatureData} />
 
-            {/* Kabul checkbox */}
+            {/* Kabul checkbox — Hizmet Sözleşmesi */}
             <label className="flex items-start gap-3 rounded-lg border border-white/5 bg-white/[0.02] p-3 cursor-pointer">
               <input
                 type="checkbox"
@@ -542,9 +557,33 @@ export default function ContractSigning({
               </span>
             </label>
 
+            {/* Mesafeli Satış Sözleşmesi — KVKK 2026/347 uyarınca AYRI checkbox */}
+            <label className="flex items-start gap-3 rounded-lg border border-white/5 bg-white/[0.02] p-3 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={mesafeliAccepted}
+                onChange={(e) => setMesafeliAccepted(e.target.checked)}
+                className="mt-0.5 h-4 w-4 rounded border-white/20 accent-[#FF4500]"
+              />
+              <span className="text-xs text-white/40 leading-relaxed">
+                <a
+                  href="/mesafeli-satis-sozlesmesi"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-[#FF4500] hover:underline"
+                >
+                  Mesafeli Satış Sözleşmesini
+                </a>{" "}
+                okudum, anladım ve kabul ediyorum. Mesafeli Sözleşmeler
+                Yönetmeliği m.15/1-ğ uyarınca, peşinat ödemesi yaparak ve
+                portalı kullanarak hizmet ifasının başlamasına açık onay
+                veriyorum; bu onay ile cayma hakkımın sona ereceğini biliyorum.
+              </span>
+            </label>
+
             <button
               onClick={handleSign}
-              disabled={loading || !signatureData || !accepted}
+              disabled={loading || !signatureData || !accepted || !mesafeliAccepted}
               className="w-full rounded-xl bg-gradient-to-r from-[#FF4500] to-orange-600 px-6 py-4 text-base font-bold text-white shadow-2xl shadow-[#FF4500]/20 transition-all hover:shadow-[#FF4500]/40 hover:scale-[1.01] active:scale-[0.99] disabled:opacity-50"
             >
               {loading ? "İmzalanıyor..." : "Sözleşmeyi İmzala ve Gönder"}

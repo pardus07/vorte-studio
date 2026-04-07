@@ -24,7 +24,13 @@ export default function PortalLoginPage() {
       });
 
       if (result?.error) {
-        setError("E-posta veya şifre hatalı");
+        if (result.code === "Locked" || result.error.includes("Locked")) {
+          setError(
+            "Çok fazla başarısız deneme. Hesabınız 30 dakika boyunca kilitlendi."
+          );
+        } else {
+          setError("E-posta veya şifre hatalı");
+        }
       } else {
         router.push("/portal/dashboard");
       }

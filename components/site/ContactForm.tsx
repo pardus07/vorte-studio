@@ -339,6 +339,20 @@ export default function ContactForm({
           >
             {status === "sending" ? "Gönderiliyor..." : "Başvuru Gönder"}
           </button>
+
+          {/* KVKK Aydınlatma bilgilendirmesi (rıza değil — sadece bilgilendirme) */}
+          <p style={{ fontSize: 11, color: "#888", marginTop: 8, textAlign: "center" }}>
+            Devam ederek{" "}
+            <a
+              href="/kvkk"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ color: "#f97316", textDecoration: "underline" }}
+            >
+              KVKK Aydınlatma Metnini
+            </a>{" "}
+            okumuş sayılırsınız.
+          </p>
         </form>
       </div>
     </div>

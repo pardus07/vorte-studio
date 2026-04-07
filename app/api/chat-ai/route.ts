@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { GoogleGenAI } from "@google/genai";
+import { checkRateLimit } from "@/lib/rate-limit";
 
 export const dynamic = "force-dynamic";
 
@@ -31,6 +32,10 @@ CEVAP VEREMEZSEN VEYA EMİN DEĞİLSEN:
 Türkçe konuş. Kısa ve sıcak ol. "Siz" hitabı kullan.`;
 
 export async function POST(req: Request) {
+  // Rate limit: 20 AI sorgu/saat/IP — Gemini maliyet kontrolü
+  const limited = checkRateLimit(req, "chat-ai", 20, 60 * 60 * 1000);
+  if (limited) return limited;
+
   try {
     const { question, firmName, sector, city, step } = await req.json();
 

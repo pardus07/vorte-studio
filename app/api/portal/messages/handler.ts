@@ -1,6 +1,7 @@
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
+import { checkRateLimit } from "@/lib/rate-limit";
 
 export async function GET() {
   try {
@@ -41,6 +42,10 @@ export async function GET() {
 }
 
 export async function POST(req: Request) {
+  // Rate limit: 30 mesaj/saat/IP — portal kullanıcı flood koruması
+  const limited = checkRateLimit(req, "portal-messages", 30, 60 * 60 * 1000);
+  if (limited) return limited;
+
   try {
     const session = await auth();
     if (!session?.user) return NextResponse.json({ error: "Yetkisiz" }, { status: 401 });

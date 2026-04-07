@@ -1,10 +1,15 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { calculatePrice } from "@/lib/pricing-calculator";
+import { checkRateLimit } from "@/lib/rate-limit";
 
 export const dynamic = "force-dynamic";
 
 export async function POST(req: Request) {
+  // Rate limit: 3 lead/saat/IP — chatbot intake DB yazar, agresif limit
+  const limited = checkRateLimit(req, "chat-submit", 3, 60 * 60 * 1000);
+  if (limited) return limited;
+
   try {
     const body = await req.json();
 

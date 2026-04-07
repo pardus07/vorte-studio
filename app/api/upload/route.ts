@@ -2,8 +2,13 @@ import { writeFile, mkdir } from "fs/promises";
 import { join } from "path";
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
+import { checkRateLimit } from "@/lib/rate-limit";
 
 export async function POST(request: NextRequest) {
+  // Rate limit: 15 upload/saat/IP — disk doldurma saldırısına karşı
+  const limited = checkRateLimit(request, "upload", 15, 60 * 60 * 1000);
+  if (limited) return limited;
+
   const session = await auth();
   if (!session) {
     return NextResponse.json({ error: "Yetkisiz" }, { status: 401 });

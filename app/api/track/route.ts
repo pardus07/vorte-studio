@@ -1,9 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { checkRateLimit } from '@/lib/rate-limit'
 
 export const dynamic = 'force-dynamic'
 
 export async function POST(req: NextRequest) {
+  // Rate limit: 100 olay/saat/IP — tracking yüksek volüm OK ama abuse koruması
+  const limited = checkRateLimit(req, 'track', 100, 60 * 60 * 1000)
+  if (limited) return limited
+
   try {
     const { slug, type, metadata } = await req.json()
 

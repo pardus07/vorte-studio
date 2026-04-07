@@ -1,7 +1,27 @@
-import NextAuth from "next-auth";
+import NextAuth, { CredentialsSignin } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
+import {
+  checkFailureCount,
+  recordFailure,
+  resetFailures,
+  getClientIp,
+} from "@/lib/rate-limit";
+
+/**
+ * Custom error: NextAuth'a kilitli durumu bildirir, kullanıcı login sayfasında
+ * `?error=Locked` query parametresiyle anlamlı mesaj görür.
+ */
+class LockedError extends CredentialsSignin {
+  code = "Locked";
+}
+
+// Brute force politikası — admin ve portal için ayrı eşikler
+const ADMIN_MAX_FAILURES = 5;
+const ADMIN_LOCKOUT_MS = 15 * 60 * 1000; // 15 dk
+const PORTAL_MAX_FAILURES = 8;
+const PORTAL_LOCKOUT_MS = 30 * 60 * 1000; // 30 dk
 
 const nextAuth = NextAuth({
   trustHost: true,
@@ -13,7 +33,20 @@ const nextAuth = NextAuth({
         email: { label: "Email", type: "email" },
         password: { label: "Sifre", type: "password" },
       },
-      async authorize(credentials) {
+      async authorize(credentials, request) {
+        // IP-bazlı brute force koruması
+        const ip = getClientIp(request as Request);
+        const failureKey = `admin-login:${ip}`;
+
+        const status = checkFailureCount(
+          failureKey,
+          ADMIN_MAX_FAILURES,
+          ADMIN_LOCKOUT_MS
+        );
+        if (status.blocked) {
+          throw new LockedError();
+        }
+
         const hash = process.env.ADMIN_PASSWORD_HASH;
         if (!hash) {
           console.error("[auth] ADMIN_PASSWORD_HASH env tanımlı değil!");
@@ -23,7 +56,10 @@ const nextAuth = NextAuth({
           credentials.password as string,
           hash
         );
+
         if (valid) {
+          // Başarılı giriş — sayacı sıfırla
+          resetFailures(failureKey);
           return {
             id: "1",
             email: credentials.email as string,
@@ -31,6 +67,9 @@ const nextAuth = NextAuth({
             role: "admin",
           };
         }
+
+        // Başarısız — sayacı artır
+        recordFailure(failureKey);
         return null;
       },
     }),
@@ -41,20 +80,41 @@ const nextAuth = NextAuth({
         email: { label: "Email", type: "email" },
         password: { label: "Sifre", type: "password" },
       },
-      async authorize(credentials) {
+      async authorize(credentials, request) {
+        const ip = getClientIp(request as Request);
+        const email = (credentials.email as string)?.toLowerCase() || "";
+        // IP + email kombinasyonu — saldırgan email rotate edemesin
+        const failureKey = `portal-login:${ip}:${email}`;
+
+        const status = checkFailureCount(
+          failureKey,
+          PORTAL_MAX_FAILURES,
+          PORTAL_LOCKOUT_MS
+        );
+        if (status.blocked) {
+          throw new LockedError();
+        }
+
         try {
           const user = await prisma.portalUser.findUnique({
-            where: { email: (credentials.email as string).toLowerCase() },
+            where: { email },
           });
-          if (!user || !user.isActive) return null;
+          if (!user || !user.isActive) {
+            recordFailure(failureKey);
+            return null;
+          }
 
           const valid = await bcrypt.compare(
             credentials.password as string,
             user.passwordHash
           );
-          if (!valid) return null;
+          if (!valid) {
+            recordFailure(failureKey);
+            return null;
+          }
 
-          // Son giriş zamanını güncelle
+          // Başarılı giriş — sayacı sıfırla, son giriş zamanını güncelle
+          resetFailures(failureKey);
           await prisma.portalUser.update({
             where: { id: user.id },
             data: { lastLoginAt: new Date() },
@@ -69,7 +129,8 @@ const nextAuth = NextAuth({
             firmName: user.firmName,
             proposalId: user.proposalId,
           };
-        } catch {
+        } catch (err) {
+          if (err instanceof LockedError) throw err;
           return null;
         }
       },
