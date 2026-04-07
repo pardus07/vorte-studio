@@ -113,7 +113,7 @@ export const WORKFLOW_STEPS: WorkflowStep[] = [
     key: "completed",
     order: 9,
     label: "Tamamlandı",
-    description: "Proje canlıda. Müşteri yıllık hosting yenileme döngüsüne alınabilir.",
+    description: "Projeniz yayında. Bir yıl boyunca hosting ve domain yönetimi Vorte Studio tarafında; yenileme zamanı geldiğinde tarafımızdan bilgilendirileceksiniz.",
     href: "/admin/projects",
     icon: "✅",
   },
