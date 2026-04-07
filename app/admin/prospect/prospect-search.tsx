@@ -54,6 +54,12 @@ function ScoreBadge({ score }: { score: number }) {
   return <div className={`flex h-10 w-10 items-center justify-center rounded-lg border text-sm font-bold ${colors[grade]}`}>{score}</div>;
 }
 
+// ── Polling parametreleri ──
+// Scraper bir mahalle için max 300sn (max_time) çalışıyor, biz 180sn bekliyoruz.
+// Yoğun mahallelerde (Beşevler, Görükle vb.) 60sn yetmiyordu — sessizce skip ediyorduk.
+const POLLING_INTERVAL_MS = 2000;
+const POLLING_MAX_ATTEMPTS = 90;     // 2sn × 90 = 180sn (3 dakika)
+
 // Mahalle/ilçe araması sırasında aynı işletme birden fazla mahallede döner.
 // Option 1: title (lowercase+trim) + telefonun sadece rakamları.
 // Aynı şube farklı formatla gelse bile tek sayılır; farklı şubeler ayrı kalır.
@@ -85,7 +91,9 @@ export default function ProspectSearch({
   const [prospects, setProspects] = useState<Prospect[]>([]);
   const [searching, setSearching] = useState(false);
   const [query, setQuery] = useState("");
-  const [progress, setProgress] = useState({ current: 0, total: 0, currentName: "" });
+  const [progress, setProgress] = useState({ current: 0, total: 0, currentName: "", waitedSec: 0 });
+  // Atlanan mahalleler — polling timeout veya scraper hatası
+  const [skippedNeighborhoods, setSkippedNeighborhoods] = useState<string[]>([]);
   const [notification, setNotification] = useState<{ msg: string; type: "info" | "success" | "error" } | null>(null);
   const [existingLeads, setExistingLeads] = useState<Set<string>>(new Set());
   // Ref: async arama loop'u içinde stale closure'a takılmadan güncel lead listesini oku
@@ -252,10 +260,12 @@ export default function ProspectSearch({
 
     setSearching(true);
     setQuery(`${searchSector} in ${city} ${selectedDistrict}`);
-    setProgress({ current: 0, total: queries.length, currentName: "" });
+    setProgress({ current: 0, total: queries.length, currentName: "", waitedSec: 0 });
+    setSkippedNeighborhoods([]); // önceki aramadan kalan skip listesini temizle
 
     const allResults: Prospect[] = [];
     const seenNames = new Set<string>();
+    const skipped: string[] = [];
     const leadNames = await getExistingLeadNames();
     const leadSet = new Set(leadNames);
     setExistingLeads(leadSet);
@@ -263,20 +273,25 @@ export default function ProspectSearch({
 
     for (let i = 0; i < queries.length; i++) {
       const q = queries[i];
-      setProgress({ current: i + 1, total: queries.length, currentName: q.split(" in ")[1] || q });
+      const neighborhoodLabel = q.split(" in ")[1] || q;
+      setProgress({ current: i + 1, total: queries.length, currentName: neighborhoodLabel, waitedSec: 0 });
 
       const job = await createScraperJob(q);
       if (!job.success || !job.jobId) {
-        showNotif(job.error || "Scraper hatası.", "error");
+        showNotif(`${neighborhoodLabel}: ${job.error || "Scraper hatası"}`, "error");
+        skipped.push(neighborhoodLabel);
+        setSkippedNeighborhoods([...skipped]);
         continue;
       }
 
-      // Polling
+      // Polling — 180 saniyeye kadar bekle, her tick'te progress'e yansıt
       let done = false;
       let attempts = 0;
-      while (!done && attempts < 30) {
+      while (!done && attempts < POLLING_MAX_ATTEMPTS) {
         attempts++;
-        await new Promise((r) => setTimeout(r, 2000));
+        await new Promise((r) => setTimeout(r, POLLING_INTERVAL_MS));
+        // Progress'e bekleme süresini yaz — kullanıcı "ne kadar sürdü" görür
+        setProgress((prev) => ({ ...prev, waitedSec: attempts * (POLLING_INTERVAL_MS / 1000) }));
         const status = await checkScraperJob(job.jobId!);
         if (!status.success) break;
         if (status.status === "ok" || status.status === "completed" || status.status === "done") {
@@ -308,6 +323,13 @@ export default function ProspectSearch({
         }
       }
 
+      // Polling timeout — scraper bitiremedi, sessizce geçme; kayda al ve bildir
+      if (!done) {
+        skipped.push(neighborhoodLabel);
+        setSkippedNeighborhoods([...skipped]);
+        showNotif(`${neighborhoodLabel}: scraper ${POLLING_MAX_ATTEMPTS * POLLING_INTERVAL_MS / 1000}sn içinde yetişemedi, atlandı.`, "error");
+      }
+
       // Her mahalle sonrası sonuçları göster — kullanıcının eklediği kartları koru
       const sorted = [...allResults].sort((a, b) => b.score - a.score);
       setProspects((prev) => {
@@ -324,8 +346,16 @@ export default function ProspectSearch({
     }
 
     setSearching(false);
-    setProgress({ current: 0, total: 0, currentName: "" });
-    showNotif(`${allResults.length} işletme bulundu!`, "success");
+    setProgress({ current: 0, total: 0, currentName: "", waitedSec: 0 });
+    // Sonuç + atlanan mahalle özeti
+    if (skipped.length > 0) {
+      showNotif(
+        `${allResults.length} işletme bulundu. ${skipped.length} mahalle atlandı — tekrar denemek için aşağıdaki listeyi gör.`,
+        "info"
+      );
+    } else {
+      showNotif(`${allResults.length} işletme bulundu!`, "success");
+    }
 
     // PageSpeed audit (arka planda)
     const withSite = allResults.filter((p) => p.website);
@@ -587,11 +617,41 @@ export default function ProspectSearch({
         {searching && progress.total > 1 && (
           <div className="mt-3">
             <div className="mb-1 flex items-center justify-between text-[11px] text-admin-muted">
-              <span>{progress.currentName}</span>
+              <span>
+                {progress.currentName}
+                {progress.waitedSec > 0 && (
+                  <span className="ml-2 text-admin-amber">
+                    · scraper bekleniyor {progress.waitedSec}sn / {POLLING_MAX_ATTEMPTS * POLLING_INTERVAL_MS / 1000}sn
+                  </span>
+                )}
+              </span>
               <span>{progress.current}/{progress.total} mahalle tarandı</span>
             </div>
             <div className="h-1.5 overflow-hidden rounded-full bg-admin-bg4">
               <div className="h-full rounded-full bg-admin-accent transition-all" style={{ width: `${(progress.current / progress.total) * 100}%` }} />
+            </div>
+          </div>
+        )}
+
+        {/* Atlanan mahalleler — polling timeout veya scraper hatası */}
+        {skippedNeighborhoods.length > 0 && (
+          <div className="mt-3 rounded-lg border border-admin-amber/30 bg-admin-amber-dim p-3">
+            <div className="mb-1 flex items-center justify-between">
+              <div className="text-[11px] font-medium text-admin-amber">
+                ⚠️ {skippedNeighborhoods.length} mahalle atlandı (scraper yetişemedi)
+              </div>
+              <button
+                onClick={() => setSkippedNeighborhoods([])}
+                className="text-[10px] text-admin-muted hover:text-admin-text transition-colors"
+              >
+                Kapat
+              </button>
+            </div>
+            <div className="text-[10.5px] text-admin-muted leading-relaxed">
+              {skippedNeighborhoods.join(" · ")}
+            </div>
+            <div className="mt-1.5 text-[10px] text-admin-muted2">
+              Tekrar denemek için bu mahalleleri seçip yeniden Ara'ya basın — mevcut liste korunur.
             </div>
           </div>
         )}
