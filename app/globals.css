@@ -156,3 +156,77 @@ body::before {
   font-weight: 600;
   color: #f0f0f0;
 }
+
+/* ─── Legal Prose (KVKK, Gizlilik, Çerez, Mesafeli Satış) ─── */
+.legal-prose h2 {
+  font-family: var(--font-syne);
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #f0f0f0;
+  margin-top: 2.5em;
+  margin-bottom: 0.8em;
+  padding-bottom: 0.5em;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+}
+.legal-prose h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #e0e0e0;
+  margin-top: 1.8em;
+  margin-bottom: 0.6em;
+}
+.legal-prose p {
+  margin: 0.9em 0;
+}
+.legal-prose ul,
+.legal-prose ol {
+  padding-left: 1.5em;
+  margin: 0.9em 0;
+}
+.legal-prose ul {
+  list-style: disc;
+}
+.legal-prose ol {
+  list-style: decimal;
+}
+.legal-prose li {
+  margin: 0.4em 0;
+}
+.legal-prose strong {
+  color: #e0e0e0;
+  font-weight: 600;
+}
+.legal-prose a {
+  color: #ff6b35;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.legal-prose a:hover {
+  color: #ff4500;
+}
+.legal-prose table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.5em 0;
+  font-size: 0.9em;
+}
+.legal-prose th,
+.legal-prose td {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 0.7em 1em;
+  text-align: left;
+  vertical-align: top;
+}
+.legal-prose th {
+  background: rgba(255, 255, 255, 0.04);
+  font-weight: 600;
+  color: #f0f0f0;
+}
+.legal-prose .callout {
+  margin: 1.5em 0;
+  padding: 1em 1.2em;
+  border-left: 3px solid #ff4500;
+  background: rgba(255, 69, 0, 0.06);
+  border-radius: 0 0.5em 0.5em 0;
+  font-size: 0.92em;
+}

@@ -115,17 +115,25 @@ export default function Footer() {
         <div className="mt-12 border-t border-border" />
 
         {/* Bottom bar */}
-        <div className="mt-6 flex flex-col items-center justify-between gap-3 md:flex-row">
+        <div className="mt-6 flex flex-col items-center justify-between gap-4 md:flex-row">
           <p className="text-[11px] text-muted2">
-            &copy; {new Date().getFullYear()} Vorte Studio. Tüm hakları saklıdır.
+            &copy; {new Date().getFullYear()} İbrahim Yaşar — Vorte Studio. Tüm hakları saklıdır.
           </p>
-          <div className="flex items-center gap-4 text-[11px] text-muted2">
+          <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-[11px] text-muted2">
+            <Link href="/kvkk" className="transition-colors hover:text-white">
+              KVKK
+            </Link>
+            <span className="text-border">|</span>
             <Link href="/gizlilik-politikasi" className="transition-colors hover:text-white">
               Gizlilik Politikası
             </Link>
             <span className="text-border">|</span>
-            <Link href="/kvkk" className="transition-colors hover:text-white">
-              KVKK
+            <Link href="/cerez-politikasi" className="transition-colors hover:text-white">
+              Çerez Politikası
+            </Link>
+            <span className="text-border">|</span>
+            <Link href="/mesafeli-satis-sozlesmesi" className="transition-colors hover:text-white">
+              Mesafeli Satış
             </Link>
           </div>
         </div>
