@@ -24,6 +24,11 @@ interface DashboardData {
     uploadedBy: string; createdAt: string;
   }[];
   logoStatus: string | null;
+  design: {
+    stagingUrl: string | null;
+    designApprovedAt: string | null;
+    usedRevisions: number;
+  };
   unreadCount: number;
 }
 
@@ -58,7 +63,9 @@ function timeAgo(iso: string) {
 }
 
 export default function PortalDashboardView({ data }: { data: DashboardData }) {
-  const { user, proposal, contract, payments, recentMessages, logoStatus, unreadCount } = data;
+  const { user, proposal, contract, payments, recentMessages, logoStatus, design, unreadCount } = data;
+  const designIsApproved = Boolean(design.designApprovedAt);
+  const designHasUrl = Boolean(design.stagingUrl);
 
   const paidTotal = payments.filter((p) => p.status === "PAID").reduce((s, p) => s + p.amount, 0);
   const totalDue = payments.reduce((s, p) => s + p.amount, 0);
@@ -134,6 +141,71 @@ export default function PortalDashboardView({ data }: { data: DashboardData }) {
           }}
         />
       </div>
+
+      {/* Tasarım Önizleme — staging URL geldiyse göster */}
+      {designHasUrl && (
+        <div className="mb-8">
+          <Link
+            href="/portal/tasarim"
+            className={`group block rounded-2xl border p-6 transition-all ${
+              designIsApproved
+                ? "border-green-500/20 bg-green-500/[0.03] hover:border-green-500/40"
+                : "border-accent/30 bg-accent/[0.04] hover:border-accent/50"
+            }`}
+          >
+            <div className="flex items-center gap-4">
+              <div
+                className={`flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl ${
+                  designIsApproved ? "bg-green-500/10" : "bg-accent/10"
+                }`}
+              >
+                <svg
+                  className={`h-6 w-6 ${designIsApproved ? "text-green-400" : "text-accent"}`}
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <rect x="2" y="3" width="20" height="14" rx="2" />
+                  <line x1="8" y1="21" x2="16" y2="21" />
+                  <line x1="12" y1="17" x2="12" y2="21" />
+                </svg>
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2">
+                  <h2 className="text-base font-semibold">Tasarım Önizleme</h2>
+                  {!designIsApproved && (
+                    <span className="rounded-full bg-accent/15 px-2 py-0.5 text-[10px] font-bold text-accent uppercase tracking-wider">
+                      İnceleme Bekliyor
+                    </span>
+                  )}
+                  {designIsApproved && (
+                    <span className="rounded-full bg-green-500/15 px-2 py-0.5 text-[10px] font-bold text-green-400 uppercase tracking-wider">
+                      Onaylandı
+                    </span>
+                  )}
+                </div>
+                <p className="mt-1 text-sm text-white/50">
+                  {designIsApproved
+                    ? "Tasarımınız onaylandı, üretim aşamasına geçildi."
+                    : "Tasarımınız hazır. İnceleyip revizyon talep edebilir veya onaylayabilirsiniz."}
+                </p>
+              </div>
+              <svg
+                className="h-5 w-5 flex-shrink-0 text-white/30 group-hover:translate-x-1 group-hover:text-white/60 transition-all"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+              >
+                <polyline points="9 18 15 12 9 6" />
+              </svg>
+            </div>
+          </Link>
+        </div>
+      )}
 
       {/* Ödeme Planı */}
       <div className="mb-8 rounded-2xl border border-white/[0.07] bg-bg2 p-6">

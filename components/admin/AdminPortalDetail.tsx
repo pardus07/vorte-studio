@@ -1,10 +1,26 @@
 "use client";
 
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useRef, useEffect, useCallback, useTransition } from "react";
 import Link from "next/link";
+import { setStagingUrl, resetDesignApproval } from "@/actions/design-preview";
 
 interface Message {
   id: string; content: string; senderType: string; isRead: boolean; createdAt: string;
+}
+
+interface DesignRevisionItem {
+  id: string;
+  note: string;
+  stagingUrlAtTime: string | null;
+  createdAt: string;
+}
+
+interface DesignData {
+  stagingUrl: string | null;
+  designApprovedAt: string | null;
+  usedRevisions: number;
+  maxRevisions: number;
+  revisions: DesignRevisionItem[];
 }
 
 interface AdminDetailData {
@@ -20,6 +36,7 @@ interface AdminDetailData {
   payments: { id: string; stage: number; label: string; amount: number; status: string; paidAt: string | null }[];
   messages: Message[];
   files: { id: string; fileName: string; filePath: string; fileSize: number; fileType: string; uploadedBy: string; createdAt: string }[];
+  design: DesignData;
 }
 
 function formatPrice(n: number) {
@@ -41,11 +58,11 @@ function formatSize(bytes: number) {
 }
 
 export default function AdminPortalDetail({ data }: { data: AdminDetailData }) {
-  const { user, proposal, contract, payments, files } = data;
+  const { user, proposal, contract, payments, files, design } = data;
   const [messages, setMessages] = useState<Message[]>(data.messages);
   const [input, setInput] = useState("");
   const [sending, setSending] = useState(false);
-  const [tab, setTab] = useState<"messages" | "files" | "payments">("messages");
+  const [tab, setTab] = useState<"messages" | "files" | "payments" | "design">("messages");
   const bottomRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = useCallback(() => {
@@ -144,7 +161,7 @@ export default function AdminPortalDetail({ data }: { data: AdminDetailData }) {
 
       {/* Tabs */}
       <div className="mb-4 flex gap-1 rounded-xl bg-[var(--color-admin-bg2)] p-1">
-        {(["messages", "files", "payments"] as const).map((t) => (
+        {(["messages", "files", "payments", "design"] as const).map((t) => (
           <button
             key={t}
             onClick={() => setTab(t)}
@@ -154,7 +171,13 @@ export default function AdminPortalDetail({ data }: { data: AdminDetailData }) {
                 : "text-[var(--color-admin-muted)] hover:text-white"
             }`}
           >
-            {t === "messages" ? "Mesajlar" : t === "files" ? "Dosyalar" : "Ödemeler"}
+            {t === "messages"
+              ? "Mesajlar"
+              : t === "files"
+              ? "Dosyalar"
+              : t === "payments"
+              ? "Ödemeler"
+              : "Tasarım"}
           </button>
         ))}
       </div>
@@ -239,6 +262,11 @@ export default function AdminPortalDetail({ data }: { data: AdminDetailData }) {
         </div>
       )}
 
+      {/* Design Tab */}
+      {tab === "design" && (
+        <AdminDesignTab portalUserId={user.id} initial={design} />
+      )}
+
       {/* Payments Tab */}
       {tab === "payments" && (
         <div className="rounded-2xl border border-[var(--color-admin-border)] bg-[var(--color-admin-bg2)] p-4">
@@ -263,6 +291,219 @@ export default function AdminPortalDetail({ data }: { data: AdminDetailData }) {
           </div>
         </div>
       )}
+    </div>
+  );
+}
+
+// ── Admin Design Tab ──────────────────────────────────────────
+// Staging URL yönetimi + revizyon geçmişi. Optimistic update YOK —
+// Server Action dönüşünde router.refresh yerine page-level
+// revalidatePath zaten tetikleniyor, bu yüzden state'i lokal tutup
+// başarıda sayfayı yenilemek yeterli.
+function AdminDesignTab({
+  portalUserId,
+  initial,
+}: {
+  portalUserId: string;
+  initial: DesignData;
+}) {
+  const [urlInput, setUrlInput] = useState(initial.stagingUrl || "");
+  const [msg, setMsg] = useState<{ type: "ok" | "err"; text: string } | null>(null);
+  const [isPending, startTransition] = useTransition();
+
+  const isApproved = Boolean(initial.designApprovedAt);
+  const approvedDate = initial.designApprovedAt
+    ? new Date(initial.designApprovedAt).toLocaleString("tr-TR", {
+        day: "numeric",
+        month: "short",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+      })
+    : null;
+
+  function handleSaveUrl() {
+    setMsg(null);
+    startTransition(async () => {
+      const cleaned = urlInput.trim() || null;
+      const res = await setStagingUrl(portalUserId, cleaned);
+      if (res.success) {
+        setMsg({ type: "ok", text: "Staging URL güncellendi" });
+      } else {
+        setMsg({ type: "err", text: res.error || "Hata oluştu" });
+      }
+    });
+  }
+
+  function handleClearUrl() {
+    if (!confirm("Staging URL temizlenecek. Müşteri 'henüz hazır değil' durumunu görecek. Emin misiniz?")) return;
+    setUrlInput("");
+    setMsg(null);
+    startTransition(async () => {
+      const res = await setStagingUrl(portalUserId, null);
+      if (res.success) {
+        setMsg({ type: "ok", text: "URL temizlendi" });
+      } else {
+        setMsg({ type: "err", text: res.error || "Hata oluştu" });
+      }
+    });
+  }
+
+  function handleResetApproval() {
+    if (
+      !confirm(
+        "Tasarım onayı geri alınacak. Müşteri tekrar revizyon isteyebilir. Bu acil durum kapısıdır — emin misiniz?"
+      )
+    )
+      return;
+    setMsg(null);
+    startTransition(async () => {
+      const res = await resetDesignApproval(portalUserId);
+      if (res.success) {
+        setMsg({ type: "ok", text: "Onay geri alındı. Sayfayı yenileyin." });
+      } else {
+        setMsg({ type: "err", text: res.error || "Hata oluştu" });
+      }
+    });
+  }
+
+  return (
+    <div className="space-y-4">
+      {/* Durum özeti */}
+      <div className="grid gap-3 sm:grid-cols-3">
+        <div className="rounded-xl border border-[var(--color-admin-border)] bg-[var(--color-admin-bg2)] p-4">
+          <p className="text-xs text-[var(--color-admin-muted)]">Staging URL</p>
+          <p className="mt-1 text-sm font-medium truncate">
+            {initial.stagingUrl ? (
+              <a
+                href={initial.stagingUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-[var(--color-admin-accent)] hover:underline"
+              >
+                {initial.stagingUrl}
+              </a>
+            ) : (
+              <span className="text-[var(--color-admin-muted)]">—</span>
+            )}
+          </p>
+        </div>
+        <div className="rounded-xl border border-[var(--color-admin-border)] bg-[var(--color-admin-bg2)] p-4">
+          <p className="text-xs text-[var(--color-admin-muted)]">Onay Durumu</p>
+          <p className={`mt-1 text-sm font-medium ${isApproved ? "text-green-400" : "text-amber-400"}`}>
+            {isApproved ? `Onaylandı · ${approvedDate}` : "Onay Bekliyor"}
+          </p>
+        </div>
+        <div className="rounded-xl border border-[var(--color-admin-border)] bg-[var(--color-admin-bg2)] p-4">
+          <p className="text-xs text-[var(--color-admin-muted)]">Revizyon</p>
+          <p className="mt-1 text-sm font-medium">
+            {initial.usedRevisions} / {initial.maxRevisions} kullanıldı
+          </p>
+        </div>
+      </div>
+
+      {/* URL form */}
+      <div className="rounded-2xl border border-[var(--color-admin-border)] bg-[var(--color-admin-bg2)] p-4">
+        <p className="mb-3 text-sm font-semibold">Staging URL Yönetimi</p>
+        <div className="flex flex-col gap-2 sm:flex-row">
+          <input
+            type="url"
+            value={urlInput}
+            onChange={(e) => setUrlInput(e.target.value)}
+            placeholder="https://staging.vortestudio.com.tr/musteri-adi"
+            className="flex-1 rounded-xl border border-[var(--color-admin-border)] bg-[var(--color-admin-bg)] px-4 py-2.5 text-sm text-white placeholder-[var(--color-admin-muted)] outline-none focus:border-[var(--color-admin-accent)]/40"
+          />
+          <button
+            onClick={handleSaveUrl}
+            disabled={isPending || urlInput.trim() === (initial.stagingUrl || "")}
+            className="rounded-xl bg-[var(--color-admin-accent)] px-4 py-2.5 text-sm font-medium text-white disabled:opacity-40"
+          >
+            Kaydet
+          </button>
+          {initial.stagingUrl && (
+            <button
+              onClick={handleClearUrl}
+              disabled={isPending}
+              className="rounded-xl border border-[var(--color-admin-border)] px-4 py-2.5 text-sm text-[var(--color-admin-muted)] hover:text-white"
+            >
+              Temizle
+            </button>
+          )}
+        </div>
+        {msg && (
+          <p className={`mt-2 text-xs ${msg.type === "ok" ? "text-green-400" : "text-red-400"}`}>
+            {msg.text}
+          </p>
+        )}
+        <p className="mt-2 text-xs text-[var(--color-admin-muted)]">
+          http:// veya https:// ile başlamalı. URL güncellendiğinde eski revizyon notları korunur
+          (her biri kendi zamanındaki URL'i snapshot olarak tutuyor).
+        </p>
+      </div>
+
+      {/* Onay acil durum kapısı */}
+      {isApproved && (
+        <div className="rounded-2xl border border-amber-500/30 bg-amber-500/5 p-4">
+          <p className="text-sm font-semibold text-amber-400">Acil Durum: Onayı Geri Al</p>
+          <p className="mt-1 text-xs text-amber-400/70">
+            Müşteri tasarımı onayladı ama bir hata fark edildiyse onayı geri alıp yeniden revizyon
+            açabilirsiniz. Revizyon geçmişi silinmez.
+          </p>
+          <button
+            onClick={handleResetApproval}
+            disabled={isPending}
+            className="mt-3 rounded-xl border border-amber-500/40 px-4 py-2 text-xs font-medium text-amber-400 hover:bg-amber-500/10"
+          >
+            Onayı Geri Al
+          </button>
+        </div>
+      )}
+
+      {/* Revizyon geçmişi */}
+      <div className="rounded-2xl border border-[var(--color-admin-border)] bg-[var(--color-admin-bg2)] p-4">
+        <p className="mb-3 text-sm font-semibold">
+          Revizyon Geçmişi ({initial.revisions.length})
+        </p>
+        {initial.revisions.length === 0 ? (
+          <p className="py-6 text-center text-sm text-[var(--color-admin-muted)]">
+            Henüz revizyon talebi yok
+          </p>
+        ) : (
+          <div className="space-y-3">
+            {initial.revisions.map((r, idx) => (
+              <div key={r.id} className="rounded-xl bg-white/[0.02] p-3">
+                <div className="mb-1 flex items-center justify-between">
+                  <span className="text-xs font-semibold text-[var(--color-admin-accent)]">
+                    #{initial.revisions.length - idx}
+                  </span>
+                  <span className="text-xs text-[var(--color-admin-muted)]">
+                    {new Date(r.createdAt).toLocaleString("tr-TR", {
+                      day: "numeric",
+                      month: "short",
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
+                  </span>
+                </div>
+                <p className="text-sm text-white/80 whitespace-pre-wrap">{r.note}</p>
+                {r.stagingUrlAtTime && (
+                  <p className="mt-2 text-[11px] text-[var(--color-admin-muted)]">
+                    Zamanındaki URL:{" "}
+                    <a
+                      href={r.stagingUrlAtTime}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="underline hover:text-white"
+                    >
+                      {r.stagingUrlAtTime}
+                    </a>
+                  </p>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 }

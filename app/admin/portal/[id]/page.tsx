@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import AdminPortalDetail from "@/components/admin/AdminPortalDetail";
+import { MAX_DESIGN_REVISIONS } from "@/lib/design-preview-rules";
 
 export const dynamic = "force-dynamic";
 
@@ -24,6 +25,7 @@ export default async function AdminPortalDetailPage({
         },
         messages: { orderBy: { createdAt: "asc" } },
         files: { orderBy: { createdAt: "desc" } },
+        designRevisions: { orderBy: { createdAt: "desc" } },
       },
     });
   } catch {
@@ -92,6 +94,18 @@ export default async function AdminPortalDetailPage({
       uploadedBy: f.uploadedBy,
       createdAt: f.createdAt.toISOString(),
     })),
+    design: {
+      stagingUrl: portalUser.stagingUrl,
+      designApprovedAt: portalUser.designApprovedAt?.toISOString() || null,
+      usedRevisions: portalUser.designRevisions.length,
+      maxRevisions: MAX_DESIGN_REVISIONS,
+      revisions: portalUser.designRevisions.map((r) => ({
+        id: r.id,
+        note: r.note,
+        stagingUrlAtTime: r.stagingUrlAtTime,
+        createdAt: r.createdAt.toISOString(),
+      })),
+    },
   };
 
   return <AdminPortalDetail data={data} />;

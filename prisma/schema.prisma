@@ -291,9 +291,30 @@ model PortalUser {
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
-  messages    PortalMessage[]
-  files       PortalFile[]
-  logoProject LogoProject?
+  // ── Tasarım Önizleme (Staging) ──
+  // Admin staging URL'i buraya yazar, müşteri /portal/tasarim'da görür.
+  // designApprovedAt dolarsa tasarım kilitlenir — yeni revizyon alınamaz.
+  stagingUrl       String?
+  designApprovedAt DateTime?
+
+  messages        PortalMessage[]
+  files           PortalFile[]
+  logoProject     LogoProject?
+  designRevisions DesignRevision[]
+}
+
+// ── Tasarım Revizyon Talepleri ──
+// Append-only audit trail. Sayım count() ile hesaplanır — race-safe, counter field yok.
+// Sözleşmede 3 revizyon hakkı var (lib/design-preview-rules.ts → MAX_DESIGN_REVISIONS).
+model DesignRevision {
+  id               String     @id @default(cuid())
+  portalUserId     String
+  portalUser       PortalUser @relation(fields: [portalUserId], references: [id], onDelete: Cascade)
+  note             String     @db.Text // Müşterinin revizyon notu
+  stagingUrlAtTime String?             // Talep anındaki staging URL snapshot'ı
+  createdAt        DateTime   @default(now())
+
+  @@index([portalUserId, createdAt])
 }
 
 // ── Portal Mesajları ──

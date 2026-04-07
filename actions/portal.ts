@@ -172,7 +172,10 @@ export async function getPortalDashboard() {
           payments: { orderBy: { stage: "asc" } },
           // Workflow logoStatus için — onaylandıysa adım 6'ya geçer
           portalUser: {
-            include: { logoProject: { select: { status: true } } },
+            include: {
+              logoProject: { select: { status: true } },
+              designRevisions: { select: { id: true } },
+            },
           },
         },
       }),
@@ -238,6 +241,11 @@ export async function getPortalDashboard() {
         createdAt: f.createdAt.toISOString(),
       })),
       logoStatus: proposal.portalUser?.logoProject?.status || null,
+      design: {
+        stagingUrl: proposal.portalUser?.stagingUrl || null,
+        designApprovedAt: proposal.portalUser?.designApprovedAt?.toISOString() || null,
+        usedRevisions: proposal.portalUser?.designRevisions.length || 0,
+      },
       unreadCount,
     };
   } catch (error) {
