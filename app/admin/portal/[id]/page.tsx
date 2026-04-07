@@ -44,6 +44,32 @@ export default async function AdminPortalDetailPage({
     // sessiz hata
   }
 
+  // Mevcut bakım kaydı (proposal email → client → maintenance)
+  let existingMaintenance: { id: string; plan: string | null; monthlyFee: number } | null = null;
+  try {
+    if (portalUser.proposal.contactEmail) {
+      const client = await prisma.client.findFirst({
+        where: { email: portalUser.proposal.contactEmail },
+        include: {
+          maintenance: {
+            where: { isActive: true },
+            take: 1,
+          },
+        },
+      });
+      const m = client?.maintenance[0];
+      if (m) {
+        existingMaintenance = {
+          id: m.id,
+          plan: m.plan,
+          monthlyFee: m.monthlyFee,
+        };
+      }
+    }
+  } catch {
+    existingMaintenance = null;
+  }
+
   const data = {
     user: {
       id: portalUser.id,
@@ -106,6 +132,7 @@ export default async function AdminPortalDetailPage({
         createdAt: r.createdAt.toISOString(),
       })),
     },
+    maintenance: existingMaintenance,
   };
 
   return <AdminPortalDetail data={data} />;

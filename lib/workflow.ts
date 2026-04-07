@@ -113,7 +113,7 @@ export const WORKFLOW_STEPS: WorkflowStep[] = [
     key: "completed",
     order: 9,
     label: "Tamamlandı",
-    description: "Proje canlıda. Bakım sözleşmesine geçilebilir.",
+    description: "Proje canlıda. Müşteri yıllık hosting yenileme döngüsüne alınabilir.",
     href: "/admin/projects",
     icon: "✅",
   },

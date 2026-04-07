@@ -4,6 +4,24 @@ import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
+/**
+ * Site tipine göre yıllık hosting paketi tutarı (TL).
+ * Kaynak: CLAUDE.md → Hosting & VDS Kapasite Bilgileri
+ * DB alanı aylık tutuyor → client tarafında 12'ye bölünerek kaydedilir.
+ */
+const YEARLY_HOSTING_BY_SITE_TYPE: Record<string, { yearly: number; plan: string }> = {
+  tanitim:     { yearly: 2490, plan: "starter" },
+  portfoy:     { yearly: 2490, plan: "starter" },
+  katalog:     { yearly: 2490, plan: "starter" },
+  randevu:     { yearly: 4490, plan: "business" },
+  "e-ticaret": { yearly: 8190, plan: "pro" },
+};
+
+function getHostingPackageForSiteType(siteType: string | null | undefined) {
+  if (!siteType) return YEARLY_HOSTING_BY_SITE_TYPE.tanitim;
+  return YEARLY_HOSTING_BY_SITE_TYPE[siteType] || YEARLY_HOSTING_BY_SITE_TYPE.tanitim;
+}
+
 const MaintenanceFormSchema = z.object({
   clientId: z.string().min(1, "Müşteri seçin"),
   websiteUrl: z.string().min(1, "Website URL girin"),
@@ -107,6 +125,132 @@ export async function getMaintenanceData() {
   } catch (err) {
     console.error("Bakım veri hatası:", err);
     return null;
+  }
+}
+
+/**
+ * Tamamlanan bir proposal'dan bakım kaydı oluşturur.
+ * Akış:
+ *   1. Proposal + portalUser oku
+ *   2. Email ile mevcut Client ara; yoksa proposal bilgilerinden yeni Client yarat
+ *   3. Client'ta aktif Maintenance varsa hata döndür (duplicate önle)
+ *   4. siteType → yıllık hosting ücreti → /12 = aylık ücret
+ *   5. Maintenance oluştur (1 yıl renewal)
+ *   6. Client.status = MAINTENANCE, totalRevenue += proposal.totalPrice
+ *   7. Activity log + revalidate
+ */
+export async function createMaintenanceFromProposal(proposalId: string) {
+  if (!proposalId || typeof proposalId !== "string") {
+    return { success: false, error: "Proposal ID geçersiz." };
+  }
+
+  try {
+    const proposal = await prisma.proposal.findUnique({
+      where: { id: proposalId },
+      include: { portalUser: true },
+    });
+
+    if (!proposal) {
+      return { success: false, error: "Teklif bulunamadı." };
+    }
+
+    // Client bul veya oluştur
+    let client = null;
+    if (proposal.contactEmail) {
+      client = await prisma.client.findFirst({
+        where: { email: proposal.contactEmail },
+      });
+    }
+
+    if (!client) {
+      client = await prisma.client.create({
+        data: {
+          name: proposal.contactName || proposal.firmName,
+          company: proposal.firmName,
+          email: proposal.contactEmail,
+          phone: proposal.contactPhone,
+          sector: proposal.sector,
+          status: "MAINTENANCE",
+          totalRevenue: proposal.totalPrice,
+          notes: `Bakım kaydı otomatik oluşturuldu (proposal ${proposal.id.slice(0, 8)})`,
+        },
+      });
+    } else {
+      // Mevcut müşteri — revenue ekle ve statü güncelle
+      await prisma.client.update({
+        where: { id: client.id },
+        data: {
+          status: "MAINTENANCE",
+          totalRevenue: { increment: proposal.totalPrice },
+        },
+      });
+    }
+
+    // Aktif bakım var mı kontrol et
+    const existing = await prisma.maintenance.findFirst({
+      where: { clientId: client.id, isActive: true },
+    });
+    if (existing) {
+      return {
+        success: false,
+        error: "Bu müşteri için zaten aktif bir bakım kaydı var.",
+        maintenanceId: existing.id,
+      };
+    }
+
+    // Site tipi → paket → ücret
+    const pkg = getHostingPackageForSiteType(proposal.siteType);
+    const monthlyFee = Math.round((pkg.yearly / 12) * 100) / 100; // 2 ondalık
+
+    // Website URL: domainName > stagingUrl > firmName
+    const websiteUrl =
+      proposal.domainName?.trim() ||
+      proposal.portalUser?.stagingUrl?.trim() ||
+      `${proposal.firmName.toLowerCase().replace(/\s+/g, "-")}.com.tr`;
+
+    const now = new Date();
+    const oneYearLater = new Date(now);
+    oneYearLater.setFullYear(oneYearLater.getFullYear() + 1);
+
+    const maintenance = await prisma.maintenance.create({
+      data: {
+        clientId: client.id,
+        websiteUrl,
+        monthlyFee,
+        plan: pkg.plan,
+        startDate: now,
+        renewalDate: oneYearLater,
+        domainExpiry: oneYearLater,
+        sslExpiry: oneYearLater,
+        isActive: true,
+        notes: `${pkg.plan.toUpperCase()} paket — ${pkg.yearly.toLocaleString("tr-TR")} ₺/yıl`,
+      },
+    });
+
+    // Activity log
+    await prisma.activity.create({
+      data: {
+        clientId: client.id,
+        type: "maintenance_created",
+        description: `Bakım kaydı açıldı: ${websiteUrl} — ${pkg.plan} paket (${pkg.yearly.toLocaleString("tr-TR")} ₺/yıl)`,
+      },
+    });
+
+    revalidatePath("/admin/maintenance");
+    revalidatePath(`/admin/portal/${proposal.portalUser?.id}`);
+    revalidatePath("/admin/crm");
+
+    return {
+      success: true,
+      maintenanceId: maintenance.id,
+      clientId: client.id,
+      monthlyFee,
+      yearlyFee: pkg.yearly,
+      plan: pkg.plan,
+    };
+  } catch (err) {
+    console.error("createMaintenanceFromProposal hatası:", err);
+    return { success: false, error: "Bakım kaydı oluşturulamadı." };
   }
 }
 

@@ -2,7 +2,9 @@
 
 import { useState, useRef, useEffect, useCallback, useTransition } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { setStagingUrl, resetDesignApproval } from "@/actions/design-preview";
+import { createMaintenanceFromProposal } from "@/actions/maintenance";
 
 interface Message {
   id: string; content: string; senderType: string; isRead: boolean; createdAt: string;
@@ -23,6 +25,12 @@ interface DesignData {
   revisions: DesignRevisionItem[];
 }
 
+interface MaintenanceData {
+  id: string;
+  plan: string | null;
+  monthlyFee: number;
+}
+
 interface AdminDetailData {
   user: {
     id: string; name: string; email: string; phone: string | null;
@@ -37,6 +45,7 @@ interface AdminDetailData {
   messages: Message[];
   files: { id: string; fileName: string; filePath: string; fileSize: number; fileType: string; uploadedBy: string; createdAt: string }[];
   design: DesignData;
+  maintenance: MaintenanceData | null;
 }
 
 function formatPrice(n: number) {
@@ -58,12 +67,43 @@ function formatSize(bytes: number) {
 }
 
 export default function AdminPortalDetail({ data }: { data: AdminDetailData }) {
-  const { user, proposal, contract, payments, files, design } = data;
+  const { user, proposal, contract, payments, files, design, maintenance } = data;
+  const router = useRouter();
   const [messages, setMessages] = useState<Message[]>(data.messages);
   const [input, setInput] = useState("");
   const [sending, setSending] = useState(false);
   const [tab, setTab] = useState<"messages" | "files" | "payments" | "design">("messages");
+  const [maintenanceMsg, setMaintenanceMsg] = useState<{ type: "ok" | "err"; text: string } | null>(null);
+  const [isMaintenancePending, startMaintenanceTransition] = useTransition();
   const bottomRef = useRef<HTMLDivElement>(null);
+
+  // Workflow step 9 kontrolü: tüm ödemeler alındı + stage 3 ödendi → proje tamamlandı
+  const stage3Paid = payments.some((p) => p.stage === 3 && p.status === "PAID");
+  const allPaid = payments.length > 0 && payments.every((p) => p.status === "PAID");
+  const isProjectCompleted = allPaid && stage3Paid;
+
+  function handleCreateMaintenance() {
+    if (
+      !confirm(
+        "Bu müşteri için otomatik bakım kaydı oluşturulacak. Site tipine göre paket belirlenecek (Starter / Profesyonel / E-Ticaret). Devam edilsin mi?"
+      )
+    )
+      return;
+
+    setMaintenanceMsg(null);
+    startMaintenanceTransition(async () => {
+      const res = await createMaintenanceFromProposal(proposal.id);
+      if (res.success) {
+        setMaintenanceMsg({
+          type: "ok",
+          text: `Bakım kaydı oluşturuldu — ${res.plan?.toUpperCase()} paket, ${res.yearlyFee?.toLocaleString("tr-TR")} ₺/yıl`,
+        });
+        setTimeout(() => router.push("/admin/maintenance"), 1500);
+      } else {
+        setMaintenanceMsg({ type: "err", text: res.error || "Bakım kaydı oluşturulamadı" });
+      }
+    });
+  }
 
   const scrollToBottom = useCallback(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -142,6 +182,78 @@ export default function AdminPortalDetail({ data }: { data: AdminDetailData }) {
           </span>
         </div>
       </div>
+
+      {/* Proje Tamamlandı → Bakım Kaydı CTA */}
+      {isProjectCompleted && (
+        <div
+          className={`mb-6 rounded-2xl border p-5 ${
+            maintenance
+              ? "border-[color:var(--color-admin-border)] bg-[var(--color-admin-bg2)]"
+              : "border-green-500/30 bg-green-500/[0.04]"
+          }`}
+        >
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex items-start gap-3">
+              <div
+                className={`flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-xl ${
+                  maintenance ? "bg-white/[0.04]" : "bg-green-500/10"
+                }`}
+              >
+                <svg
+                  className={`h-5 w-5 ${maintenance ? "text-[var(--color-admin-muted)]" : "text-green-400"}`}
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+              </div>
+              <div className="min-w-0">
+                <h3 className="text-sm font-semibold">
+                  {maintenance ? "Bakım Kaydı Aktif" : "Proje Tamamlandı"}
+                </h3>
+                <p className="mt-0.5 text-xs text-[var(--color-admin-muted)]">
+                  {maintenance
+                    ? `${(maintenance.plan || "standard").toUpperCase()} paket — ${(maintenance.monthlyFee * 12).toLocaleString("tr-TR")} ₺/yıl hosting yenileme`
+                    : "Tüm ödemeler alındı. Müşteriyi yıllık hosting yenileme döngüsüne al."}
+                </p>
+              </div>
+            </div>
+            <div className="flex-shrink-0">
+              {maintenance ? (
+                <Link
+                  href="/admin/maintenance"
+                  className="inline-flex items-center gap-1.5 rounded-lg border border-[var(--color-admin-border)] px-4 py-2 text-xs font-medium text-[var(--color-admin-muted)] transition-colors hover:text-white"
+                >
+                  Bakım Paneli →
+                </Link>
+              ) : (
+                <button
+                  onClick={handleCreateMaintenance}
+                  disabled={isMaintenancePending}
+                  className="inline-flex items-center gap-2 rounded-lg border border-green-500/40 bg-green-500/10 px-4 py-2 text-xs font-medium text-green-400 transition-colors hover:bg-green-500/20 disabled:opacity-50"
+                >
+                  {isMaintenancePending ? "Oluşturuluyor…" : "+ Bakım Kaydı Oluştur"}
+                </button>
+              )}
+            </div>
+          </div>
+          {maintenanceMsg && (
+            <div
+              className={`mt-4 rounded-lg border px-3 py-2 text-xs ${
+                maintenanceMsg.type === "ok"
+                  ? "border-green-500/30 bg-green-500/5 text-green-400"
+                  : "border-red-500/30 bg-red-500/5 text-red-400"
+              }`}
+            >
+              {maintenanceMsg.text}
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Özet kartları */}
       <div className="mb-6 grid gap-3 sm:grid-cols-3">

@@ -189,6 +189,41 @@ CMD ["sh", "-c", "npx prisma migrate deploy && node server.js"]
 
 ---
 
+## 🌐 HOSTING & VDS KAPASİTE BİLGİLERİ
+
+### Hosting Sağlayıcı
+- **Kaynak:** hostingdunyam.com.tr (Türkiye SSD VDS)
+- **Model:** VDS alınıp %40 kâr eklenerek müşteriye satılıyor
+- **Müşteri teknik detay görmez** — "Vorte Studio hosting" olarak bilir
+- **Domain dahil**, yönetim Vorte Studio'da
+
+### VDS Paket Eşleştirme (yıllık fiyatlar)
+| Vorte Paketi | VDS | Spec | Maliyet | Müşteriye |
+|---|---|---|---|---|
+| Starter | TR-VDS3 | 2C/3GB/30GB | 1.700 ₺ | 2.490 ₺/yıl |
+| Profesyonel | TR-VDS5 | 4C/6GB/50GB | 3.150 ₺ | 4.490 ₺/yıl |
+| E-Ticaret | TR-VDS7 | 4C/12GB/70GB | 5.800 ₺ | 8.190 ₺/yıl |
+
+### Site Başı Kaynak Tüketimi (Coolify + Next.js standalone)
+- **Sistem overhead:** ~1.2 GB RAM (OS + Coolify + Traefik + Docker + shared PostgreSQL)
+- **Starter:** ~130 MB RAM, ~200 MB disk (DB yok)
+- **Profesyonel:** ~175 MB RAM, ~500 MB disk (shared DB)
+- **E-Ticaret:** ~400 MB RAM, ~3 GB disk (ağır DB + görseller)
+
+### Paylaşımlı Model (Starter + Profesyonel müşteriler)
+- TR-VDS6 (4C/8GB, 3.950 ₺/yıl) ile 10-16 müşteri barındırılır
+- E-Ticaret müşterilere ayrı VDS (TR-VDS5 veya VDS7)
+- 15+ müşteriyle TR-VDS8'e (6C/16GB) geçiş planla
+
+### Bakım/Yenileme Formülü
+- `Maintenance.monthlyFee` **aylık** değer tutar (DB alan adı)
+- Yıllık paket tutarı 12'ye bölünerek kaydedilir:
+  - Starter: 2.490 / 12 = **207,50 ₺/ay**
+  - Profesyonel: 4.490 / 12 = **374,17 ₺/ay**
+  - E-Ticaret: 8.190 / 12 = **682,50 ₺/ay**
+
+---
+
 ## ✅ HER MODÜL İÇİN KONTROL LİSTESİ
 
 Yeni sayfa veya bileşen yazmadan önce sor:
