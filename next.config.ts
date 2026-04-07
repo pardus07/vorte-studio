@@ -1,5 +1,4 @@
 import type { NextConfig } from "next";
-import { withSentryConfig } from "@sentry/nextjs";
 
 const nextConfig: NextConfig = {
   output: "standalone",
@@ -84,32 +83,4 @@ const nextConfig: NextConfig = {
   },
 };
 
-// Sentry wrapper — source map upload + error tunneling + Vercel toolbar
-// SENTRY_AUTH_TOKEN ortam değişkeni yoksa source map upload sessizce atlanır
-// (build patlamaz, sadece stack trace minified kalır)
-export default withSentryConfig(nextConfig, {
-  org: "vorte-studio",
-  project: "javascript-nextjs",
-
-  // Build loglarını sustur (CI/Coolify build çıktısını kirletmesin)
-  silent: !process.env.CI,
-
-  // Source map'leri Sentry'ye yükle (auth token varsa)
-  // Coolify env'e SENTRY_AUTH_TOKEN eklediğinde otomatik aktif olur
-  sourcemaps: {
-    disable: !process.env.SENTRY_AUTH_TOKEN,
-  },
-
-  // Reklam engelleyicilerin Sentry isteklerini bloklamasını engelle
-  // /monitoring üzerinden tunnel et — kendi domain'imizden geçer
-  tunnelRoute: "/monitoring",
-
-  // Bundle boyutunu küçült — Sentry SDK debug mesajlarını production'dan çıkar
-  disableLogger: true,
-
-  // React component annotation (DevTools entegrasyonu) — kapalı, gerek yok
-  reactComponentAnnotation: { enabled: false },
-
-  // Build sırasında widen client file upload kapsamı (standalone uyumu)
-  widenClientFileUpload: true,
-});
+export default nextConfig;
