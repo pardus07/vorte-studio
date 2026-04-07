@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { addRawProspectToLead, getExistingLeadNames, auditSingleWebsite, resolveGoogleMapsLink, addManualLead } from "@/actions/prospect";
 import { createScraperJob, checkScraperJob, getScraperResults } from "@/actions/scraper";
 import { isGSM, formatWANumber } from "@/lib/phone-utils";
@@ -54,6 +54,15 @@ function ScoreBadge({ score }: { score: number }) {
   return <div className={`flex h-10 w-10 items-center justify-center rounded-lg border text-sm font-bold ${colors[grade]}`}>{score}</div>;
 }
 
+// Mahalle/ilçe araması sırasında aynı işletme birden fazla mahallede döner.
+// Option 1: title (lowercase+trim) + telefonun sadece rakamları.
+// Aynı şube farklı formatla gelse bile tek sayılır; farklı şubeler ayrı kalır.
+function dedupeKey(title: string, phone: string | null): string {
+  const normalizedTitle = title.toLowerCase().trim();
+  const normalizedPhone = (phone ?? "").replace(/\D/g, "");
+  return `${normalizedTitle}|${normalizedPhone}`;
+}
+
 const STORAGE_KEY = "vorte_prospect_results";
 const STORAGE_QUERY_KEY = "vorte_prospect_query";
 function saveToStorage(prospects: Prospect[], query: string) { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(prospects)); localStorage.setItem(STORAGE_QUERY_KEY, query); } catch {} }
@@ -79,6 +88,9 @@ export default function ProspectSearch({
   const [progress, setProgress] = useState({ current: 0, total: 0, currentName: "" });
   const [notification, setNotification] = useState<{ msg: string; type: "info" | "success" | "error" } | null>(null);
   const [existingLeads, setExistingLeads] = useState<Set<string>>(new Set());
+  // Ref: async arama loop'u içinde stale closure'a takılmadan güncel lead listesini oku
+  const existingLeadsRef = useRef<Set<string>>(new Set());
+  useEffect(() => { existingLeadsRef.current = existingLeads; }, [existingLeads]);
   const [loadingDistricts, setLoadingDistricts] = useState(false);
 
   // ── Hızlı Arama (Link veya İsim) ──
@@ -176,6 +188,7 @@ export default function ProspectSearch({
     if (result.success) {
       setQuickResult((prev) => prev ? { ...prev, addedToLeads: true } : null);
       setExistingLeads((prev) => new Set([...prev, quickResult.name]));
+      existingLeadsRef.current = new Set([...existingLeadsRef.current, quickResult.name]);
       showNotif(`${quickResult.name} Soğuk Lead olarak eklendi!`, "success");
     } else if (result.error === "duplicate") {
       setQuickResult((prev) => prev ? { ...prev, addedToLeads: true } : null);
@@ -190,7 +203,11 @@ export default function ProspectSearch({
     const saved = loadFromStorage();
     if (saved && saved.prospects.length > 0) { setProspects(saved.prospects); setQuery(saved.query); }
     else if (initialProspects.length > 0) { setProspects(initialProspects); setQuery(batchInfo.query); }
-    getExistingLeadNames().then((names) => setExistingLeads(new Set(names)));
+    getExistingLeadNames().then((names) => {
+      const set = new Set(names);
+      setExistingLeads(set);
+      existingLeadsRef.current = set;
+    });
   }, []);
 
   // İl değişince ilçeleri yükle
@@ -242,6 +259,7 @@ export default function ProspectSearch({
     const leadNames = await getExistingLeadNames();
     const leadSet = new Set(leadNames);
     setExistingLeads(leadSet);
+    existingLeadsRef.current = leadSet; // ref'i de ilk veriyle doldur
 
     for (let i = 0; i < queries.length; i++) {
       const q = queries[i];
@@ -266,8 +284,8 @@ export default function ProspectSearch({
           const results = await getScraperResults(job.jobId!);
           if (results.success && results.results) {
             for (const r of results.results) {
-              // Duplikat eleme (isim + telefon)
-              const key = `${r.title}|${r.phone}`;
+              // Normalized duplikat eleme — aynı şube farklı format gelse bile tek sayılır
+              const key = dedupeKey(r.title, r.phone || null);
               if (seenNames.has(key)) continue;
               seenNames.add(key);
 
@@ -280,7 +298,9 @@ export default function ProspectSearch({
                 address: r.address || null, googleRating: r.rating || null,
                 googleReviews: r.reviews || null, googleMapsUrl: r.place_url || null,
                 mobileScore: null, sslValid: true, hasWebsite: !!r.website,
-                score, issue, addedToLeads: leadSet.has(r.title),
+                score, issue,
+                // Ref'i kullan — kullanıcı arama sırasında eklediği kayıtları da bilir
+                addedToLeads: existingLeadsRef.current.has(r.title),
                 sector: searchSector, // ← arama anındaki sektör
               });
             }
@@ -288,10 +308,19 @@ export default function ProspectSearch({
         }
       }
 
-      // Her mahalle sonrası sonuçları göster
+      // Her mahalle sonrası sonuçları göster — kullanıcının eklediği kartları koru
       const sorted = [...allResults].sort((a, b) => b.score - a.score);
-      setProspects(sorted);
-      saveToStorage(sorted, `${searchSector} in ${city} ${selectedDistrict}`);
+      setProspects((prev) => {
+        // Önceki render'da addedToLeads=true olan isimleri topla
+        const prevAdded = new Set(prev.filter((p) => p.addedToLeads).map((p) => p.name));
+        const merged = sorted.map((p) =>
+          prevAdded.has(p.name) || existingLeadsRef.current.has(p.name)
+            ? { ...p, addedToLeads: true }
+            : p
+        );
+        saveToStorage(merged, `${searchSector} in ${city} ${selectedDistrict}`);
+        return merged;
+      });
     }
 
     setSearching(false);
@@ -334,6 +363,7 @@ export default function ProspectSearch({
     if (result.success) {
       setProspects((prev) => prev.map((p) => (p.id === id ? { ...p, addedToLeads: true } : p)));
       setExistingLeads((prev) => new Set([...prev, prospect.name]));
+      existingLeadsRef.current = new Set([...existingLeadsRef.current, prospect.name]);
       showNotif(`${prospect.name} Soğuk Lead olarak eklendi.`, "success");
     } else if (result.error === "duplicate") {
       showNotif(result.message || `${prospect.name} zaten ekli.`, "info");
@@ -356,7 +386,12 @@ export default function ProspectSearch({
         issue: prospect.issue, hasWebsite: prospect.hasWebsite, mobileScore: prospect.mobileScore,
         sector: prospect.sector ?? sector, // arama anındaki sektör snapshot
       });
-      if (result.success) { added++; setExistingLeads((prev) => new Set([...prev, prospect.name])); setProspects((prev) => prev.map((p) => (p.id === prospect.id ? { ...p, addedToLeads: true } : p))); }
+      if (result.success) {
+        added++;
+        setExistingLeads((prev) => new Set([...prev, prospect.name]));
+        existingLeadsRef.current = new Set([...existingLeadsRef.current, prospect.name]);
+        setProspects((prev) => prev.map((p) => (p.id === prospect.id ? { ...p, addedToLeads: true } : p)));
+      }
     }
     showNotif(skipped > 0 ? `${added} eklendi, ${skipped} zaten mevcut.` : `${added} prospect Soğuk Lead olarak eklendi.`, "success");
   }
