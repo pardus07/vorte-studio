@@ -1,6 +1,6 @@
 import { getDesignPreview } from "@/actions/design-preview";
-import { redirect } from "next/navigation";
 import PortalDesignView from "@/components/portal/PortalDesignView";
+import PortalDataError from "@/components/portal/PortalDataError";
 
 export const dynamic = "force-dynamic";
 
@@ -12,8 +12,9 @@ export default async function PortalDesignPage() {
     result = null;
   }
 
+  // Redirect yerine hata ekranı — middleware ile loop'a girmesin
   if (!result || !result.success) {
-    redirect("/portal/giris");
+    return <PortalDataError title="Tasarım önizlemesi yüklenemedi" />;
   }
 
   return <PortalDesignView data={result.data} />;

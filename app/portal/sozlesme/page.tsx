@@ -1,6 +1,6 @@
 import { getPortalDashboard } from "@/actions/portal";
-import { redirect } from "next/navigation";
 import PortalContractView from "@/components/portal/PortalContractView";
+import PortalDataError from "@/components/portal/PortalDataError";
 
 export const dynamic = "force-dynamic";
 
@@ -12,7 +12,8 @@ export default async function PortalContractPage() {
     data = null;
   }
 
-  if (!data) redirect("/portal/giris");
+  // Redirect yerine hata ekranı — middleware ile loop'a girmesin
+  if (!data) return <PortalDataError title="Sözleşme bilgisi yüklenemedi" />;
 
   return (
     <PortalContractView
