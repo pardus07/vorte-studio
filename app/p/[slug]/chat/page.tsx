@@ -217,6 +217,7 @@ export default async function ChatPage({ params }: PageProps) {
     if (!parsed) notFound()
 
     // Lead ID varsa DB'den kişiselleştirilmiş veri çek
+    // WhatsApp gönderiminde lead.phone dolu → contact step atlanır
     if (parsed.leadId) {
       try {
         const lead = await prisma.lead.findUnique({ where: { id: parsed.leadId } })
@@ -228,6 +229,10 @@ export default async function ChatPage({ params }: PageProps) {
               city={extractCityFromAddress(lead.address)}
               sector={lead.sector || demo?.sector || 'Genel'}
               slug={slug}
+              phone={lead.phone ?? null}
+              email={lead.email ?? null}
+              leadId={lead.id}
+              source="whatsapp"
             />
           )
         }
@@ -244,6 +249,7 @@ export default async function ChatPage({ params }: PageProps) {
         city={demo.city}
         sector={demo.sector}
         slug={slug}
+        source="demo"
       />
     )
   }
@@ -260,6 +266,7 @@ export default async function ChatPage({ params }: PageProps) {
         city={demo.city}
         sector={demo.sector}
         slug={slug}
+        source="preview"
       />
     )
   }
@@ -283,6 +290,9 @@ export default async function ChatPage({ params }: PageProps) {
       city={page.city}
       sector={page.sector}
       slug={slug}
+      phone={page.prospect.phone ?? null}
+      email={page.prospect.email ?? null}
+      source="prospect"
     />
   )
 }

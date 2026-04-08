@@ -8,13 +8,17 @@ interface Props {
   city: string
   sector: string
   slug: string
+  phone?: string | null
+  email?: string | null
+  leadId?: string | null
+  source?: 'whatsapp' | 'prospect' | 'preview' | 'demo'
 }
 
 interface Message {
   role: 'assistant' | 'user'
   text: string
   buttons?: ButtonOption[]
-  multiSelect?: boolean
+  multiSelect?: 'features' | 'audience'
   infoBox?: boolean
 }
 
@@ -33,59 +37,74 @@ interface FreeQuestion {
 // ── Adım tanımları ──
 type Step =
   | 'intro'
-  | 'firmName'
   | 'siteType'
   | 'features'
   | 'pageCount'
   | 'contentStatus'
+  | 'hasExistingSite'
   | 'existingSiteUrl'
   | 'hostingStatus'
-  | 'hostingInfo'
-  | 'hostingChoice'
+  | 'hostingProvider'
   | 'hostingPackages'
   | 'domainStatus'
-  | 'domainInfo'
-  | 'timeline'
-  | 'businessGoals'
-  | 'targetAudience'
-  | 'referenceUrls'
+  | 'domainName'
   | 'brandColors'
-  | 'seoExpectations'
-  | 'logoStatus'
-  | 'socialMediaLinks'
-  | 'liveSupportType'
-  | 'paymentProvider'
-  | 'message'
+  | 'timeline'
+  | 'targetAudience'
+  | 'extraNote'
+  | 'contactConfirm'
   | 'contactName'
   | 'contactPhone'
   | 'contactEmail'
   | 'done'
   | 'freeQuestion'
 
-// ── Toplam anlamlı adım sayısı (progress bar için) ──
-const TOTAL_STEPS = 20
+const TOTAL_STEPS = 12
 
 function stepToNumber(s: Step): number {
   const map: Record<string, number> = {
-    firmName: 1, siteType: 2, features: 3, pageCount: 4,
-    contentStatus: 5, existingSiteUrl: 6, hostingStatus: 7, domainStatus: 8,
-    timeline: 9, businessGoals: 10, targetAudience: 11,
-    referenceUrls: 12, brandColors: 13, seoExpectations: 14,
-    logoStatus: 15, socialMediaLinks: 16, liveSupportType: 17,
-    paymentProvider: 18, message: 19, contact: 20,
+    siteType: 1, features: 2, pageCount: 3, contentStatus: 4,
+    hasExistingSite: 5, existingSiteUrl: 5,
+    hostingStatus: 6, hostingProvider: 6, hostingPackages: 6,
+    domainStatus: 7, domainName: 7,
+    brandColors: 8, timeline: 9, targetAudience: 10, extraNote: 11,
+    contactConfirm: 12, contactName: 12, contactPhone: 12, contactEmail: 12,
   }
   return map[s] || 0
 }
 
-// ── Site türü seçenekleri ──
-const SITE_TYPES: ButtonOption[] = [
-  { label: '🏢 Tanıtım Sitesi', value: 'tanitim' },
-  { label: '🛒 E-Ticaret', value: 'e-ticaret' },
-  { label: '🎨 Portföy', value: 'portfoy' },
-  { label: '📅 Randevu Sistemi', value: 'randevu' },
-  { label: '📦 Katalog Sitesi', value: 'katalog' },
-  { label: '🤔 Henüz Karar Vermedim', value: 'belirsiz' },
-]
+// ── Site türleri (havuz) ──
+const SITE_TYPE_POOL: Record<string, ButtonOption> = {
+  tanitim: { label: '🏢 Kurumsal Tanıtım', value: 'tanitim' },
+  randevu: { label: '📅 Randevu & Rezervasyon', value: 'randevu' },
+  eticaret: { label: '🛒 E-Ticaret / Online Satış', value: 'eticaret' },
+  katalog: { label: '📦 Ürün / Hizmet Kataloğu', value: 'katalog' },
+  portfoy: { label: '🏆 Portföy & Referans', value: 'portfoy' },
+  menu: { label: '🍽️ Menü & Online Sipariş', value: 'menu' },
+}
+
+// Sektör grubuna göre site türü sıralaması
+function getSiteTypesForSector(sector: string): ButtonOption[] {
+  const group = getSectorGroup(sector)
+  const ordering: Record<string, string[]> = {
+    saglik: ['randevu', 'tanitim', 'portfoy', 'katalog', 'eticaret'],
+    guzellik: ['randevu', 'tanitim', 'portfoy', 'katalog', 'eticaret'],
+    spor: ['randevu', 'tanitim', 'portfoy', 'katalog'],
+    'yeme-icme': ['menu', 'tanitim', 'randevu'],
+    gida: ['katalog', 'eticaret', 'tanitim'],
+    perakende: ['eticaret', 'katalog', 'tanitim'],
+    konaklama: ['randevu', 'tanitim', 'portfoy'],
+    insaat: ['portfoy', 'tanitim', 'katalog'],
+    imalat: ['portfoy', 'katalog', 'tanitim'],
+    profesyonel: ['tanitim', 'portfoy', 'katalog'],
+    egitim: ['tanitim', 'katalog', 'randevu'],
+    otomotiv: ['katalog', 'tanitim', 'randevu'],
+    'teknik-servis': ['tanitim', 'randevu', 'katalog'],
+    diger: ['tanitim', 'katalog', 'portfoy', 'eticaret'],
+  }
+  const order = ordering[group] || ordering.diger
+  return order.map((k) => SITE_TYPE_POOL[k])
+}
 
 // ── Tüm özellik seçenekleri (24 adet) ──
 const ALL_FEATURES: ButtonOption[] = [
@@ -101,7 +120,6 @@ const ALL_FEATURES: ButtonOption[] = [
   { label: '🌐 Çok Dilli (TR/EN)', value: 'cok-dilli' },
   { label: '💬 Canlı Destek', value: 'canli-destek' },
   { label: '🔍 SEO Optimizasyon', value: 'seo' },
-  // ── Yeni özellikler ──
   { label: '💰 Fiyat / Hizmet Listesi', value: 'fiyat-listesi' },
   { label: '👥 Ekip / Kadro Tanıtımı', value: 'ekip-tanitim' },
   { label: '🏆 Proje Portföyü / Referanslar', value: 'portfoy-referans' },
@@ -118,134 +136,149 @@ const ALL_FEATURES: ButtonOption[] = [
 
 // ── Sektör grubu → önerilen özellikler ──
 const SECTOR_FEATURE_MAP: Record<string, string[]> = {
-  // Sağlık & Klinik
-  'saglik': ['online-randevu', 'ekip-tanitim', 'fiyat-listesi', 'once-sonra', 'sss', 'whatsapp', 'harita', 'blog', 'yorumlar', 'seo'],
-  // Güzellik & Bakım
-  'guzellik': ['online-randevu', 'fiyat-listesi', 'ekip-tanitim', 'once-sonra', 'galeri', 'whatsapp', 'yorumlar', 'sosyal-medya', 'seo'],
-  // Yeme-İçme
+  saglik: ['online-randevu', 'ekip-tanitim', 'fiyat-listesi', 'once-sonra', 'sss', 'whatsapp', 'harita', 'blog', 'yorumlar', 'seo'],
+  guzellik: ['online-randevu', 'fiyat-listesi', 'ekip-tanitim', 'once-sonra', 'galeri', 'whatsapp', 'yorumlar', 'sosyal-medya', 'seo'],
   'yeme-icme': ['fiyat-listesi', 'online-siparis', 'rezervasyon', 'galeri', 'whatsapp', 'harita', 'sosyal-medya', 'yorumlar'],
-  // Gıda Perakende
-  'gida': ['online-siparis', 'fiyat-listesi', 'kampanya', 'whatsapp', 'harita', 'e-bulten', 'yorumlar'],
-  // Konaklama & Turizm
-  'konaklama': ['rezervasyon', 'galeri', 'video-galeri', 'fiyat-listesi', 'cok-dilli', 'harita', 'yorumlar', 'seo', 'e-bulten'],
-  // Eğitim
-  'egitim': ['ekip-tanitim', 'fiyat-listesi', 'teklif-formu', 'sss', 'blog', 'galeri', 'whatsapp', 'harita', 'yorumlar'],
-  // Spor & Fitness
-  'spor': ['ekip-tanitim', 'fiyat-listesi', 'online-randevu', 'galeri', 'video-galeri', 'whatsapp', 'sosyal-medya', 'yorumlar'],
-  // Otomotiv
-  'otomotiv': ['fiyat-listesi', 'galeri', 'online-randevu', 'teklif-formu', 'whatsapp', 'harita', 'yorumlar', 'seo'],
-  // İnşaat & Tadilat
-  'insaat': ['portfoy-referans', 'teklif-formu', 'bolge-harita', 'galeri', 'once-sonra', 'whatsapp', 'harita', 'seo'],
-  // Atölye & İmalat
-  'imalat': ['portfoy-referans', 'teklif-formu', 'fiyat-listesi', 'galeri', 'whatsapp', 'harita', 'seo'],
-  // Hizmet & Profesyonel
-  'profesyonel': ['ekip-tanitim', 'sss', 'blog', 'teklif-formu', 'fiyat-listesi', 'whatsapp', 'seo', 'yorumlar'],
-  // Perakende
-  'perakende': ['urun-katalogu', 'kampanya', 'fiyat-listesi', 'online-odeme', 'whatsapp', 'harita', 'sosyal-medya', 'e-bulten'],
-  // Teknik Servis & Bakım
+  gida: ['online-siparis', 'fiyat-listesi', 'kampanya', 'whatsapp', 'harita', 'e-bulten', 'yorumlar'],
+  konaklama: ['rezervasyon', 'galeri', 'video-galeri', 'fiyat-listesi', 'cok-dilli', 'harita', 'yorumlar', 'seo', 'e-bulten'],
+  egitim: ['ekip-tanitim', 'fiyat-listesi', 'teklif-formu', 'sss', 'blog', 'galeri', 'whatsapp', 'harita', 'yorumlar'],
+  spor: ['ekip-tanitim', 'fiyat-listesi', 'online-randevu', 'galeri', 'video-galeri', 'whatsapp', 'sosyal-medya', 'yorumlar'],
+  otomotiv: ['fiyat-listesi', 'galeri', 'online-randevu', 'teklif-formu', 'whatsapp', 'harita', 'yorumlar', 'seo'],
+  insaat: ['portfoy-referans', 'teklif-formu', 'bolge-harita', 'galeri', 'once-sonra', 'whatsapp', 'harita', 'seo'],
+  imalat: ['portfoy-referans', 'teklif-formu', 'fiyat-listesi', 'galeri', 'whatsapp', 'harita', 'seo'],
+  profesyonel: ['ekip-tanitim', 'sss', 'blog', 'teklif-formu', 'fiyat-listesi', 'whatsapp', 'seo', 'yorumlar'],
+  perakende: ['urun-katalogu', 'kampanya', 'fiyat-listesi', 'online-odeme', 'whatsapp', 'harita', 'sosyal-medya', 'e-bulten'],
   'teknik-servis': ['bolge-harita', 'fiyat-listesi', 'teklif-formu', 'online-randevu', 'whatsapp', 'harita', 'yorumlar', 'seo'],
-  // Diğer Hizmetler
-  'diger': ['portfoy-referans', 'teklif-formu', 'bolge-harita', 'fiyat-listesi', 'whatsapp', 'harita', 'yorumlar', 'seo'],
+  diger: ['portfoy-referans', 'teklif-formu', 'bolge-harita', 'fiyat-listesi', 'whatsapp', 'harita', 'yorumlar', 'seo'],
 }
 
-// Sektör adından grup belirle
 function getSectorGroup(sector: string): string {
   const s = sector.toLowerCase()
-  // Sağlık
   if (['diş', 'veteriner', 'optik', 'fizik tedavi', 'tıp', 'psikolog', 'diyetisyen', 'estetik klinik', 'poliklinik', 'işitme', 'göz merkezi'].some(k => s.includes(k))) return 'saglik'
-  // Güzellik
   if (['kuaför', 'berber', 'güzellik', 'spa', 'cilt bakım', 'epilasyon', 'tırnak', 'dövme', 'piercing'].some(k => s.includes(k))) return 'guzellik'
-  // Yeme-İçme
   if (['restoran', 'kafe', 'pastane', 'fırın', 'catering', 'yemek'].some(k => s.includes(k))) return 'yeme-icme'
-  // Gıda
   if (['kasap', 'manav', 'kuruyemiş', 'su bayi', 'şarküteri', 'delikatessen'].some(k => s.includes(k))) return 'gida'
-  // Konaklama
   if (['otel', 'seyahat', 'acente', 'turizm'].some(k => s.includes(k))) return 'konaklama'
-  // Eğitim
   if (['kurs', 'okul', 'kreş', 'etüt', 'sürücü', 'müzik', 'eğitim'].some(k => s.includes(k))) return 'egitim'
-  // Spor
   if (['spor salon', 'pilates', 'yoga', 'fitness'].some(k => s.includes(k))) return 'spor'
-  // Otomotiv
   if (['oto ', 'oto-', 'lastik', 'motosiklet', 'galeri'].some(k => s.includes(k))) return 'otomotiv'
-  // İnşaat
   if (['inşaat', 'mimar', 'tadilat', 'dekorasyon', 'pvc', 'alüminyum', 'cam balkon', 'mermer', 'cephe', 'yalıtım', 'çatı', 'fayans', 'alçıpan', 'prefabrik', 'boya', 'elektrikçi', 'tesisatçı'].some(k => s.includes(k))) return 'insaat'
-  // İmalat
   if (['parke', 'döşeme', 'çadır', 'tente', 'branda', 'kaynak', 'demir', 'marangoz', 'bobinaj', 'matbaa', 'ambalaj', 'plastik', 'terzi', 'dikiş'].some(k => s.includes(k))) return 'imalat'
-  // Profesyonel
   if (['hukuk', 'avukat', 'muhasebe', 'emlak', 'sigorta'].some(k => s.includes(k))) return 'profesyonel'
-  // Perakende
   if (['mobilya', 'elektronik', 'kırtasiye', 'pet shop', 'çiçek', 'kuyumcu', 'tekstil', 'giyim', 'spor malzeme', 'mağaza'].some(k => s.includes(k))) return 'perakende'
-  // Teknik Servis
   if (['klima', 'kombi', 'beyaz eşya', 'asansör', 'jeneratör', 'güvenlik', 'çilingir', 'su arıtma', 'servis'].some(k => s.includes(k))) return 'teknik-servis'
-  // Diğer
   return 'diger'
 }
 
-// Sektöre göre sıralı özellik listesi oluştur (öneriler üstte)
 function getOrderedFeatures(sector: string): { recommended: ButtonOption[], others: ButtonOption[] } {
   const group = getSectorGroup(sector)
-  const recommendedKeys = SECTOR_FEATURE_MAP[group] || SECTOR_FEATURE_MAP['diger']
+  const recommendedKeys = SECTOR_FEATURE_MAP[group] || SECTOR_FEATURE_MAP.diger
   const recommended = ALL_FEATURES.filter(f => recommendedKeys.includes(f.value))
   const others = ALL_FEATURES.filter(f => !recommendedKeys.includes(f.value))
   return { recommended, others }
 }
 
-// ── Hosting bilgi metinleri ──
-const HOSTING_COMPAT_INFO = `Harika! Mevcut hostinginizin uyumluluğunu kontrol edelim.
+// ── pageCount: siteType'a göre dinamik label, value pricing-uyumlu (1-5/5-10/10+) ──
+function getPageCountQuestion(siteType: string): { question: string; buttons: ButtonOption[] } {
+  if (siteType === 'eticaret') {
+    return {
+      question: 'Yaklaşık kaç ürün satacaksınız?',
+      buttons: [
+        { label: '📦 Küçük Mağaza — 50 ürüne kadar', value: '1-5' },
+        { label: '🏬 Orta Mağaza — 50-500 ürün', value: '5-10' },
+        { label: '🏭 Büyük Mağaza — 500+ ürün', value: '10+' },
+      ],
+    }
+  }
+  if (siteType === 'katalog' || siteType === 'menu') {
+    return {
+      question: siteType === 'menu' ? 'Menünüzde yaklaşık kaç ürün var?' : 'Katalog boyutunuz ne kadar?',
+      buttons: [
+        { label: '📋 Küçük — 20 ürüne kadar', value: '1-5' },
+        { label: '📚 Standart — 100 ürüne kadar', value: '5-10' },
+        { label: '📖 Geniş — 100+ ürün', value: '10+' },
+      ],
+    }
+  }
+  // tanitim, randevu, portfoy
+  return {
+    question: 'Sitenizin kapsamı ne olmalı?',
+    buttons: [
+      { label: '🪴 Kompakt — 3-5 sayfa', value: '1-5' },
+      { label: '🌳 Standart — 6-10 sayfa', value: '5-10' },
+      { label: '🏛️ Geniş — 10+ sayfa', value: '10+' },
+    ],
+  }
+}
 
-Web sitelerimiz Next.js teknolojisi ile yapılır. Bunun için:
+// ── Hosting paketleri (CLAUDE.md ile uyumlu — TR-VDS kodları gizli) ──
+const HOSTING_PACKAGES_INFO = `Hosting paketlerimiz (Türkiye lokasyonlu sunucu, SSL ve kurulum dahil, yıllık):
 
-✅ Node.js 20+ destekli VPS veya Cloud sunucu
-✅ PostgreSQL veritabanı
-✅ Docker desteği
-✅ En az 1 vCPU + 1GB RAM
+📦 Starter — 2.490 ₺/yıl
+   Küçük tanıtım siteleri için. Tek firma, düşük trafik.
 
-❌ cPanel'li shared hosting uygun değildir
-❌ Sadece WordPress destekleyen sunucular uygun değildir
+📦 Profesyonel — 4.490 ₺/yıl
+   Orta ölçekli siteler, blog, çoklu hizmet sayfası, katalog.
 
-Mevcut hostinginiz bu özelliklere sahip değilse endişelenmeyin — size uygun fiyatlı hosting paketlerimiz mevcut.`
+📦 E-Ticaret — 8.190 ₺/yıl
+   Online satış, ürün yönetimi, yoğun trafik, ödeme entegrasyonu.
 
-const HOSTING_SELF_INFO = `Kendiniz almak isterseniz Türkiye lokasyonlu VPS önerilerimiz:
+Tüm paketlere SSL, kurulum, bakım ve teknik destek dahildir. Paket seçimini görüşmede birlikte yapacağız.`
 
-• Hetzner Cloud — CX22 (~€4.5/ay)
-• Contabo İstanbul — VPS S (~€6/ay)
-• Turhost / Natro VPS planları
+const HOSTING_NOT_KNOWN_INFO = `Açıklayalım. Hosting, web sitenizin internet üzerinde yayınlandığı sunucudur. Bizden alabileceğiniz paketler:
 
-⚠️ Önemli: cPanel'li shared hosting ALMAYIN. "VPS" veya "Cloud Server" kategorisinden seçin.
+📦 Starter — 2.490 ₺/yıl
+   Küçük tanıtım siteleri için. Tek firma, düşük trafik.
 
-Kurulumu ve yapılandırmayı biz yaparız, sadece sunucuyu almanız yeterli.`
+📦 Profesyonel — 4.490 ₺/yıl
+   Orta ölçekli siteler, blog, çoklu hizmet sayfası, katalog.
 
-const HOSTING_PACKAGES_INFO = `Hosting paketlerimiz (Türkiye lokasyonlu VDS, yıllık, KDV dahil):
+📦 E-Ticaret — 8.190 ₺/yıl
+   Online satış, ürün yönetimi, yoğun trafik, ödeme entegrasyonu.
 
-📦 Starter — 2.650 TL/yıl
-   2 vCPU · 3 GB RAM · 30 GB SSD · Limitsiz bant genişliği
-   Tek site için ideal
-
-📦 Business — 4.900 TL/yıl
-   4 vCPU · 6 GB RAM · 50 GB SSD · Limitsiz bant genişliği
-   Orta ölçekli siteler ve katalog siteleri için
-
-📦 Pro — 6.150 TL/yıl
-   4 vCPU · 8 GB RAM · 60 GB SSD · Limitsiz bant genişliği
-   E-ticaret ve yoğun trafikli siteler için
-
-Tüm paketlere kurulum, SSL sertifikası ve teknik destek dahildir.`
+Hepsine SSL, kurulum, bakım ve teknik destek dahildir.`
 
 // ── Domain bilgi metinleri ──
-const DOMAIN_INFO: Record<string, string> = {
-  yok: `Domain (alan adı) web sitenizin adresidir. Örneğin: firmaadi.com veya firmaadi.com.tr
+const DOMAIN_INFO_NEW = `Domain, sitenizin internet adresidir — örneğin firmaadi.com veya firmaadi.com.tr
 
-Türkiye'deki güvenilir domain sağlayıcıları:
-• İsimTescil (isimtescil.net)
-• Natro (natro.com)
-• Turhost (turhost.com)
+Güvenilir Türk sağlayıcılar: İsimTescil, Natro, Turhost.
 
-⚠️ Önemli: Domain'i KENDİ firmanız adına ve KENDİ faturanıza kayıt ettirin. Nameserver yönlendirmesini biz yaparız.`,
+⚠️ Önemli: Domain'i mutlaka kendi firmanız adına kayıt ettirin. Yönlendirmeyi biz yaparız.`
 
-  bilmiyor: `Domain (alan adı), web sitenizin internet adresidir — örneğin firmaadi.com
+const DOMAIN_INFO_UNKNOWN = `Açıklayalım. Domain, web sitenizin internet adresidir — örneğin firmaadi.com.
 
-Eğer daha önce bir domain almadıysanız endişelenmeyin. Görüşmede size adım adım yardımcı olacağız. Domain'i kendi adınıza almanız önemlidir.`,
-}
+Güvenilir Türk sağlayıcılar: İsimTescil, Natro, Turhost.
+
+Görüşmede size adım adım yardımcı olacağız. Domain'i kendi firmanız adına almanız önemlidir.`
+
+// ── Hedef kitle kategorileri ──
+const AUDIENCE_CATEGORIES = [
+  {
+    title: 'Yaş grubu',
+    options: [
+      { label: '👶 Çocuk & aile', value: 'cocuk-aile' },
+      { label: '🎓 Gençler (18-30)', value: 'genc' },
+      { label: '💼 Yetişkinler (30-55)', value: 'yetiskin' },
+      { label: '🌿 Yaşlılar (55+)', value: 'yasli' },
+    ],
+  },
+  {
+    title: 'Müşteri tipi',
+    options: [
+      { label: '🏠 Bireysel müşteriler', value: 'bireysel' },
+      { label: '🏢 Kurumsal / işletme', value: 'kurumsal' },
+    ],
+  },
+  {
+    title: 'Hizmet bölgesi',
+    options: [
+      { label: '📍 Sadece yerel (semt/ilçe)', value: 'yerel' },
+      { label: '🏙️ Şehir geneli', value: 'sehir' },
+      { label: '🇹🇷 Türkiye geneli', value: 'turkiye' },
+      { label: '🌍 Uluslararası', value: 'uluslararasi' },
+    ],
+  },
+]
 
 // ── Framer-motion variants ──
 const messageVariants = {
@@ -268,23 +301,15 @@ const buttonVariants = {
   }),
 }
 
-// ── Renk paleti (color-hex.com'dan popüler renkler) ──
+// ── Renk paleti ──
 const COLOR_PALETTE = [
-  // Kırmızılar & Turuncular
   '#E53E3E', '#C53030', '#FF4500', '#F97316', '#EA580C', '#DC2626',
-  // Pembeler & Morlar
   '#EC4899', '#D946EF', '#A855F7', '#8B5CF6', '#7C3AED', '#9333EA',
-  // Maviler
   '#3B82F6', '#2563EB', '#1D4ED8', '#0EA5E9', '#06B6D4', '#0891B2',
-  // Yeşiller
   '#22C55E', '#16A34A', '#15803D', '#10B981', '#059669', '#14B8A6',
-  // Sarılar & Altın
   '#EAB308', '#F59E0B', '#D97706', '#FBBF24', '#F5A623', '#FFD700',
-  // Nötrler & Koyu
   '#1A1A1A', '#374151', '#4B5563', '#6B7280', '#9CA3AF', '#D1D5DB',
-  // Kahveler & Bordo
   '#800020', '#8B4513', '#92400E', '#78350F', '#451A03', '#7C2D12',
-  // Pastel & Açık
   '#FFFFFF', '#F8FAFC', '#FEF3C7', '#DBEAFE', '#D1FAE5', '#FCE7F3',
 ]
 
@@ -295,7 +320,19 @@ const pulseKeyframes = `
 }
 `
 
-export default function ChatForm({ firmName, city, sector, slug }: Props) {
+// Telefon normalizasyonu — +90, 0, boşluklu, tireli, noktalı hepsini kabul
+function normalizePhone(raw: string): string | null {
+  const digits = raw.replace(/\D/g, '')
+  // 905xxxxxxxxx (12 hane)
+  if (digits.length === 12 && digits.startsWith('905')) return '0' + digits.slice(2)
+  // 05xxxxxxxxx (11 hane)
+  if (digits.length === 11 && digits.startsWith('05')) return digits
+  // 5xxxxxxxxx (10 hane)
+  if (digits.length === 10 && digits.startsWith('5')) return '0' + digits
+  return null
+}
+
+export default function ChatForm({ firmName, city, sector, slug, phone, email, leadId, source = 'prospect' }: Props) {
   // ── State ──
   const [messages, setMessages] = useState<Message[]>([])
   const [step, setStep] = useState<Step>('intro')
@@ -306,7 +343,7 @@ export default function ChatForm({ firmName, city, sector, slug }: Props) {
 
   // Toplanan veriler
   const [data, setData] = useState({
-    firmName: '',
+    firmName: firmName,
     siteType: '',
     features: [] as string[],
     pageCount: '',
@@ -316,24 +353,18 @@ export default function ChatForm({ firmName, city, sector, slug }: Props) {
     domainStatus: '',
     domainName: '',
     timeline: '',
-    businessGoals: '',
-    targetAudience: '',
-    referenceUrls: [] as string[],
+    targetAudience: [] as string[],
     brandColors: [] as string[],
-    seoExpectations: '',
     existingSiteUrl: '',
-    logoStatus: '',
-    socialMediaLinks: '',
-    liveSupportType: '',
-    paymentProvider: '',
     message: '',
     contactName: '',
-    contactPhone: '',
-    contactEmail: '',
+    contactPhone: phone || '',
+    contactEmail: email || '',
   })
 
   const [selectedFeatures, setSelectedFeatures] = useState<string[]>([])
   const [selectedColors, setSelectedColors] = useState<string[]>([])
+  const [selectedAudience, setSelectedAudience] = useState<string[]>([])
   const [freeQuestions, setFreeQuestions] = useState<FreeQuestion[]>([])
 
   const chatEndRef = useRef<HTMLDivElement>(null)
@@ -346,16 +377,16 @@ export default function ChatForm({ firmName, city, sector, slug }: Props) {
 
   // Input focus
   useEffect(() => {
-    if (step === 'firmName' || step === 'message' || step === 'contactName' || step === 'contactPhone' || step === 'contactEmail' || step === 'businessGoals' || step === 'targetAudience' || step === 'referenceUrls' || step === 'existingSiteUrl' || step === 'socialMediaLinks' || step === 'freeQuestion') {
+    if (['existingSiteUrl', 'hostingProvider', 'domainName', 'extraNote', 'contactName', 'contactPhone', 'contactEmail', 'freeQuestion'].includes(step)) {
       setTimeout(() => inputRef.current?.focus(), 300)
     }
   }, [step])
 
   // Bot mesajı ekle
   const addBotMessage = useCallback(
-    (text: string, nextStep: Step, options?: { buttons?: ButtonOption[]; multiSelect?: boolean; infoBox?: boolean }) => {
+    (text: string, nextStep: Step, options?: { buttons?: ButtonOption[]; multiSelect?: 'features' | 'audience'; infoBox?: boolean }) => {
       setIsTyping(true)
-      const delay = Math.min(600 + text.length * 3, 1500)
+      const delay = Math.min(500 + text.length * 2, 1200)
       setTimeout(() => {
         setIsTyping(false)
         setMessages((prev) => [
@@ -374,30 +405,31 @@ export default function ChatForm({ firmName, city, sector, slug }: Props) {
     [],
   )
 
-  // ── İlk mesajlar ──
+  // ── İlk mesajlar (firma adı prop'tan, sorulmaz) ──
   useEffect(() => {
     const t1 = setTimeout(() => {
       setMessages([
         {
           role: 'assistant',
-          text: `Merhaba! ${firmName} için özel bir web sitesi teklifi hazırlayalım.`,
+          text: `Merhaba 👋 Ben Vorte Studio'dan size özel teklifinizi hazırlayacağım.`,
         },
       ])
-    }, 500)
+    }, 300)
 
     const t2 = setTimeout(() => {
       setMessages((prev) => [
         ...prev,
         {
           role: 'assistant',
-          text: `${city}'da ${sector.toLowerCase()} sektöründe dijital varlığınızı güçlendirmek için tam size uygun bir çözüm sunacağız. Size birkaç soru soracağım — yaklaşık 2 dakika sürer.`,
+          text: `${firmName} için ${city}'da ${sector.toLowerCase()} sektörüne özel bir web sitesi planlayacağız. Yaklaşık 90 saniye sürer.`,
         },
       ])
-    }, 2000)
+    }, 1200)
 
     const t3 = setTimeout(() => {
-      addBotMessage('İşletmenizin tam adını öğrenebilir miyim?', 'firmName')
-    }, 3500)
+      const siteTypes = getSiteTypesForSector(sector)
+      addBotMessage('Nasıl bir web sitesi düşünüyorsunuz?', 'siteType', { buttons: siteTypes })
+    }, 2100)
 
     return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3) }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -408,240 +440,221 @@ export default function ChatForm({ firmName, city, sector, slug }: Props) {
     setMessages((prev) => [...prev, { role: 'user', text: label }])
 
     switch (step) {
-      case 'siteType':
+      case 'siteType': {
         setData((d) => ({ ...d, siteType: value }))
         addBotMessage(
-          `Sitenizde hangi özellikler olsun? Sektörünüze özel önerilerimiz en üstte yer alıyor. Birden fazla seçebilirsiniz, ardından "Devam Et" butonuna basın.`,
+          'Harika seçim. Sitenizde bulunmasını istediğiniz özellikleri seçelim.',
           'features',
-          { buttons: ALL_FEATURES, multiSelect: true },
+          { multiSelect: 'features' },
         )
         break
+      }
 
-      case 'pageCount':
+      case 'pageCount': {
         setData((d) => ({ ...d, pageCount: value }))
-        addBotMessage('İçerik durumunuz nedir? (Logo, fotoğraf, metin)', 'contentStatus', {
-          buttons: [
-            { label: '✅ Her şeyim hazır', value: 'hazir' },
-            { label: '🎨 Logom var, fotoğraf lazım', value: 'logo-var' },
-            { label: '📦 Hiçbir şeyim yok, her şeyi siz yapın', value: 'hicbir-sey-yok' },
-            { label: '🔄 Mevcut sitemden alınabilir', value: 'mevcut-site' },
-          ],
-        })
+        addBotMessage(
+          'Not aldım. İçeriklerinizi birlikte değerlendirelim.',
+          'contentStatus',
+          {
+            buttons: [
+              { label: '✅ Hepsi hazır (metin + görsel + logo)', value: 'hazir' },
+              { label: '📝 Metinler var, görsel/logo yok', value: 'kismen-metin' },
+              { label: '📸 Görseller var, metinler yok', value: 'kismen-gorsel' },
+              { label: '🎨 Hiçbiri yok, sizden bekliyorum', value: 'yok' },
+            ],
+          },
+        )
         break
+      }
 
-      case 'contentStatus':
+      case 'contentStatus': {
         setData((d) => ({ ...d, contentStatus: value }))
-        if (value === 'mevcut-site') {
+        const intro =
+          value === 'hazir'
+            ? 'Mükemmel, işimiz kolay.'
+            : value === 'yok'
+              ? 'İçerik üretimini de biz üstlenebiliriz.'
+              : 'Eksik kısımları birlikte tamamlayacağız.'
+        addBotMessage(
+          `${intro} Şu an çalışan bir web siteniz var mı?`,
+          'hasExistingSite',
+          {
+            buttons: [
+              { label: '✅ Var, yenilemek istiyorum', value: 'var' },
+              { label: '❌ Hayır, ilk sitem olacak', value: 'yok' },
+            ],
+          },
+        )
+        break
+      }
+
+      case 'hasExistingSite': {
+        if (value === 'var') {
           addBotMessage(
-            'Mevcut web sitenizin adresini (URL) yazar mısınız? (Örn: www.firmaadi.com)',
+            'Mevcut sitenizin adresini yazar mısınız? Görüşmede referans olarak inceleyeceğiz.',
             'existingSiteUrl',
           )
         } else {
-          addBotMessage('Hosting (sunucu barındırma) durumunuz nedir?', 'hostingStatus', {
-            buttons: [
-              { label: '✅ Hostingim var', value: 'var' },
-              { label: '❌ Hostingim yok', value: 'yok' },
-              { label: '❓ Ne olduğunu bilmiyorum', value: 'bilmiyor' },
-            ],
-          })
+          addBotMessage(
+            'Anladım, yepyeni bir başlangıç yapacağız. Hosting (sunucu) durumunuzu öğrenelim.',
+            'hostingStatus',
+            {
+              buttons: [
+                { label: '🖥️ Mevcut hostingim var', value: 'var' },
+                { label: '🛒 Hosting de sizden almak istiyorum', value: 'sizden' },
+                { label: '❓ Hosting nedir bilmiyorum', value: 'bilmiyor' },
+              ],
+            },
+          )
         }
         break
+      }
 
-      case 'hostingStatus':
+      case 'hostingStatus': {
         setData((d) => ({ ...d, hostingStatus: value }))
         if (value === 'var') {
-          // Mevcut hosting var — uyumluluk bilgisi göster
-          addBotMessage(HOSTING_COMPAT_INFO, 'hostingInfo', { infoBox: true })
-        } else {
-          // Yok veya bilmiyor — seçenek sun
           addBotMessage(
-            value === 'bilmiyor'
-              ? 'Hosting, web sitenizin yayında kalmasını sağlayan sunucu hizmetidir — sitenizin "evi". Nasıl ilerlemek istersiniz?'
-              : 'Hosting konusunda iki seçeneğiniz var:',
-            'hostingChoice',
-            {
-              buttons: [
-                { label: '🛒 Ben kendim alırım', value: 'self' },
-                { label: '📦 Siz sağlayın', value: 'provider' },
-              ],
-            },
+            'Hangi hosting firmasını kullanıyorsunuz?\n\nSitelerimiz Node.js destekli VPS veya Cloud sunucu gerektirir. Uyumluluğu birlikte kontrol ederiz.',
+            'hostingProvider',
           )
-        }
-        break
-
-      case 'hostingChoice':
-        if (value === 'self') {
-          // Kendisi alacak — VPS önerileri
-          setData((d) => ({ ...d, hostingProvider: 'musteri' }))
-          addBotMessage(HOSTING_SELF_INFO, 'hostingInfo', { infoBox: true })
+        } else if (value === 'sizden') {
+          addBotMessage(HOSTING_PACKAGES_INFO, 'hostingPackages', { infoBox: true })
         } else {
-          // Biz sağlayacağız — paketleri göster
-          addBotMessage(HOSTING_PACKAGES_INFO, 'hostingPackages', {
-            buttons: [
-              { label: '📦 Starter — 2.650 TL/yıl', value: 'starter' },
-              { label: '📦 Business — 4.900 TL/yıl', value: 'business' },
-              { label: '📦 Pro — 6.150 TL/yıl', value: 'pro' },
-              { label: '🤔 Görüşmede karar veririm', value: 'belirsiz' },
-            ],
-          })
+          addBotMessage(HOSTING_NOT_KNOWN_INFO, 'hostingPackages', { infoBox: true })
         }
         break
+      }
 
-      case 'hostingPackages':
-        setData((d) => ({ ...d, hostingProvider: `vorte-${value}` }))
-        addBotMessage('Domain (alan adı) durumunuz nedir?', 'domainStatus', {
-          buttons: [
-            { label: '✅ Domainim var', value: 'var' },
-            { label: '❌ Domainim yok', value: 'yok' },
-            { label: '❓ Ne olduğunu bilmiyorum', value: 'bilmiyor' },
-          ],
-        })
+      case 'hostingPackages': {
+        // info box'tan gelen "anladim" — domain'e geç
+        addBotMessage(
+          'Domain (alan adı) durumunuz nedir?',
+          'domainStatus',
+          {
+            buttons: [
+              { label: '✅ Kendi domainim var', value: 'var' },
+              { label: '🛒 Yeni domain almak istiyorum', value: 'yok' },
+              { label: '❓ Domain nedir bilmiyorum', value: 'bilmiyor' },
+            ],
+          },
+        )
         break
+      }
 
-      case 'hostingInfo':
-        // Bilgi okundu → domain sorusuna geç
-        addBotMessage('Domain (alan adı) durumunuz nedir?', 'domainStatus', {
-          buttons: [
-            { label: '✅ Domainim var', value: 'var' },
-            { label: '❌ Domainim yok', value: 'yok' },
-            { label: '❓ Ne olduğunu bilmiyorum', value: 'bilmiyor' },
-          ],
-        })
-        break
-
-      case 'domainStatus':
+      case 'domainStatus': {
         setData((d) => ({ ...d, domainStatus: value }))
-        if (value !== 'var' && DOMAIN_INFO[value]) {
-          addBotMessage(DOMAIN_INFO[value], 'domainInfo', { infoBox: true })
+        if (value === 'var') {
+          addBotMessage('Domain adresinizi yazar mısınız?', 'domainName')
+        } else if (value === 'yok') {
+          addBotMessage(DOMAIN_INFO_NEW, 'domainName', { infoBox: true })
         } else {
-          addBotMessage('Projeniz için zamanlamanız nedir?', 'timeline', {
-            buttons: [
-              { label: '🚀 Acil — 2 hafta içinde', value: 'acil' },
-              { label: '📅 1 ay içinde', value: '1-ay' },
-              { label: '🗓️ 2-3 ay içinde', value: '2-3-ay' },
-              { label: '⏳ Acelem yok, kaliteli olsun', value: 'esnek' },
-            ],
-          })
+          addBotMessage(DOMAIN_INFO_UNKNOWN, 'domainName', { infoBox: true })
         }
         break
+      }
 
-      case 'domainInfo':
-        addBotMessage('Projeniz için zamanlamanız nedir?', 'timeline', {
-          buttons: [
-            { label: '🚀 Acil — 2 hafta içinde', value: 'acil' },
-            { label: '📅 1 ay içinde', value: '1-ay' },
-            { label: '🗓️ 2-3 ay içinde', value: '2-3-ay' },
-            { label: '⏳ Acelem yok, kaliteli olsun', value: 'esnek' },
-          ],
-        })
+      case 'domainName': {
+        // info box'tan gelen "anladim" — brandColors'a geç
+        addBotMessage(
+          'Görsel tasarım zevkinizi öğrenelim. Markanızda öne çıkan renkleri seçin.',
+          'brandColors',
+        )
         break
+      }
 
-      case 'timeline':
+      case 'timeline': {
         setData((d) => ({ ...d, timeline: value }))
         addBotMessage(
-          'Harika! Şimdi projenizi daha iyi anlamamız için birkaç soru daha soracağım.\n\nWeb siteniz ile ne hedefliyorsunuz? (Daha fazla müşteri çekmek, online satış yapmak, kurumsal imaj oluşturmak vb.)',
-          'businessGoals',
+          'Teşekkürler. Sitenizin hangi kitleye hitap etmesini istersiniz? İlgili tüm seçenekleri işaretleyin.',
+          'targetAudience',
+          { multiSelect: 'audience' },
         )
         break
+      }
 
-      case 'brandColors':
-        // Renk seçici'den onaylanmış hex kodları gelir
-        setData((d) => ({ ...d, brandColors: selectedColors }))
-        addBotMessage(
-          'SEO (arama motoru optimizasyonu) beklentileriniz nelerdir?',
-          'seoExpectations',
-          {
-            buttons: [
-              { label: '🔍 Google\'da ilk sayfada çıkmak istiyorum', value: 'ilk-sayfa' },
-              { label: '📍 Yerel aramalarda öne çıkmak istiyorum', value: 'yerel-seo' },
-              { label: '🚀 Hem yerel hem genel SEO istiyorum', value: 'tam-seo' },
-              { label: '🤷 SEO hakkında bilgim yok, siz yönlendirin', value: 'bilmiyor' },
-              { label: '❌ SEO\'ya ihtiyacım yok', value: 'gerek-yok' },
-            ],
-          },
-        )
-        break
-
-      case 'seoExpectations':
-        setData((d) => ({ ...d, seoExpectations: value }))
-        addBotMessage(
-          'Firmanızın logosu var mı?',
-          'logoStatus',
-          {
-            buttons: [
-              { label: '✅ Logom var', value: 'var' },
-              { label: '🎨 Logom yok, üretilmeli', value: 'yok' },
-              { label: '👨‍🎨 Tasarımcıya yaptıracağım', value: 'tasarimci' },
-            ],
-          },
-        )
-        break
-
-      case 'logoStatus':
-        setData((d) => ({ ...d, logoStatus: value }))
-        addBotMessage(
-          'Sosyal medya hesaplarınızın linklerini yazabilir misiniz? (Instagram, Facebook, TikTok vb.)\n\nYoksa "Yok" yazabilirsiniz.',
-          'socialMediaLinks',
-        )
-        break
-
-      case 'liveSupportType':
-        setData((d) => ({ ...d, liveSupportType: value }))
-        // online-odeme seçildiyse sor
-        if (data.features.includes('online-odeme')) {
-          addBotMessage(
-            'Online ödeme için hangi altyapıyı tercih edersiniz?',
-            'paymentProvider',
-            {
-              buttons: [
-                { label: '💳 Iyzico', value: 'iyzico' },
-                { label: '💳 PayTR', value: 'paytr' },
-                { label: '🔄 Başka', value: 'baska' },
-                { label: '🤷 Karar veremedim', value: 'kararsiz' },
-              ],
-            },
-          )
+      case 'contactConfirm': {
+        if (value === 'onay') {
+          // WA'dan gelen telefon onaylandı, contactName'e geç
+          addBotMessage('Size nasıl hitap edelim? Adınız ve soyadınız.', 'contactName')
         } else {
-          addBotMessage(
-            'Eklemek istediğiniz özel bir not veya isteğiniz var mı?',
-            'message',
-          )
+          // Başka numara → contactPhone input
+          addBotMessage('Size ulaşabileceğimiz telefon numarası?', 'contactPhone')
         }
         break
-
-      case 'paymentProvider':
-        setData((d) => ({ ...d, paymentProvider: value }))
-        addBotMessage(
-          'Eklemek istediğiniz özel bir not veya isteğiniz var mı?',
-          'message',
-        )
-        break
+      }
     }
   }
 
-  // ── Çoklu seçim onay ──
+  // ── Çoklu seçim onay (features) ──
   function handleFeaturesConfirm() {
     setData((d) => ({ ...d, features: selectedFeatures }))
     const labels = selectedFeatures.length > 0
       ? selectedFeatures.map((v) => ALL_FEATURES.find((f) => f.value === v)?.label || v).join(', ')
-      : 'Seçim yapılmadı'
+      : 'Özellikleri görüşmede konuşalım'
     setMessages((prev) => [...prev, { role: 'user', text: labels }])
 
-    addBotMessage('Yaklaşık kaç sayfa olmalı?', 'pageCount', {
-      buttons: [
-        { label: '📄 1-5 Sayfa (Kompakt)', value: '1-5' },
-        { label: '📑 5-10 Sayfa (Standart)', value: '5-10' },
-        { label: '📚 10+ Sayfa (Kapsamlı)', value: '10+' },
-        { label: '🤷 Siz karar verin', value: 'siz-karar-verin' },
-      ],
-    })
+    const intro = selectedFeatures.length > 0
+      ? `${selectedFeatures.length} özellik seçtiniz. Şimdi projenizin boyutunu konuşalım.`
+      : 'Anladım, görüşmede birlikte belirleyelim. Şimdi projenizin boyutunu konuşalım.'
+
+    setTimeout(() => {
+      const pq = getPageCountQuestion(data.siteType)
+      addBotMessage(`${intro}\n\n${pq.question}`, 'pageCount', { buttons: pq.buttons })
+    }, 200)
   }
 
-  // ── Feature toggle ──
+  // ── Çoklu seçim onay (audience) ──
+  function handleAudienceConfirm() {
+    setData((d) => ({ ...d, targetAudience: selectedAudience }))
+    const allOpts = AUDIENCE_CATEGORIES.flatMap((c) => c.options)
+    const labels = selectedAudience.length > 0
+      ? selectedAudience.map((v) => allOpts.find((o) => o.value === v)?.label || v).join(', ')
+      : 'Görüşmede konuşalım'
+    setMessages((prev) => [...prev, { role: 'user', text: labels }])
+
+    const intro = selectedAudience.length > 0
+      ? 'Anladım, hedef kitlenizi not aldım.'
+      : 'Sorun değil, görüşmede netleştireceğiz.'
+
+    setTimeout(() => {
+      addBotMessage(
+        `${intro} Eklemek istediğiniz özel bir not var mı?\n\nÖrn: özel bir istek, vurgulanması gereken bir bilgi, beğendiğiniz bir referans site...`,
+        'extraNote',
+      )
+    }, 200)
+  }
+
   function toggleFeature(value: string) {
     setSelectedFeatures((prev) =>
       prev.includes(value) ? prev.filter((v) => v !== value) : [...prev, value],
     )
+  }
+
+  function toggleAudience(value: string) {
+    setSelectedAudience((prev) =>
+      prev.includes(value) ? prev.filter((v) => v !== value) : [...prev, value],
+    )
+  }
+
+  // ── Akıllı contact başlangıcı ──
+  function startContactFlow() {
+    if (source === 'whatsapp' && phone) {
+      addBotMessage(
+        `Son adım — iletişim bilgilerinizi teyit edelim.\n\nTeklifinizi ${phone} numarasına WhatsApp üzerinden iletelim. Bu numara doğru mu?`,
+        'contactConfirm',
+        {
+          buttons: [
+            { label: '✅ Evet, bu numara doğru', value: 'onay' },
+            { label: '📱 Başka bir numara kullanmak istiyorum', value: 'baska' },
+          ],
+        },
+      )
+    } else {
+      addBotMessage(
+        'Son adım — size nasıl hitap edelim? Adınız ve soyadınız.',
+        'contactName',
+      )
+    }
   }
 
   // ── Text input submit ──
@@ -654,135 +667,102 @@ export default function ChatForm({ firmName, city, sector, slug }: Props) {
     setInputValue('')
 
     switch (step) {
-      case 'firmName':
-        setData((d) => ({ ...d, firmName: value }))
-        addBotMessage(`Teşekkürler! ${value} için nasıl bir web sitesi düşünüyorsunuz?`, 'siteType', {
-          buttons: SITE_TYPES,
-        })
-        break
-
-      case 'businessGoals':
-        setData((d) => ({ ...d, businessGoals: value }))
+      case 'existingSiteUrl': {
+        setData((d) => ({ ...d, existingSiteUrl: value }))
         addBotMessage(
-          'Hedef kitleniz kimler? Müşterileriniz hangi yaş grubu, meslek veya ilgi alanına sahip?',
-          'targetAudience',
+          'Not aldım. Hosting (sunucu) durumunuzu öğrenelim.',
+          'hostingStatus',
+          {
+            buttons: [
+              { label: '🖥️ Mevcut hostingim var', value: 'var' },
+              { label: '🛒 Hosting de sizden almak istiyorum', value: 'sizden' },
+              { label: '❓ Hosting nedir bilmiyorum', value: 'bilmiyor' },
+            ],
+          },
         )
         break
+      }
 
-      case 'targetAudience':
-        setData((d) => ({ ...d, targetAudience: value }))
+      case 'hostingProvider': {
+        setData((d) => ({ ...d, hostingProvider: value }))
         addBotMessage(
-          'Beğendiğiniz veya "böyle olsun" dediğiniz web siteleri var mı? Varsa URL\'lerini yazın (birden fazla ise virgülle ayırın). Yoksa "Yok" yazabilirsiniz.',
-          'referenceUrls',
+          'Teşekkürler, görüşmede uyumluluğunu birlikte kontrol edelim. Domain (alan adı) durumunuz nedir?',
+          'domainStatus',
+          {
+            buttons: [
+              { label: '✅ Kendi domainim var', value: 'var' },
+              { label: '🛒 Yeni domain almak istiyorum', value: 'yok' },
+              { label: '❓ Domain nedir bilmiyorum', value: 'bilmiyor' },
+            ],
+          },
         )
         break
+      }
 
-      case 'referenceUrls': {
-        const urls = value.toLowerCase() === 'yok' ? [] : value.split(/[,\s]+/).map(u => u.trim()).filter(Boolean)
-        setData((d) => ({ ...d, referenceUrls: urls }))
-        setSelectedColors([])
+      case 'domainName': {
+        setData((d) => ({ ...d, domainName: value }))
         addBotMessage(
-          'Markanızın renk paletini seçin. Aşağıdaki renklerden sitenizde kullanılmasını istediğiniz renkleri seçin ve "Onayla" butonuna basın.',
+          'Not aldım. Görsel tasarım zevkinizi öğrenelim. Markanızda öne çıkan renkleri seçin.',
           'brandColors',
         )
         break
       }
 
-      case 'existingSiteUrl':
-        setData((d) => ({ ...d, existingSiteUrl: value }))
-        addBotMessage('Hosting (sunucu barındırma) durumunuz nedir?', 'hostingStatus', {
-          buttons: [
-            { label: '✅ Hostingim var', value: 'var' },
-            { label: '❌ Hostingim yok', value: 'yok' },
-            { label: '❓ Ne olduğunu bilmiyorum', value: 'bilmiyor' },
-          ],
-        })
-        break
-
-      case 'socialMediaLinks': {
-        const smValue = value.toLowerCase() === 'yok' ? '' : value
-        setData((d) => ({ ...d, socialMediaLinks: smValue }))
-        // canli-destek seçildiyse sor
-        if (data.features.includes('canli-destek')) {
-          addBotMessage(
-            'Canlı destek için hangi sistemi tercih edersiniz?',
-            'liveSupportType',
-            {
-              buttons: [
-                { label: '💬 WhatsApp', value: 'whatsapp' },
-                { label: '🟢 Tawk.to (Ücretsiz)', value: 'tawkto' },
-                { label: '🔵 Crisp', value: 'crisp' },
-                { label: '🤷 Karar veremedim', value: 'kararsiz' },
-              ],
-            },
-          )
-        } else if (data.features.includes('online-odeme')) {
-          addBotMessage(
-            'Online ödeme için hangi altyapıyı tercih edersiniz?',
-            'paymentProvider',
-            {
-              buttons: [
-                { label: '💳 Iyzico', value: 'iyzico' },
-                { label: '💳 PayTR', value: 'paytr' },
-                { label: '🔄 Başka', value: 'baska' },
-                { label: '🤷 Karar veremedim', value: 'kararsiz' },
-              ],
-            },
-          )
-        } else {
-          addBotMessage(
-            'Eklemek istediğiniz özel bir not veya isteğiniz var mı?',
-            'message',
-          )
-        }
+      case 'extraNote': {
+        setData((d) => ({ ...d, message: value }))
+        startContactFlow()
         break
       }
-
-      case 'message':
-        setData((d) => ({ ...d, message: value }))
-        addBotMessage(
-          'Son adım! Teklifinizi hazırlayıp size iletebilmemiz için adınızı ve soyadınızı alabilir miyim?',
-          'contactName',
-        )
-        break
 
       case 'contactName': {
         const name = value.trim()
         if (!name) {
-          addBotMessage('Lütfen adınızı ve soyadınızı yazın.', 'contactName')
+          addBotMessage('Lütfen adınızı ve soyadınızı yazar mısınız?', 'contactName')
           return
         }
         setData((d) => ({ ...d, contactName: name }))
-        addBotMessage(
-          `Teşekkürler ${name}! Şimdi telefon numaranızı alabilir miyim?`,
-          'contactPhone',
-        )
+        // WA'dan onaylandıysa direkt email'e geç, değilse phone iste
+        if (source === 'whatsapp' && phone && data.contactPhone === phone) {
+          addBotMessage(
+            'E-posta adresiniz? Teklifi PDF olarak da göndermek için.',
+            'contactEmail',
+          )
+        } else {
+          addBotMessage(
+            'Size ulaşabileceğimiz telefon numarası?',
+            'contactPhone',
+          )
+        }
         break
       }
 
       case 'contactPhone': {
-        const phonePart = value.match(/0[5]\d{2}[\s.-]?\d{3}[\s.-]?\d{2}[\s.-]?\d{2}/)?.[0] || ''
-
-        if (!phonePart) {
-          addBotMessage('Lütfen geçerli bir telefon numarası girin. (05XX XXX XX XX)', 'contactPhone')
+        const normalized = normalizePhone(value)
+        if (!normalized) {
+          addBotMessage(
+            'Numarayı doğrulayamadım. 10 haneli cep telefonu numaranızı yazar mısınız? (örn: 05XX XXX XX XX)',
+            'contactPhone',
+          )
           return
         }
-
-        setData((d) => ({ ...d, contactPhone: phonePart }))
+        setData((d) => ({ ...d, contactPhone: normalized }))
         addBotMessage(
-          `Teşekkürler ${data.contactName}! Teklifinizi e-posta ile de iletmemizi ister misiniz?`,
+          'E-posta adresiniz? Teklifi PDF olarak da göndermek için.',
           'contactEmail',
         )
         break
       }
 
       case 'contactEmail': {
-        const email = value.trim()
-        if (email && email.includes('@')) {
-          setData((d) => ({ ...d, contactEmail: email }))
-          submitForm({ ...data, contactEmail: email })
+        const emailVal = value.trim()
+        if (emailVal && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailVal)) {
+          setData((d) => ({ ...d, contactEmail: emailVal }))
+          submitForm({ ...data, contactEmail: emailVal })
         } else {
-          addBotMessage('Geçerli bir e-posta adresi girebilir misiniz? (örn: isim@firma.com)', 'contactEmail')
+          addBotMessage(
+            'E-posta adresi geçerli görünmüyor. Kontrol edip tekrar dener misiniz? Veya "E-posta istemiyorum" butonuna basabilirsiniz.',
+            'contactEmail',
+          )
         }
         break
       }
@@ -794,16 +774,51 @@ export default function ChatForm({ firmName, city, sector, slug }: Props) {
   }
 
   // ── "Atla" butonları ──
-  function handleSkipMessage() {
-    setMessages((prev) => [...prev, { role: 'user', text: 'Atla' }])
+  function handleSkipExistingSite() {
+    setMessages((prev) => [...prev, { role: 'user', text: 'Bu adımı atla' }])
     addBotMessage(
-      'Son adım! Teklifinizi hazırlayıp size iletebilmemiz için adınızı ve soyadınızı alabilir miyim?',
-      'contactName',
+      'Sorun değil. Hosting (sunucu) durumunuzu öğrenelim.',
+      'hostingStatus',
+      {
+        buttons: [
+          { label: '🖥️ Mevcut hostingim var', value: 'var' },
+          { label: '🛒 Hosting de sizden almak istiyorum', value: 'sizden' },
+          { label: '❓ Hosting nedir bilmiyorum', value: 'bilmiyor' },
+        ],
+      },
     )
   }
 
+  function handleSkipHostingProvider() {
+    setMessages((prev) => [...prev, { role: 'user', text: 'Bilmiyorum, siz kontrol edin' }])
+    addBotMessage(
+      'Tamam, görüşmede uyumluluğu kontrol ederiz. Domain (alan adı) durumunuz nedir?',
+      'domainStatus',
+      {
+        buttons: [
+          { label: '✅ Kendi domainim var', value: 'var' },
+          { label: '🛒 Yeni domain almak istiyorum', value: 'yok' },
+          { label: '❓ Domain nedir bilmiyorum', value: 'bilmiyor' },
+        ],
+      },
+    )
+  }
+
+  function handleSkipDomainName() {
+    setMessages((prev) => [...prev, { role: 'user', text: 'Henüz kesinleşmedi' }])
+    addBotMessage(
+      'Not aldım. Görsel tasarım zevkinizi öğrenelim. Markanızda öne çıkan renkleri seçin.',
+      'brandColors',
+    )
+  }
+
+  function handleSkipExtraNote() {
+    setMessages((prev) => [...prev, { role: 'user', text: 'Notum yok, devam edelim' }])
+    startContactFlow()
+  }
+
   function handleSkipEmail() {
-    setMessages((prev) => [...prev, { role: 'user', text: 'Atla' }])
+    setMessages((prev) => [...prev, { role: 'user', text: 'E-posta istemiyorum' }])
     submitForm(data)
   }
 
@@ -813,7 +828,6 @@ export default function ChatForm({ firmName, city, sector, slug }: Props) {
     setStep('freeQuestion')
   }
 
-  // ── AI ile serbest soru yanıtla ──
   async function handleFreeQuestion(question: string) {
     setAiLoading(true)
     setIsTyping(true)
@@ -862,42 +876,7 @@ export default function ChatForm({ firmName, city, sector, slug }: Props) {
 
   // ── Form gönder ──
   async function submitForm(finalData: typeof data) {
-    const completedSteps = 20
-
-    let leadId: string | undefined
-    if (slug.startsWith('demo-')) {
-      const rest = slug.replace('demo-', '')
-      const knownTemplates = [
-        'dis-klinikleri','veteriner-klinikleri','optik-gozlukcu','fizik-tedavi',
-        'tip-merkezleri','estetik-klinik','psikolog-danisma','diyetisyen',
-        'isitme-merkezi','goz-merkezi','kuaforler','berberler','guzellik-spa',
-        'cilt-bakim','epilasyon','tirnak-studyosu','dovme-piercing','restoranlar',
-        'kafeler','pastaneler','firinlar','catering','kasaplar','manavlar',
-        'kuruyemisciler','sarkuteri','su-bayileri','oteller','seyahat-acentesi',
-        'ozel-okullar','kresler','muzik-kurslari','spor-salonlari','pilates-yoga',
-        'oto-galeri','oto-servis','lastikci','oto-egzoz','oto-kaporta','oto-cam',
-        'motosiklet-servisi','insaat-firmalari','mimarlik-ofisleri','tadilat-dekorasyon',
-        'isi-yalitim','dis-cephe','cati-sistemleri','fayans-seramik','asma-tavan',
-        'boya-badana','elektrikci','tesisatci','mermer-granit','parke-zemin',
-        'dosemeci','marangoz','cadir-tente','branda','kaynak-demir','bobinaj',
-        'matbaalar','ambalaj','plastik-imalat','terzi','tabela-reklam','hukuk-burosu',
-        'muhasebe','sigorta','emlak-ofisi','mobilya','elektronik','kirtasiye',
-        'pet-shop','cicekci','kuyumcu','tekstil-giyim','spor-malzemeleri',
-        'klima-servisi','kombi-servisi','beyaz-esya','asansor','jenerator',
-        'guvenlik-sistemleri','cilingir','su-aritma','fotograf-studyosu','temizlik',
-        'kuru-temizleme','hali-yikama','nakliyat','organizasyon','ozel-poliklinik',
-        'dil-kurslari','etut-merkezleri','surucu-kurslari','oto-yikama','oto-elektrik',
-        'oto-yedek-parca','oto-aksesuar','pvc-dograma','aluminyum-dograma',
-        'cam-balkon','prefabrik-yapi',
-      ].sort((a, b) => b.length - a.length)
-
-      for (const t of knownTemplates) {
-        if (rest.startsWith(t + '-')) {
-          leadId = rest.slice(t.length + 1)
-          break
-        }
-      }
-    }
+    const completedSteps = TOTAL_STEPS
 
     try {
       const res = await fetch('/api/chat-submit', {
@@ -918,39 +897,37 @@ export default function ChatForm({ firmName, city, sector, slug }: Props) {
           domainStatus: finalData.domainStatus,
           domainName: finalData.domainName,
           timeline: finalData.timeline,
-          businessGoals: finalData.businessGoals,
-          targetAudience: finalData.targetAudience,
-          referenceUrls: finalData.referenceUrls,
+          targetAudience: finalData.targetAudience.join(', '),
           brandColors: finalData.brandColors.length > 0 ? finalData.brandColors.join(',') : '',
-          seoExpectations: finalData.seoExpectations,
           existingSiteUrl: finalData.existingSiteUrl,
-          logoStatus: finalData.logoStatus,
-          socialMediaLinks: finalData.socialMediaLinks,
-          liveSupportType: finalData.liveSupportType,
-          paymentProvider: finalData.paymentProvider,
           message: finalData.message,
           sector,
           city,
           completedSteps,
           freeQuestions,
           leadId,
+          source,
         }),
       })
 
-      // Rate limit (429): kullanıcıya net mesaj göster
       if (res.status === 429) {
         addBotMessage(
-          'Çok fazla istek gönderdiniz. Bilgilerinizi aldık ancak sistem koruması nedeniyle bir saat sonra tekrar deneyebilirsiniz. Acil iletişim için: studio@vorte.com.tr',
+          'Bilgilerinizi aldık ancak sistem koruması nedeniyle şu an işleme alamadık. Lütfen 1 saat sonra tekrar deneyin veya doğrudan studio@vorte.com.tr adresine yazabilirsiniz.',
           'done',
         )
         return
       }
     } catch {
-      // Sessiz hata — UX'i bozma
+      addBotMessage(
+        `Bilgileriniz kaydedildi ${finalData.contactName ? finalData.contactName + ', ' : ''}ekibimiz 24 saat içinde size ulaşacak. Acil durumlar için: studio@vorte.com.tr`,
+        'done',
+      )
+      return
     }
 
+    const channel = source === 'whatsapp' ? 'WhatsApp' : 'iletişim kanallarınız'
     addBotMessage(
-      `Teşekkürler ${finalData.contactName}!\n\nBilgileriniz ekibimize iletildi. 24 saat içinde size özel teklifiniz hazırlanacak ve sizinle iletişime geçeceğiz.\n\nGüzel bir gün dileriz!`,
+      `Harika, ${finalData.contactName}! 🎉\n\nBilgileriniz ekibimize iletildi. 24 saat içinde size özel hazırlanmış teklifinizi ${channel} üzerinden paylaşacağız.\n\nSizi aramızda görmek isteriz.\n\n— Vorte Studio`,
       'done',
     )
   }
@@ -958,30 +935,53 @@ export default function ChatForm({ firmName, city, sector, slug }: Props) {
   // ── Progress bar ──
   const progress = step === 'done' ? 100 : (stepToNumber(step) / TOTAL_STEPS) * 100
 
-  // ── Buton gösterilecek mi ──
-  const showButtons = !['intro', 'firmName', 'message', 'contactName', 'contactPhone', 'businessGoals', 'targetAudience', 'referenceUrls', 'brandColors', 'existingSiteUrl', 'socialMediaLinks', 'done', 'freeQuestion'].includes(step)
-  const showTextInput = ['firmName', 'message', 'contactName', 'contactPhone', 'contactEmail', 'businessGoals', 'targetAudience', 'referenceUrls', 'existingSiteUrl', 'socialMediaLinks', 'freeQuestion'].includes(step)
-  const showColorPicker = step === 'brandColors'
-  const showFreeQuestionBtn = !['intro', 'done', 'freeQuestion', 'hostingInfo', 'hostingChoice', 'hostingPackages', 'domainInfo'].includes(step)
+  // ── Buton/input gösterim koşulları ──
+  const showTextInput = ['existingSiteUrl', 'hostingProvider', 'domainName', 'extraNote', 'contactName', 'contactPhone', 'contactEmail', 'freeQuestion'].includes(step)
+  const showButtons = !showTextInput && !['intro', 'features', 'targetAudience', 'brandColors', 'done', 'freeQuestion'].includes(step)
+  const showFreeQuestionBtn = !['intro', 'done', 'freeQuestion', 'hostingPackages', 'domainName'].includes(step)
+
+  // brandColors → timeline geçişi (color picker onayında tetiklenir)
+  function handleColorsConfirm() {
+    setData((d) => ({ ...d, brandColors: selectedColors }))
+    const label = selectedColors.length > 0
+      ? `Seçilen renkler: ${selectedColors.join(', ')}`
+      : 'Rengi görüşmede belirleyelim'
+    setMessages((prev) => [...prev, { role: 'user', text: label }])
+
+    const intro = selectedColors.length > 0
+      ? `${selectedColors.length} renk not edildi.`
+      : 'Sorun değil, rengi birlikte belirleyeceğiz.'
+
+    setTimeout(() => {
+      addBotMessage(
+        `${intro} Siteyi ne zaman yayında görmek istersiniz?`,
+        'timeline',
+        {
+          buttons: [
+            { label: '🚀 Mümkün olan en kısa sürede', value: 'acil' },
+            { label: '📅 2-4 hafta içinde', value: '1-ay' },
+            { label: '🗓️ 1-2 ay içinde', value: '2-3-ay' },
+            { label: '🌿 Acele etmiyorum, kalite önemli', value: 'esnek' },
+          ],
+        },
+      )
+    }, 200)
+  }
 
   // ── Placeholder ──
   const placeholders: Record<string, string> = {
-    firmName: 'İşletmenizin adını yazın...',
-    businessGoals: 'Örn: Daha fazla müşteri çekmek, online satış...',
-    targetAudience: 'Örn: 25-45 yaş arası kadınlar, işletme sahipleri...',
-    referenceUrls: 'Örn: www.ornek.com, www.diger.com veya "Yok"',
-    existingSiteUrl: 'Örn: www.firmaadi.com',
-    socialMediaLinks: 'Örn: instagram.com/firma, facebook.com/firma veya "Yok"',
-    message: 'Notunuzu yazın veya "Atla" butonuna basın...',
-    contactName: 'Adınız ve soyadınız...',
-    contactPhone: '05XX XXX XX XX',
-    contactEmail: 'E-posta adresiniz (örn: isim@firma.com)',
+    existingSiteUrl: 'www.firmaadi.com',
+    hostingProvider: 'Örn: Natro VPS, Hetzner, Contabo...',
+    domainName: 'firmaadi.com',
+    extraNote: 'Notunuzu yazın veya bu adımı atlayın...',
+    contactName: 'Ad Soyad',
+    contactPhone: '05XX XXX XX XX veya +90 5XX XXX XX XX',
+    contactEmail: 'isim@firma.com',
     freeQuestion: 'Sorunuzu yazın...',
   }
 
   return (
     <div className="flex min-h-[100dvh] flex-col bg-gradient-to-b from-slate-50 via-white to-slate-50">
-      {/* Pulse animation style */}
       <style>{pulseKeyframes}</style>
 
       {/* ── Header ── */}
@@ -1011,7 +1011,6 @@ export default function ChatForm({ firmName, city, sector, slug }: Props) {
             </div>
           </div>
 
-          {/* Progress */}
           <AnimatePresence>
             {step !== 'intro' && step !== 'done' && (
               <motion.div
@@ -1040,7 +1039,6 @@ export default function ChatForm({ firmName, city, sector, slug }: Props) {
       {/* ── Chat area ── */}
       <main className="flex-1 overflow-y-auto px-4 py-6">
         <div className="mx-auto max-w-xl space-y-4">
-          {/* Bugün etiketi */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -1050,7 +1048,6 @@ export default function ChatForm({ firmName, city, sector, slug }: Props) {
             <span className="rounded-full bg-slate-100 px-3 py-1 text-xs text-slate-400">Bugün</span>
           </motion.div>
 
-          {/* ── Mesajlar ── */}
           <AnimatePresence mode="popLayout">
             {messages.map((msg, i) => (
               <motion.div
@@ -1060,9 +1057,7 @@ export default function ChatForm({ firmName, city, sector, slug }: Props) {
                 animate="visible"
                 layout
               >
-                {/* Mesaj balonu */}
                 <div className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                  {/* Assistant avatar (sadece ilk mesajda veya önceki farklı role ise) */}
                   {msg.role === 'assistant' && (
                     <div className="mr-2 mt-1 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-orange-500 to-orange-600 text-[10px] font-bold text-white">
                       V
@@ -1078,7 +1073,6 @@ export default function ChatForm({ firmName, city, sector, slug }: Props) {
                           : 'rounded-bl-sm bg-white text-slate-700 shadow-sm ring-1 ring-slate-200/60'
                     }`}
                   >
-                    {/* Info box ikon */}
                     {msg.infoBox && (
                       <div className="mb-2 flex items-center gap-2 text-xs font-medium text-blue-600">
                         <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
@@ -1117,8 +1111,8 @@ export default function ChatForm({ firmName, city, sector, slug }: Props) {
                   </motion.div>
                 )}
 
-                {/* ── Multi-select butonlar ── */}
-                {msg.multiSelect && i === messages.length - 1 && (() => {
+                {/* ── Multi-select: features ── */}
+                {msg.multiSelect === 'features' && i === messages.length - 1 && (() => {
                   const { recommended, others } = getOrderedFeatures(sector)
                   return (
                     <motion.div
@@ -1127,7 +1121,6 @@ export default function ChatForm({ firmName, city, sector, slug }: Props) {
                       transition={{ delay: 0.15 }}
                       className="mt-3 space-y-3 pl-9"
                     >
-                      {/* Sektöre özel öneriler */}
                       {recommended.length > 0 && (
                         <>
                           <div className="text-xs font-medium text-orange-600">⭐ Sektörünüze Özel Öneriler</div>
@@ -1165,10 +1158,9 @@ export default function ChatForm({ firmName, city, sector, slug }: Props) {
                         </>
                       )}
 
-                      {/* Diğer özellikler */}
                       {others.length > 0 && (
                         <>
-                          <div className="text-xs font-medium text-slate-400 pt-1">Diğer Özellikler</div>
+                          <div className="pt-1 text-xs font-medium text-slate-400">Diğer Özellikler</div>
                           <div className="flex flex-wrap gap-2">
                             {others.map((f, fi) => {
                               const isSelected = selectedFeatures.includes(f.value)
@@ -1209,7 +1201,7 @@ export default function ChatForm({ firmName, city, sector, slug }: Props) {
                         onClick={handleFeaturesConfirm}
                         className="rounded-xl bg-gradient-to-r from-orange-500 to-orange-600 px-6 py-2.5 text-sm font-medium text-white shadow-lg shadow-orange-500/25 transition-shadow hover:shadow-xl hover:shadow-orange-500/30"
                       >
-                        Devam Et
+                        ✓ Seçimi Onayla
                         <svg className="ml-2 inline h-4 w-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
                         </svg>
@@ -1217,6 +1209,65 @@ export default function ChatForm({ firmName, city, sector, slug }: Props) {
                     </motion.div>
                   )
                 })()}
+
+                {/* ── Multi-select: audience ── */}
+                {msg.multiSelect === 'audience' && i === messages.length - 1 && (
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.15 }}
+                    className="mt-3 space-y-4 pl-9"
+                  >
+                    {AUDIENCE_CATEGORIES.map((cat) => (
+                      <div key={cat.title} className="space-y-2">
+                        <div className="text-xs font-medium text-slate-500">{cat.title}</div>
+                        <div className="flex flex-wrap gap-2">
+                          {cat.options.map((opt, oi) => {
+                            const isSelected = selectedAudience.includes(opt.value)
+                            return (
+                              <motion.button
+                                key={opt.value}
+                                custom={oi}
+                                variants={buttonVariants}
+                                initial="hidden"
+                                animate="visible"
+                                whileHover={{ scale: 1.03 }}
+                                whileTap={{ scale: 0.96 }}
+                                onClick={() => toggleAudience(opt.value)}
+                                className={`relative rounded-xl border px-4 py-2.5 text-sm transition-all ${
+                                  isSelected
+                                    ? 'border-orange-400 bg-orange-50 text-orange-700 shadow-md shadow-orange-500/10'
+                                    : 'border-slate-200 bg-white text-slate-700 hover:border-orange-300 hover:bg-orange-50/50'
+                                }`}
+                              >
+                                <span className="flex items-center gap-2">
+                                  {isSelected && (
+                                    <motion.svg initial={{ scale: 0 }} animate={{ scale: 1 }} className="h-4 w-4 text-orange-500" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
+                                      <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                                    </motion.svg>
+                                  )}
+                                  {opt.label}
+                                </span>
+                              </motion.button>
+                            )
+                          })}
+                        </div>
+                      </div>
+                    ))}
+
+                    <motion.button
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.97 }}
+                      onClick={handleAudienceConfirm}
+                      className="rounded-xl bg-gradient-to-r from-orange-500 to-orange-600 px-6 py-2.5 text-sm font-medium text-white shadow-lg shadow-orange-500/25 transition-shadow hover:shadow-xl hover:shadow-orange-500/30"
+                    >
+                      ✓ Seçimi Tamamla
+                      <svg className="ml-2 inline h-4 w-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                      </svg>
+                    </motion.button>
+                  </motion.div>
+                )}
 
                 {/* ── Renk Paleti Seçici ── */}
                 {step === 'brandColors' && i === messages.length - 1 && !msg.buttons && !msg.multiSelect && msg.role === 'assistant' && (
@@ -1243,9 +1294,9 @@ export default function ChatForm({ firmName, city, sector, slug }: Props) {
                               }}
                               className={`relative aspect-square rounded-lg transition-all ${
                                 isSelected
-                                  ? 'ring-2 ring-orange-500 ring-offset-2 scale-110 z-10'
+                                  ? 'z-10 scale-110 ring-2 ring-orange-500 ring-offset-2'
                                   : 'hover:scale-105 hover:ring-1 hover:ring-slate-300'
-                              } ${selectedColors.length >= 5 && !isSelected ? 'opacity-40 cursor-not-allowed' : ''}`}
+                              } ${selectedColors.length >= 5 && !isSelected ? 'cursor-not-allowed opacity-40' : ''}`}
                               style={{ backgroundColor: hex, border: isLight ? '1px solid #e2e8f0' : 'none' }}
                               title={hex}
                               disabled={selectedColors.length >= 5 && !isSelected}
@@ -1266,7 +1317,6 @@ export default function ChatForm({ firmName, city, sector, slug }: Props) {
                         })}
                       </div>
 
-                      {/* Seçilen renkler önizleme */}
                       {selectedColors.length > 0 && (
                         <div className="mt-3 flex items-center gap-2 border-t border-slate-100 pt-3">
                           <span className="text-xs text-slate-400">Seçilen:</span>
@@ -1276,42 +1326,34 @@ export default function ChatForm({ firmName, city, sector, slug }: Props) {
                                 className="h-6 w-6 rounded-md border border-slate-200"
                                 style={{ backgroundColor: hex }}
                               />
-                              <span className="text-[10px] font-mono text-slate-400">{hex}</span>
+                              <span className="font-mono text-[10px] text-slate-400">{hex}</span>
                             </div>
                           ))}
                         </div>
                       )}
 
-                      <p className="mt-2 text-xs text-slate-400 text-center">
-                        En az 2, en çok 5 renk seçin ve onayla butonuna basın
+                      <p className="mt-2 text-center text-xs text-slate-400">
+                        En az 2, en çok 5 renk seçin
                       </p>
                     </div>
 
                     <motion.button
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.97 }}
-                      onClick={() => {
-                        if (selectedColors.length >= 2) {
-                          const label = selectedColors.join(', ')
-                          handleButtonClick(label, `Seçilen renkler: ${label}`)
-                        }
-                      }}
+                      onClick={handleColorsConfirm}
                       disabled={selectedColors.length < 2}
                       className={`rounded-xl px-6 py-2.5 text-sm font-medium text-white shadow-lg transition-all ${
                         selectedColors.length >= 2
                           ? 'bg-gradient-to-r from-orange-500 to-orange-600 shadow-orange-500/25 hover:shadow-xl hover:shadow-orange-500/30'
-                          : 'bg-slate-300 cursor-not-allowed shadow-none'
+                          : 'cursor-not-allowed bg-slate-300 shadow-none'
                       }`}
                     >
-                      Renkleri Onayla ({selectedColors.length}/5)
-                      <svg className="ml-2 inline h-4 w-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                      </svg>
+                      ✓ Renk Seçimini Tamamla ({selectedColors.length}/5)
                     </motion.button>
                   </motion.div>
                 )}
 
-                {/* ── Info box — "Anladım" butonu ── */}
+                {/* ── Info box "Anladım" butonu ── */}
                 {msg.infoBox && i === messages.length - 1 && (
                   <motion.div
                     initial={{ opacity: 0, y: 8 }}
@@ -1336,7 +1378,6 @@ export default function ChatForm({ firmName, city, sector, slug }: Props) {
             ))}
           </AnimatePresence>
 
-          {/* ── Typing indicator ── */}
           <AnimatePresence>
             {isTyping && (
               <motion.div
@@ -1349,18 +1390,9 @@ export default function ChatForm({ firmName, city, sector, slug }: Props) {
                   V
                 </div>
                 <div className="flex items-center gap-1.5 rounded-2xl rounded-bl-sm bg-white px-5 py-3.5 shadow-sm ring-1 ring-slate-200/60">
-                  <span
-                    className="h-2 w-2 rounded-full bg-slate-400"
-                    style={{ animation: 'dotPulse 1.4s ease-in-out infinite', animationDelay: '0ms' }}
-                  />
-                  <span
-                    className="h-2 w-2 rounded-full bg-slate-400"
-                    style={{ animation: 'dotPulse 1.4s ease-in-out infinite', animationDelay: '200ms' }}
-                  />
-                  <span
-                    className="h-2 w-2 rounded-full bg-slate-400"
-                    style={{ animation: 'dotPulse 1.4s ease-in-out infinite', animationDelay: '400ms' }}
-                  />
+                  <span className="h-2 w-2 rounded-full bg-slate-400" style={{ animation: 'dotPulse 1.4s ease-in-out infinite', animationDelay: '0ms' }} />
+                  <span className="h-2 w-2 rounded-full bg-slate-400" style={{ animation: 'dotPulse 1.4s ease-in-out infinite', animationDelay: '200ms' }} />
+                  <span className="h-2 w-2 rounded-full bg-slate-400" style={{ animation: 'dotPulse 1.4s ease-in-out infinite', animationDelay: '400ms' }} />
                 </div>
               </motion.div>
             )}
@@ -1391,17 +1423,64 @@ export default function ChatForm({ firmName, city, sector, slug }: Props) {
                   className="flex-1 rounded-xl border border-slate-200 bg-slate-50/80 px-4 py-3 text-sm text-slate-900 placeholder-slate-400 outline-none transition-all focus:border-orange-300 focus:bg-white focus:shadow-lg focus:shadow-orange-500/5 focus:ring-2 focus:ring-orange-100"
                   disabled={aiLoading}
                 />
-                {(step === 'message' || step === 'contactEmail') && (
+
+                {/* Adıma özel "Atla" butonu */}
+                {step === 'existingSiteUrl' && (
                   <motion.button
                     type="button"
                     whileHover={{ scale: 1.03 }}
                     whileTap={{ scale: 0.97 }}
-                    onClick={step === 'contactEmail' ? handleSkipEmail : handleSkipMessage}
+                    onClick={handleSkipExistingSite}
                     className="rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-500 transition-colors hover:bg-slate-50"
                   >
                     Atla
                   </motion.button>
                 )}
+                {step === 'hostingProvider' && (
+                  <motion.button
+                    type="button"
+                    whileHover={{ scale: 1.03 }}
+                    whileTap={{ scale: 0.97 }}
+                    onClick={handleSkipHostingProvider}
+                    className="rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-500 transition-colors hover:bg-slate-50"
+                  >
+                    Bilmiyorum
+                  </motion.button>
+                )}
+                {step === 'domainName' && (
+                  <motion.button
+                    type="button"
+                    whileHover={{ scale: 1.03 }}
+                    whileTap={{ scale: 0.97 }}
+                    onClick={handleSkipDomainName}
+                    className="rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-500 transition-colors hover:bg-slate-50"
+                  >
+                    Atla
+                  </motion.button>
+                )}
+                {step === 'extraNote' && (
+                  <motion.button
+                    type="button"
+                    whileHover={{ scale: 1.03 }}
+                    whileTap={{ scale: 0.97 }}
+                    onClick={handleSkipExtraNote}
+                    className="rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-500 transition-colors hover:bg-slate-50"
+                  >
+                    Atla
+                  </motion.button>
+                )}
+                {step === 'contactEmail' && (
+                  <motion.button
+                    type="button"
+                    whileHover={{ scale: 1.03 }}
+                    whileTap={{ scale: 0.97 }}
+                    onClick={handleSkipEmail}
+                    className="rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-500 transition-colors hover:bg-slate-50"
+                  >
+                    Atla
+                  </motion.button>
+                )}
+
                 <motion.button
                   type="submit"
                   disabled={!inputValue.trim() || aiLoading}
@@ -1415,7 +1494,6 @@ export default function ChatForm({ firmName, city, sector, slug }: Props) {
                 </motion.button>
               </form>
 
-              {/* Free question butonu — text input modlarında */}
               {showFreeQuestionBtn && step !== 'freeQuestion' && (
                 <motion.button
                   initial={{ opacity: 0 }}
@@ -1433,7 +1511,6 @@ export default function ChatForm({ firmName, city, sector, slug }: Props) {
                 </motion.button>
               )}
 
-              {/* KVKK Aydınlatma bilgilendirmesi — kişisel veri toplandığı adımlarda */}
               {(step === 'contactName' || step === 'contactPhone' || step === 'contactEmail') && (
                 <p className="mt-2 text-center text-[10px] text-slate-400">
                   Devam ederek{' '}
@@ -1452,7 +1529,6 @@ export default function ChatForm({ firmName, city, sector, slug }: Props) {
           </motion.div>
         )}
 
-        {/* ── Buton modlarında "Bir sorum var" ── */}
         {showButtons && !showTextInput && (
           <motion.div
             key="button-footer"
@@ -1476,7 +1552,6 @@ export default function ChatForm({ firmName, city, sector, slug }: Props) {
           </motion.div>
         )}
 
-        {/* ── Tamamlandı ── */}
         {step === 'done' && (
           <motion.div
             key="done-footer"
@@ -1486,7 +1561,6 @@ export default function ChatForm({ firmName, city, sector, slug }: Props) {
             className="sticky bottom-0 z-10 border-t border-slate-200/80 bg-white/80 px-4 py-5 backdrop-blur-xl"
           >
             <div className="mx-auto max-w-xl text-center">
-              {/* Kutlama animasyonu */}
               <motion.div
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
