@@ -917,6 +917,26 @@ export default function ChatForm({ firmName, city, sector, slug, phone, email, l
         )
         return
       }
+
+      // Paket önerisini response'tan al (saf fonksiyon, server'da hesaplanır)
+      let suggestedName: string | null = null
+      try {
+        const json = await res.json()
+        suggestedName = json?.suggestedPackage?.name || null
+      } catch {
+        // JSON parse hatası — paket önerisi olmadan devam
+      }
+
+      const channel = source === 'whatsapp' ? 'WhatsApp' : 'iletişim kanallarınız'
+      const packageLine = suggestedName
+        ? `\n\nİhtiyaçlarınıza göre "${suggestedName}" paketimiz uygun görünüyor. Kesin fiyat ve detayları görüşmemizde paylaşacağız.`
+        : ''
+
+      addBotMessage(
+        `Harika, ${finalData.contactName}! 🎉\n\nBilgileriniz ekibimize iletildi. 24 saat içinde size özel hazırlanmış teklifinizi ${channel} üzerinden paylaşacağız.${packageLine}\n\nSizi aramızda görmek isteriz.\n\n— Vorte Studio`,
+        'done',
+      )
+      return
     } catch {
       addBotMessage(
         `Bilgileriniz kaydedildi ${finalData.contactName ? finalData.contactName + ', ' : ''}ekibimiz 24 saat içinde size ulaşacak. Acil durumlar için: studio@vorte.com.tr`,
@@ -924,12 +944,6 @@ export default function ChatForm({ firmName, city, sector, slug, phone, email, l
       )
       return
     }
-
-    const channel = source === 'whatsapp' ? 'WhatsApp' : 'iletişim kanallarınız'
-    addBotMessage(
-      `Harika, ${finalData.contactName}! 🎉\n\nBilgileriniz ekibimize iletildi. 24 saat içinde size özel hazırlanmış teklifinizi ${channel} üzerinden paylaşacağız.\n\nSizi aramızda görmek isteriz.\n\n— Vorte Studio`,
-      'done',
-    )
   }
 
   // ── Progress bar ──

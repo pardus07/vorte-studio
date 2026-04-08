@@ -131,9 +131,10 @@ model ChatSubmission {
   city            String?
   completedSteps  Int      @default(0)  // kaçıncı adıma kadar geldi (1-12)
   score           String   @default("cold") // hot/warm/cold
-  calculatedPrice Float?                // otomatik hesaplanan fiyat (TL)
+  calculatedPrice Float?                // otomatik hesaplanan fiyat (TL) — iç tahmin
   estimatedHours  Float?                // tahmini toplam saat
   tokenCost       Float?                // AI token maliyeti (TL)
+  suggestedPackage String?              // starter/profesyonel/eticaret/kurumsal — paket önerisi
   freeQuestions   Json     @default("[]")  // [{question, answer, step, timestamp}]
   isRead          Boolean  @default(false) // admin okudu mu
   createdAt       DateTime @default(now())

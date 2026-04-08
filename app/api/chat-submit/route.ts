@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { calculatePrice } from "@/lib/pricing-calculator";
+import { suggestPackage } from "@/lib/package-suggester";
 import { checkRateLimit } from "@/lib/rate-limit";
 
 export const dynamic = "force-dynamic";
@@ -105,6 +106,14 @@ export async function POST(req: Request) {
       // Fiyat hesaplanamazsa sessiz devam et
     }
 
+    // Paket önerisi (saf fonksiyon — DB gerektirmez, hata fırlatmaz)
+    const suggestion = suggestPackage({
+      siteType: siteType || null,
+      features: features || [],
+      pageCount: pageCount || null,
+      contentStatus: contentStatus || null,
+    });
+
     // ChatSubmission oluştur
     const submission = await prisma.chatSubmission.create({
       data: {
@@ -140,6 +149,7 @@ export async function POST(req: Request) {
         calculatedPrice,
         estimatedHours,
         tokenCost,
+        suggestedPackage: suggestion.slug,
         freeQuestions: freeQuestions || [],
         leadId: leadId || null,
       },
@@ -175,7 +185,11 @@ export async function POST(req: Request) {
       }
     }
 
-    return NextResponse.json({ success: true, id: submission.id });
+    return NextResponse.json({
+      success: true,
+      id: submission.id,
+      suggestedPackage: suggestion,
+    });
   } catch (err) {
     console.error("Chat submit hatası:", err);
     return NextResponse.json(

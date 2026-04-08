@@ -47,6 +47,7 @@ export async function getChatSubmissions() {
       calculatedPrice: s.calculatedPrice,
       estimatedHours: s.estimatedHours,
       tokenCost: s.tokenCost,
+      suggestedPackage: s.suggestedPackage,
       freeQuestions: s.freeQuestions as Array<{
         question: string;
         answer: string;

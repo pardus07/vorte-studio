@@ -40,6 +40,7 @@ interface Submission {
   calculatedPrice: number | null;
   estimatedHours: number | null;
   tokenCost: number | null;
+  suggestedPackage: string | null;
   freeQuestions: Array<{
     question: string;
     answer: string;
@@ -74,11 +75,21 @@ const TIMELINE_LABELS: Record<string, string> = {
 // ── Site türü etiketleri ──
 const SITE_TYPE_LABELS: Record<string, string> = {
   tanitim: "Tanıtım Sitesi",
-  "e-ticaret": "E-Ticaret",
+  eticaret: "E-Ticaret",
+  "e-ticaret": "E-Ticaret", // eski kayıtlar için geriye dönük
   portfoy: "Portföy",
   randevu: "Randevu Sistemi",
   katalog: "Katalog",
+  menu: "Menü Sitesi",
   belirsiz: "Belirsiz",
+};
+
+// ── Paket etiketleri ──
+const PACKAGE_LABELS: Record<string, { name: string; color: string }> = {
+  starter: { name: "Starter", color: "bg-blue-500/15 text-blue-400 border-blue-500/30" },
+  profesyonel: { name: "Profesyonel", color: "bg-orange-500/15 text-orange-400 border-orange-500/30" },
+  eticaret: { name: "E-Ticaret", color: "bg-emerald-500/15 text-emerald-400 border-emerald-500/30" },
+  kurumsal: { name: "Kurumsal", color: "bg-purple-500/15 text-purple-400 border-purple-500/30" },
 };
 
 export default function SubmissionsDashboard({ initialData, pricingConfigs }: Props) {
@@ -651,11 +662,26 @@ export default function SubmissionsDashboard({ initialData, pricingConfigs }: Pr
                 </div>
               )}
 
-              {/* Fiyat bilgisi */}
+              {/* Önerilen paket */}
+              {selected.suggestedPackage && PACKAGE_LABELS[selected.suggestedPackage] && (
+                <div className={`rounded-lg border p-3 ${PACKAGE_LABELS[selected.suggestedPackage].color}`}>
+                  <div className="text-[11px] uppercase tracking-wider opacity-70">
+                    Önerilen Paket
+                  </div>
+                  <div className="mt-1 text-base font-semibold">
+                    {PACKAGE_LABELS[selected.suggestedPackage].name}
+                  </div>
+                  <div className="mt-1 text-[11px] opacity-70">
+                    Müşteriye chatbot bitiş mesajında bu paket önerildi (fiyat verilmedi).
+                  </div>
+                </div>
+              )}
+
+              {/* Fiyat bilgisi (iç tahmin) */}
               {(selected.calculatedPrice || selected.estimatedHours) && (
                 <div className="rounded-lg border border-admin-accent/20 bg-admin-accent/5 p-3">
                   <div className="text-[11px] uppercase tracking-wider text-admin-muted">
-                    Hesaplanan Fiyat
+                    İç Tahmin (müşteriye gösterilmedi)
                   </div>
                   <div className="mt-1.5 flex items-baseline gap-3">
                     {selected.calculatedPrice && (
