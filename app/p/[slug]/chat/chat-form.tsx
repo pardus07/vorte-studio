@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { getPrimaryGoalButtons, resolvePrimaryGoal } from '@/lib/primary-goal-mapping'
 
 interface Props {
   firmName: string
@@ -51,6 +52,7 @@ type Step =
   | 'brandColors'
   | 'timeline'
   | 'targetAudience'
+  | 'primaryGoal'
   | 'extraNote'
   | 'contactConfirm'
   | 'contactName'
@@ -59,7 +61,7 @@ type Step =
   | 'done'
   | 'freeQuestion'
 
-const TOTAL_STEPS = 12
+const TOTAL_STEPS = 13
 
 function stepToNumber(s: Step): number {
   const map: Record<string, number> = {
@@ -67,8 +69,9 @@ function stepToNumber(s: Step): number {
     hasExistingSite: 5, existingSiteUrl: 5,
     hostingStatus: 6, hostingProvider: 6, hostingPackages: 6,
     domainStatus: 7, domainName: 7,
-    brandColors: 8, timeline: 9, targetAudience: 10, extraNote: 11,
-    contactConfirm: 12, contactName: 12, contactPhone: 12, contactEmail: 12,
+    brandColors: 8, timeline: 9, targetAudience: 10,
+    primaryGoal: 11, extraNote: 12,
+    contactConfirm: 13, contactName: 13, contactPhone: 13, contactEmail: 13,
   }
   return map[s] || 0
 }
@@ -354,6 +357,7 @@ export default function ChatForm({ firmName, city, sector, slug, phone, email, l
     domainName: '',
     timeline: '',
     targetAudience: [] as string[],
+    primaryGoal: '',
     brandColors: [] as string[],
     existingSiteUrl: '',
     message: '',
@@ -572,6 +576,15 @@ export default function ChatForm({ firmName, city, sector, slug, phone, email, l
         break
       }
 
+      case 'primaryGoal': {
+        setData((d) => ({ ...d, primaryGoal: value }))
+        addBotMessage(
+          'Anladım, bu hedef doğrultusunda planlayacağız. Eklemek istediğiniz özel bir not var mı?\n\nÖrn: özel bir istek, vurgulanması gereken bir bilgi, beğendiğiniz bir referans site...',
+          'extraNote',
+        )
+        break
+      }
+
       case 'contactConfirm': {
         if (value === 'onay') {
           // WA'dan gelen telefon onaylandı, contactName'e geç
@@ -618,8 +631,9 @@ export default function ChatForm({ firmName, city, sector, slug, phone, email, l
 
     setTimeout(() => {
       addBotMessage(
-        `${intro} Eklemek istediğiniz özel bir not var mı?\n\nÖrn: özel bir istek, vurgulanması gereken bir bilgi, beğendiğiniz bir referans site...`,
-        'extraNote',
+        `${intro} Son birkaç soru kaldı 🙌\n\nBu siteyle birincil hedefiniz ne? (Tek seçim)`,
+        'primaryGoal',
+        { buttons: getPrimaryGoalButtons() },
       )
     }, 200)
   }
@@ -878,6 +892,9 @@ export default function ChatForm({ firmName, city, sector, slug, phone, email, l
   async function submitForm(finalData: typeof data) {
     const completedSteps = TOTAL_STEPS
 
+    // Birincil hedef → businessGoals + seoExpectations çift mapping
+    const goalMapping = resolvePrimaryGoal(finalData.primaryGoal)
+
     try {
       const res = await fetch('/api/chat-submit', {
         method: 'POST',
@@ -901,6 +918,8 @@ export default function ChatForm({ firmName, city, sector, slug, phone, email, l
           brandColors: finalData.brandColors.length > 0 ? finalData.brandColors.join(',') : '',
           existingSiteUrl: finalData.existingSiteUrl,
           message: finalData.message,
+          businessGoals: goalMapping?.businessGoals || null,
+          seoExpectations: goalMapping?.seoExpectations || null,
           sector,
           city,
           completedSteps,
