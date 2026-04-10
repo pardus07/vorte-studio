@@ -696,3 +696,15 @@ model CallLog {
 
   @@map("call_logs")
 }
+
+// ── FCM Cihaz Token'ları (Push Notification) ──
+model DeviceToken {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  platform  String   @default("android")
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("device_tokens")
+}
