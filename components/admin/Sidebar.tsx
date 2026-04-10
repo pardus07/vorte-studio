@@ -73,6 +73,7 @@ const sections = [
   {
     label: "İletişim",
     items: [
+      { name: "Sesli Aramalar", href: "/admin/voice-calls", icon: PhoneIcon },
       { name: "WhatsApp", href: "/admin/whatsapp", icon: WhatsAppIcon },
     ],
   },
@@ -409,6 +410,14 @@ function LogoIcon({ className }: { className?: string }) {
       <rect x="2" y="2" width="14" height="14" rx="3" />
       <circle cx="7" cy="7" r="2" />
       <path d="M16 12l-4-4-6 8" />
+    </svg>
+  );
+}
+
+function PhoneIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M16 12.5c0 .4-.1.8-.3 1.1-.2.4-.5.7-.8 1-.5.5-1.1.8-1.7.9-.7.1-1.4 0-2-.3l-2.2-.9c-.6-.3-1.2-.6-1.7-1a16 16 0 01-4.6-4.6c-.4-.5-.8-1.1-1-1.7L1.8 4.8c-.3-.7-.4-1.4-.3-2 .1-.7.4-1.3.9-1.8.3-.3.6-.6 1-.8.3-.2.7-.3 1.1-.3h.4c.3 0 .6.2.8.5l1.5 2.6c.1.2.1.5 0 .8l-.8 1.3c0 .1 0 .2.1.3.5 1 1.2 1.9 2 2.7.8.8 1.7 1.5 2.7 2 .1.1.2.1.3 0l1.3-.8c.2-.1.5-.2.8 0l2.6 1.5c.3.2.5.5.5.8v.4z" />
     </svg>
   );
 }
