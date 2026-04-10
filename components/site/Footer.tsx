@@ -87,13 +87,19 @@ export default function Footer() {
             </h3>
             <address className="flex flex-col gap-2.5 not-italic">
               <a
+                href="tel:+908503058635"
+                className="text-sm text-muted transition-colors hover:text-accent"
+              >
+                0850 305 86 35
+              </a>
+              <a
                 href="mailto:studio@vorte.com.tr"
                 className="text-sm text-muted transition-colors hover:text-accent"
               >
                 studio@vorte.com.tr
               </a>
-              <span className="text-sm text-muted2">
-                Türkiye geneli &middot; Uzaktan hizmet
+              <span className="text-sm leading-relaxed text-muted2">
+                Ankara Caddesi No:81 Bayraklı Tower K:1 No:, D:011, 35030
               </span>
             </address>
 
