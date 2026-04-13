@@ -99,7 +99,7 @@ export default function Footer() {
                 studio@vorte.com.tr
               </a>
               <span className="text-sm leading-relaxed text-muted2">
-                Ankara Caddesi No:81 Bayraklı Tower K:1 No:, D:011, 35030
+                Mansuroğlu Mah. Ankara Caddesi No:81/012 Bayraklı Tower, Bayraklı, İzmir
               </span>
             </address>
 
