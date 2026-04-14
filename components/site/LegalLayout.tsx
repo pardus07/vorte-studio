@@ -76,10 +76,10 @@ export default function LegalLayout({ title, lastUpdated, children }: LegalLayou
         <div className="mt-8 text-center text-xs text-muted2">
           Sorularınız için:{" "}
           <a
-            href="mailto:studio@vorte.com.tr"
+            href="mailto:info@vortestudio.com"
             className="text-accent transition-colors hover:underline"
           >
-            studio@vorte.com.tr
+            info@vortestudio.com
           </a>
         </div>
       </div>

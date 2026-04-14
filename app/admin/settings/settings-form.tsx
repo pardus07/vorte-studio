@@ -9,7 +9,7 @@ type Props = {
 
 const FIELDS = [
   { key: "whatsapp_number", label: "WhatsApp Numarası", placeholder: "905XXXXXXXXX", type: "text" },
-  { key: "email", label: "E-posta", placeholder: "studio@vorte.com.tr", type: "text" },
+  { key: "email", label: "E-posta", placeholder: "info@vortestudio.com", type: "text" },
   { key: "github_url", label: "GitHub URL", placeholder: "https://github.com/...", type: "text" },
   { key: "description", label: "Site Açıklaması", placeholder: "Kısa site açıklaması...", type: "textarea" },
 ] as const;

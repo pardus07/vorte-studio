@@ -174,7 +174,7 @@ export default function CerezPolitikasiPage() {
       <h2>6. İletişim</h2>
       <p>
         Çerez politikamız hakkında sorularınız için:{" "}
-        <a href="mailto:studio@vorte.com.tr">studio@vorte.com.tr</a>
+        <a href="mailto:info@vortestudio.com">info@vortestudio.com</a>
       </p>
 
       <div className="callout">

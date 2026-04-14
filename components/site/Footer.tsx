@@ -93,10 +93,10 @@ export default function Footer() {
                 0850 305 86 35
               </a>
               <a
-                href="mailto:studio@vorte.com.tr"
+                href="mailto:info@vortestudio.com"
                 className="text-sm text-muted transition-colors hover:text-accent"
               >
-                studio@vorte.com.tr
+                info@vortestudio.com
               </a>
               <span className="text-sm leading-relaxed text-muted2">
                 Mansuroğlu Mah. Ankara Caddesi No:81/012 Bayraklı Tower, Bayraklı, İzmir

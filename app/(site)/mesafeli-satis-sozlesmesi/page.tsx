@@ -56,7 +56,7 @@ export default function MesafeliSatisSozlesmesiPage() {
           <tr>
             <th>E-posta</th>
             <td>
-              <a href="mailto:studio@vorte.com.tr">studio@vorte.com.tr</a>
+              <a href="mailto:info@vortestudio.com">info@vortestudio.com</a>
             </td>
           </tr>
         </tbody>
@@ -187,7 +187,7 @@ export default function MesafeliSatisSozlesmesiPage() {
       <p>
         Cayma hakkı süresi dolmadan ve hizmet ifası başlamadan önce Alıcı,
         cayma kararını{" "}
-        <a href="mailto:studio@vorte.com.tr">studio@vorte.com.tr</a> adresine
+        <a href="mailto:info@vortestudio.com">info@vortestudio.com</a> adresine
         yazılı bildirim göndererek veya portal üzerinden mesaj ileterek
         kullanabilir. Cayma halinde, Alıcı tarafından yapılan ödemeler
         (henüz yapılmışsa) 14 gün içinde aynı ödeme yöntemi ile iade edilir.

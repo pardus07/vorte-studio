@@ -1346,7 +1346,7 @@ export default function ProposalView({
               WhatsApp
             </a>
             <a
-              href="mailto:studio@vorte.com.tr"
+              href="mailto:info@vortestudio.com"
               className="inline-flex items-center gap-2 rounded-lg border border-white/10 bg-white/5 px-4 py-2.5 text-sm text-white/50 transition-colors hover:bg-white/10"
             >
               <svg

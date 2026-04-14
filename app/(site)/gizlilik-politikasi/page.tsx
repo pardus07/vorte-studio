@@ -144,7 +144,7 @@ export default function GizlilikPolitikasiPage() {
         KVKK&apos;nın 11. maddesi kapsamındaki tüm haklarınızı{" "}
         <a href="/kvkk">KVKK Aydınlatma Metni</a> sayfamızda detaylı olarak
         inceleyebilir ve{" "}
-        <a href="mailto:studio@vorte.com.tr">studio@vorte.com.tr</a> adresine
+        <a href="mailto:info@vortestudio.com">info@vortestudio.com</a> adresine
         başvurarak kullanabilirsiniz.
       </p>
 
@@ -164,7 +164,7 @@ export default function GizlilikPolitikasiPage() {
       <ul>
         <li>
           E-posta:{" "}
-          <a href="mailto:studio@vorte.com.tr">studio@vorte.com.tr</a>
+          <a href="mailto:info@vortestudio.com">info@vortestudio.com</a>
         </li>
         <li>Telefon: 0543 188 34 25</li>
         <li>

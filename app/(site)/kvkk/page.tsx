@@ -58,7 +58,7 @@ export default function KvkkPage() {
           <tr>
             <th>E-posta</th>
             <td>
-              <a href="mailto:studio@vorte.com.tr">studio@vorte.com.tr</a>
+              <a href="mailto:info@vortestudio.com">info@vortestudio.com</a>
             </td>
           </tr>
           <tr>
@@ -248,7 +248,7 @@ export default function KvkkPage() {
       <ul>
         <li>
           E-posta:{" "}
-          <a href="mailto:studio@vorte.com.tr">studio@vorte.com.tr</a>
+          <a href="mailto:info@vortestudio.com">info@vortestudio.com</a>
         </li>
         <li>
           Posta: Dumlupınar Mah., Kayabaşı Sk., Özge Sitesi B Blok No: 17 B/H,

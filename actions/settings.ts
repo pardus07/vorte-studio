@@ -5,7 +5,7 @@ import { revalidatePath } from "next/cache";
 
 const DEFAULTS: Record<string, string> = {
   whatsapp_number: "",
-  email: "studio@vorte.com.tr",
+  email: "info@vortestudio.com",
   github_url: "",
   description: "WordPress değil, gerçek kod. Next.js ve Prisma ile yenilikçi web çözümleri üretiyoruz.",
 };

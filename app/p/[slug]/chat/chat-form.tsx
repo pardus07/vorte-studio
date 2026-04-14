@@ -931,7 +931,7 @@ export default function ChatForm({ firmName, city, sector, slug, phone, email, l
 
       if (res.status === 429) {
         addBotMessage(
-          'Bilgilerinizi aldık ancak sistem koruması nedeniyle şu an işleme alamadık. Lütfen 1 saat sonra tekrar deneyin veya doğrudan studio@vorte.com.tr adresine yazabilirsiniz.',
+          'Bilgilerinizi aldık ancak sistem koruması nedeniyle şu an işleme alamadık. Lütfen 1 saat sonra tekrar deneyin veya doğrudan info@vortestudio.com adresine yazabilirsiniz.',
           'done',
         )
         return
@@ -958,7 +958,7 @@ export default function ChatForm({ firmName, city, sector, slug, phone, email, l
       return
     } catch {
       addBotMessage(
-        `Bilgileriniz kaydedildi ${finalData.contactName ? finalData.contactName + ', ' : ''}ekibimiz 24 saat içinde size ulaşacak. Acil durumlar için: studio@vorte.com.tr`,
+        `Bilgileriniz kaydedildi ${finalData.contactName ? finalData.contactName + ', ' : ''}ekibimiz 24 saat içinde size ulaşacak. Acil durumlar için: info@vortestudio.com`,
         'done',
       )
       return

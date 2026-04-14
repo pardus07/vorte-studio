@@ -45,10 +45,10 @@ export default function PortalDataError({
         <p className="mt-3 text-sm text-white/60">{message}</p>
         <div className="mt-6 flex flex-col gap-2">
           <a
-            href="mailto:studio@vorte.com.tr"
+            href="mailto:info@vortestudio.com"
             className="rounded-xl border border-white/[0.07] bg-white/[0.03] px-4 py-2.5 text-sm text-white hover:bg-white/[0.06]"
           >
-            studio@vorte.com.tr
+            info@vortestudio.com
           </a>
           <button
             onClick={() => signOut({ callbackUrl: "/portal/giris" })}

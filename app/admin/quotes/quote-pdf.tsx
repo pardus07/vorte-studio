@@ -222,7 +222,7 @@ export default function QuotePDF({
             VORTE<Text style={s.logoDot}>.</Text>STUDIO
           </Text>
           <View style={s.contactBlock}>
-            <Text>studio@vorte.com.tr</Text>
+            <Text>info@vortestudio.com</Text>
             <Text>www.vortestudio.com</Text>
             <Text>Antalya, Türkiye</Text>
           </View>
@@ -305,7 +305,7 @@ export default function QuotePDF({
         {/* Footer */}
         <View style={s.footer}>
           <Text style={s.footerText}>Vorte Studio — Dijital Deneyimler</Text>
-          <Text style={s.footerText}>www.vortestudio.com · studio@vorte.com.tr</Text>
+          <Text style={s.footerText}>www.vortestudio.com · info@vortestudio.com</Text>
         </View>
       </Page>
     </Document>

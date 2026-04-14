@@ -83,7 +83,7 @@ export async function sendQuoteMail(data: {
           <div style="background:#1a1a1a;padding:24px 32px;border-bottom:3px solid #f97316">
             <table style="width:100%"><tr>
               <td><span style="font-size:20px;font-weight:800;color:#fff;letter-spacing:-0.5px">VORTE<span style="color:#f97316">.</span>STUDIO</span></td>
-              <td style="text-align:right;font-size:11px;color:#9ca3af;line-height:1.6">studio@vorte.com.tr<br>www.vortestudio.com</td>
+              <td style="text-align:right;font-size:11px;color:#9ca3af;line-height:1.6">info@vortestudio.com<br>www.vortestudio.com</td>
             </tr></table>
           </div>
 

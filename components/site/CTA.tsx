@@ -4,7 +4,7 @@ import { useState, useRef } from "react";
 import { motion, useInView } from "framer-motion";
 import ContactForm from "./ContactForm";
 
-const DEFAULT_WA = "905376400877"; // Fallback WA numarası
+const DEFAULT_WA = "905431883425"; // Fallback WA numarası
 
 export default function CTA({ whatsappNumber }: { whatsappNumber?: string }) {
   const [showForm, setShowForm] = useState(false);
@@ -156,7 +156,7 @@ export default function CTA({ whatsappNumber }: { whatsappNumber?: string }) {
             </svg>
           </motion.button>
           <motion.a
-            href="mailto:studio@vorte.com.tr"
+            href="mailto:info@vortestudio.com"
             whileHover={{ scale: 1.02 }}
             className="inline-flex items-center gap-2 rounded-xl border border-border bg-transparent px-7 py-4 text-[15px] text-muted transition-all hover:border-accent/30 hover:text-white"
           >
@@ -164,7 +164,7 @@ export default function CTA({ whatsappNumber }: { whatsappNumber?: string }) {
               <rect x="1" y="3" width="14" height="10" rx="2" />
               <path d="M1 5l7 4 7-4" />
             </svg>
-            studio@vorte.com.tr
+            info@vortestudio.com
           </motion.a>
         </motion.div>
 
