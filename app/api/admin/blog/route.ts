@@ -3,6 +3,7 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { turkishToSlug } from "@/lib/utils";
 import { revalidatePath } from "next/cache";
+import { submitToIndexNow } from "@/lib/indexnow";
 import { z } from "zod";
 
 export const dynamic = "force-dynamic";
@@ -115,6 +116,15 @@ export async function POST(request: NextRequest) {
       revalidatePath(`/blog/${finalSlug}`);
     } catch {
       console.warn("[blog POST] revalidatePath başarısız ama blog oluşturuldu");
+    }
+
+    // IndexNow: yayınlandıysa Bing/Yandex'e anında bildir
+    if (published) {
+      submitToIndexNow([
+        "https://www.vortestudio.com/blog",
+        `https://www.vortestudio.com/blog/${finalSlug}`,
+        "https://www.vortestudio.com/",
+      ]).catch(() => {});
     }
 
     return NextResponse.json(

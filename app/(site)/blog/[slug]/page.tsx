@@ -44,15 +44,21 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const description =
     post.seoDescription || post.excerpt || "Vorte Studio blog yazısı.";
 
+  const url = `https://www.vortestudio.com/blog/${slug}`;
+
   return {
     title: `${title} | Vorte Studio`,
     description,
+    alternates: {
+      canonical: url,
+    },
     openGraph: {
       title,
       description,
       type: "article",
-      url: `https://www.vortestudio.com/blog/${slug}`,
+      url,
       siteName: "Vorte Studio",
+      locale: "tr_TR",
       ...(post.coverImage && {
         images: [{ url: post.coverImage, width: 1200, height: 630 }],
       }),
@@ -96,25 +102,79 @@ export default async function BlogDetailPage({ params }: Props) {
 
   if (!post) notFound();
 
+  // Plain text from HTML for wordCount + articleBody signal
+  const plainText = post.content.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+  const wordCount = plainText ? plainText.split(" ").filter(Boolean).length : 0;
+  const articleUrl = `https://www.vortestudio.com/blog/${post.slug}`;
+
   const jsonLd = {
     "@context": "https://schema.org",
-    "@type": "BlogPosting",
-    headline: post.seoTitle || post.title,
-    description: post.seoDescription || post.excerpt || "",
-    image: post.coverImage || undefined,
-    author: {
-      "@type": "Organization",
-      name: post.authorName,
-    },
-    publisher: {
-      "@type": "Organization",
-      name: "Vorte Studio",
-      url: "https://www.vortestudio.com",
-    },
-    datePublished: post.publishedAt?.toISOString(),
-    dateModified: post.updatedAt.toISOString(),
-    url: `https://www.vortestudio.com/blog/${post.slug}`,
-    keywords: post.tags.join(", "),
+    "@graph": [
+      {
+        "@type": "BlogPosting",
+        "@id": `${articleUrl}#article`,
+        headline: post.seoTitle || post.title,
+        description: post.seoDescription || post.excerpt || "",
+        image: post.coverImage
+          ? {
+              "@type": "ImageObject",
+              url: post.coverImage,
+              width: 1200,
+              height: 630,
+            }
+          : undefined,
+        author: {
+          "@type": "Organization",
+          name: post.authorName,
+          url: "https://www.vortestudio.com",
+        },
+        publisher: {
+          "@type": "Organization",
+          name: "Vorte Studio",
+          url: "https://www.vortestudio.com",
+          logo: {
+            "@type": "ImageObject",
+            url: "https://www.vortestudio.com/og-image.png",
+            width: 1200,
+            height: 630,
+          },
+        },
+        datePublished: post.publishedAt?.toISOString(),
+        dateModified: post.updatedAt.toISOString(),
+        url: articleUrl,
+        mainEntityOfPage: {
+          "@type": "WebPage",
+          "@id": articleUrl,
+        },
+        inLanguage: "tr-TR",
+        keywords: post.tags.join(", "),
+        wordCount,
+        articleSection: post.tags[0] || "Blog",
+      },
+      {
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          {
+            "@type": "ListItem",
+            position: 1,
+            name: "Ana Sayfa",
+            item: "https://www.vortestudio.com",
+          },
+          {
+            "@type": "ListItem",
+            position: 2,
+            name: "Blog",
+            item: "https://www.vortestudio.com/blog",
+          },
+          {
+            "@type": "ListItem",
+            position: 3,
+            name: post.title,
+            item: articleUrl,
+          },
+        ],
+      },
+    ],
   };
 
   return (

@@ -25,15 +25,23 @@ export default function JsonLd() {
           width: 1200,
           height: 630,
         },
-        sameAs: [
-          "https://github.com/nicemicro",
-        ],
-        contactPoint: {
-          "@type": "ContactPoint",
-          contactType: "customer service",
-          email: "studio@vorte.com.tr",
-          availableLanguage: ["Turkish", "English"],
+        address: {
+          "@type": "PostalAddress",
+          streetAddress: "Mansuroğlu Mah. Ankara Caddesi No:81/012 Bayraklı Tower",
+          addressLocality: "Bayraklı",
+          addressRegion: "İzmir",
+          postalCode: "35030",
+          addressCountry: "TR",
         },
+        contactPoint: [
+          {
+            "@type": "ContactPoint",
+            contactType: "customer service",
+            email: "info@vortestudio.com",
+            telephone: "+90-850-305-8635",
+            availableLanguage: ["Turkish", "English"],
+          },
+        ],
       },
       {
         "@type": "ProfessionalService",
@@ -42,7 +50,17 @@ export default function JsonLd() {
         description:
           "Next.js ve Prisma ile kurumsal web sitesi, e-ticaret ve mobil uygulama geliştiren yazılım stüdyosu. Yenilikçi tasarım, gerçek kod, ölçülebilir performans.",
         url: SITE_URL,
+        telephone: "+90-850-305-8635",
+        email: "info@vortestudio.com",
         priceRange: "₺₺",
+        address: {
+          "@type": "PostalAddress",
+          streetAddress: "Mansuroğlu Mah. Ankara Caddesi No:81/012 Bayraklı Tower",
+          addressLocality: "Bayraklı",
+          addressRegion: "İzmir",
+          postalCode: "35030",
+          addressCountry: "TR",
+        },
         areaServed: {
           "@type": "Country",
           name: "Türkiye",

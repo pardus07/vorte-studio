@@ -10,6 +10,9 @@ export const metadata: Metadata = {
   title: "Blog | Vorte Studio",
   description:
     "Vorte Studio blog: Web geliştirme, mobil uygulama, UI/UX tasarım ve dijital dünya hakkında yazılar, ipuçları ve güncellemeler.",
+  alternates: {
+    canonical: "https://www.vortestudio.com/blog",
+  },
   openGraph: {
     title: "Blog | Vorte Studio",
     description:
@@ -17,6 +20,7 @@ export const metadata: Metadata = {
     url: "https://www.vortestudio.com/blog",
     siteName: "Vorte Studio",
     type: "website",
+    locale: "tr_TR",
   },
 };
 
@@ -53,9 +57,61 @@ export default async function BlogPage() {
     posts = [];
   }
 
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          {
+            "@type": "ListItem",
+            position: 1,
+            name: "Ana Sayfa",
+            item: "https://www.vortestudio.com",
+          },
+          {
+            "@type": "ListItem",
+            position: 2,
+            name: "Blog",
+            item: "https://www.vortestudio.com/blog",
+          },
+        ],
+      },
+      {
+        "@type": "Blog",
+        "@id": "https://www.vortestudio.com/blog#blog",
+        url: "https://www.vortestudio.com/blog",
+        name: "Vorte Studio Blog",
+        description:
+          "Web geliştirme, mobil uygulama, UI/UX tasarım ve dijital dünya hakkında yazılar.",
+        inLanguage: "tr-TR",
+        publisher: {
+          "@type": "Organization",
+          name: "Vorte Studio",
+          url: "https://www.vortestudio.com",
+        },
+        blogPost: posts.map((p) => ({
+          "@type": "BlogPosting",
+          headline: p.title,
+          url: `https://www.vortestudio.com/blog/${p.slug}`,
+          datePublished: p.publishedAt?.toISOString(),
+          description: p.excerpt || undefined,
+          image: p.coverImage || undefined,
+          author: { "@type": "Organization", name: p.authorName },
+        })),
+      },
+    ],
+  };
+
   return (
     <>
       <Navbar />
+
+      {/* Safe: jsonLd is a hardcoded structured object, not user input (DB-sourced titles/slugs pass through JSON.stringify which escapes HTML) */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
 
       <section className="px-6 pb-24 pt-32 md:px-12">
         {/* Header */}
