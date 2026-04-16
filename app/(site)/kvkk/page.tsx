@@ -51,8 +51,8 @@ export default function KvkkPage() {
           <tr>
             <th>Adres</th>
             <td>
-              Dumlupınar Mah., Kayabaşı Sk., Özge Sitesi B Blok No: 17 B/H,
-              16285 Nilüfer / Bursa
+              Mansuroğlu Mah., Ankara Caddesi No:81/012, Bayraklı Tower,
+              35030 Bayraklı / İzmir
             </td>
           </tr>
           <tr>
@@ -251,8 +251,8 @@ export default function KvkkPage() {
           <a href="mailto:info@vortestudio.com">info@vortestudio.com</a>
         </li>
         <li>
-          Posta: Dumlupınar Mah., Kayabaşı Sk., Özge Sitesi B Blok No: 17 B/H,
-          16285 Nilüfer / Bursa
+          Posta: Mansuroğlu Mah., Ankara Caddesi No:81/012, Bayraklı Tower,
+          35030 Bayraklı / İzmir
         </li>
       </ul>
       <p>

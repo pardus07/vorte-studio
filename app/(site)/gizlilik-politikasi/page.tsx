@@ -168,8 +168,8 @@ export default function GizlilikPolitikasiPage() {
         </li>
         <li>Telefon: 0543 188 34 25</li>
         <li>
-          Adres: Dumlupınar Mah., Kayabaşı Sk., Özge Sitesi B Blok No: 17 B/H,
-          16285 Nilüfer / Bursa
+          Adres: Mansuroğlu Mah., Ankara Caddesi No:81/012, Bayraklı Tower,
+          35030 Bayraklı / İzmir
         </li>
       </ul>
     </LegalLayout>

@@ -78,9 +78,11 @@ export async function createContractDraft(
     const contractText = generateContractText({
       ownerName: process.env.VORTE_OWNER_NAME || "Vorte Studio",
       ownerTcNo: process.env.VORTE_OWNER_TCKN || "",
-      ownerAddress: process.env.VORTE_ADDRESS || "Bursa",
+      ownerAddress:
+        process.env.VORTE_ADDRESS ||
+        "Mansuroğlu Mah. Ankara Caddesi No:81/012 Bayraklı Tower, 35030 Bayraklı / İzmir",
       ownerPhone: process.env.VORTE_PHONE || "05431883425",
-      ownerEmail: process.env.SMTP_USER || "studio@vorte.com.tr",
+      ownerEmail: process.env.SMTP_USER || "info@vortestudio.com",
       ownerIban: process.env.VORTE_IBAN || "",
       ownerTaxOffice: process.env.VORTE_TAX_OFFICE || "",
       signerName: signerInfo.signerName,

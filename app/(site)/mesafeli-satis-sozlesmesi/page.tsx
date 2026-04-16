@@ -45,8 +45,8 @@ export default function MesafeliSatisSozlesmesiPage() {
           <tr>
             <th>Adres</th>
             <td>
-              Dumlupınar Mah., Kayabaşı Sk., Özge Sitesi B Blok No: 17 B/H,
-              16285 Nilüfer / Bursa
+              Mansuroğlu Mah., Ankara Caddesi No:81/012, Bayraklı Tower,
+              35030 Bayraklı / İzmir
             </td>
           </tr>
           <tr>
@@ -318,7 +318,7 @@ export default function MesafeliSatisSozlesmesiPage() {
         <strong>Tüketici Hakem Heyetleri</strong> ile{" "}
         <strong>Tüketici Mahkemeleri</strong> yetkilidir. Ticari satış
         ilişkilerinde{" "}
-        <strong>Bursa Mahkemeleri ve İcra Daireleri</strong> yetkilidir.
+        <strong>İzmir Mahkemeleri ve İcra Daireleri</strong> yetkilidir.
       </p>
 
       <h2>15. Yürürlük</h2>

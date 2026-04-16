@@ -300,7 +300,7 @@ MADDE 11 — UYUŞMAZLIK ÇÖZÜMÜ
 11.1. İşbu sözleşmeden doğan uyuşmazlıklarda öncelikle 6102 sayılı Türk
 Ticaret Kanunu m. 5/A uyarınca zorunlu arabuluculuk yoluna başvurulacaktır.
 
-11.2. Arabuluculukta çözüm sağlanamaması halinde BURSA MAHKEMELERİ ve İCRA
+11.2. Arabuluculukta çözüm sağlanamaması halinde İZMİR MAHKEMELERİ ve İCRA
 DAİRELERİ yetkilidir.
 
 ================================================================================
