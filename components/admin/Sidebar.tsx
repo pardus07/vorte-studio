@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 import { useSidebar } from "./SidebarContext";
 
 const sections = [
+  // 1) Günaydın ekranı
   {
     label: "Genel",
     items: [
@@ -14,8 +15,9 @@ const sections = [
       { name: "Raporlar", href: "/admin/reports", icon: ReportsIcon },
     ],
   },
+  // 2) Funnel başlangıcı — müşteri arama
   {
-    label: "Müşteri & Satış",
+    label: "Müşteri Bulma",
     items: [
       {
         name: "Müşteri Bul",
@@ -24,6 +26,12 @@ const sections = [
         badge: "2",
         badgeColor: "amber" as const,
       },
+    ],
+  },
+  // 3) Lead'a ekleme ve pipeline takibi
+  {
+    label: "Satış Hattı",
+    items: [
       { name: "CRM", href: "/admin/crm", icon: CrmIcon },
       {
         name: "Lead Pipeline",
@@ -32,13 +40,39 @@ const sections = [
         badge: "3",
         badgeColor: "red" as const,
       },
-      { name: "Teklif Üretici", href: "/admin/quotes", icon: QuoteIcon },
     ],
   },
+  // 4) WhatsApp ile teklif şablonu gönderme + arama
+  {
+    label: "İletişim",
+    items: [
+      { name: "WhatsApp", href: "/admin/whatsapp", icon: WhatsAppIcon },
+      { name: "Sesli Aramalar", href: "/admin/voice-calls", icon: PhoneIcon },
+    ],
+  },
+  // 5) Teklif hazırlama + chatbot'tan gelen başvurular
+  {
+    label: "Teklif & Başvuru",
+    items: [
+      { name: "Teklif Üretici", href: "/admin/quotes", icon: QuoteIcon },
+      { name: "Başvurular", href: "/admin/chat-submissions", icon: ChatSubmissionIcon },
+      { name: "Teklifler", href: "/admin/proposals", icon: ProposalIcon },
+      { name: "Fiyatlandırma", href: "/admin/pricing", icon: PricingIcon },
+    ],
+  },
+  // 6) Satış sonrası — proje teslim süreci
   {
     label: "Projeler",
     items: [
       { name: "Projeler", href: "/admin/projects", icon: ProjectIcon },
+      { name: "Müşteri Portalı", href: "/admin/portal", icon: PortalIcon },
+      { name: "Logo & Marka", href: "/admin/logo", icon: LogoIcon },
+    ],
+  },
+  // 7) Yenileme / tahsilat
+  {
+    label: "Finans & Bakım",
+    items: [
       { name: "Finans", href: "/admin/finance", icon: FinanceIcon },
       {
         name: "Bakım Paketleri",
@@ -47,6 +81,7 @@ const sections = [
       },
     ],
   },
+  // 8) Günlük pazarlama üretimi
   {
     label: "İçerik",
     items: [
@@ -55,28 +90,7 @@ const sections = [
       { name: "Şablonlar", href: "/admin/templates", icon: TemplatesIcon },
     ],
   },
-  {
-    label: "Chatbot",
-    items: [
-      { name: "Başvurular", href: "/admin/chat-submissions", icon: ChatSubmissionIcon },
-      { name: "Teklifler", href: "/admin/proposals", icon: ProposalIcon },
-      { name: "Fiyatlandırma", href: "/admin/pricing", icon: PricingIcon },
-    ],
-  },
-  {
-    label: "Portal",
-    items: [
-      { name: "Müşteri Portalı", href: "/admin/portal", icon: PortalIcon },
-      { name: "Logo & Marka", href: "/admin/logo", icon: LogoIcon },
-    ],
-  },
-  {
-    label: "İletişim",
-    items: [
-      { name: "Sesli Aramalar", href: "/admin/voice-calls", icon: PhoneIcon },
-      { name: "WhatsApp", href: "/admin/whatsapp", icon: WhatsAppIcon },
-    ],
-  },
+  // 9) En dipte
   {
     label: "Yönetim",
     items: [
