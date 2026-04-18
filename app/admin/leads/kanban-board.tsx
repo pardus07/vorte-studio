@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { updateLeadStatus, convertLeadToClient, deleteLeadAction, addWaTemplateToLead, markWaSent, updateLeadSector, bulkUpdateLeadsSector } from "@/actions/leads";
+import { updateLeadStatus, convertLeadToClient, deleteLeadAction, addWaTemplateToLead, markWaSent, updateLeadSector, bulkUpdateLeadsSector, type LeadStatus } from "@/actions/leads";
 import { isGSM, formatWANumber } from "@/lib/phone-utils";
 import { generateWaMessage, buildDemoLink, buildWaUrl, detectIssue, extractCity } from "@/lib/wa-templates";
 import { getTemplateName } from "@/lib/template-selector";
@@ -128,7 +128,7 @@ export default function KanbanBoard({ leads: initial }: { leads: Lead[] }) {
     const old = [...leads];
     setLeads((prev) => prev.map((l) => (l.id === id ? { ...l, status: newStatus } : l)));
     try {
-      await updateLeadStatus(id, newStatus as "COLD" | "TEMPLATE_ADDED" | "WA_SENT" | "CONTACTED" | "MEETING" | "QUOTED" | "CONTRACTED" | "WON" | "LOST");
+      await updateLeadStatus(id, newStatus as LeadStatus);
     } catch {
       setLeads(old);
       showNotif("Durum güncellenemedi.", "error");

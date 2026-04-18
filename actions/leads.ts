@@ -4,16 +4,57 @@ import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
+// ── Lead status'u için tek doğruluk kaynağı ──
+// updateLeadStatus param type'ı ile form schema'nın drift etmesini önler.
+// Prisma LeadStatus enum'unu burada aynalıyoruz (CONTRACTED dahil).
+export const LeadStatusSchema = z.enum([
+  "COLD",
+  "TEMPLATE_ADDED",
+  "WA_SENT",
+  "CONTACTED",
+  "MEETING",
+  "QUOTED",
+  "CONTRACTED",
+  "WON",
+  "LOST",
+]);
+export type LeadStatus = z.infer<typeof LeadStatusSchema>;
+
+// ── Telefon: Türkiye cep formatı (opsiyonel) ──
+// Kabul edilen formatlar:
+//   +905551234567, 05551234567, 5551234567
+// Boş string de kabul (form'da alan boşsa).
+const PhoneOptionalSchema = z
+  .string()
+  .trim()
+  .max(20)
+  .refine(
+    (v) => v === "" || /^(\+90|0)?5\d{9}$/.test(v.replace(/\s+/g, "")),
+    { message: "Geçerli bir cep telefonu girin (örn: 05XX XXX XX XX)" }
+  )
+  .optional();
+
+// ── Form şeması ──
+// NOT: googleRating, googleReviews, mobileScore, hasWebsite, sslValid,
+// waTemplate*, waSentAt gibi alanlar form'dan GELMEZ — scraper ya da
+// iş akışı tarafından yazılır. Bilerek schema dışında tutuluyorlar.
 const LeadFormSchema = z.object({
-  name: z.string().min(2, "İşletme adı en az 2 karakter olmalı"),
-  company: z.string().optional(),
-  phone: z.string().optional(),
-  email: z.string().email("Geçerli e-posta girin").optional().or(z.literal("")),
-  sector: z.string().optional(),
+  name: z.string().trim().min(2, "İşletme adı en az 2 karakter olmalı").max(200),
+  company: z.string().trim().max(200).optional(),
+  phone: PhoneOptionalSchema,
+  // Boş string input'u undefined'a çevir — DB'de "" yerine NULL tutmak için
+  email: z
+    .string()
+    .trim()
+    .email("Geçerli e-posta girin")
+    .max(320)
+    .optional()
+    .or(z.literal("").transform(() => undefined)),
+  sector: z.string().trim().max(100).optional(),
   source: z.enum(["MAPS_SCRAPER", "SITE_FORM", "LINKEDIN", "REFERRAL", "MANUAL"]),
-  budget: z.string().optional(),
-  notes: z.string().optional(),
-  status: z.enum(["COLD", "TEMPLATE_ADDED", "WA_SENT", "CONTACTED", "MEETING", "QUOTED", "WON", "LOST"]).optional(),
+  budget: z.string().trim().max(100).optional(),
+  notes: z.string().max(2000).optional(),
+  status: LeadStatusSchema.optional(),
 });
 
 export type LeadFormData = z.infer<typeof LeadFormSchema>;
@@ -45,13 +86,14 @@ export async function createLeadAction(data: LeadFormData) {
   }
 }
 
-export async function updateLeadStatus(
-  id: string,
-  status: "COLD" | "TEMPLATE_ADDED" | "WA_SENT" | "CONTACTED" | "MEETING" | "QUOTED" | "CONTRACTED" | "WON" | "LOST"
-) {
+export async function updateLeadStatus(id: string, status: LeadStatus) {
+  // Runtime guard — admin UI'den bozuk veri gelirse Prisma fail olmadan
+  // burada reddet. Geriye dönük uyum için throw atılır; mevcut kanban
+  // caller'ı try/catch ile hatayı yakalıyor.
+  const parsedStatus = LeadStatusSchema.parse(status);
   const lead = await prisma.lead.update({
     where: { id },
-    data: { status },
+    data: { status: parsedStatus },
   });
   revalidatePath("/admin/leads");
   return lead;
