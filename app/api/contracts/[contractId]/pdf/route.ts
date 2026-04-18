@@ -10,10 +10,15 @@ export async function GET(
   { params }: { params: Promise<{ contractId: string }> }
 ) {
   try {
-    // Admin kontrolü
+    // Admin kontrolü — portal user'ların başka firmaların contract PDF'ine
+    // erişmemesi için role === "admin" şartı zorunlu (IDOR koruması).
     const session = await auth();
-    if (!session) {
+    if (!session?.user) {
       return NextResponse.json({ error: "Yetkisiz" }, { status: 401 });
+    }
+    const role = (session.user as { role?: string }).role;
+    if (role !== "admin") {
+      return NextResponse.json({ error: "Yetkisiz" }, { status: 403 });
     }
 
     const { contractId } = await params;

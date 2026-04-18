@@ -2,7 +2,14 @@
 
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
+import { auth } from "@/lib/auth";
 import { activatePortalAccount } from "./portal";
+
+async function requireAdmin() {
+  const session = await auth();
+  if (!session?.user) return false;
+  return (session.user as { role?: string }).role === "admin";
+}
 
 // ── Yeni proje için varsayılan milestone'lar ──
 const DEFAULT_MILESTONES = [
@@ -120,6 +127,7 @@ async function ensureProjectFromProposal(proposalId: string): Promise<void> {
 
 // ── Teklif ödemelerini getir ──
 export async function getProposalPayments(proposalId: string) {
+  if (!(await requireAdmin())) return [];
   try {
     const payments = await prisma.proposalPayment.findMany({
       where: { proposalId },
@@ -141,6 +149,7 @@ export async function getProposalPayments(proposalId: string) {
 
 // ── Ödeme yapıldı olarak işaretle ──
 export async function markPaymentPaid(paymentId: string, notes?: string) {
+  if (!(await requireAdmin())) return { success: false, error: "Yetkisiz" };
   try {
     const payment = await prisma.proposalPayment.update({
       where: { id: paymentId },
@@ -205,6 +214,7 @@ export async function markPaymentPaid(paymentId: string, notes?: string) {
 
 // ── Ödemeyi geri al (iptal) ──
 export async function revertPayment(paymentId: string) {
+  if (!(await requireAdmin())) return { success: false, error: "Yetkisiz" };
   try {
     await prisma.proposalPayment.update({
       where: { id: paymentId },
@@ -225,6 +235,7 @@ export async function revertPayment(paymentId: string) {
 
 // ── Tüm teklifleri ödeme bilgileriyle getir ──
 export async function getProposalsWithPayments() {
+  if (!(await requireAdmin())) return [];
   try {
     const proposals = await prisma.proposal.findMany({
       orderBy: { createdAt: "desc" },

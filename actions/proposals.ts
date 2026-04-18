@@ -17,6 +17,7 @@ export async function createProposalFromSubmission(
   submissionId: string,
   pricingConfigs: PricingItem[]
 ) {
+  if (!(await requireAdmin())) return { success: false, error: "Yetkisiz" };
   try {
     const submission = await prisma.chatSubmission.findUnique({
       where: { id: submissionId },
@@ -106,6 +107,7 @@ export async function createProposalFromSubmission(
 
 // ── Teklifleri listele ──
 export async function getProposals() {
+  if (!(await requireAdmin())) return [];
   try {
     const proposals = await prisma.proposal.findMany({
       orderBy: { createdAt: "desc" },
@@ -219,6 +221,7 @@ export async function updateProposalStatus(
   proposalId: string,
   status: "SENT" | "ACCEPTED" | "REJECTED"
 ) {
+  if (!(await requireAdmin())) return { success: false, error: "Yetkisiz" };
   try {
     const updateData: Record<string, unknown> = { status };
 
@@ -299,6 +302,7 @@ export async function acceptProposal(token: string) {
 
 // ── Teklif sil ──
 export async function deleteProposal(proposalId: string) {
+  if (!(await requireAdmin())) return { success: false, error: "Yetkisiz" };
   try {
     await prisma.proposal.delete({
       where: { id: proposalId },
