@@ -187,13 +187,50 @@ export async function POST(req: NextRequest) {
     }
 
     // 6. Müşteriye e-posta gönder (PDF ekli — hizmet + mesafeli)
+    //    DB'ye gönderim delili yaz: Mesafeli Sözl. Yönetmeliği m.6 "kalıcı
+    //    veri saklayıcısı" yükümlülüğü için tüketici uyuşmazlıklarında
+    //    ispat lazım. SMTP log'u yeterli değil (30-90gün rotate).
     if (pdfBuffer && contract.signerEmail) {
-      await sendContractEmail(
-        contract.signerEmail,
-        contract.proposal.firmName,
-        pdfBuffer,
-        mesafeliBuffer || undefined
-      );
+      const sentAt = new Date();
+      try {
+        const ok = await sendContractEmail(
+          contract.signerEmail,
+          contract.proposal.firmName,
+          pdfBuffer,
+          mesafeliBuffer || undefined
+        );
+        if (ok) {
+          await prisma.contract.update({
+            where: { id: contract.id },
+            data: {
+              pdfSentAt: sentAt,
+              // mesafeli buffer üretilebildiyse gönderim de başarılı sayılır
+              // (aynı sendMail çağrısının ek'i — ayrı mail değil)
+              mesafeliPdfSentAt: mesafeliBuffer ? sentAt : null,
+              pdfSendError: null,
+            },
+          });
+        } else {
+          await prisma.contract.update({
+            where: { id: contract.id },
+            data: { pdfSendError: "SMTP returned false — transporter logunu kontrol et" },
+          });
+        }
+      } catch (mailErr) {
+        // Transport hatası (SMTP down, TLS fail vb.) — DB'ye not düş,
+        // sözleşme imzalama akışı yine başarılı olsun (kullanıcı tarafında
+        // "imzaladım ama mail gelmedi" → admin panelden yeniden gönderir).
+        const msg = mailErr instanceof Error ? mailErr.message : "bilinmeyen hata";
+        console.error("Sözleşme mail gönderim hatası:", mailErr);
+        try {
+          await prisma.contract.update({
+            where: { id: contract.id },
+            data: { pdfSendError: msg.slice(0, 500) },
+          });
+        } catch {
+          // DB update bile patlarsa sessizce devam et, imza kaydı korunur
+        }
+      }
     }
 
     // 7. Admin'e bildirim gönder

@@ -246,6 +246,13 @@ model Contract {
   // Durum
   status        ContractStatus @default(PENDING)
 
+  // ── Kalıcı veri saklayıcısı delili (Mesafeli Sözl. Yönetmeliği m.5/1-a, m.6) ──
+  // Tüketici "bana gelmedi" iddia ederse DB'de kanıt olmalı; SMTP logları
+  // kısa sürede rotate olur, bu alanlar 10 yıl kalır.
+  pdfSentAt          DateTime? // Hizmet sözleşmesi PDF'i maile eklenip gönderildiği an
+  mesafeliPdfSentAt  DateTime? // Mesafeli Satış PDF'i gönderildiği an (ayrı delil)
+  pdfSendError       String?   @db.Text // Son gönderim hatası (varsa) — admin bildirimi için
+
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
 }
