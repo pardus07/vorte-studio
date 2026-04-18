@@ -4,10 +4,18 @@ import { NextResponse } from "next/server";
 export default auth((req) => {
   const isLoggedIn = !!req.auth;
   const role = req.auth?.user?.role;
-  const isAdminRoute = req.nextUrl.pathname.startsWith("/admin");
-  const isLoginPage = req.nextUrl.pathname === "/login";
-  const isPortalRoute = req.nextUrl.pathname.startsWith("/portal");
-  const isPortalLogin = req.nextUrl.pathname === "/portal/giris";
+  const pathname = req.nextUrl.pathname;
+  const isAdminRoute = pathname.startsWith("/admin");
+  const isLoginPage = pathname === "/login";
+  const isPortalRoute = pathname.startsWith("/portal");
+
+  // Portal "public entry points" — unauthenticated kullanıcının erişmesi
+  // GEREKEN sayfalar. Şifresini unutan kullanıcı zaten giriş yapamıyor,
+  // middleware onu /portal/giris'e yönlendirirse sonsuz döngüye düşer.
+  const isPortalPublic =
+    pathname === "/portal/giris" ||
+    pathname === "/portal/sifre-sifirla" ||
+    pathname.startsWith("/portal/sifre/"); // token sayfası
 
   // NOT: redirect URL'lerinde `req.nextUrl`'yi base olarak kullanıyoruz.
   // `req.url` bazı Coolify/Traefik kurulumlarında internal origin'i (ya da
@@ -23,13 +31,14 @@ export default auth((req) => {
     return NextResponse.redirect(new URL("/admin/dashboard", base));
   }
 
-  // Portal koruması
-  if (isPortalRoute && !isPortalLogin) {
+  // Portal koruması (sadece private portal sayfaları için)
+  if (isPortalRoute && !isPortalPublic) {
     if (!isLoggedIn || role !== "portal") {
       return NextResponse.redirect(new URL("/portal/giris", base));
     }
   }
-  if (isPortalLogin && isLoggedIn && role === "portal") {
+  // Login sayfasındayken zaten portal role'üyle login'liyse dashboard'a at
+  if (pathname === "/portal/giris" && isLoggedIn && role === "portal") {
     return NextResponse.redirect(new URL("/portal/dashboard", base));
   }
 });
