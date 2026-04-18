@@ -434,7 +434,7 @@ const DISCLOSURE_NOTE = `
 Veri sorumlusu: Vorte Studio (İbrahim Yaşar, İzmir)
 İletişim bilgileriniz Google Haritalar'daki halka açık işletme kaydınızdan alınmıştır. Hukuki dayanak: KVKK m.5/2-f (meşru menfaat — tanıtım).
 • Aydınlatma metni ve haklarınız: https://vortestudio.com/kvkk
-• Verinizi silmek veya listeden çıkmak için mesajınıza "DURDUR" yazmanız yeterli — 24 saat içinde işleme alınır ve bir daha mesaj gönderilmez.`;
+• Verinizi silmek veya listeden çıkmak için: yukarıdaki link üzerinden açılan sayfanın üst bandındaki "Verimi Sil" butonuna basın (anında işlenir) veya info@vortestudio.com adresine yazın.`;
 
 // ── Şablon oluştur ──
 export function generateWaMessage(data: WaTemplateData): string {

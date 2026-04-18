@@ -321,16 +321,12 @@ export default function KvkkPage() {
           sisteme düşer ve sayfanız aynı dakika içinde kaldırılır.
         </li>
         <li>
-          <strong>WhatsApp:</strong> Tarafımızdan gelen mesaja{" "}
-          <strong>&quot;DURDUR&quot;</strong> yazarak yanıt verin — 24 saat
-          içinde işleme alınır.
-        </li>
-        <li>
           <strong>E-posta:</strong>{" "}
           <a href="mailto:info@vortestudio.com?subject=Verimi%20Sil">
             info@vortestudio.com
           </a>{" "}
-          adresine firma adınızı ve talep konusunu yazın.
+          adresine firma adınızı ve talep konusunu yazın — en geç 3 iş günü
+          içinde işleme alınır ve sayfanız kaldırılır.
         </li>
       </ul>
       <p>
