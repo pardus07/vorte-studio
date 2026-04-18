@@ -51,16 +51,18 @@ export const FILE_CATEGORIES: FileCategoryRule[] = [
     icon: "🖼",
     maxBytes: 50 * 1024 * 1024,
     maxLabel: "50 MB",
-    extensions: [".jpg", ".jpeg", ".png", ".webp", ".svg", ".gif", ".tif", ".tiff"],
+    // SVG KALDIRILDI — içinde <script>, <foreignObject> ile XSS çalıştırılabilir.
+    // Müşteri vektör logo yüklemek isterse PNG/WebP'ye dönüştürmesi gerekir.
+    // /api/uploads handler'ı SVG'yi inline render ettiği için tarayıcıda çalışır.
+    extensions: [".jpg", ".jpeg", ".png", ".webp", ".gif", ".tif", ".tiff"],
     mimes: [
       "image/jpeg",
       "image/png",
       "image/webp",
-      "image/svg+xml",
       "image/gif",
       "image/tiff",
     ],
-    formatLabel: "JPG, PNG, WebP, SVG, GIF, TIFF",
+    formatLabel: "JPG, PNG, WebP, GIF, TIFF",
   },
   {
     category: "video",

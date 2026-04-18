@@ -9,6 +9,7 @@ import {
   MAX_TOTAL_REQUEST_LABEL,
   MAX_FILES_PER_REQUEST,
 } from "@/lib/file-constraints";
+import { verifyMagicBytes } from "@/lib/file-magic";
 
 interface RejectedFile {
   fileName: string;
@@ -74,6 +75,18 @@ export async function POST(req: Request) {
       }
 
       const buffer = Buffer.from(await file.arrayBuffer());
+
+      // Magic-byte doğrulama — MIME header sahteciliğini engeller.
+      // .txt gibi signature'ı olmayan formatlar verifyMagicBytes'ta zaten
+      // true döner; image/video/pdf/office için gerçek içerik kontrolü yapılır.
+      if (!verifyMagicBytes(buffer, file.type || "", file.name)) {
+        rejected.push({
+          fileName: file.name,
+          reason: "içerik dosya tipiyle eşleşmiyor",
+        });
+        continue;
+      }
+
       const safeName = `${Date.now()}-${file.name.replace(/[^a-zA-Z0-9._-]/g, "_")}`;
       const filePath = path.join(uploadDir, safeName);
       await writeFile(filePath, buffer);
