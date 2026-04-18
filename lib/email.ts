@@ -207,6 +207,53 @@ export async function sendPortalCredentials(
   }
 }
 
+/** Portal sifre sifirlama baglantisi gonder */
+export async function sendPasswordResetEmail(
+  to: string,
+  resetUrl: string,
+  firmName: string
+): Promise<boolean> {
+  try {
+    await transporter.sendMail({
+      from: FROM,
+      to,
+      subject: `Vorte Studio - Şifre Sıfırlama Talebi`,
+      html: `
+        <!DOCTYPE html>
+        <html lang="tr">
+        <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"></head>
+        <body style="margin:0;padding:0">
+        <div style="font-family:'Segoe UI',Roboto,sans-serif;max-width:480px;margin:0 auto;padding:32px;background:#fafafa;border-radius:12px">
+          <div style="text-align:center;margin-bottom:24px">
+            <div style="display:inline-block;background:#FF4500;color:#fff;font-weight:800;font-size:18px;padding:8px 16px;border-radius:8px">V</div>
+            <span style="font-size:16px;font-weight:700;margin-left:8px;color:#1a1a1a">VORTE<span style="color:#FF4500">.</span>STUDIO</span>
+          </div>
+          <h2 style="color:#1a1a1a;font-size:20px;margin-bottom:8px;text-align:center">Şifre Sıfırlama</h2>
+          <p style="color:#666;font-size:14px;text-align:center;margin-bottom:24px">
+            <strong>${escapeHtml(firmName)}</strong> hesabınız için şifre sıfırlama talebi aldık.
+            Yeni şifrenizi belirlemek için aşağıdaki butona tıklayın.
+          </p>
+          <div style="text-align:center;margin-bottom:24px">
+            <a href="${resetUrl}" style="display:inline-block;background:#FF4500;color:#fff;font-weight:700;font-size:14px;padding:12px 32px;border-radius:8px;text-decoration:none">Yeni Şifre Belirle</a>
+          </div>
+          <p style="color:#999;font-size:12px;text-align:center">
+            Bu bağlantı 30 dakika boyunca geçerlidir ve yalnızca bir kez kullanılabilir.<br>
+            Talebi siz yapmadıysanız bu e-postayı görmezden gelin — şifreniz değişmeyecektir.
+          </p>
+          <hr style="border:none;border-top:1px solid #eee;margin:24px 0">
+          <p style="color:#bbb;font-size:11px;text-align:center">Vorte Studio · vortestudio.com</p>
+        </div>
+        </body>
+        </html>
+      `,
+    });
+    return true;
+  } catch (err) {
+    console.error("Sifre sifirlama maili gonderilemedi:", err);
+    return false;
+  }
+}
+
 /** Admin'e bildirim maili gonder */
 export async function sendContractNotification(
   firmName: string,

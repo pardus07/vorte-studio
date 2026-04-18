@@ -307,6 +307,30 @@ model PortalUser {
   files           PortalFile[]
   logoProject     LogoProject?
   designRevisions DesignRevision[]
+  passwordResets  PortalPasswordReset[]
+}
+
+// ── Portal Şifre Sıfırlama Token ──
+//
+// Müşteri "Şifremi Unuttum" akışı için tek-kullanımlık, TTL'li token.
+// Token hash'lenmez — kısa ömürlü (60 dk) ve tek-kullanımlık olduğu için
+// DB sızıntısında risk sınırlı. E-posta ile gönderilen link /portal/sifre/[token]
+// route'una yönlendirir; token valid + unused + not expired ise yeni şifre
+// ekranı gösterilir.
+//
+// used=true ya da expiresAt geçtikten sonra cleanup job gerekmez —
+// aramalar where expiresAt { gte: now(), used: false } ile filtreler.
+model PortalPasswordReset {
+  id           String     @id @default(cuid())
+  portalUserId String
+  portalUser   PortalUser @relation(fields: [portalUserId], references: [id], onDelete: Cascade)
+  token        String     @unique
+  expiresAt    DateTime
+  used         Boolean    @default(false)
+  createdAt    DateTime   @default(now())
+  ipAddress    String?
+
+  @@index([portalUserId, createdAt])
 }
 
 // ── Tasarım Revizyon Talepleri ──

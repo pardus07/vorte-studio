@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export default function PortalLoginPage() {
   const router = useRouter();
@@ -122,6 +123,15 @@ export default function PortalLoginPage() {
               "Giriş Yap"
             )}
           </button>
+
+          <div className="mt-5 text-center">
+            <Link
+              href="/portal/sifre-sifirla"
+              className="text-xs text-white/40 transition-colors hover:text-accent"
+            >
+              Şifremi unuttum
+            </Link>
+          </div>
         </form>
 
         <p className="mt-6 text-center text-xs text-white/20">
