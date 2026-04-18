@@ -72,7 +72,8 @@ export async function sendVerificationEmail(
 export async function sendContractEmail(
   to: string,
   firmName: string,
-  pdfBuffer: Buffer
+  pdfBuffer: Buffer,
+  mesafeliPdfBuffer?: Buffer
 ): Promise<boolean> {
   try {
     // Dosya adı için Türkçe karakterleri ASCII'ye çevir (mail client uyumluluğu)
@@ -108,8 +109,20 @@ export async function sendContractEmail(
           <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:16px;text-align:center;margin-bottom:24px">
             <span style="color:#16a34a;font-size:14px;font-weight:600">Sözleşme başarıyla kaydedildi</span>
           </div>
+          ${
+            mesafeliPdfBuffer
+              ? `<div style="background:#fff7ed;border:1px solid #fed7aa;border-radius:8px;padding:14px;margin-bottom:20px">
+                  <p style="color:#9a3412;font-size:13px;font-weight:600;margin:0 0 4px">
+                    Mesafeli Satış Sözleşmesi (6502 sayılı Kanun)
+                  </p>
+                  <p style="color:#9a3412;font-size:12px;margin:0">
+                    Ekte yer alan ikinci PDF, onayladığınız Mesafeli Satış Sözleşmesinin bir örneğidir. Yönetmelik gereği kalıcı veri saklayıcısı üzerinden iletiliyor.
+                  </p>
+                </div>`
+              : ""
+          }
           <p style="color:#999;font-size:12px;text-align:center">
-            Bu sözleşmeyi güvenli bir yerde saklamanızı öneririz.
+            Bu sözleşmeleri güvenli bir yerde saklamanızı öneririz.
           </p>
           <hr style="border:none;border-top:1px solid #eee;margin:24px 0">
           <p style="color:#bbb;font-size:11px;text-align:center">Vorte Studio · vortestudio.com</p>
@@ -123,6 +136,15 @@ export async function sendContractEmail(
           content: pdfBuffer,
           contentType: "application/pdf",
         },
+        ...(mesafeliPdfBuffer
+          ? [
+              {
+                filename: `Vorte_Studio_Mesafeli_Satis_${safeFileName}.pdf`,
+                content: mesafeliPdfBuffer,
+                contentType: "application/pdf",
+              },
+            ]
+          : []),
       ],
     });
     return true;

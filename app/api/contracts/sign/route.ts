@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { sendContractNotification, sendContractEmail } from "@/lib/email";
 import { generateContractPDF } from "@/lib/contract-pdf";
+import { generateMesafeliPDF } from "@/lib/mesafeli-pdf";
 import { createPortalAccount } from "@/actions/portal";
 import { revalidatePath } from "next/cache";
 import { checkRateLimit } from "@/lib/rate-limit";
@@ -151,12 +152,47 @@ export async function POST(req: NextRequest) {
       // PDF oluşturulamazsa bile imzalama başarılı
     }
 
-    // 6. Müşteriye e-posta gönder (PDF ekli)
+    // 5.b Mesafeli Satış Sözleşmesi PDF — 6502 sayılı Kanun ve Mesafeli
+    //     Sözleşmeler Yönetmeliği m.5/1-a ve m.6 uyarınca tüketiciye
+    //     kalıcı veri saklayıcısı üzerinden iletilmesi zorunlu.
+    let mesafeliBuffer: Buffer | null = null;
+    try {
+      const siteType = (contract.proposal.siteType || "").toLowerCase();
+      const packagePlan =
+        siteType === "e-ticaret" || siteType === "eticaret"
+          ? "E-Ticaret"
+          : siteType === "randevu" || siteType === "rezervasyon" || siteType === "profesyonel"
+          ? "Profesyonel"
+          : siteType
+          ? "Starter"
+          : "Teklife göre";
+
+      mesafeliBuffer = await generateMesafeliPDF({
+        firmName: contract.proposal.firmName,
+        signerName: contract.signerName,
+        signerEmail: contract.signerEmail || "",
+        signerCompany: contract.signerCompany || undefined,
+        signedAt: signedAtStr,
+        signerIp: ip,
+        signerAgent: userAgent || "bilinmiyor",
+        contractHash: contract.contractHash,
+        packagePlan,
+        totalPrice,
+        ownerName: process.env.VORTE_OWNER_NAME || "Vorte Studio",
+      });
+    } catch (mesafeliError) {
+      console.error("Mesafeli PDF olusturma hatasi (kritik degil):", mesafeliError);
+      // Hizmet sözleşmesi yine gönderilir; mesafeli eksik kalırsa admin
+      // manuel gönderebilir.
+    }
+
+    // 6. Müşteriye e-posta gönder (PDF ekli — hizmet + mesafeli)
     if (pdfBuffer && contract.signerEmail) {
       await sendContractEmail(
         contract.signerEmail,
         contract.proposal.firmName,
-        pdfBuffer
+        pdfBuffer,
+        mesafeliBuffer || undefined
       );
     }
 
