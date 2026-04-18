@@ -142,6 +142,18 @@ export async function createContractDraft(
 }
 
 // ── E-posta doğrulama kodu gönder ──
+//
+// RATE LIMIT (DB-bazlı): Aynı email için son 60 dakikada en fazla 5 kod
+// gönderilir. Üst limit aşılırsa reddedilir. Server Action olduğu için
+// checkRateLimit (Request-bazlı) kullanılamıyor; bu yüzden
+// VerificationCode.createdAt üzerinden COUNT ile kontrol ediliyor.
+//
+// Amaç: kötü niyetli bir kullanıcının mesafeli satış doğrulama kodunu
+// sürekli tetikleyerek SMTP/giden-posta kotasını yormasını engellemek
+// ve email sağlayıcılarının spam skorlamasından kaçınmak.
+const CODE_SEND_LIMIT = 5;
+const CODE_SEND_WINDOW_MS = 60 * 60 * 1000; // 60 dakika
+
 export async function sendContractVerification(contractId: string) {
   try {
     const contract = await prisma.contract.findUnique({
@@ -149,6 +161,23 @@ export async function sendContractVerification(contractId: string) {
       include: { proposal: true },
     });
     if (!contract) return { success: false, error: "Sözleşme bulunamadı" };
+
+    // Rate limit kontrolü — son 60 dakikada bu email için kaç kod üretilmiş?
+    const windowStart = new Date(Date.now() - CODE_SEND_WINDOW_MS);
+    const recentCount = await prisma.verificationCode.count({
+      where: {
+        email: contract.signerEmail,
+        type: "contract",
+        createdAt: { gte: windowStart },
+      },
+    });
+    if (recentCount >= CODE_SEND_LIMIT) {
+      return {
+        success: false,
+        error:
+          "Çok fazla doğrulama kodu isteği — lütfen 1 saat sonra tekrar deneyin veya info@vortestudio.com ile iletişime geçin.",
+      };
+    }
 
     // Mevcut kullanılmamış kodları iptal et
     await prisma.verificationCode.updateMany({
@@ -186,12 +215,29 @@ export async function sendContractVerification(contractId: string) {
 }
 
 // ── Doğrulama kodunu kontrol et ──
+//
+// Brute force azaltımı (katmanlı):
+// 1. Input format kontrolü — sadece 6 haneli rakam kabul edilir; ham DB
+//    lookup'ı önler ve enumeration'ı zorlaştırır.
+// 2. Kod 10 dakika sonra expire olur (DB seviyesinde gte filtresi).
+// 3. Başarılı kod bir kez kullanılır (used=true işaretlenir).
+// Ek: Aynı contract için son 10 dk'da zaten onaylanmış kayıt varsa, 200
+// döner — replay'e karşı idempotent davranır.
 export async function verifyContractEmail(contractId: string, code: string) {
   try {
+    // Input validation: 6 haneli rakam
+    if (!/^\d{6}$/.test(code)) {
+      return { success: false, error: "Geçersiz kod formatı" };
+    }
+
     const contract = await prisma.contract.findUnique({
       where: { id: contractId },
     });
     if (!contract) return { success: false, error: "Sözleşme bulunamadı" };
+    if (contract.emailVerified) {
+      // Zaten doğrulanmış — idempotent başarı
+      return { success: true };
+    }
 
     const verification = await prisma.verificationCode.findFirst({
       where: {
