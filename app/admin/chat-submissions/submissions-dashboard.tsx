@@ -50,6 +50,11 @@ interface Submission {
   isRead: boolean;
   createdAt: string;
   lead: { id: string; name: string; phone: string | null; status: string } | null;
+  // KVKK açık rıza kaydı (6698 m.10 — hukuki delil)
+  kvkkAcceptedAt: string | null;
+  kvkkVersion: string | null;
+  kvkkAcceptIp: string | null;
+  kvkkAcceptUserAgent: string | null;
 }
 
 interface Props {
@@ -440,6 +445,15 @@ export default function SubmissionsDashboard({ initialData, pricingConfigs }: Pr
                   >
                     {SCORE_STYLES[s.score]?.label || s.score}
                   </span>
+                  {/* KVKK onay rozeti — hukuki delil anında görünür */}
+                  {s.kvkkAcceptedAt && (
+                    <span
+                      title={`KVKK onayı: ${formatDate(s.kvkkAcceptedAt)}`}
+                      className="rounded-full bg-emerald-500/15 px-1.5 py-0.5 text-[9px] font-semibold text-emerald-400"
+                    >
+                      🔒 KVKK
+                    </span>
+                  )}
                   <span className="text-[10px] text-admin-muted">
                     {formatDate(s.createdAt)}
                   </span>
@@ -631,6 +645,61 @@ export default function SubmissionsDashboard({ initialData, pricingConfigs }: Pr
                   </div>
                   <div className="mt-1.5 text-sm text-admin-text">
                     {selected.message}
+                  </div>
+                </div>
+              )}
+
+              {/* KVKK Açık Rıza Kaydı — 6698 m.10 hukuki delil */}
+              {selected.kvkkAcceptedAt ? (
+                <div className="rounded-lg border border-emerald-500/30 bg-emerald-500/5 p-3">
+                  <div className="flex items-center gap-2 text-[11px] uppercase tracking-wider text-emerald-400">
+                    <span>🔒</span>
+                    <span>KVKK Açık Rıza Kaydı</span>
+                    <span className="ml-auto rounded-full bg-emerald-500/20 px-2 py-0.5 text-[10px] text-emerald-300">
+                      Onaylandı ✓
+                    </span>
+                  </div>
+                  <div className="mt-2 space-y-1 text-[12px]">
+                    <div className="flex">
+                      <span className="w-28 text-admin-muted">Onay Tarihi</span>
+                      <span className="text-admin-text">
+                        {formatDate(selected.kvkkAcceptedAt)}
+                      </span>
+                    </div>
+                    <div className="flex">
+                      <span className="w-28 text-admin-muted">Versiyon</span>
+                      <span className="font-mono text-admin-text">
+                        {selected.kvkkVersion || "—"}
+                      </span>
+                    </div>
+                    <div className="flex">
+                      <span className="w-28 text-admin-muted">IP Adresi</span>
+                      <span className="font-mono text-admin-text">
+                        {selected.kvkkAcceptIp || "—"}
+                      </span>
+                    </div>
+                    {selected.kvkkAcceptUserAgent && (
+                      <div className="flex">
+                        <span className="w-28 shrink-0 text-admin-muted">Cihaz / UA</span>
+                        <span className="break-all text-[11px] text-admin-muted">
+                          {selected.kvkkAcceptUserAgent}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                  <div className="mt-2 border-t border-emerald-500/20 pt-2 text-[10px] text-emerald-400/70">
+                    HMK m. 193 kapsamında dijital delil — uyuşmazlık halinde ibraz edilebilir.
+                  </div>
+                </div>
+              ) : (
+                <div className="rounded-lg border border-amber-500/30 bg-amber-500/5 p-3">
+                  <div className="flex items-center gap-2 text-[11px] uppercase tracking-wider text-amber-400">
+                    <span>⚠️</span>
+                    <span>KVKK Onayı Yok</span>
+                  </div>
+                  <div className="mt-1.5 text-[11px] text-amber-300/80">
+                    Bu kayıt KVKK açık rıza alınmadan önce (Sprint 1.1 öncesi)
+                    oluşturulmuş. Yeni başvurularda onay otomatik kaydedilir.
                   </div>
                 </div>
               )}

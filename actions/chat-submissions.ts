@@ -57,6 +57,11 @@ export async function getChatSubmissions() {
       isRead: s.isRead,
       createdAt: s.createdAt.toISOString(),
       lead: s.lead,
+      // KVKK açık rıza kaydı (6698 m.10 — hukuki delil)
+      kvkkAcceptedAt: s.kvkkAcceptedAt ? s.kvkkAcceptedAt.toISOString() : null,
+      kvkkVersion: s.kvkkVersion,
+      kvkkAcceptIp: s.kvkkAcceptIp,
+      kvkkAcceptUserAgent: s.kvkkAcceptUserAgent,
     }));
   } catch {
     return [];

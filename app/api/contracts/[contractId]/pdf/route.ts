@@ -70,17 +70,35 @@ export async function GET(
       ownerIban: process.env.VORTE_IBAN || "",
     });
 
-    const fileName = `Vorte_Studio_Sozlesme_${contract.proposal.firmName.replace(/\s+/g, "_")}.pdf`;
+    // HTTP header'lar ISO-8859-1 — Türkçe karakter (ş, ı, ö, ç, ü, ğ, İ)
+    // doğrudan yazılamaz (ByteString exception). RFC 5987 ile çift alan:
+    //   filename="..."      → ASCII fallback (eski tarayıcı)
+    //   filename*=UTF-8''.. → tam Türkçe (modern tarayıcı + indirme adı)
+    const rawName = `Vorte_Studio_Sozlesme_${contract.proposal.firmName.replace(/\s+/g, "_")}`;
+    const asciiName = rawName
+      .replace(/[ışŞİı]/g, "i")
+      .replace(/[İ]/g, "I")
+      .replace(/[şŞ]/g, "s")
+      .replace(/[çÇ]/g, "c")
+      .replace(/[öÖ]/g, "o")
+      .replace(/[üÜ]/g, "u")
+      .replace(/[ğĞ]/g, "g")
+      .replace(/[^\x20-\x7E]/g, "_"); // kalan her non-ASCII → _
+    const utf8Name = encodeURIComponent(rawName);
     const isDownload = req.nextUrl.searchParams.get("download") === "1";
+    const disposition = isDownload ? "attachment" : "inline";
 
     return new NextResponse(new Uint8Array(pdfBuffer), {
       headers: {
         "Content-Type": "application/pdf",
-        "Content-Disposition": `${isDownload ? "attachment" : "inline"}; filename="${fileName}"`,
+        "Content-Disposition": `${disposition}; filename="${asciiName}.pdf"; filename*=UTF-8''${utf8Name}.pdf`,
       },
     });
   } catch (error) {
     console.error("PDF olusturma hatasi:", error);
-    return NextResponse.json({ error: "PDF olusturulamadi" }, { status: 500 });
+    // Admin debug için gerçek hata mesajı — prod'da sadece auth'lu admin
+    // bu endpoint'i çağırabildiği için PII sızıntısı riski yok.
+    const msg = error instanceof Error ? error.message : "bilinmeyen hata";
+    return NextResponse.json({ error: "PDF olusturulamadi", detail: msg }, { status: 500 });
   }
 }
