@@ -2,8 +2,15 @@
 
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
+import { auth } from "@/lib/auth";
 import { calculatePrice, formatPriceRange } from "@/lib/pricing-calculator";
 import type { PricingItem } from "@/lib/pricing-constants";
+
+async function requireAdmin() {
+  const session = await auth();
+  if (!session?.user) return false;
+  return (session.user as { role?: string }).role === "admin";
+}
 
 // ── Teklif oluştur (submission'dan) ──
 export async function createProposalFromSubmission(
@@ -142,7 +149,22 @@ export async function getProposalByToken(token: string) {
     });
     if (!proposal) return null;
 
-    // İlk görüntülemede viewedAt kaydet + Lead güncelle
+    // Otomatik EXPIRED transition — süresi dolmuş ama status hâlâ aktif ise
+    // bir kere DB'ye yaz. ACCEPTED teklifler dokunulmaz (zaten kabul edildi).
+    const now = new Date();
+    const expired = proposal.validUntil < now;
+    if (
+      expired &&
+      (proposal.status === "SENT" || proposal.status === "VIEWED" || proposal.status === "DRAFT")
+    ) {
+      await prisma.proposal.update({
+        where: { id: proposal.id },
+        data: { status: "EXPIRED" },
+      });
+      proposal.status = "EXPIRED";
+    }
+
+    // İlk görüntülemede viewedAt kaydet + Lead güncelle (expired değilse)
     if (!proposal.viewedAt && proposal.status === "SENT") {
       await prisma.proposal.update({
         where: { id: proposal.id },
@@ -344,5 +366,55 @@ export async function rejectProposal(token: string) {
     return { success: true };
   } catch {
     return { success: false, error: "İşlem başarısız" };
+  }
+}
+
+// ── Teklif geçerlilik süresini uzat (Admin) ──
+//
+// Süresi dolmuş veya dolmak üzere olan bir teklifin validUntil tarihini
+// now + 14 gün olarak yeniden ayarlar ve status EXPIRED ise VIEWED/SENT'e
+// geri döndürür (hiç görülmediyse SENT, görülmüşse VIEWED).
+//
+// Müşteri teklif linkini geç gördüyse admin elle DB'ye müdahale etmek
+// zorunda kalmasın diye eklendi. ACCEPTED/REJECTED tekliflerin süresi
+// uzatılamaz — onlar zaten işlem görmüş.
+export async function extendProposalValidity(proposalId: string, days = 14) {
+  const isAdmin = await requireAdmin();
+  if (!isAdmin) return { success: false, error: "Yetkisiz" };
+  if (days < 1 || days > 90) return { success: false, error: "Süre 1-90 gün arasında olmalı" };
+
+  try {
+    const proposal = await prisma.proposal.findUnique({ where: { id: proposalId } });
+    if (!proposal) return { success: false, error: "Teklif bulunamadı" };
+    if (proposal.status === "ACCEPTED" || proposal.status === "REJECTED") {
+      return { success: false, error: "Bu teklif zaten işlem görmüş, süresi uzatılamaz" };
+    }
+
+    const newValidUntil = new Date(Date.now() + days * 24 * 60 * 60 * 1000);
+    const newStatus =
+      proposal.status === "EXPIRED"
+        ? proposal.viewedAt
+          ? "VIEWED"
+          : "SENT"
+        : proposal.status;
+
+    await prisma.proposal.update({
+      where: { id: proposalId },
+      data: {
+        validUntil: newValidUntil,
+        status: newStatus,
+      },
+    });
+
+    revalidatePath("/admin/proposals");
+    revalidatePath(`/admin/proposals/${proposalId}`);
+    revalidatePath(`/teklif/${proposal.token}`);
+    return {
+      success: true,
+      validUntil: newValidUntil.toISOString(),
+    };
+  } catch (error) {
+    console.error("Teklif süresi uzatma hatası:", error);
+    return { success: false, error: "Süre uzatılamadı" };
   }
 }

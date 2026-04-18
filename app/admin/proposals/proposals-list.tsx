@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { updateProposalStatus, deleteProposal } from "@/actions/proposals";
+import { updateProposalStatus, deleteProposal, extendProposalValidity } from "@/actions/proposals";
 import { markPaymentPaid, revertPayment } from "@/actions/payments";
 import NextStepBadge from "@/components/admin/NextStepBadge";
 
@@ -307,6 +307,35 @@ export default function ProposalsList({ initialData }: { initialData: Proposal[]
                               className="rounded-md bg-amber-500/10 px-2 py-1 text-[10px] font-medium text-amber-400 hover:bg-amber-500/20 disabled:opacity-50"
                             >
                               Gonder
+                            </button>
+                          )}
+                          {p.status === "EXPIRED" && (
+                            <button
+                              onClick={() => {
+                                startTransition(async () => {
+                                  const res = await extendProposalValidity(p.id, 14);
+                                  if (res.success && res.validUntil) {
+                                    setItems((prev) =>
+                                      prev.map((x) =>
+                                        x.id === p.id
+                                          ? {
+                                              ...x,
+                                              validUntil: res.validUntil!,
+                                              status: x.viewedAt ? "VIEWED" : "SENT",
+                                            }
+                                          : x
+                                      )
+                                    );
+                                  } else if (res.error) {
+                                    alert(res.error);
+                                  }
+                                });
+                              }}
+                              disabled={isPending}
+                              title="14 gün ekleyip teklifi yeniden aktif et"
+                              className="rounded-md bg-blue-500/10 px-2 py-1 text-[10px] font-medium text-blue-400 hover:bg-blue-500/20 disabled:opacity-50"
+                            >
+                              Süreyi Uzat (14g)
                             </button>
                           )}
                           {deleteConfirm === p.id ? (
