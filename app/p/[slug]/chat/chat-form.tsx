@@ -3,6 +3,13 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { getPrimaryGoalButtons, resolvePrimaryGoal } from '@/lib/primary-goal-mapping'
+import {
+  KVKK_VERSION,
+  KVKK_URL,
+  KVKK_CONSENT_MESSAGE,
+  KVKK_ACCEPT_BUTTON_LABEL,
+  KVKK_READ_BUTTON_LABEL,
+} from '@/lib/kvkk-constants'
 
 interface Props {
   firmName: string
@@ -54,6 +61,7 @@ type Step =
   | 'targetAudience'
   | 'primaryGoal'
   | 'extraNote'
+  | 'kvkkConsent'
   | 'contactConfirm'
   | 'contactName'
   | 'contactPhone'
@@ -61,7 +69,7 @@ type Step =
   | 'done'
   | 'freeQuestion'
 
-const TOTAL_STEPS = 13
+const TOTAL_STEPS = 14
 
 function stepToNumber(s: Step): number {
   const map: Record<string, number> = {
@@ -71,7 +79,8 @@ function stepToNumber(s: Step): number {
     domainStatus: 7, domainName: 7,
     brandColors: 8, timeline: 9, targetAudience: 10,
     primaryGoal: 11, extraNote: 12,
-    contactConfirm: 13, contactName: 13, contactPhone: 13, contactEmail: 13,
+    kvkkConsent: 13,
+    contactConfirm: 14, contactName: 14, contactPhone: 14, contactEmail: 14,
   }
   return map[s] || 0
 }
@@ -364,6 +373,8 @@ export default function ChatForm({ firmName, city, sector, slug, phone, email, l
     contactName: '',
     contactPhone: phone || '',
     contactEmail: email || '',
+    kvkkAcceptedAt: '' as string,
+    kvkkVersion: '' as string,
   })
 
   const [selectedFeatures, setSelectedFeatures] = useState<string[]>([])
@@ -585,6 +596,36 @@ export default function ChatForm({ firmName, city, sector, slug, phone, email, l
         break
       }
 
+      case 'kvkkConsent': {
+        if (value === 'read') {
+          // Aydınlatma metni yeni sekmede açıldı; kullanıcı onayı hâlâ bekleniyor.
+          // Aynı adımda kalınır, butonlar tekrar gösterilir.
+          if (typeof window !== 'undefined') {
+            window.open(KVKK_URL, '_blank', 'noopener,noreferrer')
+          }
+          addBotMessage(
+            'Aydınlatma metnini yeni sekmede açtım. Okuduktan sonra kabul ediyorsanız devam edelim.',
+            'kvkkConsent',
+            {
+              buttons: [
+                { label: KVKK_ACCEPT_BUTTON_LABEL, value: 'onay' },
+              ],
+            },
+          )
+          return
+        }
+        if (value === 'onay') {
+          const acceptedAt = new Date().toISOString()
+          setData((d) => ({
+            ...d,
+            kvkkAcceptedAt: acceptedAt,
+            kvkkVersion: KVKK_VERSION,
+          }))
+          proceedToContactAfterKvkk()
+        }
+        break
+      }
+
       case 'contactConfirm': {
         if (value === 'onay') {
           // WA'dan gelen telefon onaylandı, contactName'e geç
@@ -651,10 +692,26 @@ export default function ChatForm({ firmName, city, sector, slug, phone, email, l
   }
 
   // ── Akıllı contact başlangıcı ──
+  // KVKK açık rıza adımından (kvkkConsent) sonra contactConfirm/contactName'e yönlendirir.
   function startContactFlow() {
+    addBotMessage(
+      KVKK_CONSENT_MESSAGE,
+      'kvkkConsent',
+      {
+        buttons: [
+          { label: KVKK_ACCEPT_BUTTON_LABEL, value: 'onay' },
+          { label: KVKK_READ_BUTTON_LABEL, value: 'read' },
+        ],
+      },
+    )
+  }
+
+  // KVKK onayı alındıktan sonra iletişim akışına devam eder.
+  // (Eski startContactFlow'un WhatsApp/non-WhatsApp ayrım mantığı buraya taşındı.)
+  function proceedToContactAfterKvkk() {
     if (source === 'whatsapp' && phone) {
       addBotMessage(
-        `Son adım — iletişim bilgilerinizi teyit edelim.\n\nTeklifinizi ${phone} numarasına WhatsApp üzerinden iletelim. Bu numara doğru mu?`,
+        `Teşekkürler. Şimdi iletişim bilgilerinizi teyit edelim.\n\nTeklifinizi ${phone} numarasına WhatsApp üzerinden iletelim. Bu numara doğru mu?`,
         'contactConfirm',
         {
           buttons: [
@@ -665,7 +722,7 @@ export default function ChatForm({ firmName, city, sector, slug, phone, email, l
       )
     } else {
       addBotMessage(
-        'Son adım — size nasıl hitap edelim? Adınız ve soyadınız.',
+        'Teşekkürler. Size nasıl hitap edelim? Adınız ve soyadınız.',
         'contactName',
       )
     }
@@ -926,6 +983,8 @@ export default function ChatForm({ firmName, city, sector, slug, phone, email, l
           freeQuestions,
           leadId,
           source,
+          kvkkAcceptedAt: finalData.kvkkAcceptedAt,
+          kvkkVersion: finalData.kvkkVersion,
         }),
       })
 
@@ -1544,20 +1603,8 @@ export default function ChatForm({ firmName, city, sector, slug, phone, email, l
                 </motion.button>
               )}
 
-              {(step === 'contactName' || step === 'contactPhone' || step === 'contactEmail') && (
-                <p className="mt-2 text-center text-[10px] text-slate-400">
-                  Devam ederek{' '}
-                  <a
-                    href="/kvkk"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-orange-500 underline hover:text-orange-600"
-                  >
-                    KVKK Aydınlatma Metnini
-                  </a>{' '}
-                  okumuş sayılırsınız.
-                </p>
-              )}
+              {/* KVKK açık rıza 'kvkkConsent' adımında pozitif aksiyonla alınıyor.
+                  Bu noktada onay zaten verilmiş durumda — implied consent metni kaldırıldı. */}
             </div>
           </motion.div>
         )}

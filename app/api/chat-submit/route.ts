@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { calculatePrice } from "@/lib/pricing-calculator";
 import { suggestPackage } from "@/lib/package-suggester";
 import { checkRateLimit } from "@/lib/rate-limit";
+import { KVKK_VERSION } from "@/lib/kvkk-constants";
 
 export const dynamic = "force-dynamic";
 
@@ -45,6 +46,8 @@ export async function POST(req: Request) {
       completedSteps,
       freeQuestions,
       leadId,
+      kvkkAcceptedAt,
+      kvkkVersion,
     } = body;
 
     if (!slug || !firmName) {
@@ -53,6 +56,31 @@ export async function POST(req: Request) {
         { status: 400 }
       );
     }
+
+    // ── KVKK açık rıza zorunlu (6698 m.10) ──
+    // UI bypass edilirse bile DB'ye onaysız kayıt yazılamaz.
+    if (!kvkkAcceptedAt) {
+      return NextResponse.json(
+        { success: false, error: "KVKK açık rıza onayı zorunlu" },
+        { status: 400 }
+      );
+    }
+    const kvkkDate = new Date(kvkkAcceptedAt);
+    if (isNaN(kvkkDate.getTime())) {
+      return NextResponse.json(
+        { success: false, error: "KVKK onay tarihi geçersiz" },
+        { status: 400 }
+      );
+    }
+
+    // ── İstemci IP + User-Agent (Traefik/Coolify uyumlu) ──
+    // x-forwarded-for'un ilk parçası gerçek istemci; sonraki değerler proxy chain.
+    const xff = req.headers.get("x-forwarded-for") || "";
+    const kvkkAcceptIp =
+      xff.split(",")[0].trim() ||
+      req.headers.get("x-real-ip") ||
+      null;
+    const kvkkAcceptUserAgent = req.headers.get("user-agent") || null;
 
     // Lead skoru hesapla
     let score = "cold";
@@ -152,6 +180,10 @@ export async function POST(req: Request) {
         suggestedPackage: suggestion.slug,
         freeQuestions: freeQuestions || [],
         leadId: leadId || null,
+        kvkkAcceptedAt: kvkkDate,
+        kvkkVersion: kvkkVersion || KVKK_VERSION,
+        kvkkAcceptIp,
+        kvkkAcceptUserAgent,
       },
     });
 

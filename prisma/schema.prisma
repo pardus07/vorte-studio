@@ -137,6 +137,11 @@ model ChatSubmission {
   suggestedPackage String?              // starter/profesyonel/eticaret/kurumsal — paket önerisi
   freeQuestions   Json     @default("[]")  // [{question, answer, step, timestamp}]
   isRead          Boolean  @default(false) // admin okudu mu
+  // ── KVKK Açık Rıza (6698 m.10) ──
+  kvkkAcceptedAt      DateTime? // onay zaman damgası
+  kvkkVersion         String?   // onaylanan metin versiyonu (lib/kvkk-constants.ts)
+  kvkkAcceptIp        String?   // onay anındaki istemci IP (x-forwarded-for ilk parça)
+  kvkkAcceptUserAgent String?   @db.Text // onay anındaki User-Agent
   createdAt       DateTime @default(now())
 
   proposals Proposal[]
