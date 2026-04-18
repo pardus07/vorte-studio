@@ -47,7 +47,8 @@ export async function POST(req: Request) {
       freeQuestions,
       leadId,
       kvkkAcceptedAt,
-      kvkkVersion,
+      // kvkkVersion body'den gelir ama GÜVENMİYORUZ — server-side
+      // KVKK_VERSION constant'ı kullanılıyor (aşağıda).
     } = body;
 
     if (!slug || !firmName) {
@@ -59,6 +60,10 @@ export async function POST(req: Request) {
 
     // ── KVKK açık rıza zorunlu (6698 m.10) ──
     // UI bypass edilirse bile DB'ye onaysız kayıt yazılamaz.
+    // Delil zincirinin bozulmaması için:
+    //   1) Tarih server-side pencerede olmalı (istemci clock tampering önlemi)
+    //   2) Version SABİT server-side constant'tan okunur — istemci göndermeye
+    //      çalışsa bile yoksayılır (submission.create'te kvkkVersion: KVKK_VERSION)
     if (!kvkkAcceptedAt) {
       return NextResponse.json(
         { success: false, error: "KVKK açık rıza onayı zorunlu" },
@@ -69,6 +74,19 @@ export async function POST(req: Request) {
     if (isNaN(kvkkDate.getTime())) {
       return NextResponse.json(
         { success: false, error: "KVKK onay tarihi geçersiz" },
+        { status: 400 }
+      );
+    }
+    // Clock skew toleransı: istemci saati ±5dk kayabilir, kabul ediyoruz.
+    // Bunun dışı → istemci tarihi manipüle ediyor, delil bozulur.
+    const nowMs = Date.now();
+    const driftMs = Math.abs(kvkkDate.getTime() - nowMs);
+    if (driftMs > 5 * 60 * 1000) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: "KVKK onay tarihi geçerli zaman penceresinde değil",
+        },
         { status: 400 }
       );
     }
@@ -181,7 +199,10 @@ export async function POST(req: Request) {
         freeQuestions: freeQuestions || [],
         leadId: leadId || null,
         kvkkAcceptedAt: kvkkDate,
-        kvkkVersion: kvkkVersion || KVKK_VERSION,
+        // TRUST BOUNDARY: İstemciden gelen kvkkVersion'ı YOKSAY.
+        // Delil niteliği için server-side constant'ı kullan — böylece
+        // istemci "v99-fake" yazıp fake delil oluşturamaz.
+        kvkkVersion: KVKK_VERSION,
         kvkkAcceptIp,
         kvkkAcceptUserAgent,
       },

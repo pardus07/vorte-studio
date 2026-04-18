@@ -464,6 +464,25 @@ model ProspectPage {
   events ProspectEvent[]
 }
 
+// ── Prospect Opt-Out (KVKK veri silme talepleri) ──
+// Prospect'e ait landing sayfası üzerinden "Verimi Sil" butonuyla tetiklenir.
+// ProspectPage.isActive → false çekilir AMA bu tablo silinmez: uyuşmazlıkta
+// "şu tarihte şu IP'den talep geldi, 30 gün içinde karşıladık" delili olarak
+// KVKK m.13 başvuru usulüne uygunluğu kanıtlar.
+model ProspectOptOut {
+  id         String   @id @default(cuid())
+  prospectId String?  // opt-out anında hala mevcutsa; sonra silinebilir
+  slug       String   // her zaman korunur (prospect silinse bile delil için)
+  firmName   String   // hangi firma talep etti (kanıt)
+  ip         String?  // talep edenin IP'si
+  userAgent  String?  @db.Text
+  reason     String?  @db.Text // opsiyonel — "neden" alanı varsa
+  createdAt  DateTime @default(now())
+
+  @@index([slug])
+  @@index([createdAt])
+}
+
 // ── Şablon Görselleri ──
 model TemplateImage {
   id         String   @id @default(cuid())

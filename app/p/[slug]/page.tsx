@@ -289,7 +289,7 @@ export default async function ProspectLandingPage({ params }: PageProps) {
 
     return (
       <>
-        <ProspectDisclaimer firmName={demo.firmName} />
+        <ProspectDisclaimer firmName={demo.firmName} slug={slug} />
         <TemplateComponent
           firmName={demo.firmName}
           city={demo.city}
@@ -344,7 +344,7 @@ export default async function ProspectLandingPage({ params }: PageProps) {
 
   return (
     <>
-      <ProspectDisclaimer firmName={prospect.name} />
+      <ProspectDisclaimer firmName={prospect.name} slug={slug} />
       <TemplateComponent
         firmName={prospect.name}
         city={page.city}

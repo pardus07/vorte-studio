@@ -419,11 +419,22 @@ export function detectIssue(lead: {
   return "Dijital varlığınız rakiplerinizin gerisinde kalıyor olabilir — bunu birlikte değerlendirelim";
 }
 
-// ── Bilgilendirme notu (KVKK / Şeffaflık) ──
+// ── Bilgilendirme notu (KVKK m.10 / 6563 s. Kanun m.6) ──
+// Scraper kaynaklı outreach için yasal gereklilikler:
+//   1. Veri kaynağı — Google Haritalar halka açık kayıtlar
+//   2. Veri sorumlusu kimliği — KVKK m.10/a zorunlu
+//   3. İşleme amacı — KVKK m.10/b
+//   4. Hukuki dayanak — m.5/2-f meşru menfaat
+//   5. İlgili kişi hakları — m.11 başvuru linki
+//   6. Opt-out yolu — 6563 s. Elektronik Ticaret Kanunu m.6 zorunlu
 const DISCLOSURE_NOTE = `
 
 ---
-Sayın firma yetkilisi, GSM numaranızı Google Haritalar'da halka açık olarak yayınlanan işletme bilgilerinizden aldık. Firmanızın Google Haritalar kaydında web sitesi bulunmadığını veya mevcut sitenizin iyileştirilebileceğini tespit ettiğimiz için sizinle iletişime geçiyoruz. Yanıt vermek istemezseniz bu mesajı görmezden gelebilirsiniz.`;
+📋 KVKK Bilgilendirme
+Veri sorumlusu: Vorte Studio (İbrahim Yaşar, İzmir)
+İletişim bilgileriniz Google Haritalar'daki halka açık işletme kaydınızdan alınmıştır. Hukuki dayanak: KVKK m.5/2-f (meşru menfaat — tanıtım).
+• Aydınlatma metni ve haklarınız: https://vortestudio.com/kvkk
+• Verinizi silmek veya listeden çıkmak için mesajınıza "DURDUR" yazmanız yeterli — 24 saat içinde işleme alınır ve bir daha mesaj gönderilmez.`;
 
 // ── Şablon oluştur ──
 export function generateWaMessage(data: WaTemplateData): string {

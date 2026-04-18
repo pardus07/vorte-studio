@@ -262,7 +262,95 @@ export default function KvkkPage() {
         30 gün içinde sonuçlandırılacaktır.
       </p>
 
-      <h2>10. Değişiklikler</h2>
+      <h2 id="prospect">
+        10. Özel Bölüm: Tasarım Önizleme Sayfaları
+      </h2>
+      <p>
+        İşbu bölüm, Vorte Studio&apos;nun pazarlama faaliyetleri kapsamında
+        oluşturduğu <strong>tasarım önizleme sayfalarına</strong> (genellikle{" "}
+        <code>vortestudio.com/p/...</code> veya{" "}
+        <code>vortestudio.com/demo/...</code> adreslerinde yayımlanır)
+        konu olan gerçek kişi firma yetkilileri / işletme sahipleri için
+        KVKK m.10 kapsamında ek aydınlatmadır.
+      </p>
+
+      <h3>10.1 Veri Kaynağı</h3>
+      <p>
+        Bu sayfaların oluşturulmasında kullanılan işletme bilgileri (firma
+        adı, adres, telefon, Google puanı ve yorum sayısı, web sitesi)
+        <strong> Google Haritalar</strong> üzerinde işletme sahipleri
+        tarafından halka açık olarak yayımlanan kayıtlardan otomatik
+        yöntemlerle toplanmıştır. Hiçbir özel veya gizli kaynak
+        kullanılmamıştır.
+      </p>
+
+      <h3>10.2 İşleme Amacı</h3>
+      <p>
+        Veriler yalnızca, firma yetkilisine özel bir web sitesi tasarım
+        önizlemesi sunmak ve bu önizlemeyi kendisine iletmek amacıyla
+        işlenir. Bu kapsamda oluşturulan sayfada yer alan iletişim
+        bilgileri (telefon, adres) yalnızca firmanın kendi müşterilerine
+        görüneceği nihai tasarımı temsil eder — Vorte Studio tarafından
+        pazarlama veya başka bir amaçla üçüncü kişilere aktarılmaz.
+      </p>
+
+      <h3>10.3 Hukuki Dayanak</h3>
+      <p>
+        Bu işleme faaliyeti KVKK m.5/2-f uyarınca{" "}
+        <strong>
+          veri sorumlusunun meşru menfaatleri için veri işlenmesinin zorunlu
+          olması
+        </strong>{" "}
+        hukuki sebebine dayanmaktadır. Meşru menfaat; ticari tanıtım yapma,
+        hizmet sunma ve potansiyel müşteri ilişkileri kurma menfaatimizdir.
+        Bu menfaat, ilgili kişinin temel hak ve özgürlüklerine zarar
+        vermeyecek şekilde, minimum veri ilkesi (sadece halka açık işletme
+        bilgileri) gözetilerek kullanılmaktadır.
+      </p>
+
+      <h3>10.4 Veri Silme ve Listeden Çıkma Hakkı</h3>
+      <p>
+        Tasarım önizleme sayfanızın kaldırılmasını ve Vorte Studio iletişim
+        listesinden çıkarılmanızı dilediğiniz zaman talep edebilirsiniz.
+        Üç farklı yolla gerçekleştirebilirsiniz:
+      </p>
+      <ul>
+        <li>
+          <strong>Hızlı yol:</strong> Önizleme sayfanızın üst bandındaki{" "}
+          <em>&quot;Verimi Sil&quot;</em> butonuna tıklayın — talebiniz anında
+          sisteme düşer ve sayfanız aynı dakika içinde kaldırılır.
+        </li>
+        <li>
+          <strong>WhatsApp:</strong> Tarafımızdan gelen mesaja{" "}
+          <strong>&quot;DURDUR&quot;</strong> yazarak yanıt verin — 24 saat
+          içinde işleme alınır.
+        </li>
+        <li>
+          <strong>E-posta:</strong>{" "}
+          <a href="mailto:info@vortestudio.com?subject=Verimi%20Sil">
+            info@vortestudio.com
+          </a>{" "}
+          adresine firma adınızı ve talep konusunu yazın.
+        </li>
+      </ul>
+      <p>
+        Silme talebinizin alındığı tarih, talep eden IP adresi ve User-Agent
+        bilgisi; 6698 sayılı Kanun m.13 uyarınca başvurunun süresinde
+        cevaplandığını ispat etmek amacıyla <strong>10 yıl boyunca</strong>{" "}
+        saklanır. Bu kayıt; firma adınız, talep tarihi ve IP adresinizden
+        ibarettir; başka bir kişisel veri tutulmaz.
+      </p>
+
+      <h3>10.5 Veri Saklama Süresi (Prospect için)</h3>
+      <p>
+        Silme talebiniz gelene kadar veya önizleme sayfanız oluşturulduktan
+        sonraki <strong>90 gün</strong> süreyle (hangisi önce olursa)
+        verileriniz aktif olarak sistemimizde tutulur. 90 gün sonunda firma
+        sizinle iletişime geçmemişse veya teklif kabul etmemişse kayıt
+        otomatik olarak pasifleştirilir.
+      </p>
+
+      <h2>11. Değişiklikler</h2>
       <p>
         Vorte Studio, işbu aydınlatma metnini mevzuat değişiklikleri veya
         hizmet güncellemeleri doğrultusunda gerektiğinde güncelleyebilir.
