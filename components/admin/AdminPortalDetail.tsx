@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { setStagingUrl, resetDesignApproval } from "@/actions/design-preview";
 import { createMaintenanceFromProposal } from "@/actions/maintenance";
+import { resendPortalCredentials } from "@/actions/portal";
 
 interface Message {
   id: string; content: string; senderType: string; isRead: boolean; createdAt: string;
@@ -75,6 +76,37 @@ export default function AdminPortalDetail({ data }: { data: AdminDetailData }) {
   const [tab, setTab] = useState<"messages" | "files" | "payments" | "design">("messages");
   const [maintenanceMsg, setMaintenanceMsg] = useState<{ type: "ok" | "err"; text: string } | null>(null);
   const [isMaintenancePending, startMaintenanceTransition] = useTransition();
+  const [credentialsMsg, setCredentialsMsg] = useState<{ type: "ok" | "err"; text: string } | null>(null);
+  const [isCredentialsPending, startCredentialsTransition] = useTransition();
+
+  function handleResendCredentials() {
+    if (!user.isActive) {
+      setCredentialsMsg({
+        type: "err",
+        text: "Hesap henüz aktif değil — peşinat ödendiğinde credentials otomatik gönderilir.",
+      });
+      return;
+    }
+    if (
+      !confirm(
+        `${user.email} adresine yeni bir şifre üretilip gönderilecek. Eski şifre geçersiz olacak. Devam edilsin mi?`
+      )
+    )
+      return;
+
+    setCredentialsMsg(null);
+    startCredentialsTransition(async () => {
+      const res = await resendPortalCredentials(user.id);
+      if (res.success) {
+        setCredentialsMsg({
+          type: "ok",
+          text: `Yeni şifre ${res.email} adresine gönderildi.`,
+        });
+      } else {
+        setCredentialsMsg({ type: "err", text: res.error || "Gönderilemedi" });
+      }
+    });
+  }
   const bottomRef = useRef<HTMLDivElement>(null);
 
   // Workflow step 9 kontrolü: tüm ödemeler alındı + stage 3 ödendi → proje tamamlandı
@@ -165,6 +197,18 @@ export default function AdminPortalDetail({ data }: { data: AdminDetailData }) {
           </p>
         </div>
         <div className="flex items-center gap-2">
+          <button
+            onClick={handleResendCredentials}
+            disabled={isCredentialsPending || !user.isActive}
+            title={
+              user.isActive
+                ? "Müşteriye yeni bir portal şifresi üretir ve e-posta ile gönderir"
+                : "Hesap aktif olduğunda kullanılabilir"
+            }
+            className="rounded-lg border border-[var(--color-admin-border)] px-3 py-1.5 text-xs text-[var(--color-admin-muted)] transition-colors hover:text-white disabled:cursor-not-allowed disabled:opacity-40"
+          >
+            {isCredentialsPending ? "Gönderiliyor…" : "🔑 Şifreyi Yeniden Gönder"}
+          </button>
           <a
             href={`/teklif/${proposal.token}`}
             target="_blank"
@@ -182,6 +226,19 @@ export default function AdminPortalDetail({ data }: { data: AdminDetailData }) {
           </span>
         </div>
       </div>
+
+      {/* Portal credentials yeniden gönderme geri bildirimi */}
+      {credentialsMsg && (
+        <div
+          className={`mb-4 rounded-lg border px-3 py-2 text-xs ${
+            credentialsMsg.type === "ok"
+              ? "border-green-500/30 bg-green-500/5 text-green-400"
+              : "border-red-500/30 bg-red-500/5 text-red-400"
+          }`}
+        >
+          {credentialsMsg.text}
+        </div>
+      )}
 
       {/* Proje Tamamlandı → Bakım Kaydı CTA */}
       {isProjectCompleted && (

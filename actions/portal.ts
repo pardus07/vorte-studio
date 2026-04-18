@@ -97,15 +97,73 @@ export async function createPortalAccount(
 
     revalidatePath("/admin/portal");
 
+    // GÜVENLİK: plainPassword return edilmez — SSR log / client response /
+    // react-devtools üzerinden sızma riski var. Şifre sadece müşterinin
+    // mailbox'una gider; admin şifreyi asla görmez. Unuttuysa
+    // resendPortalCredentials ile yeni şifre üretilip gönderilir.
     return {
       success: true,
       email: portalUser.email,
-      password: activateImmediately ? password : undefined,
+      credentialsSent: activateImmediately,
       pendingActivation: !activateImmediately,
     };
   } catch (error) {
     console.error("Portal hesap oluşturma hatası:", error);
     return { success: false, error: "Portal hesabı oluşturulamadı" };
+  }
+}
+
+/**
+ * Portal şifresini yeniden gönder — müşteri şifresini unutmuşsa veya maili
+ * almadıysa çağrılır. Yeni bir şifre üretilir (bcrypt geri okunamaz olduğu
+ * için eski şifre kurtarılamaz), DB'deki hash güncellenir ve credentials
+ * mailI tekrar atılır.
+ *
+ * Yetki: sadece admin.
+ * Rate limit: admin action — UI buton disable pattern'i yeterli koruma.
+ */
+export async function resendPortalCredentials(portalUserId: string) {
+  const isAdmin = await requireAdmin();
+  if (!isAdmin) return { success: false, error: "Yetkisiz" };
+
+  try {
+    const portalUser = await prisma.portalUser.findUnique({
+      where: { id: portalUserId },
+      include: { proposal: { select: { firmName: true } } },
+    });
+    if (!portalUser) return { success: false, error: "Portal hesabı bulunamadı" };
+    if (!portalUser.isActive) {
+      return {
+        success: false,
+        error:
+          "Hesap henüz aktif değil — peşinat ödendiğinde credentials otomatik gönderilir.",
+      };
+    }
+
+    const newPassword = generatePassword();
+    const passwordHash = await bcrypt.hash(newPassword, 12);
+
+    await prisma.portalUser.update({
+      where: { id: portalUser.id },
+      data: { passwordHash },
+    });
+
+    const sent = await sendPortalCredentials(
+      portalUser.email,
+      newPassword,
+      portalUser.proposal.firmName
+    );
+    if (!sent) {
+      return { success: false, error: "E-posta gönderilemedi — tekrar deneyin" };
+    }
+
+    revalidatePath("/admin/portal");
+    revalidatePath(`/admin/portal/${portalUserId}`);
+
+    return { success: true, email: portalUser.email };
+  } catch (error) {
+    console.error("Portal credentials yeniden gönderme hatası:", error);
+    return { success: false, error: "Credentials gönderilemedi" };
   }
 }
 
