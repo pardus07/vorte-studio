@@ -74,6 +74,51 @@ export default function KanbanBoard({ leads: initial }: { leads: Lead[] }) {
     }
   }, [searchParams, router]);
 
+  // ── WA şablon auto-regenerate (preview modal açılınca) ──
+  // TEMPLATE_ADDED statüsündeki bir lead için modalı açtığında,
+  // `Lead.waTemplate` DB'de eski kod döneminde üretilmiş olabilir
+  // (ör: KVKK disclosure bloğu eski versiyon). Taze üretip farklıysa
+  // DB + state'i sessizce güncelle. WA_SENT ve sonrası dokunulmaz —
+  // gönderilmiş mesajın birebir kopyası delil değeri taşır.
+  useEffect(() => {
+    if (!previewLead) return;
+    if (previewLead.status !== "TEMPLATE_ADDED") return;
+    if (!previewLead.waTemplateSector || !previewLead.phone) return;
+
+    const freshMsg = generateWaMessage({
+      firma: previewLead.name,
+      sektor: previewLead.waTemplateSector,
+      sehir: extractCity(previewLead.address),
+      sorun: detectIssue({
+        hasWebsite: previewLead.hasWebsite,
+        mobileScore: previewLead.mobileScore,
+        sslValid: previewLead.sslValid,
+        website: previewLead.website,
+      }),
+      link: buildDemoLink(previewLead.id, previewLead.waTemplateSector),
+      phone: formatWANumber(previewLead.phone),
+    });
+
+    if (freshMsg === previewLead.waTemplate) return; // değişiklik yok
+
+    const slug =
+      previewLead.waTemplateSlug || getTemplateName(previewLead.waTemplateSector);
+    const leadId = previewLead.id;
+    const sector = previewLead.waTemplateSector;
+
+    addWaTemplateToLead(leadId, freshMsg, sector, slug).then((result) => {
+      if (!result.success) return;
+      setLeads((prev) =>
+        prev.map((l) => (l.id === leadId ? { ...l, waTemplate: freshMsg } : l))
+      );
+      setPreviewLead((prev) =>
+        prev && prev.id === leadId ? { ...prev, waTemplate: freshMsg } : prev
+      );
+      showNotif("Şablon güncel KVKK metniyle yenilendi.", "info");
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [previewLead?.id]);
+
   function showNotif(msg: string, type: "success" | "error" | "info" = "info") {
     setNotification({ msg, type });
     setTimeout(() => setNotification(null), 4000);
