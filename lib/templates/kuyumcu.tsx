@@ -3,6 +3,7 @@
 import { Cormorant_Garamond, Jost } from 'next/font/google'
 import { motion } from 'framer-motion'
 import { TemplateProps, buildChatLink } from './types'
+import { suffixDe, suffixIn } from './turkish-grammar'
 import { useTrackPageView, trackEvent } from './use-track'
 
 const cormorant = Cormorant_Garamond({
@@ -104,7 +105,7 @@ export default function KuyumcuTemplate(props: TemplateProps) {
         {/* Bottom text + CTA */}
         <motion.div variants={staggerContainer} initial="hidden" animate="visible" className="mt-10 text-center">
           <motion.p variants={fadeInUp} className="mx-auto max-w-lg font-[family-name:var(--font-jost)] text-lg leading-relaxed text-white/50">
-            {props.firmName} — {props.city}&apos;de nişan yüzüğünden özel tasarıma,
+            {props.firmName} — {suffixDe(props.city)} nişan yüzüğünden özel tasarıma,
             altın ve pırlanta koleksiyonları.
           </motion.p>
 

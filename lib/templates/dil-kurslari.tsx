@@ -3,6 +3,7 @@
 import { Space_Grotesk, DM_Sans } from 'next/font/google'
 import { motion } from 'framer-motion'
 import { TemplateProps, buildChatLink } from './types'
+import { suffixDe, suffixIn } from './turkish-grammar'
 import { useTrackPageView, trackEvent } from './use-track'
 
 const spaceGrotesk = Space_Grotesk({ subsets: ['latin-ext'], weight: ['300', '400', '500', '600', '700'], variable: '--font-space', display: 'swap' })
@@ -64,7 +65,7 @@ export default function DilKurslariTemplate(props: TemplateProps) {
               </motion.h1>
 
               <motion.p variants={fadeInUp} className="mt-5 max-w-md font-[family-name:var(--font-dm)] text-lg leading-relaxed text-white/50">
-                {props.firmName} — {props.city}&apos;de İngilizce, Almanca, Fransızca ve daha fazlası.
+                {props.firmName} — {suffixDe(props.city)} İngilizce, Almanca, Fransızca ve daha fazlası.
                 Uzman eğitmenler, küçük sınıflar, garantili sonuç.
               </motion.p>
 

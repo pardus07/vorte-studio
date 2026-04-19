@@ -3,6 +3,7 @@
 import { Rajdhani, Source_Sans_3 } from 'next/font/google'
 import { motion } from 'framer-motion'
 import { TemplateProps, buildChatLink } from './types'
+import { suffixDe, suffixIn } from './turkish-grammar'
 import { useTrackPageView, trackEvent } from './use-track'
 
 const rajdhani = Rajdhani({ subsets: ['latin-ext'], weight: ['400', '500', '600', '700'], variable: '--font-rajdhani', display: 'swap' })
@@ -72,7 +73,7 @@ export default function AsansorTemplate(props: TemplateProps) {
             </motion.h1>
 
             <motion.p variants={fadeInUp} className="mx-auto max-w-lg font-[family-name:var(--font-source-sans)] text-lg leading-relaxed text-white/50">
-              {props.firmName} — {props.city}&apos;de asansör montaj, periyodik bakım ve acil arıza servisi.
+              {props.firmName} — {suffixDe(props.city)} asansör montaj, periyodik bakım ve acil arıza servisi.
               TSE belgeli, sigortalı hizmet.
             </motion.p>
 

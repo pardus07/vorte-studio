@@ -72,7 +72,7 @@ export default function VeterinerKlinikleriTemplate(props: TemplateProps) {
               className={`font-[family-name:var(--font-nunito)] text-3xl font-bold leading-tight tracking-tight md:text-5xl ${props.images?.hero ? 'lg:text-5xl' : 'lg:text-6xl'}`}
             >
               {props.firmName} &mdash;{' '}
-              <span className="text-[#10B981]">{props.city}&apos;in</span> güvenilir veteriner kliniği
+              <span className="text-[#10B981]">{props.city} bölgesinin</span> güvenilir veteriner kliniği
             </motion.h1>
 
             <motion.p

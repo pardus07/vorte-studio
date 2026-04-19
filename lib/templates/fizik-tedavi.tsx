@@ -4,6 +4,7 @@ import React from 'react'
 import { DM_Sans, Lato } from 'next/font/google'
 import { motion } from 'framer-motion'
 import { TemplateProps, buildChatLink } from './types'
+import { suffixDe, suffixIn } from './turkish-grammar'
 import { useTrackPageView, trackEvent } from './use-track'
 
 const dmSans = DM_Sans({
@@ -189,7 +190,7 @@ export default function FizikTedaviTemplate(props: TemplateProps) {
               variants={fadeUp}
               className={`mt-5 text-lg text-white/85 font-[family-name:var(--font-lato)] md:text-xl ${props.images?.hero ? 'max-w-xl' : 'mx-auto max-w-xl'}`}
             >
-              {props.city}&apos;da uzman fizyoterapi hizmeti — ağrısız bir yaşam için doğru adres.
+              {suffixDe(props.city)} uzman fizyoterapi hizmeti — ağrısız bir yaşam için doğru adres.
             </motion.p>
 
             <motion.div variants={fadeUp} className={`mt-8 flex flex-col gap-4 sm:flex-row ${props.images?.hero ? 'justify-start' : 'items-center justify-center'}`}>

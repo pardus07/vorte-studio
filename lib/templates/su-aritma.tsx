@@ -3,6 +3,7 @@
 import { Poppins, Inter } from 'next/font/google'
 import { motion } from 'framer-motion'
 import { TemplateProps, buildChatLink } from './types'
+import { suffixDe, suffixIn } from './turkish-grammar'
 import { useTrackPageView, trackEvent } from './use-track'
 
 const poppins = Poppins({ subsets: ['latin-ext'], weight: ['300', '400', '500', '600', '700', '800'], variable: '--font-poppins', display: 'swap' })
@@ -58,7 +59,7 @@ export default function SuAritmaTemplate(props: TemplateProps) {
               </motion.h1>
 
               <motion.p variants={fadeInUp} className="mt-5 max-w-md font-[family-name:var(--font-inter)] text-lg leading-relaxed text-gray-500">
-                {props.firmName} — {props.city}&apos;de su arıtma sistemi satış, montaj ve bakım.
+                {props.firmName} — {suffixDe(props.city)} su arıtma sistemi satış, montaj ve bakım.
                 Ücretsiz su testi ile ihtiyacınıza en uygun çözümü sunuyoruz.
               </motion.p>
 

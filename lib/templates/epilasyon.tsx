@@ -3,6 +3,7 @@
 import { Raleway, Nunito } from 'next/font/google'
 import { motion } from 'framer-motion'
 import { TemplateProps, buildChatLink } from './types'
+import { suffixDe } from './turkish-grammar'
 import { useTrackPageView, trackEvent } from './use-track'
 
 const raleway = Raleway({
@@ -111,9 +112,11 @@ export default function EpilasyonTemplate(props: TemplateProps) {
                 props.images?.hero ? '' : 'mx-auto'
               }`}
             >
-              {props.firmName} &mdash; {props.city}
-              {props.district ? `, ${props.district}` : ''}&apos;da son teknoloji
-              lazer epilasyon hizmeti ile pürüzsüz cilde kavuşun.
+              {props.firmName} &mdash;{' '}
+              {props.district
+                ? `${props.city}, ${suffixDe(props.district)}`
+                : suffixDe(props.city)}{' '}
+              son teknoloji lazer epilasyon hizmeti ile pürüzsüz cilde kavuşun.
             </motion.p>
 
             {/* Google Rating */}

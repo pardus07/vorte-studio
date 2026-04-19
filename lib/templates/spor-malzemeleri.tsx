@@ -3,6 +3,7 @@
 import { Barlow_Condensed, Barlow } from 'next/font/google'
 import { motion } from 'framer-motion'
 import { TemplateProps, buildChatLink } from './types'
+import { suffixDe, suffixIn } from './turkish-grammar'
 import { useTrackPageView, trackEvent } from './use-track'
 
 const barlowCondensed = Barlow_Condensed({
@@ -87,7 +88,7 @@ export default function SporMalzemeleriTemplate(props: TemplateProps) {
             </motion.h1>
 
             <motion.p variants={fadeInUp} className="mt-6 max-w-md font-[family-name:var(--font-barlow)] text-lg leading-relaxed text-white/60">
-              {props.firmName} — {props.city}&apos;de spor ekipmanları, giyim ve aksesuar.
+              {props.firmName} — {suffixDe(props.city)} spor ekipmanları, giyim ve aksesuar.
               Uzman kadromuzla doğru ürünü seçmenize yardımcı oluyoruz.
             </motion.p>
 

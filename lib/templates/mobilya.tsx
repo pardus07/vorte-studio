@@ -3,6 +3,7 @@
 import { Cormorant_Garamond, Karla } from 'next/font/google'
 import { motion } from 'framer-motion'
 import { TemplateProps, buildChatLink } from './types'
+import { suffixDe, suffixIn } from './turkish-grammar'
 import { useTrackPageView, trackEvent } from './use-track'
 
 const cormorant = Cormorant_Garamond({
@@ -96,7 +97,7 @@ export default function MobilyaTemplate(props: TemplateProps) {
             </motion.h1>
 
             <motion.p variants={fadeInUp} className="mt-6 max-w-xl font-[family-name:var(--font-karla)] text-lg leading-relaxed text-[#78716C]">
-              {props.firmName} — {props.city}&apos;de yaşam alanlarınıza değer katan,
+              {props.firmName} — {suffixDe(props.city)} yaşam alanlarınıza değer katan,
               kaliteli ve şık mobilya koleksiyonları. Showroom&apos;umuzu keşfedin.
             </motion.p>
 

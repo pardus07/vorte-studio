@@ -3,6 +3,7 @@
 import { Playfair_Display, Source_Sans_3 } from 'next/font/google'
 import { motion, type Variants } from 'framer-motion'
 import { TemplateProps, buildChatLink } from './types'
+import { suffixDe, suffixIn } from './turkish-grammar'
 import { useTrackPageView, trackEvent } from './use-track'
 
 const playfair = Playfair_Display({
@@ -92,7 +93,7 @@ export default function OptikGozlukcuTemplate(props: TemplateProps) {
                 className={`mt-6 max-w-2xl text-lg text-white/80 sm:text-xl ${props.images?.hero ? '' : 'mx-auto'}`}
                 style={{ fontFamily: 'var(--font-source-sans)' }}
               >
-                {props.firmName} &mdash; {props.city}&apos;da kaliteli görmenin adresi
+                {props.firmName} &mdash; {suffixDe(props.city)} kaliteli görmenin adresi
               </motion.p>
 
               <motion.div

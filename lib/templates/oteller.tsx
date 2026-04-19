@@ -3,6 +3,7 @@
 import { Cormorant_Garamond, Raleway } from 'next/font/google'
 import { motion } from 'framer-motion'
 import { TemplateProps, buildChatLink } from './types'
+import { suffixDe, suffixIn } from './turkish-grammar'
 import { useTrackPageView, trackEvent } from './use-track'
 
 const cormorant = Cormorant_Garamond({
@@ -87,7 +88,7 @@ export default function OtellerTemplate(props: TemplateProps) {
               </motion.h1>
 
               <motion.p variants={fadeInUp} className="max-w-lg font-[family-name:var(--font-raleway)] text-lg leading-relaxed text-[#FFFBF0]/60">
-                {props.city}&apos;in kalbinde eşsiz konaklama deneyimi. Konfor, zarafet ve misafirperverliği bir arada yaşayın.
+                {suffixIn(props.city)} kalbinde eşsiz konaklama deneyimi. Konfor, zarafet ve misafirperverliği bir arada yaşayın.
               </motion.p>
 
               <motion.div variants={fadeInUp} className="flex flex-wrap gap-4">

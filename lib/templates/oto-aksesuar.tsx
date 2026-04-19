@@ -3,6 +3,7 @@
 import { Outfit, DM_Sans } from 'next/font/google'
 import { motion } from 'framer-motion'
 import { TemplateProps, buildChatLink } from './types'
+import { suffixDe, suffixIn } from './turkish-grammar'
 import { useTrackPageView, trackEvent } from './use-track'
 
 const outfit = Outfit({ subsets: ['latin-ext'], weight: ['300', '400', '500', '600', '700', '800'], variable: '--font-outfit', display: 'swap' })
@@ -52,7 +53,7 @@ export default function OtoAksesuarTemplate(props: TemplateProps) {
               <br /><span className="text-[#8B5CF6]">Kişiselleştir</span>
             </motion.h1>
             <motion.p variants={fadeInUp} className="mx-auto mt-5 max-w-lg font-[family-name:var(--font-dm)] text-lg leading-relaxed text-white/45">
-              {props.firmName} — {props.city}&apos;de jant, multimedya, kaplama, aydınlatma ve daha fazlası.
+              {props.firmName} — {suffixDe(props.city)} jant, multimedya, kaplama, aydınlatma ve daha fazlası.
               Aracınıza karakter katın.
             </motion.p>
             <motion.div variants={fadeInUp} className="mt-6 flex flex-wrap justify-center gap-3">

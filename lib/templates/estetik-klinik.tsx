@@ -3,6 +3,7 @@
 import { Cormorant_Garamond, Jost } from 'next/font/google'
 import { motion } from 'framer-motion'
 import { TemplateProps, buildChatLink } from './types'
+import { suffixDe, suffixIn } from './turkish-grammar'
 import { useTrackPageView, trackEvent } from './use-track'
 
 const cormorant = Cormorant_Garamond({
@@ -59,7 +60,7 @@ export default function EstetikKlinikTemplate(props: TemplateProps) {
               variants={fadeInUp}
               className={`mt-6 max-w-xl font-[family-name:var(--font-jost)] text-base text-[#1C1917]/60 md:text-lg ${props.images?.hero ? '' : 'mx-auto'}`}
             >
-              {props.firmName} &mdash; {props.city}&apos;da estetik ve güzelliğin adresi
+              {props.firmName} &mdash; {suffixDe(props.city)} estetik ve güzelliğin adresi
             </motion.p>
 
             {/* Thin gold line below subtext */}

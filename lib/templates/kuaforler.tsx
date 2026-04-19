@@ -3,6 +3,7 @@
 import { Tenor_Sans, Karla } from 'next/font/google'
 import { motion } from 'framer-motion'
 import { TemplateProps, buildChatLink } from './types'
+import { suffixDe, suffixIn } from './turkish-grammar'
 import { useTrackPageView, trackEvent } from './use-track'
 
 const tenorSans = Tenor_Sans({
@@ -83,7 +84,7 @@ export default function KuaforlerTemplate(props: TemplateProps) {
             variants={fadeInUp}
             className="mt-6 max-w-xl font-[family-name:var(--font-karla)] text-base text-[#FFFBEB]/60 md:text-lg"
           >
-            {props.city}&apos;da stil ve bakımın adresi
+            {suffixDe(props.city)} stil ve bakımın adresi
           </motion.p>
 
           {/* Gold divider */}

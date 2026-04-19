@@ -3,6 +3,7 @@
 import { Crimson_Pro, Hind } from 'next/font/google'
 import { motion } from 'framer-motion'
 import { TemplateProps, buildChatLink } from './types'
+import { suffixDe, suffixIn } from './turkish-grammar'
 import { useTrackPageView, trackEvent } from './use-track'
 
 const crimsonPro = Crimson_Pro({
@@ -82,7 +83,7 @@ export default function PsikologDanismaTemplate(props: TemplateProps) {
             variants={fadeInUp}
             className={`mt-6 font-[family-name:var(--font-hind)] text-base text-[#1C1917]/65 md:text-lg ${props.images?.hero ? 'max-w-xl' : 'mx-auto max-w-xl'}`}
           >
-            {props.firmName} &mdash; {props.city}&apos;da profesyonel psikolojik danışmanlık
+            {props.firmName} &mdash; {suffixDe(props.city)} profesyonel psikolojik danışmanlık
           </motion.p>
 
           {/* Google Rating */}

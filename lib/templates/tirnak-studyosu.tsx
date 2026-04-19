@@ -3,6 +3,7 @@
 import { Montserrat, Nunito } from 'next/font/google'
 import { motion } from 'framer-motion'
 import { TemplateProps, buildChatLink } from './types'
+import { suffixDe, suffixIn } from './turkish-grammar'
 import { useTrackPageView, trackEvent } from './use-track'
 
 const montserrat = Montserrat({
@@ -113,7 +114,7 @@ export default function TirnakStudyosuTemplate(props: TemplateProps) {
               variants={fadeInUp}
               className={`mt-6 max-w-lg font-[family-name:var(--font-nunito)] text-base leading-relaxed text-[#1C1917]/55 md:text-lg ${props.images?.hero ? '' : 'mx-auto'}`}
             >
-              {props.firmName} &mdash; {props.city}&apos;da profesyonel tırnak bakımı ve nail art tasarım stüdyosu
+              {props.firmName} &mdash; {suffixDe(props.city)} profesyonel tırnak bakımı ve nail art tasarım stüdyosu
             </motion.p>
 
             {/* Google Rating */}

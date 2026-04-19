@@ -3,6 +3,7 @@
 import { Gilda_Display, Hind_Siliguri } from 'next/font/google'
 import { motion } from 'framer-motion'
 import { TemplateProps, buildChatLink } from './types'
+import { suffixDe, suffixIn } from './turkish-grammar'
 import { useTrackPageView, trackEvent } from './use-track'
 
 const gildaDisplay = Gilda_Display({
@@ -79,7 +80,7 @@ export default function CiltBakimTemplate(props: TemplateProps) {
             <motion.p variants={fadeInUp}
               className={`mt-6 max-w-xl font-[family-name:var(--font-hind-siliguri)] text-base leading-relaxed text-[#3B1A06]/55 md:text-lg ${centerMx}`}
             >
-              {props.firmName} &mdash; {props.city}&apos;da cildinize özel bakım protokolleri sunan güvenilir adres.
+              {props.firmName} &mdash; {suffixDe(props.city)} cildinize özel bakım protokolleri sunan güvenilir adres.
             </motion.p>
 
             <motion.div variants={fadeInUp} className={`mt-8 h-px w-20 bg-[#92400E]/25 ${centerMx}`} />

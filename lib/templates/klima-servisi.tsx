@@ -3,6 +3,7 @@
 import { Poppins, Inter } from 'next/font/google'
 import { motion } from 'framer-motion'
 import { TemplateProps, buildChatLink } from './types'
+import { suffixDe, suffixIn } from './turkish-grammar'
 import { useTrackPageView, trackEvent } from './use-track'
 
 const poppins = Poppins({ subsets: ['latin-ext'], weight: ['300', '400', '500', '600', '700', '800'], variable: '--font-poppins', display: 'swap' })
@@ -51,7 +52,7 @@ export default function KlimaServisiTemplate(props: TemplateProps) {
                 </motion.h1>
 
                 <motion.p variants={fadeInUp} className="mt-5 font-[family-name:var(--font-inter)] text-base leading-relaxed text-white/70">
-                  {props.firmName} — {props.city}&apos;de klima montaj, bakım ve arıza servisi.
+                  {props.firmName} — {suffixDe(props.city)} klima montaj, bakım ve arıza servisi.
                   Tüm markalara uygun, garantili hizmet.
                 </motion.p>
 

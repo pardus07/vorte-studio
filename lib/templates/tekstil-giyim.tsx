@@ -3,6 +3,7 @@
 import { Tenor_Sans, Karla } from 'next/font/google'
 import { motion } from 'framer-motion'
 import { TemplateProps, buildChatLink } from './types'
+import { suffixDe, suffixIn } from './turkish-grammar'
 import { useTrackPageView, trackEvent } from './use-track'
 
 const tenorSans = Tenor_Sans({
@@ -91,7 +92,7 @@ export default function TekstilGiyimTemplate(props: TemplateProps) {
             </motion.h1>
 
             <motion.p variants={fadeInUp} className="mx-auto max-w-md font-[family-name:var(--font-karla)] text-lg leading-relaxed text-white/50">
-              {props.firmName} — {props.city}&apos;de trend koleksiyonlar ve
+              {props.firmName} — {suffixDe(props.city)} trend koleksiyonlar ve
               her tarza uygun giyim seçenekleri.
             </motion.p>
 

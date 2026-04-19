@@ -3,6 +3,7 @@
 import { Rajdhani, Source_Sans_3 } from 'next/font/google'
 import { motion } from 'framer-motion'
 import { TemplateProps, buildChatLink } from './types'
+import { suffixDe, suffixIn } from './turkish-grammar'
 import { useTrackPageView, trackEvent } from './use-track'
 
 const rajdhani = Rajdhani({ subsets: ['latin-ext'], weight: ['400', '500', '600', '700'], variable: '--font-rajdhani', display: 'swap' })
@@ -77,7 +78,7 @@ export default function GuvenlikSistemleriTemplate(props: TemplateProps) {
               </motion.h1>
 
               <motion.p variants={fadeInUp} className="mt-5 max-w-md font-[family-name:var(--font-source-sans)] text-lg leading-relaxed text-white/45">
-                {props.firmName} — {props.city}&apos;de kamera, alarm, kartlı geçiş ve tüm güvenlik çözümleri.
+                {props.firmName} — {suffixDe(props.city)} kamera, alarm, kartlı geçiş ve tüm güvenlik çözümleri.
                 Ücretsiz keşif, profesyonel montaj.
               </motion.p>
 

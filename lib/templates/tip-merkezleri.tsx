@@ -3,6 +3,7 @@
 import { Inter } from 'next/font/google'
 import { motion } from 'framer-motion'
 import { TemplateProps, buildChatLink } from './types'
+import { suffixDe, suffixIn } from './turkish-grammar'
 import { useTrackPageView, trackEvent } from './use-track'
 
 const inter = Inter({
@@ -59,7 +60,7 @@ export default function TipMerkezleriTemplate(props: TemplateProps) {
               variants={fadeUp}
               className={`text-lg sm:text-xl text-[#94A3B8] mb-8 ${props.images?.hero ? 'lg:mx-0' : 'max-w-2xl mx-auto'}`}
             >
-              {props.city}&apos;da uzman hekim kadrosuyla hizmetinizdeyiz
+              {suffixDe(props.city)} uzman hekim kadrosuyla hizmetinizdeyiz
             </motion.p>
 
             {/* Google Rating Badge */}

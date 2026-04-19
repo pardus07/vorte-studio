@@ -3,6 +3,7 @@
 import { Outfit, Inter } from 'next/font/google'
 import { motion } from 'framer-motion'
 import { TemplateProps, buildChatLink } from './types'
+import { suffixDe, suffixIn } from './turkish-grammar'
 import { useTrackPageView, trackEvent } from './use-track'
 
 const outfit = Outfit({ subsets: ['latin-ext'], weight: ['300', '400', '500', '600', '700', '800'], variable: '--font-outfit', display: 'swap' })
@@ -52,7 +53,7 @@ export default function PvcDogramaTemplate(props: TemplateProps) {
               <br /><span className="text-[#2563EB]">Sessizlik</span>
             </motion.h1>
             <motion.p variants={fadeInUp} className="mt-5 max-w-lg font-[family-name:var(--font-inter)] text-lg leading-relaxed text-gray-500">
-              {props.firmName} — {props.city}&apos;de PVC pencere, kapı, sürme sistem. Enerji tasarrufu, ses yalıtımı, 10 yıl garanti.
+              {props.firmName} — {suffixDe(props.city)} PVC pencere, kapı, sürme sistem. Enerji tasarrufu, ses yalıtımı, 10 yıl garanti.
             </motion.p>
             <motion.div variants={fadeInUp} className="mt-6 flex flex-wrap gap-3">
               {['Pencere', 'Kapı', 'Sürme', 'Katlanır', 'Isıcamlı'].map((s) => (

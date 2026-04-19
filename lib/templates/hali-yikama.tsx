@@ -3,6 +3,7 @@
 import { Lora, Source_Sans_3 } from 'next/font/google'
 import { motion } from 'framer-motion'
 import { TemplateProps, buildChatLink } from './types'
+import { suffixDe, suffixIn } from './turkish-grammar'
 import { useTrackPageView, trackEvent } from './use-track'
 
 const lora = Lora({ subsets: ['latin-ext'], weight: ['400', '500', '600', '700'], variable: '--font-lora', display: 'swap' })
@@ -64,7 +65,7 @@ export default function HaliYikamaTemplate(props: TemplateProps) {
             </motion.h1>
 
             <motion.p variants={fadeInUp} className="mt-5 font-[family-name:var(--font-source-sans)] text-lg leading-relaxed text-gray-500">
-              {props.firmName} — {props.city}&apos;de eve alma/teslim ile profesyonel halı yıkama.
+              {props.firmName} — {suffixDe(props.city)} eve alma/teslim ile profesyonel halı yıkama.
               Hızlı kurutma, hijyenik teslim garantisi.
             </motion.p>
 

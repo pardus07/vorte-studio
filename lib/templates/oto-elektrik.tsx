@@ -3,6 +3,7 @@
 import { Chakra_Petch, Inter } from 'next/font/google'
 import { motion } from 'framer-motion'
 import { TemplateProps, buildChatLink } from './types'
+import { suffixDe, suffixIn } from './turkish-grammar'
 import { useTrackPageView, trackEvent } from './use-track'
 
 const chakra = Chakra_Petch({ subsets: ['latin-ext'], weight: ['300', '400', '500', '600', '700'], variable: '--font-chakra', display: 'swap' })
@@ -74,7 +75,7 @@ export default function OtoElektrikTemplate(props: TemplateProps) {
               </motion.h1>
 
               <motion.p variants={fadeInUp} className="mt-5 max-w-md font-[family-name:var(--font-inter)] text-lg leading-relaxed text-white/45">
-                {props.firmName} — {props.city}&apos;de oto elektrik arıza tespit, akü, marş, dinamü, beyin tamiri.
+                {props.firmName} — {suffixDe(props.city)} oto elektrik arıza tespit, akü, marş, dinamü, beyin tamiri.
                 Bilgisayarlı arıza tespit sistemi.
               </motion.p>
 

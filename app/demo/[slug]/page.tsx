@@ -211,10 +211,12 @@ export default async function DemoPage({ params, searchParams }: PageProps) {
   }
 
   // ref yoksa veya lead bulunamadıysa generic demo göster
+  // Sprint 3.6c-fix: default şehir "İzmir" — Vorte Studio lokasyonu.
+  // Gerçek Lead'lerde extractCity() Lead.address'ten şehir çekiyor.
   return (
     <TemplateComponent
       firmName="Demo Firma"
-      city="İstanbul"
+      city="İzmir"
       address="Örnek Mahallesi, Demo Sokak No:1"
       phone="0532 000 00 00"
       googleRating={4.8}

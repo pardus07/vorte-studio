@@ -3,6 +3,7 @@
 import { Saira, Work_Sans } from 'next/font/google'
 import { motion } from 'framer-motion'
 import { TemplateProps, buildChatLink } from './types'
+import { suffixDe, suffixIn } from './turkish-grammar'
 import { useTrackPageView, trackEvent } from './use-track'
 
 const saira = Saira({ subsets: ['latin-ext'], weight: ['300', '400', '500', '600', '700', '800'], variable: '--font-saira', display: 'swap' })
@@ -62,7 +63,7 @@ export default function PrefabrikYapiTemplate(props: TemplateProps) {
                 <br />Modüler
               </motion.h1>
               <motion.p variants={fadeInUp} className="mt-5 max-w-md font-[family-name:var(--font-work)] text-lg leading-relaxed text-white/45">
-                {props.firmName} — {props.city}&apos;de prefabrik ev, konteyner, şantiye binası, depo. Hızlı montaj, dayanıklı yapı, uygun maliyet.
+                {props.firmName} — {suffixDe(props.city)} prefabrik ev, konteyner, şantiye binası, depo. Hızlı montaj, dayanıklı yapı, uygun maliyet.
               </motion.p>
               <motion.div variants={fadeInUp} className="mt-6 flex flex-wrap gap-3">
                 {['Prefabrik Ev', 'Konteyner', 'Şantiye', 'Depo', 'Modüler Ofis'].map((s) => (

@@ -3,6 +3,7 @@
 import { Nunito, Quicksand } from 'next/font/google'
 import { motion } from 'framer-motion'
 import { TemplateProps, buildChatLink } from './types'
+import { suffixDe, suffixIn } from './turkish-grammar'
 import { useTrackPageView, trackEvent } from './use-track'
 
 const nunito = Nunito({
@@ -87,7 +88,7 @@ export default function PetShopTemplate(props: TemplateProps) {
               </motion.h1>
 
               <motion.p variants={fadeInUp} className="mt-6 max-w-md font-[family-name:var(--font-quicksand)] text-lg leading-relaxed text-[#57534E]">
-                {props.firmName} — {props.city}&apos;de evcil hayvanınızın sağlığı ve mutluluğu için
+                {props.firmName} — {suffixDe(props.city)} evcil hayvanınızın sağlığı ve mutluluğu için
                 kaliteli mama, oyuncak ve bakım ürünleri.
               </motion.p>
 

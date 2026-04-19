@@ -3,6 +3,7 @@
 import { Nunito, Open_Sans } from 'next/font/google'
 import { motion } from 'framer-motion'
 import { TemplateProps, buildChatLink } from './types'
+import { suffixDe, suffixIn } from './turkish-grammar'
 import { useTrackPageView, trackEvent } from './use-track'
 
 const nunito = Nunito({ subsets: ['latin-ext'], weight: ['300', '400', '500', '600', '700', '800'], variable: '--font-nunito', display: 'swap' })
@@ -66,7 +67,7 @@ export default function KuruTemizlemeTemplate(props: TemplateProps) {
               </motion.h1>
 
               <motion.p variants={fadeInUp} className="mt-5 max-w-lg font-[family-name:var(--font-opensans)] text-lg leading-relaxed text-gray-500">
-                {props.firmName} — {props.city}&apos;de profesyonel kuru temizleme, ütü ve özel kumaş bakımı.
+                {props.firmName} — {suffixDe(props.city)} profesyonel kuru temizleme, ütü ve özel kumaş bakımı.
                 Ekspres servis, eve teslim seçeneği.
               </motion.p>
 

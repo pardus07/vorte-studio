@@ -3,6 +3,7 @@
 import { Quicksand, Nunito_Sans } from 'next/font/google'
 import { motion } from 'framer-motion'
 import { TemplateProps, buildChatLink } from './types'
+import { suffixDe, suffixIn } from './turkish-grammar'
 import { useTrackPageView, trackEvent } from './use-track'
 
 const quicksand = Quicksand({ subsets: ['latin-ext'], weight: ['300', '400', '500', '600', '700'], variable: '--font-quicksand', display: 'swap' })
@@ -62,7 +63,7 @@ export default function CamBalkonTemplate(props: TemplateProps) {
               <br /><span className="text-[#0EA5E9]">Ferah Alan</span>
             </motion.h1>
             <motion.p variants={fadeInUp} className="mt-5 max-w-lg font-[family-name:var(--font-nunito-sans)] text-lg leading-relaxed text-gray-500">
-              {props.firmName} — {props.city}&apos;de katlanır cam balkon, sürme cam balkon, ısıcamlı sistem. Balkonunuz dört mevsim yaşam alanı.
+              {props.firmName} — {suffixDe(props.city)} katlanır cam balkon, sürme cam balkon, ısıcamlı sistem. Balkonunuz dört mevsim yaşam alanı.
             </motion.p>
             <motion.div variants={fadeInUp} className="mt-6 flex flex-wrap gap-3">
               {['Katlanır', 'Sürme', 'Isıcamlı', 'Menteşeli', 'Seri Sistem'].map((s) => (

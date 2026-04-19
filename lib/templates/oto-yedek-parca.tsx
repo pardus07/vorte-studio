@@ -3,6 +3,7 @@
 import { Barlow, Source_Sans_3 } from 'next/font/google'
 import { motion } from 'framer-motion'
 import { TemplateProps, buildChatLink } from './types'
+import { suffixDe, suffixIn } from './turkish-grammar'
 import { useTrackPageView, trackEvent } from './use-track'
 
 const barlow = Barlow({ subsets: ['latin-ext'], weight: ['300', '400', '500', '600', '700', '800'], variable: '--font-barlow', display: 'swap' })
@@ -56,7 +57,7 @@ export default function OtoYedekParcaTemplate(props: TemplateProps) {
                 <br /><span className="text-[#F97316]">Hızlı Teslimat</span>
               </motion.h1>
               <motion.p variants={fadeInUp} className="mt-5 max-w-md font-[family-name:var(--font-source)] text-lg leading-relaxed text-white/45">
-                {props.firmName} — {props.city}&apos;de tüm marka araçlar için orijinal ve muadil yedek parça. Aynı gün teslimat.
+                {props.firmName} — {suffixDe(props.city)} tüm marka araçlar için orijinal ve muadil yedek parça. Aynı gün teslimat.
               </motion.p>
               <motion.div variants={fadeInUp} className="mt-6 flex flex-wrap gap-3">
                 {['Motor', 'Fren', 'Süspansiyon', 'Elektrik', 'Kaporta', 'Filtre'].map((s) => (

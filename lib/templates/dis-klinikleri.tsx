@@ -207,7 +207,7 @@ export default function DisKlinikleriTemplate(props: TemplateProps) {
                 variants={fadeUp}
                 className={`${outfit.className} text-4xl font-extrabold leading-[1.1] tracking-tight text-[#1E293B] sm:text-5xl lg:text-6xl`}
               >
-                {props.city}&apos;nın en çok tercih edilen diş kliniği olmak{' '}
+                {props.city} bölgesinin en çok tercih edilen diş kliniği olmak{' '}
                 <span className="bg-gradient-to-r from-[#0EA5E9] to-[#10B981] bg-clip-text text-transparent">
                   bir adım uzağınızda
                 </span>

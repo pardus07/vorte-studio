@@ -3,6 +3,7 @@
 import { Oswald, Source_Sans_3 } from 'next/font/google'
 import { motion } from 'framer-motion'
 import { TemplateProps, buildChatLink } from './types'
+import { suffixDe, suffixIn } from './turkish-grammar'
 import { useTrackPageView, trackEvent } from './use-track'
 
 const oswald = Oswald({ subsets: ['latin-ext'], weight: ['400', '500', '600', '700'], variable: '--font-oswald', display: 'swap' })
@@ -65,7 +66,7 @@ export default function KombiServisiTemplate(props: TemplateProps) {
               </motion.h1>
 
               <motion.p variants={fadeInUp} className="mt-5 max-w-md font-[family-name:var(--font-source-sans)] text-lg leading-relaxed text-white/60">
-                {props.firmName} — {props.city}&apos;de kombi arıza, bakım ve montaj servisi.
+                {props.firmName} — {suffixDe(props.city)} kombi arıza, bakım ve montaj servisi.
                 Tüm markalarda yetkili teknik ekip, garantili hizmet.
               </motion.p>
 

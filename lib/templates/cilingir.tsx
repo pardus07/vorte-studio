@@ -3,6 +3,7 @@
 import { Barlow_Condensed, Barlow } from 'next/font/google'
 import { motion } from 'framer-motion'
 import { TemplateProps, buildChatLink } from './types'
+import { suffixDe, suffixIn } from './turkish-grammar'
 import { useTrackPageView, trackEvent } from './use-track'
 
 const barlowCondensed = Barlow_Condensed({ subsets: ['latin-ext'], weight: ['400', '500', '600', '700', '800'], variable: '--font-barlow-cd', display: 'swap' })
@@ -72,7 +73,7 @@ export default function CilingirTemplate(props: TemplateProps) {
             </motion.h1>
 
             <motion.p variants={fadeInUp} className="mx-auto max-w-lg font-[family-name:var(--font-barlow)] text-lg leading-relaxed text-white/45">
-              {props.firmName} — {props.city}&apos;de ev, iş yeri ve araç çilingir hizmeti.
+              {props.firmName} — {suffixDe(props.city)} ev, iş yeri ve araç çilingir hizmeti.
               Hasarsız açma garantisi, şeffaf fiyat.
             </motion.p>
 

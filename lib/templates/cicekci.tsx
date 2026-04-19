@@ -3,6 +3,7 @@
 import { Playfair_Display, Nunito } from 'next/font/google'
 import { motion } from 'framer-motion'
 import { TemplateProps, buildChatLink } from './types'
+import { suffixDe, suffixIn } from './turkish-grammar'
 import { useTrackPageView, trackEvent } from './use-track'
 
 const playfair = Playfair_Display({
@@ -117,7 +118,7 @@ export default function CicekciTemplate(props: TemplateProps) {
             </motion.h1>
 
             <motion.p variants={fadeInUp} className="mx-auto max-w-lg font-[family-name:var(--font-nunito)] text-lg leading-relaxed text-[#78716C]">
-              {props.firmName} — {props.city}&apos;de sevdiklerinize en taze çiçeklerle
+              {props.firmName} — {suffixDe(props.city)} sevdiklerinize en taze çiçeklerle
               duygularınızı ifade edin. Aynı gün teslimat!
             </motion.p>
 

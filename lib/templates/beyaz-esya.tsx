@@ -3,6 +3,7 @@
 import { Poppins, Inter } from 'next/font/google'
 import { motion } from 'framer-motion'
 import { TemplateProps, buildChatLink } from './types'
+import { suffixDe, suffixIn } from './turkish-grammar'
 import { useTrackPageView, trackEvent } from './use-track'
 
 const poppins = Poppins({ subsets: ['latin-ext'], weight: ['300', '400', '500', '600', '700', '800'], variable: '--font-poppins', display: 'swap' })
@@ -58,7 +59,7 @@ export default function BeyazEsyaTemplate(props: TemplateProps) {
             </motion.h1>
 
             <motion.p variants={fadeInUp} className="mx-auto mt-5 max-w-lg font-[family-name:var(--font-inter)] text-lg leading-relaxed text-[#64748B]">
-              {props.firmName} — {props.city}&apos;de tüm marka beyaz eşya tamiri.
+              {props.firmName} — {suffixDe(props.city)} tüm marka beyaz eşya tamiri.
               Eve gelir servis, orijinal parça garantisi.
             </motion.p>
 

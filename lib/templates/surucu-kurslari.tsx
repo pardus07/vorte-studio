@@ -3,6 +3,7 @@
 import { Rajdhani, Inter } from 'next/font/google'
 import { motion } from 'framer-motion'
 import { TemplateProps, buildChatLink } from './types'
+import { suffixDe, suffixIn } from './turkish-grammar'
 import { useTrackPageView, trackEvent } from './use-track'
 
 const rajdhani = Rajdhani({ subsets: ['latin-ext'], weight: ['300', '400', '500', '600', '700'], variable: '--font-rajdhani', display: 'swap' })
@@ -65,7 +66,7 @@ export default function SurucuKurslariTemplate(props: TemplateProps) {
               </motion.h1>
 
               <motion.p variants={fadeInUp} className="mt-5 max-w-md font-[family-name:var(--font-inter)] text-lg leading-relaxed text-white/45">
-                {props.firmName} — {props.city}&apos;de B, A, C sınıfı ehliyet eğitimi.
+                {props.firmName} — {suffixDe(props.city)} B, A, C sınıfı ehliyet eğitimi.
                 Tecrübeli eğitmenler, yüksek ilk seferde geçme oranı.
               </motion.p>
 

@@ -3,6 +3,7 @@
 import { Nunito, Open_Sans } from 'next/font/google'
 import { motion } from 'framer-motion'
 import { TemplateProps, buildChatLink } from './types'
+import { suffixDe, suffixIn } from './turkish-grammar'
 import { useTrackPageView, trackEvent } from './use-track'
 
 const nunito = Nunito({
@@ -94,7 +95,7 @@ export default function KirtasiyeTemplate(props: TemplateProps) {
               </motion.h1>
 
               <motion.p variants={fadeInUp} className="mt-6 max-w-md font-[family-name:var(--font-open-sans)] text-lg leading-relaxed text-[#57534E]">
-                {props.firmName} — {props.city}&apos;de okul, ofis ve sanat malzemeleri
+                {props.firmName} — {suffixDe(props.city)} okul, ofis ve sanat malzemeleri
                 için güvenilir adresiniz. Toplu siparişlerde özel indirimler!
               </motion.p>
 

@@ -3,6 +3,7 @@
 import { Cormorant_Garamond, Jost } from 'next/font/google'
 import { motion } from 'framer-motion'
 import { TemplateProps, buildChatLink } from './types'
+import { suffixDe, suffixIn } from './turkish-grammar'
 import { useTrackPageView, trackEvent } from './use-track'
 
 const cormorant = Cormorant_Garamond({ subsets: ['latin-ext'], weight: ['400', '500', '600', '700'], variable: '--font-cormorant', display: 'swap' })
@@ -71,7 +72,7 @@ export default function OrganizasyonTemplate(props: TemplateProps) {
             </motion.h1>
 
             <motion.p variants={fadeInUp} className="mx-auto max-w-lg font-[family-name:var(--font-jost)] text-lg leading-relaxed text-white/40">
-              {props.firmName} — {props.city}&apos;de düğün, nişan, kına gecesi, kurumsal etkinlik
+              {props.firmName} — {suffixDe(props.city)} düğün, nişan, kına gecesi, kurumsal etkinlik
               ve özel gün organizasyonu. Hayalinizdeki etkinliği gerçeğe dönüştürüyoruz.
             </motion.p>
 

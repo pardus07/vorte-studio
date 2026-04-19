@@ -3,6 +3,7 @@
 import { Oswald, Source_Sans_3 } from 'next/font/google'
 import { motion } from 'framer-motion'
 import { TemplateProps, buildChatLink } from './types'
+import { suffixDe, suffixIn } from './turkish-grammar'
 import { useTrackPageView, trackEvent } from './use-track'
 
 const oswald = Oswald({ subsets: ['latin-ext'], weight: ['300', '400', '500', '600', '700'], variable: '--font-oswald', display: 'swap' })
@@ -68,7 +69,7 @@ export default function NakliyatTemplate(props: TemplateProps) {
               </motion.h1>
 
               <motion.p variants={fadeInUp} className="mt-5 max-w-md font-[family-name:var(--font-source-sans)] text-lg leading-relaxed text-white/45">
-                {props.firmName} — {props.city}&apos;de evden eve, ofis ve şehirlerarası nakliyat.
+                {props.firmName} — {suffixDe(props.city)} evden eve, ofis ve şehirlerarası nakliyat.
                 Sigortalı taşıma, profesyonel paketleme.
               </motion.p>
 

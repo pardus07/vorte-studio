@@ -3,6 +3,7 @@
 import { Archivo, Inter } from 'next/font/google'
 import { motion } from 'framer-motion'
 import { TemplateProps, buildChatLink } from './types'
+import { suffixDe, suffixIn } from './turkish-grammar'
 import { useTrackPageView, trackEvent } from './use-track'
 
 const archivo = Archivo({ subsets: ['latin-ext'], weight: ['300', '400', '500', '600', '700', '800'], variable: '--font-archivo', display: 'swap' })
@@ -75,7 +76,7 @@ export default function AluminyumDogramaTemplate(props: TemplateProps) {
                 <br /><span className="text-[#0284C7]">Dayanıklı</span>
               </motion.h1>
               <motion.p variants={fadeInUp} className="mt-5 max-w-lg font-[family-name:var(--font-inter)] text-lg leading-relaxed text-gray-500">
-                {props.firmName} — {props.city}&apos;de alüminyum pencere, kapı, cephe giydirme, pergola. Hafif, dayanıklı, modern görünüm.
+                {props.firmName} — {suffixDe(props.city)} alüminyum pencere, kapı, cephe giydirme, pergola. Hafif, dayanıklı, modern görünüm.
               </motion.p>
               <motion.div variants={fadeInUp} className="mt-6 flex flex-wrap gap-3">
                 {['Pencere', 'Kapı', 'Cephe', 'Pergola', 'Korkuluk', 'Sürme'].map((s) => (

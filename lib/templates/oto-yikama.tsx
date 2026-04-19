@@ -3,6 +3,7 @@
 import { Exo_2, Nunito } from 'next/font/google'
 import { motion } from 'framer-motion'
 import { TemplateProps, buildChatLink } from './types'
+import { suffixDe, suffixIn } from './turkish-grammar'
 import { useTrackPageView, trackEvent } from './use-track'
 
 const exo2 = Exo_2({ subsets: ['latin-ext'], weight: ['300', '400', '500', '600', '700', '800'], variable: '--font-exo', display: 'swap' })
@@ -62,7 +63,7 @@ export default function OtoYikamaTemplate(props: TemplateProps) {
             </motion.h1>
 
             <motion.p variants={fadeInUp} className="mx-auto mt-5 max-w-lg font-[family-name:var(--font-nunito)] text-lg leading-relaxed text-white/50">
-              {props.firmName} — {props.city}&apos;de iç-dış yıkama, detaylı temizlik, pasta-cila.
+              {props.firmName} — {suffixDe(props.city)} iç-dış yıkama, detaylı temizlik, pasta-cila.
               Aracınıza özel bakım, pırıl pırıl teslimat.
             </motion.p>
 

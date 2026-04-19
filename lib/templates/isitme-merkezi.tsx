@@ -3,6 +3,7 @@
 import { Poppins, Open_Sans } from 'next/font/google'
 import { motion } from 'framer-motion'
 import { TemplateProps, buildChatLink } from './types'
+import { suffixDe } from './turkish-grammar'
 import { useTrackPageView, trackEvent } from './use-track'
 
 const poppins = Poppins({
@@ -123,8 +124,11 @@ export default function IsitmeMerkeziTemplate(props: TemplateProps) {
               variants={fadeInUp}
               className={`mt-6 max-w-xl font-[family-name:var(--font-open-sans)] text-base leading-relaxed text-[#1E293B]/60 md:text-lg ${props.images?.hero ? '' : 'mx-auto'}`}
             >
-              {props.firmName} &mdash; {props.city}
-              {props.district ? `, ${props.district}` : ''}&apos;da işitme sağlığınız için güvenilir adres.
+              {props.firmName} &mdash;{' '}
+              {props.district
+                ? `${props.city}, ${suffixDe(props.district)}`
+                : suffixDe(props.city)}{' '}
+              işitme sağlığınız için güvenilir adres.
             </motion.p>
 
             {/* CTA Buttons */}

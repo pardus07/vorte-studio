@@ -4,6 +4,7 @@ import { Quicksand, Mulish } from 'next/font/google'
 import { motion, useInView } from 'framer-motion'
 import { useRef, useEffect, useState } from 'react'
 import { TemplateProps, buildChatLink } from './types'
+import { suffixDe, suffixIn } from './turkish-grammar'
 import { useTrackPageView, trackEvent } from './use-track'
 
 const quicksand = Quicksand({
@@ -208,7 +209,7 @@ export default function DiyetisyenTemplate(props: TemplateProps) {
                   variants={fadeUp}
                   className={`${mulish.className} mt-5 max-w-lg text-lg text-white/85 md:text-xl lg:mx-0`}
                 >
-                  {props.city}&apos;da uzman diyetisyen desteği
+                  {suffixDe(props.city)} uzman diyetisyen desteği
                 </motion.p>
 
                 {/* CTA Buttons */}
@@ -308,7 +309,7 @@ export default function DiyetisyenTemplate(props: TemplateProps) {
                 variants={fadeUp}
                 className={`${mulish.className} mx-auto mt-5 max-w-lg text-lg text-white/85 md:text-xl`}
               >
-                {props.city}&apos;da uzman diyetisyen desteği
+                {suffixDe(props.city)} uzman diyetisyen desteği
               </motion.p>
 
               {/* CTA Buttons */}

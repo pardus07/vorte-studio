@@ -3,6 +3,7 @@
 import { Raleway, Lato } from 'next/font/google'
 import { motion } from 'framer-motion'
 import { TemplateProps, buildChatLink } from './types'
+import { suffixDe, suffixIn } from './turkish-grammar'
 import { useTrackPageView, trackEvent } from './use-track'
 
 const raleway = Raleway({
@@ -148,7 +149,7 @@ export default function GozMerkeziTemplate(props: TemplateProps) {
               className={`mt-6 max-w-xl text-lg text-gray-600 sm:text-xl ${props.images?.hero ? '' : 'mx-auto'}`}
               style={{ fontFamily: 'var(--font-lato)' }}
             >
-              {props.firmName} &mdash; {props.city}&apos;da göz sağlığında güvenilir adres.
+              {props.firmName} &mdash; {suffixDe(props.city)} göz sağlığında güvenilir adres.
               Uzman kadro ve son teknoloji ekipmanlarla hizmetinizdeyiz.
             </motion.p>
 

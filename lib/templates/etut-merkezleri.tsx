@@ -3,6 +3,7 @@
 import { Merriweather, Source_Sans_3 } from 'next/font/google'
 import { motion } from 'framer-motion'
 import { TemplateProps, buildChatLink } from './types'
+import { suffixDe, suffixIn } from './turkish-grammar'
 import { useTrackPageView, trackEvent } from './use-track'
 
 const merriweather = Merriweather({ subsets: ['latin-ext'], weight: ['300', '400', '700', '900'], variable: '--font-merri', display: 'swap' })
@@ -58,7 +59,7 @@ export default function EtutMerkezleriTemplate(props: TemplateProps) {
               </motion.h1>
 
               <motion.p variants={fadeInUp} className="mt-5 max-w-md font-[family-name:var(--font-source)] text-lg leading-relaxed text-gray-500">
-                {props.firmName} — {props.city}&apos;de birebir ve grup etüt, ödev takibi, sınav hazırlık.
+                {props.firmName} — {suffixDe(props.city)} birebir ve grup etüt, ödev takibi, sınav hazırlık.
                 Deneyimli öğretmenler, sessiz çalışma ortamı.
               </motion.p>
 

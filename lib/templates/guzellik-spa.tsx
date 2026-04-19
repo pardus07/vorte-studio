@@ -3,6 +3,7 @@
 import { Playfair_Display, Jost } from 'next/font/google'
 import { motion } from 'framer-motion'
 import { TemplateProps, buildChatLink } from './types'
+import { suffixDe } from './turkish-grammar'
 import { useTrackPageView, trackEvent } from './use-track'
 
 const playfair = Playfair_Display({
@@ -89,8 +90,11 @@ export default function GuzellikSpaTemplate(props: TemplateProps) {
               variants={fadeInUp}
               className={`mt-6 max-w-xl font-[family-name:var(--font-jost)] text-base leading-relaxed text-[#1C1917]/55 md:text-lg ${props.images?.hero ? '' : 'mx-auto'}`}
             >
-              {props.firmName} sizi dinlendiriyor &mdash; {props.city}
-              {props.district ? `, ${props.district}` : ''}&apos;da huzurun adresi.
+              {props.firmName} sizi dinlendiriyor &mdash;{' '}
+              {props.district
+                ? `${props.city}, ${suffixDe(props.district)}`
+                : suffixDe(props.city)}{' '}
+              huzurun adresi.
             </motion.p>
 
             {/* Thin gold divider below */}
