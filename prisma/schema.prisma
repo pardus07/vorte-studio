@@ -71,6 +71,16 @@ model Lead {
   waTemplateSlug   String?              // Şablon slug'ı (ör: firinlar)
   waSentAt         DateTime?            // WA gönderim tarihi
 
+  // ── Kaynak izleme (Sprint 3.5) ──
+  // source enum "kaba kategori"; aşağıdakiler ROI/attribution için detay.
+  // Hepsi nullable — eski lead'lerde boş kalır, yeni akışlarda doldurulur.
+  sourceDetail  String?  // "prospect:firinlar-ankara" | "contact-form" | "chat:slug"
+  sourceUrl     String?  // Geliş sayfası pathname + query
+  referrer      String?  // document.referrer (boşsa direct)
+  utmSource     String?  // google | facebook | instagram | newsletter
+  utmMedium     String?  // cpc | organic | email | referral
+  utmCampaign   String?  // kampanya id/adı
+
   createdAt     DateTime   @default(now())
   updatedAt     DateTime   @updatedAt
 

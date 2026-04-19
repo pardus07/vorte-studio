@@ -18,7 +18,38 @@ type Lead = {
   hasWebsite: boolean; mobileScore: number | null; sslValid: boolean;
   waTemplate: string | null; waTemplateSector: string | null;
   waTemplateSlug: string | null; waSentAt: string | null;
+  // Sprint 3.5 — attribution (hepsi opsiyonel, eski lead'lerde boş)
+  sourceDetail?: string | null;
+  sourceUrl?: string | null;
+  referrer?: string | null;
+  utmSource?: string | null;
+  utmMedium?: string | null;
+  utmCampaign?: string | null;
 };
+
+// Sprint 3.5 — UTM medium → renk haritası (minimal, 4 bucket).
+// organic=gri, paid=turuncu, referral=mavi, direct=koyu gri.
+function traceBucket(lead: {
+  utmMedium?: string | null;
+  utmSource?: string | null;
+  referrer?: string | null;
+}): { label: string; cls: string } {
+  const m = (lead.utmMedium || "").toLowerCase();
+  if (m === "cpc" || m === "ppc" || m === "paid" || m === "ads") {
+    return { label: "paid", cls: "bg-admin-accent/15 text-admin-accent" };
+  }
+  if (m === "referral" || (lead.referrer && !lead.utmMedium)) {
+    return { label: "referral", cls: "bg-admin-blue/15 text-admin-blue" };
+  }
+  if (m === "organic" || m === "seo") {
+    return { label: "organic", cls: "bg-white/5 text-admin-muted" };
+  }
+  // UTM yoksa ve referrer da yoksa → direct
+  if (!lead.utmSource && !lead.referrer) {
+    return { label: "direct", cls: "bg-white/5 text-admin-muted/70" };
+  }
+  return { label: "organic", cls: "bg-white/5 text-admin-muted" };
+}
 
 const columns = [
   { key: "COLD", label: "Soğuk Lead", icon: "🔵" },
@@ -398,6 +429,32 @@ export default function KanbanBoard({ leads: initial }: { leads: Lead[] }) {
                         </div>
                         <span className={`shrink-0 rounded-full px-1.5 py-0.5 text-[9px] font-medium ${src.color}`}>{src.label}</span>
                       </div>
+
+                      {/* Sprint 3.5 — Attribution rozetleri (varsa göster).
+                          Hover tooltip'te utmMedium/utmCampaign/referrer/sourceUrl. */}
+                      {(lead.sourceDetail || lead.utmSource) && (() => {
+                        const bucket = traceBucket(lead);
+                        const tooltip = [
+                          lead.utmMedium ? `medium: ${lead.utmMedium}` : null,
+                          lead.utmCampaign ? `campaign: ${lead.utmCampaign}` : null,
+                          lead.referrer ? `ref: ${lead.referrer}` : null,
+                          lead.sourceUrl ? `url: ${lead.sourceUrl}` : null,
+                        ].filter(Boolean).join("\n") || "bilgi yok";
+                        return (
+                          <div className="mt-1 flex flex-wrap items-center gap-1" title={tooltip}>
+                            {lead.sourceDetail && (
+                              <span className={`rounded px-1.5 py-0.5 text-[9px] font-medium ${bucket.cls}`}>
+                                {lead.sourceDetail.length > 24 ? lead.sourceDetail.slice(0, 24) + "…" : lead.sourceDetail}
+                              </span>
+                            )}
+                            {lead.utmSource && (
+                              <span className={`rounded px-1.5 py-0.5 text-[9px] font-medium ${bucket.cls}`}>
+                                utm:{lead.utmSource}
+                              </span>
+                            )}
+                          </div>
+                        );
+                      })()}
 
                       {/* Firma (sadece farklıysa) */}
                       {lead.company && lead.company !== lead.name && (

@@ -24,16 +24,27 @@ const transporter = nodemailer.createTransport({
   tls: { rejectUnauthorized: false },
 });
 
+type LeadTrace = {
+  sourceDetail?: string | null;
+  sourceUrl?: string | null;
+  referrer?: string | null;
+  utmSource?: string | null;
+  utmMedium?: string | null;
+  utmCampaign?: string | null;
+};
+
 type ContactData = {
   name: string;
   phone: string;
   projectType: string;
   message: string;
   selectedPackage?: string;
+  // Sprint 3.5 — attribution verisi, client'tan getLeadTrace() ile gelir.
+  trace?: LeadTrace;
 };
 
 export async function sendContactForm(data: ContactData) {
-  const { name, phone, projectType, message, selectedPackage } = data;
+  const { name, phone, projectType, message, selectedPackage, trace } = data;
 
   if (!name || !message) {
     return { success: false, error: "Ad ve mesaj zorunludur." };
@@ -57,6 +68,13 @@ export async function sendContactForm(data: ContactData) {
         ]
           .filter(Boolean)
           .join("\n"),
+        // Sprint 3.5 — attribution
+        sourceDetail: trace?.sourceDetail || "contact-form",
+        sourceUrl: trace?.sourceUrl || null,
+        referrer: trace?.referrer || null,
+        utmSource: trace?.utmSource || null,
+        utmMedium: trace?.utmMedium || null,
+        utmCampaign: trace?.utmCampaign || null,
       },
     });
   } catch (err) {

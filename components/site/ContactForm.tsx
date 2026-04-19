@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { sendContactForm } from "@/actions/contact";
+import { getLeadTrace } from "@/lib/utm-capture";
 
 const projectTypes = [
   "Web Sitesi",
@@ -35,7 +36,8 @@ export default function ContactForm({
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setStatus("sending");
-    const result = await sendContactForm({ ...form, selectedPackage });
+    const trace = getLeadTrace("contact-form");
+    const result = await sendContactForm({ ...form, selectedPackage, trace });
     if (result.success) {
       setStatus("sent");
     } else {

@@ -47,9 +47,18 @@ export async function POST(req: Request) {
       freeQuestions,
       leadId,
       kvkkAcceptedAt,
+      // Sprint 3.5 — attribution verisi (istemci getLeadTrace() ile gönderir)
+      trace,
       // kvkkVersion body'den gelir ama GÜVENMİYORUZ — server-side
       // KVKK_VERSION constant'ı kullanılıyor (aşağıda).
     } = body;
+
+    // Trace alanları için güvenli okuyucu — tip garantisi yoksa null'a düş.
+    const t = (trace && typeof trace === "object" ? trace : {}) as Record<string, unknown>;
+    const traceField = (k: string, max = 500) => {
+      const v = t[k];
+      return typeof v === "string" && v.length > 0 ? v.slice(0, max) : null;
+    };
 
     if (!slug || !firmName) {
       return NextResponse.json(
@@ -225,6 +234,14 @@ export async function POST(req: Request) {
             ]
               .filter(Boolean)
               .join("\n"),
+            // Sprint 3.5 — attribution: sourceDetail chat slug'ına sabitlenir,
+            // UTM/referrer varsa istemciden gelen trace kullanılır.
+            sourceDetail: traceField("sourceDetail", 200) || `chat:${slug}`,
+            sourceUrl: traceField("sourceUrl"),
+            referrer: traceField("referrer"),
+            utmSource: traceField("utmSource", 100),
+            utmMedium: traceField("utmMedium", 100),
+            utmCampaign: traceField("utmCampaign", 200),
           },
         });
 

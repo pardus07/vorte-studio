@@ -10,6 +10,7 @@ import {
   KVKK_ACCEPT_BUTTON_LABEL,
   KVKK_READ_BUTTON_LABEL,
 } from '@/lib/kvkk-constants'
+import { getLeadTrace } from '@/lib/utm-capture'
 
 interface Props {
   firmName: string
@@ -985,6 +986,8 @@ export default function ChatForm({ firmName, city, sector, slug, phone, email, l
           source,
           kvkkAcceptedAt: finalData.kvkkAcceptedAt,
           kvkkVersion: finalData.kvkkVersion,
+          // Sprint 3.5 — attribution trace (UTM + referrer + sayfa)
+          trace: getLeadTrace(`chat:${slug}`),
         }),
       })
 

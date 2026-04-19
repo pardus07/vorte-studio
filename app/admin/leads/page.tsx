@@ -41,6 +41,13 @@ async function getLeads() {
         waTemplateSector: l.waTemplateSector,
         waTemplateSlug: l.waTemplateSlug,
         waSentAt: l.waSentAt?.toISOString() || null,
+        // Sprint 3.5 — attribution alanları (nullable, eski lead'lerde boş)
+        sourceDetail: l.sourceDetail,
+        sourceUrl: l.sourceUrl,
+        referrer: l.referrer,
+        utmSource: l.utmSource,
+        utmMedium: l.utmMedium,
+        utmCampaign: l.utmCampaign,
         updatedAt: l.updatedAt.toISOString(),
       }));
     }
