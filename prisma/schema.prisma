@@ -85,6 +85,23 @@ model Lead {
   updatedAt     DateTime   @updatedAt
 
   chatSubmissions ChatSubmission[]
+  statusHistory   LeadStatusHistory[]
+}
+
+// ── Lead Status Geçmişi (Sprint 3.2) ──
+// Status değişimlerinin audit log'u. Satış funnel analytics + retrospektif.
+// Idempotency: aynı status'a geçişte yazmaz (kanban drag gürültüsü önlenir).
+model LeadStatusHistory {
+  id         String      @id @default(cuid())
+  leadId     String
+  lead       Lead        @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  fromStatus LeadStatus?  // ilk oluşturmada null
+  toStatus   LeadStatus
+  changedBy  String?     // admin email, "system", veya "admin" fallback
+  reason     String?     // "manual" | "wa_template_added" | "wa_sent" | "contract_signed" | "client_conversion" | "lead_created"
+  createdAt  DateTime    @default(now())
+
+  @@index([leadId, createdAt])
 }
 
 enum LeadSource {

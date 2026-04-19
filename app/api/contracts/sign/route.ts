@@ -6,6 +6,7 @@ import { generateMesafeliPDF } from "@/lib/mesafeli-pdf";
 import { createPortalAccount } from "@/actions/portal";
 import { revalidatePath } from "next/cache";
 import { checkRateLimit } from "@/lib/rate-limit";
+import { logLeadStatusChange } from "@/lib/lead-history";
 
 export const dynamic = "force-dynamic";
 
@@ -114,12 +115,24 @@ export async function POST(req: NextRequest) {
       await prisma.proposalPayment.create({ data: record });
     }
 
-    // 4. Lead durumunu CONTRACTED yap
+    // 4. Lead durumunu CONTRACTED yap + history log'u
     if (contract.proposal.leadId) {
       try {
+        const prevLead = await prisma.lead.findUnique({
+          where: { id: contract.proposal.leadId },
+          select: { status: true },
+        });
         await prisma.lead.update({
           where: { id: contract.proposal.leadId },
           data: { status: "CONTRACTED" },
+        });
+        // Sprint 3.2 — public endpoint, auth() yok → "system" olarak işaretle
+        await logLeadStatusChange({
+          leadId: contract.proposal.leadId,
+          fromStatus: prevLead?.status ?? null,
+          toStatus: "CONTRACTED",
+          reason: "contract_signed",
+          changedBy: "system",
         });
       } catch {
         // Lead bulunamazsa sessizce devam et

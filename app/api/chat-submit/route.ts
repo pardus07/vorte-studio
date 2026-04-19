@@ -4,6 +4,7 @@ import { calculatePrice } from "@/lib/pricing-calculator";
 import { suggestPackage } from "@/lib/package-suggester";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { KVKK_VERSION } from "@/lib/kvkk-constants";
+import { logLeadStatusChange } from "@/lib/lead-history";
 
 export const dynamic = "force-dynamic";
 
@@ -243,6 +244,15 @@ export async function POST(req: Request) {
             utmMedium: traceField("utmMedium", 100),
             utmCampaign: traceField("utmCampaign", 200),
           },
+        });
+
+        // Sprint 3.2 — yeni chat lead'i CONTACTED ile açılır; history log'u
+        await logLeadStatusChange({
+          leadId: newLead.id,
+          fromStatus: null,
+          toStatus: "CONTACTED",
+          reason: "lead_created",
+          changedBy: "system",
         });
 
         // ChatSubmission'a lead bağla

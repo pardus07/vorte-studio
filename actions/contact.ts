@@ -2,6 +2,7 @@
 
 import nodemailer from "nodemailer";
 import { prisma } from "@/lib/prisma";
+import { logLeadStatusChange } from "@/lib/lead-history";
 
 /** HTML special karakterlerini escape eder — e-posta XSS koruması */
 function escapeHtml(str: string): string {
@@ -54,7 +55,7 @@ export async function sendContactForm(data: ContactData) {
 
   // Lead kaydı oluştur — admin panelde soğuk lead olarak düşer
   try {
-    await prisma.lead.create({
+    const created = await prisma.lead.create({
       data: {
         name,
         phone: phone || null,
@@ -76,6 +77,14 @@ export async function sendContactForm(data: ContactData) {
         utmMedium: trace?.utmMedium || null,
         utmCampaign: trace?.utmCampaign || null,
       },
+    });
+    // Sprint 3.2 — ilk status "COLD", fromStatus null, public endpoint "system"
+    await logLeadStatusChange({
+      leadId: created.id,
+      fromStatus: null,
+      toStatus: "COLD",
+      reason: "lead_created",
+      changedBy: "system",
     });
   } catch (err) {
     console.error("Lead kayıt hatası:", err);

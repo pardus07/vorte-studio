@@ -1,8 +1,32 @@
 "use client";
 
-import { useState } from "react";
-import { updateLeadNotes, convertLeadToClient } from "@/actions/leads";
+import { useState, useEffect } from "react";
+import { updateLeadNotes, convertLeadToClient, getLeadHistory } from "@/actions/leads";
 import { isGSM, formatWANumber } from "@/lib/phone-utils";
+
+// Sprint 3.2 — reason string'lerini Türkçe etiket'e çevirir
+const reasonLabels: Record<string, string> = {
+  manual: "Manuel değişiklik",
+  lead_created: "Lead oluşturuldu",
+  wa_template_added: "WA şablonu eklendi",
+  wa_sent: "WA gönderildi",
+  contract_signed: "Sözleşme imzalandı",
+  client_conversion: "CRM'e taşındı",
+};
+
+const statusShort: Record<string, string> = {
+  COLD: "Soğuk", TEMPLATE_ADDED: "Şablon", WA_SENT: "WA", CONTACTED: "İletişim",
+  MEETING: "Görüşme", QUOTED: "Teklif", CONTRACTED: "Sözleşme", WON: "Tamamlandı", LOST: "Kapandı",
+};
+
+type HistoryItem = {
+  id: string;
+  fromStatus: string | null;
+  toStatus: string;
+  reason: string | null;
+  changedBy: string | null;
+  createdAt: string | Date;
+};
 
 type Lead = {
   id: string; name: string; company: string; source: string;
@@ -39,6 +63,19 @@ export default function LeadDetailModal({
   const [saving, setSaving] = useState(false);
   const src = sourceLabels[lead.source] || sourceLabels.MANUAL;
   const canConvert = lead.status === "QUOTED" || lead.status === "WON";
+
+  // Sprint 3.2 — status geçmişini modal açılınca bir kez yükle
+  const [history, setHistory] = useState<HistoryItem[]>([]);
+  const [historyLoading, setHistoryLoading] = useState(true);
+  useEffect(() => {
+    let cancelled = false;
+    getLeadHistory(lead.id).then((res) => {
+      if (cancelled) return;
+      if (res.success) setHistory(res.history as HistoryItem[]);
+      setHistoryLoading(false);
+    });
+    return () => { cancelled = true; };
+  }, [lead.id]);
 
   async function saveNotes() {
     setSaving(true);
@@ -145,6 +182,48 @@ export default function LeadDetailModal({
               {saving ? "Kaydediliyor..." : "Kaydet"}
             </button>
           </div>
+        </div>
+
+        {/* Sprint 3.2 — Status geçmişi timeline */}
+        <div className="mt-5 border-t border-admin-border pt-4">
+          <div className="mb-2 flex items-center justify-between">
+            <label className="text-[11px] font-medium text-admin-muted">Durum Geçmişi</label>
+            {!historyLoading && (
+              <span className="text-[10px] text-admin-muted">{history.length} kayıt</span>
+            )}
+          </div>
+          {historyLoading ? (
+            <div className="text-[11px] text-admin-muted">Yükleniyor…</div>
+          ) : history.length === 0 ? (
+            <div className="text-[11px] text-admin-muted">Henüz durum değişikliği yok.</div>
+          ) : (
+            <ol className="space-y-2 max-h-48 overflow-y-auto pr-1">
+              {history.map((h) => {
+                const from = h.fromStatus ? (statusShort[h.fromStatus] || h.fromStatus) : "—";
+                const to = statusShort[h.toStatus] || h.toStatus;
+                const reason = h.reason ? (reasonLabels[h.reason] || h.reason) : "";
+                const who = h.changedBy === "system" ? "sistem" : (h.changedBy || "—");
+                return (
+                  <li key={h.id} className="flex items-start gap-2 text-[11px]">
+                    <span className="mt-0.5 inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-admin-accent" />
+                    <div className="min-w-0 flex-1">
+                      <div className="text-admin-text">
+                        <span className="text-admin-muted">{from}</span>
+                        <span className="mx-1 text-admin-muted">→</span>
+                        <span className="font-medium">{to}</span>
+                        {reason && <span className="ml-2 text-admin-muted">({reason})</span>}
+                      </div>
+                      <div className="mt-0.5 text-[10px] text-admin-muted">
+                        {new Date(h.createdAt).toLocaleString("tr-TR", {
+                          day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit",
+                        })} · {who}
+                      </div>
+                    </div>
+                  </li>
+                );
+              })}
+            </ol>
+          )}
         </div>
 
         <div className="mt-3 text-[10px] text-admin-muted">

@@ -3,6 +3,20 @@
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
+import { auth } from "@/lib/auth";
+import { logLeadStatusChange } from "@/lib/lead-history";
+
+// ── Admin kullanıcıyı string olarak al ──
+// auth() session'da user varsa email kullanır; yoksa "admin" fallback.
+// Public endpoint'ler için "system" manuel geçilir (logLeadStatusChange'e).
+async function getChangedByFromSession(): Promise<string> {
+  try {
+    const session = await auth();
+    return session?.user?.email || "admin";
+  } catch {
+    return "admin";
+  }
+}
 
 // ── Lead status'u için tek doğruluk kaynağı ──
 // updateLeadStatus param type'ı ile form schema'nın drift etmesini önler.
@@ -62,7 +76,8 @@ export type LeadFormData = z.infer<typeof LeadFormSchema>;
 export async function createLeadAction(data: LeadFormData) {
   try {
     const parsed = LeadFormSchema.parse(data);
-    await prisma.lead.create({
+    const initialStatus = parsed.status || "COLD";
+    const created = await prisma.lead.create({
       data: {
         name: parsed.name,
         company: parsed.company || null,
@@ -72,8 +87,16 @@ export async function createLeadAction(data: LeadFormData) {
         source: parsed.source,
         budget: parsed.budget || null,
         notes: parsed.notes || null,
-        status: parsed.status || "COLD",
+        status: initialStatus,
       },
+    });
+    // Sprint 3.2 — manuel lead oluşturma da history'ye düşer
+    await logLeadStatusChange({
+      leadId: created.id,
+      fromStatus: null,
+      toStatus: initialStatus,
+      reason: "lead_created",
+      changedBy: await getChangedByFromSession(),
     });
     revalidatePath("/admin/leads");
     return { success: true };
@@ -91,9 +114,22 @@ export async function updateLeadStatus(id: string, status: LeadStatus) {
   // burada reddet. Geriye dönük uyum için throw atılır; mevcut kanban
   // caller'ı try/catch ile hatayı yakalıyor.
   const parsedStatus = LeadStatusSchema.parse(status);
+  // Sprint 3.2 — önceki status'u oku (history için). findUnique + update
+  // arası race olabilir ama tek admin kullanıcıda pratik sorun yok.
+  const prev = await prisma.lead.findUnique({
+    where: { id },
+    select: { status: true },
+  });
   const lead = await prisma.lead.update({
     where: { id },
     data: { status: parsedStatus },
+  });
+  await logLeadStatusChange({
+    leadId: id,
+    fromStatus: prev?.status ?? null,
+    toStatus: parsedStatus,
+    reason: "manual",
+    changedBy: await getChangedByFromSession(),
   });
   revalidatePath("/admin/leads");
   return lead;
@@ -107,6 +143,10 @@ export async function addWaTemplateToLead(
   waTemplateSlug: string
 ) {
   try {
+    const prev = await prisma.lead.findUnique({
+      where: { id: leadId },
+      select: { status: true },
+    });
     await prisma.lead.update({
       where: { id: leadId },
       data: {
@@ -115,6 +155,13 @@ export async function addWaTemplateToLead(
         waTemplateSlug,
         status: "TEMPLATE_ADDED",
       },
+    });
+    await logLeadStatusChange({
+      leadId,
+      fromStatus: prev?.status ?? null,
+      toStatus: "TEMPLATE_ADDED",
+      reason: "wa_template_added",
+      changedBy: await getChangedByFromSession(),
     });
     revalidatePath("/admin/leads");
     return { success: true };
@@ -127,12 +174,23 @@ export async function addWaTemplateToLead(
 // ── WA gönderildi olarak işaretle ──
 export async function markWaSent(leadId: string) {
   try {
+    const prev = await prisma.lead.findUnique({
+      where: { id: leadId },
+      select: { status: true },
+    });
     await prisma.lead.update({
       where: { id: leadId },
       data: {
         status: "WA_SENT",
         waSentAt: new Date(),
       },
+    });
+    await logLeadStatusChange({
+      leadId,
+      fromStatus: prev?.status ?? null,
+      toStatus: "WA_SENT",
+      reason: "wa_sent",
+      changedBy: await getChangedByFromSession(),
     });
     revalidatePath("/admin/leads");
     return { success: true };
@@ -203,9 +261,20 @@ export async function convertLeadToClient(leadId: string) {
       },
     });
 
+    const prevLead = await prisma.lead.findUnique({
+      where: { id: leadId },
+      select: { status: true },
+    });
     await prisma.lead.update({
       where: { id: leadId },
       data: { status: "WON" },
+    });
+    await logLeadStatusChange({
+      leadId,
+      fromStatus: prevLead?.status ?? null,
+      toStatus: "WON",
+      reason: "client_conversion",
+      changedBy: await getChangedByFromSession(),
     });
 
     await prisma.activity.create({
@@ -223,6 +292,22 @@ export async function convertLeadToClient(leadId: string) {
   } catch (err) {
     console.error("Lead dönüştürme hatası:", err);
     return { success: false, error: "Lead CRM'e taşınamadı." };
+  }
+}
+
+// Sprint 3.2 — Lead status geçmişini oku (detail modal için).
+// En yeni değişim en üstte döner.
+export async function getLeadHistory(leadId: string) {
+  try {
+    const history = await prisma.leadStatusHistory.findMany({
+      where: { leadId },
+      orderBy: { createdAt: "desc" },
+      take: 50, // 50'den fazla ihtiyaç olmaz; güvenlik limiti
+    });
+    return { success: true as const, history };
+  } catch (err) {
+    console.error("Lead history okuma hatası:", err);
+    return { success: false as const, error: "Geçmiş yüklenemedi.", history: [] };
   }
 }
 
