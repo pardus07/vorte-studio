@@ -23,6 +23,8 @@ export interface TemplateProps {
 }
 
 // Teklif chatbot sayfası linki
+// Sprint 3.6c — /p/[slug] kaldırıldı, chat akışı /demo/[slug]/chat'e taşındı.
+// 103 şablonun tümü bu helper'ı kullandığı için merkezi değişiklik.
 export function buildChatLink(slug: string) {
-  return `/p/${slug}/chat`
+  return `/demo/${slug}/chat`
 }

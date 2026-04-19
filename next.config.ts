@@ -7,6 +7,19 @@ const nextConfig: NextConfig = {
   // sharp'i bundle'a almaya calismasini engelle (libvips native lib gerekiyor)
   serverExternalPackages: ["sharp", "@react-pdf/renderer"],
 
+  // Sprint 3.6c — /p/[slug] mimarisi kaldırıldı, chat akışı /demo/ altına
+  // taşındı. Eski URL'leri (dış linkler, Google cache, WA geçmişi) kırmamak
+  // için kalıcı (301) redirect. Tüm alt yollar dahil: /p/xxx ve /p/xxx/chat.
+  async redirects() {
+    return [
+      {
+        source: "/p/:path*",
+        destination: "/demo/:path*",
+        permanent: true,
+      },
+    ];
+  },
+
   async headers() {
     return [
       {
@@ -43,15 +56,8 @@ const nextConfig: NextConfig = {
       },
       // Özel/dinamik rotalar — arama motorlarından tamamen gizle
       // (brand impersonation / deceptive pages tespitini önler)
-      {
-        source: "/p/:path*",
-        headers: [
-          {
-            key: "X-Robots-Tag",
-            value: "noindex, nofollow, noarchive, nosnippet",
-          },
-        ],
-      },
+      // NOT: /p/:path* artık redirect olduğu için X-Robots-Tag bloğu yok
+      // (redirect öncelikli çalışır, header uygulanmaz).
       {
         source: "/demo/:path*",
         headers: [

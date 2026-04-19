@@ -1083,7 +1083,7 @@ export default function ChatForm({ firmName, city, sector, slug, phone, email, l
       <header className="sticky top-0 z-20 border-b border-slate-200/80 bg-white/80 px-4 py-3 backdrop-blur-xl">
         <div className="mx-auto flex max-w-xl items-center gap-3">
           <motion.a
-            href={`/p/${slug}`}
+            href={`/demo/${slug}`}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-100 text-slate-500 transition-colors hover:bg-slate-200"
@@ -1654,7 +1654,7 @@ export default function ChatForm({ firmName, city, sector, slug, phone, email, l
               </motion.div>
               <p className="mb-4 text-sm text-slate-500">Başvurunuz alındı! Demo sayfanıza geri dönebilirsiniz.</p>
               <motion.a
-                href={`/p/${slug}`}
+                href={`/demo/${slug}`}
                 whileHover={{ scale: 1.03 }}
                 whileTap={{ scale: 0.97 }}
                 className="inline-flex items-center gap-2 rounded-xl bg-slate-100 px-6 py-3 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-200"

@@ -5,7 +5,7 @@ import ChatForm from './chat-form'
 
 export const dynamic = 'force-dynamic'
 
-// Önizleme modu demo verileri
+// Önizleme modu demo verileri — WA outreach için sektör fallback'i
 const previewData: Record<string, { firmName: string; city: string; sector: string }> = {
   'dis-klinikleri': { firmName: 'Gülüş Diş Kliniği', city: 'Antalya', sector: 'Diş Klinikleri' },
   'veteriner-klinikleri': { firmName: 'Patiler Veteriner', city: 'İstanbul', sector: 'Veteriner Klinikleri' },
@@ -116,19 +116,34 @@ interface PageProps {
   params: Promise<{ slug: string }>
 }
 
-// demo-{templateSlug} veya demo-{templateSlug}-{leadId} parse et
+// Sprint 3.6c — Revize slug parse stratejisi:
+//   - `demo-{templateSlug}`               → template preview (ref yok)
+//   - `demo-{templateSlug}-{leadId}`      → WhatsApp outreach lead sayfası
+//
+// ID format fragile olmasın diye: template key'lerini uzundan kısaya deneyip
+// kalan parçayı cuid-benzeri regex ile validate ediyoruz. DB lookup FINAL auth
+// — ID ne tipte olursa olsun (cuid/cuid2/nanoid) sadece DB'de bulunursa Lead
+// olarak davranırız. Bulunamazsa generic demo fallback — crash yok, 404 yok.
 function parseDemoSlug(slug: string): { templateId: string; leadId?: string } | null {
-  const rest = slug.replace('demo-', '')
+  const rest = slug.replace(/^demo-/, '')
 
-  // Önce direkt template key mi diye bak
+  // Direkt template key mi? (ör: "dis-klinikleri")
   if (previewData[rest]) return { templateId: rest }
 
-  // Bilinen template key'lerini uzundan kısaya sırala (doğru eşleşme için)
+  // Template key + leadId: uzundan kısaya eşleştir
   const keys = Object.keys(previewData).sort((a, b) => b.length - a.length)
   for (const key of keys) {
     if (rest.startsWith(key + '-')) {
-      const leadId = rest.slice(key.length + 1)
-      if (leadId) return { templateId: key, leadId }
+      const maybeLeadId = rest.slice(key.length + 1)
+      // cuid (25 char), cuid2 (24 char) ve nanoid uyumlu geniş regex:
+      //   - sadece a-z, A-Z, 0-9, _, -
+      //   - 20-30 karakter uzunluğunda
+      // Format değişirse DB lookup yine filtreler — crash yok
+      if (/^[a-z0-9_-]{20,30}$/i.test(maybeLeadId)) {
+        return { templateId: key, leadId: maybeLeadId }
+      }
+      // Regex tutmuyorsa leadId'siz template kabul et
+      return { templateId: key }
     }
   }
 
@@ -138,7 +153,18 @@ function parseDemoSlug(slug: string): { templateId: string; leadId?: string } | 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params
 
-  // Demo modu (WA şablonlarından gelen lead'ler)
+  // Admin önizleme (preview-{templateId})
+  if (slug.startsWith('preview-')) {
+    const templateId = slug.replace(/^preview-/, '')
+    const demo = previewData[templateId]
+    if (!demo) return { title: 'Sayfa Bulunamadı' }
+    return {
+      title: `Ücretsiz Teklif — ${demo.firmName} | Vorte Studio`,
+      robots: { index: false, follow: false },
+    }
+  }
+
+  // Demo modu (WA şablonlarından gelen lead'ler veya plain template)
   if (slug.startsWith('demo-')) {
     const parsed = parseDemoSlug(slug)
     if (!parsed) return { title: 'Sayfa Bulunamadı' }
@@ -150,46 +176,23 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
         if (lead) {
           return {
             title: `Ücretsiz Teklif — ${lead.name} | Vorte Studio`,
-            robots: 'noindex, nofollow',
+            robots: { index: false, follow: false },
           }
         }
-      } catch { /* fallthrough to preview */ }
+      } catch {
+        /* fallthrough to generic */
+      }
     }
 
     const demo = previewData[parsed.templateId]
     return {
       title: `Ücretsiz Teklif — ${demo?.firmName || 'Demo'} | Vorte Studio`,
-      robots: 'noindex, nofollow',
+      robots: { index: false, follow: false },
     }
   }
 
-  // Önizleme modu (admin preview)
-  if (slug.startsWith('preview-')) {
-    const templateId = slug.replace('preview-', '')
-    const demo = previewData[templateId]
-    if (!demo) return { title: 'Sayfa Bulunamadı' }
-    return {
-      title: `Ücretsiz Teklif — ${demo.firmName} | Vorte Studio`,
-      robots: 'noindex, nofollow',
-    }
-  }
-
-  let page = null
-  try {
-    page = await prisma.prospectPage.findUnique({
-      where: { slug },
-      include: { prospect: true },
-    })
-  } catch {
-    return { title: 'Sayfa Bulunamadı' }
-  }
-
-  if (!page) return { title: 'Sayfa Bulunamadı' }
-
-  return {
-    title: `Ücretsiz Teklif — ${page.prospect.name} | Vorte Studio`,
-    robots: 'noindex, nofollow',
-  }
+  // Tanınmayan slug — 404
+  return { title: 'Sayfa Bulunamadı' }
 }
 
 // Adresten şehir çıkar (lead.address → şehir)
@@ -210,6 +213,23 @@ function extractCityFromAddress(address?: string | null): string {
 
 export default async function ChatPage({ params }: PageProps) {
   const { slug } = await params
+
+  // Admin önizleme (preview-{templateId})
+  if (slug.startsWith('preview-')) {
+    const templateId = slug.replace(/^preview-/, '')
+    const demo = previewData[templateId]
+    if (!demo) notFound()
+
+    return (
+      <ChatForm
+        firmName={demo.firmName}
+        city={demo.city}
+        sector={demo.sector}
+        slug={slug}
+        source="preview"
+      />
+    )
+  }
 
   // Demo modu (WA şablonlarından gelen lead'ler)
   if (slug.startsWith('demo-')) {
@@ -236,10 +256,13 @@ export default async function ChatPage({ params }: PageProps) {
             />
           )
         }
-      } catch { /* fallthrough to generic demo */ }
+      } catch {
+        /* fallthrough to generic demo — crash olmasin */
+      }
     }
 
-    // Lead bulunamazsa generic demo data
+    // Lead bulunamazsa generic demo — bot saldirisi veya stale URL icin
+    // crash-safe fallback. Generic demo data ile ChatForm render edilir.
     const demo = previewData[parsed.templateId]
     if (!demo) notFound()
 
@@ -254,45 +277,6 @@ export default async function ChatPage({ params }: PageProps) {
     )
   }
 
-  // Önizleme modu (admin preview)
-  if (slug.startsWith('preview-')) {
-    const templateId = slug.replace('preview-', '')
-    const demo = previewData[templateId]
-    if (!demo) notFound()
-
-    return (
-      <ChatForm
-        firmName={demo.firmName}
-        city={demo.city}
-        sector={demo.sector}
-        slug={slug}
-        source="preview"
-      />
-    )
-  }
-
-  // Gerçek veri (prospect sayfaları)
-  let page = null
-  try {
-    page = await prisma.prospectPage.findUnique({
-      where: { slug, isActive: true },
-      include: { prospect: true },
-    })
-  } catch {
-    notFound()
-  }
-
-  if (!page) notFound()
-
-  return (
-    <ChatForm
-      firmName={page.prospect.name}
-      city={page.city}
-      sector={page.sector}
-      slug={slug}
-      phone={page.prospect.phone ?? null}
-      email={page.prospect.email ?? null}
-      source="prospect"
-    />
-  )
+  // Tanınmayan slug — 404
+  notFound()
 }

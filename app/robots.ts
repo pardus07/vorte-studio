@@ -10,7 +10,10 @@ export default function robots(): MetadataRoute.Robots {
           "/admin/",
           "/api/",
           "/login",
-          "/p/",
+          // NOT: /p/ kaldırıldı — Sprint 3.6c'den sonra /p/:path* → /demo/:path*
+          // 301 redirect ediyor. Disallow + redirect kombinasyonunda Googlebot
+          // 301'i göremediği için eski indekslenmiş URL'ler silinemiyor.
+          // /demo/ zaten disallow'da + X-Robots-Tag noindex alıyor.
           "/demo/",
           "/teklif/",
           "/portal/",
