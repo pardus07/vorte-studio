@@ -2,6 +2,11 @@
 
 import { prisma } from "@/lib/prisma";
 import { auditWebsite } from "@/lib/pagespeed";
+import {
+  findExistingScraperLead,
+  logDuplicate,
+  matchReasonLabel,
+} from "@/lib/lead-dedup";
 
 // Puanlama (0-100) — yüksek skor = daha iyi müşteri adayı
 export async function calculateScore(item: {
@@ -131,7 +136,10 @@ export async function getProspectsByBatch(batchId: string) {
   });
 }
 
-// Scraper sonucundan lead oluşturma — dublike kontrol ile
+// Scraper sonucundan lead oluşturma — Sprint 3.6a: 3-seviye dedup.
+// Öncelik: googleMapsUrl → phone → (name+sector).
+// Duplicate bulunursa LeadDuplicateLog'a yaz, kullanıcıya eşleşme
+// sebebi + mevcut lead id'sini dön.
 export async function addRawProspectToLead(data: {
   name: string;
   phone: string | null;
@@ -139,6 +147,7 @@ export async function addRawProspectToLead(data: {
   address: string | null;
   googleRating: number | null;
   googleReviews: number | null;
+  googleMapsUrl?: string | null;   // UI henüz göndermiyor ama tip uyumlu
   score: number;
   issue: string | null;
   hasWebsite: boolean;
@@ -146,15 +155,35 @@ export async function addRawProspectToLead(data: {
   sector: string | null;
 }) {
   try {
-    // Dublike kontrol — aynı isimde lead var mı?
-    const existing = await prisma.lead.findFirst({
-      where: { name: data.name, source: "MAPS_SCRAPER" },
+    // 3-seviye dedup
+    const match = await findExistingScraperLead({
+      name: data.name,
+      phone: data.phone,
+      googleMapsUrl: data.googleMapsUrl ?? null,
+      sector: data.sector,
     });
-    if (existing) {
-      return { success: false, error: "duplicate", message: `${data.name} zaten Soğuk Lead olarak ekli.` };
+
+    if (match) {
+      await logDuplicate({
+        attemptedName: data.name,
+        attemptedPhone: data.phone,
+        attemptedGoogleMapsUrl: data.googleMapsUrl ?? null,
+        attemptedSector: data.sector,
+        matchedLeadId: match.leadId,
+        matchReason: match.matchReason,
+        duplicateSource: "MAPS_SCRAPER",
+      });
+      return {
+        success: false,
+        error: "duplicate",
+        matchedLeadId: match.leadId,
+        matchedLeadName: match.leadName,
+        matchReason: match.matchReason,
+        message: `${data.name} zaten Soğuk Lead olarak ekli (eşleşme: ${matchReasonLabel(match.matchReason)}).`,
+      };
     }
 
-    await prisma.lead.create({
+    const created = await prisma.lead.create({
       data: {
         name: data.name,
         company: data.name,
@@ -163,6 +192,7 @@ export async function addRawProspectToLead(data: {
         address: data.address,
         googleRating: data.googleRating,
         googleReviews: data.googleReviews,
+        googleMapsUrl: data.googleMapsUrl ?? null,
         mobileScore: data.mobileScore,
         hasWebsite: data.hasWebsite,
         score: data.score,
@@ -171,8 +201,19 @@ export async function addRawProspectToLead(data: {
         status: "COLD",
       },
     });
-    return { success: true };
+    return { success: true, leadId: created.id };
   } catch (err) {
+    // Partial unique index ihlali → race condition (iki paralel request)
+    // Prisma P2002 döner; kullanıcıya "duplicate" olarak göster.
+    const code = (err as { code?: string })?.code;
+    if (code === "P2002") {
+      console.warn("[addRawProspectToLead] DB-level unique index yakaladı:", err);
+      return {
+        success: false,
+        error: "duplicate",
+        message: `${data.name} aynı anda eklendi (eşzamanlı istek).`,
+      };
+    }
     console.error("Lead kayıt hatası:", err);
     return { success: false, error: "Lead kaydedilemedi." };
   }
@@ -263,7 +304,9 @@ export async function resolveGoogleMapsLink(input: string): Promise<{
   return { success: true, query: trimmed };
 }
 
-// Manuel lead ekleme — Maps scraper sonucu olmadan, direkt bilgilerle
+// Manuel lead ekleme — Sprint 3.6a: 3-seviye dedup (MANUAL_ADMIN source).
+// Admin panelden tek firma eklerken de duplicate kontrol çalışsın ki
+// scraper olmadan manuel ekleyen kullanıcı aynı firmayı iki kez girmesin.
 export async function addManualLead(data: {
   name: string;
   phone: string | null;
@@ -275,11 +318,31 @@ export async function addManualLead(data: {
   sector?: string | null;
 }) {
   try {
-    const existing = await prisma.lead.findFirst({
-      where: { name: data.name },
+    const match = await findExistingScraperLead({
+      name: data.name,
+      phone: data.phone,
+      googleMapsUrl: data.googleMapsUrl,
+      sector: data.sector ?? null,
     });
-    if (existing) {
-      return { success: false, error: "duplicate", message: `${data.name} zaten Lead olarak ekli.` };
+
+    if (match) {
+      await logDuplicate({
+        attemptedName: data.name,
+        attemptedPhone: data.phone,
+        attemptedGoogleMapsUrl: data.googleMapsUrl,
+        attemptedSector: data.sector ?? null,
+        matchedLeadId: match.leadId,
+        matchReason: match.matchReason,
+        duplicateSource: "MANUAL_ADMIN",
+      });
+      return {
+        success: false,
+        error: "duplicate",
+        matchedLeadId: match.leadId,
+        matchedLeadName: match.leadName,
+        matchReason: match.matchReason,
+        message: `${data.name} zaten Lead olarak ekli (eşleşme: ${matchReasonLabel(match.matchReason)}).`,
+      };
     }
 
     const lead = await prisma.lead.create({
@@ -301,6 +364,15 @@ export async function addManualLead(data: {
     });
     return { success: true, id: lead.id };
   } catch (err) {
+    const code = (err as { code?: string })?.code;
+    if (code === "P2002") {
+      console.warn("[addManualLead] DB-level unique index yakaladı:", err);
+      return {
+        success: false,
+        error: "duplicate",
+        message: `${data.name} aynı anda eklendi (eşzamanlı istek).`,
+      };
+    }
     console.error("Manuel lead kayıt hatası:", err);
     return { success: false, error: "Lead kaydedilemedi." };
   }

@@ -378,6 +378,9 @@ export default function ProspectSearch({
   async function handleAddToLeads(id: string) {
     const prospect = prospects.find((p) => p.id === id);
     if (!prospect) return;
+    // Client-side exact-name pre-check — UX optimizasyonu (sunucuya
+    // gitmeden bariz duplicate'leri eler). Sprint 3.6a: asıl 3-seviye
+    // kontrol server'da (googleMapsUrl → phone → name+sector).
     if (existingLeads.has(prospect.name)) {
       showNotif(`${prospect.name} zaten Soğuk Lead olarak ekli.`, "info");
       setProspects((prev) => prev.map((p) => (p.id === id ? { ...p, addedToLeads: true } : p)));
@@ -386,7 +389,9 @@ export default function ProspectSearch({
     const result = await addRawProspectToLead({
       name: prospect.name, phone: prospect.phone, website: prospect.website,
       address: prospect.address, googleRating: prospect.googleRating,
-      googleReviews: prospect.googleReviews, score: prospect.score,
+      googleReviews: prospect.googleReviews,
+      googleMapsUrl: prospect.googleMapsUrl,
+      score: prospect.score,
       issue: prospect.issue, hasWebsite: prospect.hasWebsite, mobileScore: prospect.mobileScore,
       sector: prospect.sector ?? sector, // arama anındaki sektör (yoksa live state — eski localStorage için)
     });
@@ -396,6 +401,7 @@ export default function ProspectSearch({
       existingLeadsRef.current = new Set([...existingLeadsRef.current, prospect.name]);
       showNotif(`${prospect.name} Soğuk Lead olarak eklendi.`, "success");
     } else if (result.error === "duplicate") {
+      // Sprint 3.6a: message içinde eşleşme sebebi var ("eşleşme: telefon")
       showNotif(result.message || `${prospect.name} zaten ekli.`, "info");
       setProspects((prev) => prev.map((p) => (p.id === id ? { ...p, addedToLeads: true } : p)));
     } else {
@@ -406,13 +412,22 @@ export default function ProspectSearch({
   async function handleAddAll() {
     const toAdd = filtered.filter((p) => !p.addedToLeads);
     if (toAdd.length === 0) { showNotif("Eklenecek yeni prospect yok.", "info"); return; }
+    // Sprint 3.6a: duplicate sebeplerini kırılım olarak göster
     let added = 0, skipped = 0;
+    const skipReasons: Record<string, number> = {};
     for (const prospect of toAdd) {
-      if (existingLeads.has(prospect.name)) { skipped++; setProspects((prev) => prev.map((p) => (p.id === prospect.id ? { ...p, addedToLeads: true } : p))); continue; }
+      if (existingLeads.has(prospect.name)) {
+        skipped++;
+        skipReasons.name = (skipReasons.name || 0) + 1;
+        setProspects((prev) => prev.map((p) => (p.id === prospect.id ? { ...p, addedToLeads: true } : p)));
+        continue;
+      }
       const result = await addRawProspectToLead({
         name: prospect.name, phone: prospect.phone, website: prospect.website,
         address: prospect.address, googleRating: prospect.googleRating,
-        googleReviews: prospect.googleReviews, score: prospect.score,
+        googleReviews: prospect.googleReviews,
+        googleMapsUrl: prospect.googleMapsUrl,
+        score: prospect.score,
         issue: prospect.issue, hasWebsite: prospect.hasWebsite, mobileScore: prospect.mobileScore,
         sector: prospect.sector ?? sector, // arama anındaki sektör snapshot
       });
@@ -421,9 +436,27 @@ export default function ProspectSearch({
         setExistingLeads((prev) => new Set([...prev, prospect.name]));
         existingLeadsRef.current = new Set([...existingLeadsRef.current, prospect.name]);
         setProspects((prev) => prev.map((p) => (p.id === prospect.id ? { ...p, addedToLeads: true } : p)));
+      } else if (result.error === "duplicate") {
+        skipped++;
+        const reasonKey = (result as { matchReason?: string }).matchReason || "name";
+        skipReasons[reasonKey] = (skipReasons[reasonKey] || 0) + 1;
+        setProspects((prev) => prev.map((p) => (p.id === prospect.id ? { ...p, addedToLeads: true } : p)));
       }
     }
-    showNotif(skipped > 0 ? `${added} eklendi, ${skipped} zaten mevcut.` : `${added} prospect Soğuk Lead olarak eklendi.`, "success");
+    // Kırılım mesajı: "3 eklendi, 2 atlandı (telefon: 1, Google Maps: 1)"
+    const reasonParts = Object.entries(skipReasons)
+      .filter(([, n]) => n > 0)
+      .map(([k, n]) => {
+        const label = k === "GOOGLE_MAPS_URL" ? "Google Maps"
+                    : k === "PHONE"           ? "telefon"
+                    : k === "NAME_SECTOR"     ? "isim+sektör"
+                    : "isim";
+        return `${label}: ${n}`;
+      });
+    const summary = skipped > 0
+      ? `${added} eklendi, ${skipped} atlandı${reasonParts.length ? ` (${reasonParts.join(", ")})` : ""}.`
+      : `${added} prospect Soğuk Lead olarak eklendi.`;
+    showNotif(summary, "success");
   }
 
   function handleClear() { setProspects([]); setQuery(""); clearStorage(); }

@@ -86,6 +86,27 @@ model Lead {
 
   chatSubmissions ChatSubmission[]
   statusHistory   LeadStatusHistory[]
+  duplicateLogs   LeadDuplicateLog[]
+}
+
+// ── Lead Dublike Log (Sprint 3.6a) ──
+// Scraper/manual ekleme akışında reddedilen duplicate denemelerinin
+// audit kaydı. UI'da "Atlanan: N" sayacı + debug için kullanılır.
+// FK CASCADE: eşleşilen lead silinirse log da gider.
+model LeadDuplicateLog {
+  id                     String   @id @default(cuid())
+  attemptedName          String
+  attemptedPhone         String?
+  attemptedGoogleMapsUrl String?
+  attemptedSector        String?
+  matchedLeadId          String
+  matchedLead            Lead     @relation(fields: [matchedLeadId], references: [id], onDelete: Cascade)
+  matchReason            String   // GOOGLE_MAPS_URL | PHONE | NAME_SECTOR
+  duplicateSource        String   // MAPS_SCRAPER | MANUAL_ADMIN
+  createdAt              DateTime @default(now())
+
+  @@index([matchedLeadId])
+  @@index([createdAt])
 }
 
 // ── Lead Status Geçmişi (Sprint 3.2) ──
