@@ -4,7 +4,7 @@
 import { prisma } from "@/lib/prisma";
 // Circular import önleme: LeadStatus type'ını doğrudan Prisma'dan al,
 // actions/leads'ten değil (leads.ts zaten bu dosyayı import ediyor).
-import type { LeadStatus } from "@/app/generated/prisma";
+import type { LeadStatus } from "@/app/generated/prisma/client";
 
 export type StatusChangeReason =
   | "manual"              // kanban drag
