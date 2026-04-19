@@ -177,7 +177,7 @@ export default function TemplatesPanel({ catalog, stats }: Props) {
                     </button>
                     <button
                       onClick={() => {
-                        window.open(`/demo/preview-${tpl.id}`, '_blank')
+                        window.open(`/demo/${tpl.id}`, '_blank')
                       }}
                       className="rounded-lg border border-admin-border px-3 py-2 text-xs text-admin-muted transition-colors hover:border-admin-accent/30 hover:text-admin-text"
                     >
@@ -262,7 +262,7 @@ export default function TemplatesPanel({ catalog, stats }: Props) {
               </div>
               <div className="flex items-center gap-2">
                 <a
-                  href={`/demo/preview-${previewSlug}`}
+                  href={`/demo/${previewSlug}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="rounded-lg border border-admin-border px-3 py-1.5 text-xs text-admin-muted hover:text-admin-text"
@@ -282,7 +282,7 @@ export default function TemplatesPanel({ catalog, stats }: Props) {
 
             {/* iframe preview */}
             <iframe
-              src={`/demo/preview-${previewSlug}`}
+              src={`/demo/${previewSlug}`}
               className="h-full w-full"
               title={`${previewSlug} önizleme`}
             />
