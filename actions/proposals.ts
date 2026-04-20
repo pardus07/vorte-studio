@@ -2,9 +2,22 @@
 
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
+import { cookies } from "next/headers";
 import { auth } from "@/lib/auth";
 import { calculatePrice, formatPriceRange } from "@/lib/pricing-calculator";
 import type { PricingItem } from "@/lib/pricing-constants";
+import {
+  checkAccessRateLimit,
+  recordAccessAttempt,
+  extractClientContext,
+  determineAccessKind,
+  normalizePhoneLast4,
+  normalizeEmail,
+  extractPhoneLast4,
+  signAccessCookie,
+  buildAccessCookieName,
+  PROPOSAL_ACCESS_COOKIE_MAX_AGE_SECONDS,
+} from "@/lib/proposal-access-rate-limit";
 
 async function requireAdmin() {
   const session = await auth();
@@ -166,19 +179,12 @@ export async function getProposalByToken(token: string) {
       proposal.status = "EXPIRED";
     }
 
-    // İlk görüntülemede viewedAt kaydet + Lead güncelle (expired değilse)
-    if (!proposal.viewedAt && proposal.status === "SENT") {
-      await prisma.proposal.update({
-        where: { id: proposal.id },
-        data: {
-          viewedAt: new Date(),
-          status: "VIEWED",
-        },
-      });
-
-      // Lead pipeline'ı güncelle (QUOTED kalır, viewedAt kaydedilir)
-      // VIEWED ayrı bir sütun değil, QUOTED altında takip edilir
-    }
+    // ⚠️ FAZ B — Madde 2.4 (Q1-a kararı):
+    //   Eski viewedAt/VIEWED transition'ı buradan ÇIKARILDI. Artık müşteri
+    //   gate'i geçtikten SONRA (veya disabled mode'da gate bypass edildikten
+    //   sonra) markProposalViewed() ile kaydedilir. Ham URL paylaşımında
+    //   viewedAt set olmaz — yanlışlıkla URL sızan admin/bot trafiği için
+    //   VIEWED transition tetiklenmez, veri temiz kalır.
 
     return {
       id: proposal.id,
@@ -420,5 +426,174 @@ export async function extendProposalValidity(proposalId: string, days = 14) {
   } catch (error) {
     console.error("Teklif süresi uzatma hatası:", error);
     return { success: false, error: "Süre uzatılamadı" };
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// FAZ B — Madde 2.4: /teklif/{token} IDOR gate
+// ═══════════════════════════════════════════════════════════════════════
+
+/**
+ * markProposalViewed — teklif ilk kez görüntülendiğinde viewedAt + status
+ * VIEWED kaydı düşer. Idempotent: viewedAt dolu veya status SENT değilse
+ * no-op. Page.tsx hem cookie-valid dalı hem disabled-mode dalı bunu çağırır
+ * (disabled mode'da her render'da çağrılır ama idempotent olduğu için güvenli).
+ *
+ * Server Action olarak export edildi — "use server" dosya-level ama
+ * dışarıdan client çağırmıyor, sadece Server Component (page.tsx) ve
+ * verifyProposalAccess kullanıyor.
+ */
+export async function markProposalViewed(proposalId: string): Promise<void> {
+  try {
+    const proposal = await prisma.proposal.findUnique({
+      where: { id: proposalId },
+      select: { viewedAt: true, status: true },
+    });
+    if (!proposal) return;
+    if (proposal.viewedAt) return;          // zaten görüldü
+    if (proposal.status !== "SENT") return; // EXPIRED/DRAFT/ACCEPTED — mark etme
+
+    await prisma.proposal.update({
+      where: { id: proposalId },
+      data: { viewedAt: new Date(), status: "VIEWED" },
+    });
+  } catch (err) {
+    console.error("markProposalViewed hatası (kritik değil):", err);
+  }
+}
+
+/**
+ * verifyProposalAccess — gate doğrulama Server Action'ı.
+ *
+ * Akış:
+ *   1. Token → Proposal (yoksa genel hata — IDOR probe'una bilgi vermeme)
+ *   2. Expired check
+ *   3. Server-side kind hesaplama (client payload'ı güvensiz)
+ *   4. Rate limit check (fail-open)
+ *   5. Input karşılaştırma (phone last 4 / email full, normalize edilir)
+ *   6. recordAccessAttempt (her durum, matched bool dahil)
+ *   7. Başarılıysa: HMAC-SHA256 imzalı cookie set + success dön
+ *   8. Başarısızsa: error + kalan deneme / kilit süresi
+ *
+ * Not: viewedAt/VIEWED mark EDİLMEZ — page.tsx cookie valid branch'i
+ * markProposalViewed'ı çağırır (single source of truth).
+ */
+export async function verifyProposalAccess(
+  token: string,
+  input: string
+): Promise<
+  | { success: true }
+  | {
+      success: false;
+      error: string;
+      remainingAttempts?: number;
+      retryAfterSeconds?: number;
+      locked?: boolean;
+    }
+> {
+  try {
+    const proposal = await prisma.proposal.findUnique({
+      where: { token },
+      select: {
+        id: true,
+        contactPhone: true,
+        contactEmail: true,
+        status: true,
+        validUntil: true,
+      },
+    });
+    if (!proposal) {
+      // 404 vermek yerine genel "bulunamadı" — IDOR enumeration korunur
+      return { success: false, error: "Teklif bulunamadı veya süresi dolmuş" };
+    }
+
+    // Expired teklif için gate açmaya gerek yok
+    if (proposal.validUntil < new Date()) {
+      return { success: false, error: "Teklifin süresi dolmuş" };
+    }
+
+    // Server-side kind re-check (client "disabled" diye maskelemek isteyebilir)
+    const kind = determineAccessKind({
+      contactPhone: proposal.contactPhone,
+      contactEmail: proposal.contactEmail,
+    });
+    if (kind === "disabled") {
+      // Bu endpoint'e gate kapalı proposal için çağrı gelmemeli — UI bug
+      return { success: false, error: "Bu teklif için doğrulama gerekmiyor" };
+    }
+
+    // Rate limit check
+    const { ip, userAgent } = await extractClientContext();
+    const decision = await checkAccessRateLimit(proposal.id);
+
+    if (!decision.allowed) {
+      // Rate limit violation da audit'e düşsün (matched=false)
+      await recordAccessAttempt({
+        proposalId: proposal.id,
+        kind,
+        matched: false,
+        ip,
+        userAgent,
+      });
+      return {
+        success: false,
+        error: decision.message,
+        retryAfterSeconds: decision.retryAfterSeconds,
+        locked: decision.reason === "locked",
+      };
+    }
+
+    // Input karşılaştırma (normalize + sabit eşleşme)
+    let matched = false;
+    if (kind === "phone" && proposal.contactPhone) {
+      const inputLast4 = normalizePhoneLast4(input);
+      const storedLast4 = extractPhoneLast4(proposal.contactPhone);
+      matched =
+        inputLast4 !== null &&
+        storedLast4 !== null &&
+        inputLast4 === storedLast4;
+    } else if (kind === "email" && proposal.contactEmail) {
+      const inputEmail = normalizeEmail(input);
+      const storedEmail = normalizeEmail(proposal.contactEmail);
+      matched = inputEmail === storedEmail;
+    }
+
+    // Audit kaydı (success/fail her durumda)
+    await recordAccessAttempt({
+      proposalId: proposal.id,
+      kind,
+      matched,
+      ip,
+      userAgent,
+    });
+
+    if (!matched) {
+      // decision.remaining check-öncesi sayı; bu deneme de sayıldı → -1.
+      const remainingAttempts = Math.max(decision.remaining - 1, 0);
+      return {
+        success: false,
+        error:
+          kind === "phone"
+            ? "Telefon numarasının son 4 hanesi uyuşmadı"
+            : "E-posta adresi uyuşmadı",
+        remainingAttempts,
+      };
+    }
+
+    // Başarılı: HMAC-SHA256 imzalı cookie set et
+    const signedValue = signAccessCookie(proposal.id);
+    const cookieStore = await cookies();
+    cookieStore.set(buildAccessCookieName(proposal.id), signedValue, {
+      maxAge: PROPOSAL_ACCESS_COOKIE_MAX_AGE_SECONDS,
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      path: `/teklif/${token}`, // sadece bu teklif URL'ine scope'lu
+    });
+
+    return { success: true };
+  } catch (error) {
+    console.error("verifyProposalAccess hatası:", error);
+    return { success: false, error: "Doğrulama başarısız oldu" };
   }
 }

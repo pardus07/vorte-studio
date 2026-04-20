@@ -271,6 +271,7 @@ model Proposal {
   contract        Contract?
   payments        ProposalPayment[]
   portalUser      PortalUser?
+  accessAttempts  ProposalAccessAttempt[]  // FAZ B — Madde 2.4 (IDOR gate audit izi)
 }
 
 enum ProposalStatus {
@@ -367,6 +368,39 @@ model EmailVerificationAttempt {
 
   @@index([email, attemptedAt])    // Rate limit window sorguları
   @@index([attemptedAt])           // Cleanup job için
+}
+
+// ── Teklif Erişim Denemeleri (FAZ B — Madde 2.4) ──
+//
+// /teklif/{token} public URL için IDOR koruma gate'inin audit izi.
+// Teklif HEM cuid token HEM ikinci faktör (phone son 4 / email) ile korunur.
+// Her phone / email / disabled-mode denemesi (başarılı/başarısız) kaydedilir.
+//
+// Dinamik doğrulama modu:
+//   • contactPhone varsa → phone son 4 hane sorulur (kind='phone')
+//   • contactPhone yoksa ama contactEmail varsa → tam email sorulur (kind='email')
+//   • ikisi de yoksa → gate bypass (kind='disabled', matched=false kaydı düşer)
+//
+// Retention: KVKK m.5/2-f meşru menfaat (güvenlik denetimi, brute force analizi).
+// PII minimum: ham input değeri saklanmaz — sadece matched boolean. IP + UA
+// (500ch truncate) bot/insan ayrımı ve abuse için yeterli.
+//
+// ⚠️ DB-level FK YOK: SQL migration'da constraint oluşturulmadı (proposal
+// silinse bile audit izi kalmalı). Prisma schema'daki @relation sadece
+// client-side type safety için — Prisma migrate tetiklenmediği sürece
+// DB'ye FK eklenmez. Sprint 3.6d out-of-band pattern gereği migrate atlandı.
+model ProposalAccessAttempt {
+  id          String   @id @default(cuid())
+  proposalId  String
+  proposal    Proposal @relation(fields: [proposalId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  kind        String   // 'phone' | 'email' | 'disabled'
+  matched     Boolean
+  ip          String?
+  userAgent   String?
+  attemptedAt DateTime @default(now())
+
+  @@index([proposalId, attemptedAt])  // Rate limit window sorguları
+  @@index([attemptedAt])              // Cleanup job için
 }
 
 // ── Teklif Ödeme Takibi ──

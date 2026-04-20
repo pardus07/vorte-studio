@@ -376,9 +376,14 @@ const fmt = (n: number) => n.toLocaleString("tr-TR");
 export default function ProposalView({
   proposal,
   portfolioItems = [],
+  showAccessWarning = false,
 }: {
   proposal: ProposalData;
   portfolioItems?: PortfolioItem[];
+  // FAZ B — Madde 2.4 (Q3-a): Proposal'da ne phone ne email kayıtlı
+  // olduğunda gate devre dışı kalır ve bu prop true geçirilir — üstte
+  // "doğrulamasız görüntüleme" uyarı bantı render edilir.
+  showAccessWarning?: boolean;
 }) {
   const [accepted, setAccepted] = useState(proposal.status === "ACCEPTED");
   const [rejected, setRejected] = useState(proposal.status === "REJECTED");
@@ -496,6 +501,41 @@ export default function ProposalView({
           </div>
         </div>
       </div>
+
+      {/* FAZ B — Madde 2.4 (Q3-a): Doğrulamasız erişim uyarı bantı.
+          Proposal'da phone/email bilgisi yoksa gate uygulanamadığı için
+          kullanıcı direkt render görür — bu bant müşteriye/sahibine linkin
+          ikinci faktör olmadığını hatırlatır. Dismiss YOK (SSR kalıcı). */}
+      {showAccessWarning && (
+        <div className="border-b border-amber-500/20 bg-amber-500/10 text-amber-100">
+          <div className="mx-auto flex max-w-4xl items-start gap-3 px-6 py-3 text-xs">
+            <svg
+              className="mt-0.5 h-4 w-4 shrink-0"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth={2}
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"
+              />
+            </svg>
+            <div>
+              <p className="font-medium">
+                Bu teklif bağlantısı doğrulamasız görüntülenmektedir.
+              </p>
+              <p className="mt-0.5 opacity-80">
+                Teklifinizde telefon veya e-posta bilgisi bulunmadığı için ek
+                doğrulama adımı uygulanamamıştır. Bağlantınızı yalnızca güvendiğiniz
+                kişilerle paylaşmanızı öneririz.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
 
       <main className="mx-auto max-w-4xl px-6 py-12">
         {/* ═══ 1. HERO ═══ */}
