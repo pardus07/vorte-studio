@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import type { Metadata } from "next";
+import DemoDisclaimer from "@/components/site/DemoDisclaimer";
 
 export const dynamic = "force-dynamic";
 
@@ -143,7 +144,8 @@ export async function generateMetadata({ params, searchParams }: PageProps): Pro
   if (ref) {
     try {
       const lead = await prisma.lead.findUnique({ where: { id: ref } });
-      if (lead) {
+      // OPTED_OUT lead'lerde firma adı meta'ya sızdırılmaz — default meta döner
+      if (lead && lead.status !== "OPTED_OUT") {
         return {
           title: `${lead.name} — Profesyonel Web Sitesi Örneği | Vorte Studio`,
           description: `${lead.name} için özel hazırlanmış web sitesi teklifi. Sektörünüze özel tasarım.`,
@@ -186,28 +188,42 @@ export default async function DemoPage({ params, searchParams }: PageProps) {
     templateImages = {};
   }
 
-  // ref parametresi varsa lead bilgilerini çek
+  // ref parametresi varsa lead bilgilerini çek. Lead.findUnique try/catch
+  // sadece DB bağlantısı problemleri için — notFound() burada çağırılmamalı
+  // çünkü Next.js'in NEXT_NOT_FOUND hatası generic catch tarafından yutulur.
+  let lead: Awaited<ReturnType<typeof prisma.lead.findUnique>> = null;
   if (ref) {
     try {
-      const lead = await prisma.lead.findUnique({ where: { id: ref } });
-      if (lead) {
-        const city = extractCity(lead.address);
-        return (
-          <TemplateComponent
-            firmName={lead.name}
-            city={city}
-            address={lead.address ?? undefined}
-            phone={lead.phone ?? undefined}
-            googleRating={lead.googleRating ?? undefined}
-            googleReviews={lead.googleReviews ?? undefined}
-            score={lead.score}
-            slug={`demo-${slug}-${ref}`}
-            sector={lead.sector ?? slug}
-            images={Object.keys(templateImages).length > 0 ? templateImages : undefined}
-          />
-        );
-      }
-    } catch { /* fallthrough to generic demo */ }
+      lead = await prisma.lead.findUnique({ where: { id: ref } });
+    } catch {
+      lead = null; /* DB hatası: generic demo'ya düş */
+    }
+  }
+
+  if (lead) {
+    // KVKK m.7 gate: OPTED_OUT lead'in demo sayfası 404 döner.
+    // Lead kaydı DB'de kalır (LeadOptOutLog FK koruması + 10 yıl saklama)
+    // ama sayfası görünmez olur. notFound() try/catch dışında çağrılıyor.
+    if (lead.status === "OPTED_OUT") notFound();
+
+    const city = extractCity(lead.address);
+    return (
+      <>
+        <DemoDisclaimer firmName={lead.name} leadId={lead.id} />
+        <TemplateComponent
+          firmName={lead.name}
+          city={city}
+          address={lead.address ?? undefined}
+          phone={lead.phone ?? undefined}
+          googleRating={lead.googleRating ?? undefined}
+          googleReviews={lead.googleReviews ?? undefined}
+          score={lead.score}
+          slug={`demo-${slug}-${ref}`}
+          sector={lead.sector ?? slug}
+          images={Object.keys(templateImages).length > 0 ? templateImages : undefined}
+        />
+      </>
+    );
   }
 
   // ref yoksa veya lead bulunamadıysa generic demo göster

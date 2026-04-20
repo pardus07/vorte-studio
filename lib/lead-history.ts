@@ -12,7 +12,8 @@ export type StatusChangeReason =
   | "wa_template_added"   // WA şablonu eklendi
   | "wa_sent"             // WA gönderildi
   | "contract_signed"     // sözleşme imzalandı (public endpoint)
-  | "client_conversion";  // CRM'e taşındı
+  | "client_conversion"   // CRM'e taşındı
+  | "opt_out";            // KVKK m.7 veri silme talebi (public endpoint)
 
 /**
  * logLeadStatusChange — status değişimini audit tablosuna yazar.

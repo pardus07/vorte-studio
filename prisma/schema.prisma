@@ -81,12 +81,16 @@ model Lead {
   utmMedium     String?  // cpc | organic | email | referral
   utmCampaign   String?  // kampanya id/adı
 
+  // Sprint 3.6d: /demo/[slug]?ref=<leadId> her ziyarette atomic increment
+  viewCount     Int        @default(0)
+
   createdAt     DateTime   @default(now())
   updatedAt     DateTime   @updatedAt
 
   chatSubmissions ChatSubmission[]
   statusHistory   LeadStatusHistory[]
   duplicateLogs   LeadDuplicateLog[]
+  optOutLogs      LeadOptOutLog[]
 }
 
 // ── Lead Dublike Log (Sprint 3.6a) ──
@@ -119,10 +123,28 @@ model LeadStatusHistory {
   fromStatus LeadStatus?  // ilk oluşturmada null
   toStatus   LeadStatus
   changedBy  String?     // admin email, "system", veya "admin" fallback
-  reason     String?     // "manual" | "wa_template_added" | "wa_sent" | "contract_signed" | "client_conversion" | "lead_created"
+  reason     String?     // "manual" | "wa_template_added" | "wa_sent" | "contract_signed" | "client_conversion" | "lead_created" | "opt_out"
   createdAt  DateTime    @default(now())
 
   @@index([leadId, createdAt])
+}
+
+// ── Lead Opt-Out Log (Sprint 3.6d) ──
+// KVKK m.7 veri silme talebinin delil kaydı. Lead SİLİNMEZ, status=OPTED_OUT
+// olur. Bu log 10 yıl saklanır (KVKK m.13 başvuru delili) ve FK ON DELETE
+// RESTRICT nedeniyle lead silme DB seviyesinde engellenir — hukuki kale.
+model LeadOptOutLog {
+  id        String   @id @default(cuid())
+  leadId    String
+  lead      Lead     @relation(fields: [leadId], references: [id], onDelete: Restrict)
+  firmName  String   // opt-out anında lead.name — lead ileride rename olursa da delil net
+  ip        String?
+  userAgent String?
+  reason    String?  // kullanıcının opsiyonel serbest metin geri bildirimi (max 500ch)
+  createdAt DateTime @default(now())
+
+  @@index([leadId])
+  @@index([createdAt])
 }
 
 enum LeadSource {
@@ -143,6 +165,7 @@ enum LeadStatus {
   CONTRACTED
   WON
   LOST
+  OPTED_OUT  // Sprint 3.6d: KVKK m.7 veri silme talebi (lead silinmez, status geçer)
 }
 
 // ── Chatbot Başvuru ──
