@@ -39,6 +39,22 @@ export default function DemoDisclaimer({
     if (stored === "true") setDismissed(true);
   }, []);
 
+  // WCAG 2.1.2 "No Keyboard Trap" — ESC ile modal kapatma.
+  // showOptOut false iken listener eklenmez (performance).
+  // submitting state guard backdrop click ile aynı davranış (race koruması).
+  useEffect(() => {
+    if (!showOptOut) return;
+
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && optOutState !== "submitting") {
+        setShowOptOut(false);
+      }
+    };
+
+    window.addEventListener("keydown", handleEscape);
+    return () => window.removeEventListener("keydown", handleEscape);
+  }, [showOptOut, optOutState]);
+
   // Defansif: leadId gelmezse hiç render etme (SSR'da zaten parent kontrol eder)
   if (!leadId || leadId.trim() === "") return null;
 
