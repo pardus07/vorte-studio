@@ -2,10 +2,9 @@ FROM node:22-alpine AS base
 WORKDIR /app
 
 FROM base AS builder
-# sharp Alpine icin libvips native binary'sini install sirasinda fetch eder
-# Gerekli build deps (musl). sharp 0.33+ pre-built musl binary ile geliyor ama
-# fallback gerekirse vips-dev fail-safe.
-RUN apk add --no-cache vips-dev build-base python3 || true
+# sharp 0.34+ Alpine musl icin bundled libvips ile geliyor — apk dep'e gerek yok.
+# (Onceki "vips-dev build-base python3 || true" satiri Alpine CDN throttle'da
+# 21dk build timeout'a sebep oluyordu; sharp pre-built binary yeterli.)
 COPY package*.json ./
 RUN NODE_ENV=development npm ci
 COPY . .
@@ -18,8 +17,8 @@ RUN npm run build
 
 FROM base AS runner
 ENV NODE_ENV=production
-# sharp runtime icin libvips kutuphanesi (alpine'da vips paketi)
-RUN apk add --no-cache vips || true
+# sharp runtime libvips'i node_modules/@img/sharp-libvips-linux-musl-x64 icinde
+# bundled tasiyor — runner stage'de apk vips paketi gereksiz.
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 
