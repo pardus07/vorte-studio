@@ -345,6 +345,30 @@ model VerificationCode {
   createdAt DateTime @default(now())
 }
 
+// ── E-posta Doğrulama Rate Limit Takibi (FAZ A — Madde 1.5) ──
+//
+// verifyContractEmail Server Action'ı her çağrıldığında (başarılı/başarısız)
+// bir satır yazar. Brute force koruması:
+//   • 15 dk pencere içinde en fazla 5 deneme
+//   • 5 başarısız deneme sonrası 1 saat kilit
+//
+// Retention: KVKK m.5/2-f meşru menfaat (güvenlik denetimi) — cleanup job'u
+// eklenene kadar manuel temizlenir. PII minimum: e-posta + IP + UA (500ch
+// truncate). Hash YOK çünkü rate limit sorguları email üzerinden çalışır.
+//
+// FK yok: contract silinse de denetim izi kalmalı (attempt history).
+model EmailVerificationAttempt {
+  id          String   @id @default(cuid())
+  email       String
+  attemptedAt DateTime @default(now())
+  ip          String?
+  userAgent   String?
+  success     Boolean
+
+  @@index([email, attemptedAt])    // Rate limit window sorguları
+  @@index([attemptedAt])           // Cleanup job için
+}
+
 // ── Teklif Ödeme Takibi ──
 model ProposalPayment {
   id         String   @id @default(cuid())

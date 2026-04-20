@@ -8,6 +8,12 @@ import {
   sendContractNotification,
 } from "@/lib/email";
 import { createPortalAccount } from "@/actions/portal";
+// FAZ A — Madde 1.5: verifyContractEmail brute force koruması
+import {
+  checkRateLimit,
+  recordAttempt,
+  extractClientContext,
+} from "@/lib/email-verification-rate-limit";
 
 // ── Feature labels (sözleşme metni için) ──
 const FEATURE_LABELS: Record<string, string> = {
@@ -221,6 +227,10 @@ export async function sendContractVerification(contractId: string) {
 //    lookup'ı önler ve enumeration'ı zorlaştırır.
 // 2. Kod 10 dakika sonra expire olur (DB seviyesinde gte filtresi).
 // 3. Başarılı kod bir kez kullanılır (used=true işaretlenir).
+// 4. FAZ A — Madde 1.5: DB-backed rate limit
+//    • 15 dk pencere içinde 5 deneme maksimum
+//    • 5 başarısız sonrası 1 saat kilit
+//    • Response: rateLimited=true + retryAfterSeconds (UI countdown göstersin)
 // Ek: Aynı contract için son 10 dk'da zaten onaylanmış kayıt varsa, 200
 // döner — replay'e karşı idempotent davranır.
 export async function verifyContractEmail(contractId: string, code: string) {
@@ -235,8 +245,20 @@ export async function verifyContractEmail(contractId: string, code: string) {
     });
     if (!contract) return { success: false, error: "Sözleşme bulunamadı" };
     if (contract.emailVerified) {
-      // Zaten doğrulanmış — idempotent başarı
+      // Zaten doğrulanmış — idempotent başarı (rate limit penceresine sayılmaz)
       return { success: true };
+    }
+
+    // Rate limit kontrolü — contract.signerEmail anahtarıyla
+    const clientContext = await extractClientContext();
+    const rateCheck = await checkRateLimit(contract.signerEmail);
+    if (!rateCheck.allowed) {
+      return {
+        success: false,
+        error: rateCheck.message,
+        rateLimited: true as const,
+        retryAfterSeconds: rateCheck.retryAfterSeconds,
+      };
     }
 
     const verification = await prisma.verificationCode.findFirst({
@@ -250,7 +272,18 @@ export async function verifyContractEmail(contractId: string, code: string) {
     });
 
     if (!verification) {
-      return { success: false, error: "Geçersiz veya süresi dolmuş kod" };
+      // Başarısız denemeyi logla + kalan deneme sayısını UI'a bildir
+      await recordAttempt({
+        email: contract.signerEmail,
+        success: false,
+        ip: clientContext.ip,
+        userAgent: clientContext.userAgent,
+      });
+      return {
+        success: false,
+        error: "Geçersiz veya süresi dolmuş kod",
+        remainingAttempts: Math.max(rateCheck.remaining - 1, 0),
+      };
     }
 
     // Kodu kullanıldı olarak işaretle
@@ -263,6 +296,15 @@ export async function verifyContractEmail(contractId: string, code: string) {
     await prisma.contract.update({
       where: { id: contractId },
       data: { emailVerified: true },
+    });
+
+    // Başarılı denemeyi logla (brute force attacker "doğru kodu bildim" diye
+    // limit dışı kalmasın — success=true de pencereye sayılır)
+    await recordAttempt({
+      email: contract.signerEmail,
+      success: true,
+      ip: clientContext.ip,
+      userAgent: clientContext.userAgent,
     });
 
     return { success: true };
