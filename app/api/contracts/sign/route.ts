@@ -7,6 +7,8 @@ import { createPortalAccount } from "@/actions/portal";
 import { revalidatePath } from "next/cache";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { logLeadStatusChange } from "@/lib/lead-history";
+// FAZ C — Madde 3.3: KDV temporal lookup
+import { getPricingValue } from "@/lib/pricing-config";
 
 export const dynamic = "force-dynamic";
 
@@ -89,8 +91,8 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    // 2. KDV hesaplama
-    const kdvRate = 0.20;
+    // 2. KDV hesaplama — FAZ C 3.3: sözleşme tarihindeki oran
+    const kdvRate = await getPricingValue("kdv_rate", contract.createdAt);
     const totalPrice = contract.proposal.totalPrice;
     const kdvAmount = Math.round(totalPrice * kdvRate);
     const totalWithKdv = totalPrice + kdvAmount;

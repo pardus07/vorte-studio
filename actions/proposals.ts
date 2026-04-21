@@ -18,6 +18,8 @@ import {
   buildAccessCookieName,
   PROPOSAL_ACCESS_COOKIE_MAX_AGE_SECONDS,
 } from "@/lib/proposal-access-rate-limit";
+// FAZ C — Madde 3.3: KDV temporal lookup
+import { getPricingValue } from "@/lib/pricing-config";
 
 async function requireAdmin() {
   const session = await auth();
@@ -52,8 +54,9 @@ export async function createProposalFromSubmission(
       pricingConfigs
     );
 
-    // Ödeme planı (KDV dahil toplam üzerinden)
-    const kdvRate = 0.20;
+    // Ödeme planı (KDV dahil toplam üzerinden) — FAZ C 3.3: şu anki oran
+    // (teklif ilk yaratılıyor, tarih yok → now())
+    const kdvRate = await getPricingValue("kdv_rate");
     const totalWithKdv = Math.round(priceResult.totalPrice * (1 + kdvRate));
     const pay1 = Math.round(totalWithKdv * 0.4);
     const pay2 = Math.round(totalWithKdv * 0.3);

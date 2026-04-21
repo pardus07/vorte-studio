@@ -3,6 +3,7 @@
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import type { PricingItem } from "@/lib/pricing-constants";
+import { invalidatePricingCache } from "@/lib/pricing-config";
 
 export async function getPricingConfigs(): Promise<PricingItem[]> {
   try {
@@ -26,10 +27,13 @@ export async function getPricingConfigs(): Promise<PricingItem[]> {
 
 export async function updatePricingValue(id: string, value: number) {
   try {
-    await prisma.pricingConfig.update({
+    const updated = await prisma.pricingConfig.update({
       where: { id },
       data: { value },
+      select: { key: true },
     });
+    // FAZ C 3.3: In-process Map cache invalidation — yeni oran hemen görünsün
+    invalidatePricingCache(updated.key);
     revalidatePath("/admin/pricing");
     return { success: true };
   } catch (err) {
@@ -80,12 +84,31 @@ export async function createPricingConfig(data: {
   }
 }
 
+// FAZ C Madde 3.3: Temporal geçiş sonrası `key` tek başına unique değil.
+// Bu fonksiyon sadece "şu an aktif olan satırı güncelle" semantiğinde
+// kullanılıyor (admin pricing'de USD/TRY kuru refresh gibi volatile
+// değerler için). Gerçek "oran değişti" senaryosu için ileride ayrı
+// `archiveAndCreate(key, newValue, effectiveFrom)` helper'ı gerekebilir.
 export async function updatePricingByKey(key: string, value: number) {
   try {
+    const now = new Date();
+    const current = await prisma.pricingConfig.findFirst({
+      where: {
+        key,
+        effectiveFrom: { lte: now },
+        OR: [{ effectiveTo: null }, { effectiveTo: { gt: now } }],
+      },
+      orderBy: { effectiveFrom: "desc" },
+      select: { id: true },
+    });
+    if (!current) {
+      return { success: false };
+    }
     await prisma.pricingConfig.update({
-      where: { key },
+      where: { id: current.id },
       data: { value },
     });
+    invalidatePricingCache(key);
     return { success: true };
   } catch {
     return { success: false };

@@ -19,6 +19,8 @@ export type ClientFormData = z.infer<typeof ClientFormSchema>;
 export async function createClient(data: ClientFormData) {
   try {
     const parsed = ClientFormSchema.parse(data);
+    // FAZ C 3.5: Admin panelden manuel müşteri → MANUAL_ADMIN kaynak.
+    // Lead geçmişi yok, originalLeadId null bırakılır.
     const client = await prisma.client.create({
       data: {
         name: parsed.name,
@@ -28,6 +30,9 @@ export async function createClient(data: ClientFormData) {
         sector: parsed.sector || null,
         status: parsed.status || "POTENTIAL",
         notes: parsed.notes || null,
+        acquisitionSource: "MANUAL_ADMIN",
+        acquisitionDate: new Date(),
+        originalLeadId: null,
       },
     });
     revalidatePath("/admin/crm");

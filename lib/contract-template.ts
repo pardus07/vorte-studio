@@ -31,6 +31,7 @@ interface ContractData {
   features: string[];
   pageCount?: string;
   totalPrice: number;      // KDV hariç
+  kdvRate: number;          // FAZ C 3.3: DB'den temporal olarak gelir (ör 0.20)
   kdvAmount: number;        // KDV tutarı
   totalWithKdv: number;     // KDV dahil
   paymentPlan: Array<{ label: string; percent: number; amount: number; description: string }>;
@@ -138,7 +139,7 @@ MADDE 3 — BEDEL VE ÖDEME KOŞULLARI
 
 3.1. Proje Bedeli:
   Ara Toplam (KDV Hariç) : ${fmt(data.totalPrice)} TL
-  KDV (%20)              : ${fmt(data.kdvAmount)} TL
+  KDV (%${Math.round(data.kdvRate * 100)})              : ${fmt(data.kdvAmount)} TL
   TOPLAM (KDV Dahil)     : ${fmt(data.totalWithKdv)} TL
 
 3.2. Ödeme Planı:

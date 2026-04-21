@@ -190,10 +190,13 @@ function getProcessSteps(timeline: string | null) {
 }
 
 // ── 3 Paket türetme ──
+// FAZ C — Madde 3.3: kdvRate artık DB'den geliyor, parametre olarak geçer.
+// Hardcoded 0.20 kaldırıldı; çağıran (ProposalView main) prop'u forward eder.
 function generatePackages(
   totalPrice: number,
   features: string[],
-  estimatedHours: number | null
+  estimatedHours: number | null,
+  kdvRate: number
 ) {
   // Profesyonel = mevcut fiyat (100%)
   // Başlangıç = temel özellikler (%70)
@@ -226,7 +229,7 @@ function generatePackages(
     (f) => !basicSlice.includes(f)
   );
 
-  const kdvRate = 0.2;
+  // kdvRate parametreden gelir (FAZ C 3.3) — DB kaynaklı temporal değer
 
   const basicPrice = Math.round(totalPrice * basicMultiplier);
   const basicWithKdv = Math.round(basicPrice * (1 + kdvRate));
@@ -376,10 +379,15 @@ const fmt = (n: number) => n.toLocaleString("tr-TR");
 export default function ProposalView({
   proposal,
   portfolioItems = [],
+  kdvRate,
   showAccessWarning = false,
 }: {
   proposal: ProposalData;
   portfolioItems?: PortfolioItem[];
+  // FAZ C — Madde 3.3: KDV oranı SSR'da getPricingValue ile çekilir
+  // ve buraya prop olarak geçer. Client tarafı DB'ye erişemediği için
+  // bu zorunlu (use server async fn client'tan çağrılamaz).
+  kdvRate: number;
   // FAZ B — Madde 2.4 (Q3-a): Proposal'da ne phone ne email kayıtlı
   // olduğunda gate devre dışı kalır ve bu prop true geçirilir — üstte
   // "doğrulamasız görüntüleme" uyarı bantı render edilir.
@@ -423,8 +431,9 @@ export default function ProposalView({
     )
   );
 
-  // KDV hesaplama (%20)
-  const kdvRate = 0.2;
+  // KDV hesaplama — FAZ C 3.3: kdvRate prop'u SSR'da getPricingValue ile,
+  // teklifin createdAt'ine göre çekilir (temporal — teklif imzalandığı
+  // andaki oran sabitlenir, bugün rate değişse bile bu teklif etkilenmez).
   const kdvAmount = Math.round(proposal.totalPrice * kdvRate);
   const totalWithKdv = proposal.totalPrice + kdvAmount;
 
@@ -438,7 +447,8 @@ export default function ProposalView({
   const packages = generatePackages(
     proposal.totalPrice,
     proposal.features,
-    proposal.estimatedHours
+    proposal.estimatedHours,
+    kdvRate
   );
   const colors = parseColors(proposal.brandColors);
 
@@ -1083,7 +1093,7 @@ export default function ProposalView({
           </div>
           <div className="mt-2 space-y-1">
             <div className="text-xs text-white/30">
-              {fmt(proposal.totalPrice)} TL + %{kdvRate * 100} KDV (
+              {fmt(proposal.totalPrice)} TL + %{Math.round(kdvRate * 100)} KDV (
               {fmt(kdvAmount)} TL)
             </div>
             <div className="text-[10px] text-white/15">
@@ -1183,7 +1193,7 @@ export default function ProposalView({
             </div>
             <div className="flex items-center justify-between">
               <span className="text-sm text-white/40">
-                KDV (%{kdvRate * 100})
+                KDV (%{Math.round(kdvRate * 100)})
               </span>
               <span className="text-sm text-white/60">
                 {fmt(kdvAmount)} TL

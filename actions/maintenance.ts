@@ -3,6 +3,8 @@
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
+// FAZ C — Madde 3.5: LeadSource → ClientAcquisitionSource mapper
+import { leadSourceToAcquisitionSource } from "@/lib/constants";
 
 /**
  * Site tipine göre yıllık hosting paketi tutarı (TL).
@@ -163,6 +165,17 @@ export async function createMaintenanceFromProposal(proposalId: string) {
     }
 
     if (!client) {
+      // FAZ C 3.5: Bakım akışından oluşan Client için kaynak önceliği:
+      //   1) Proposal.leadId varsa Lead.source (ör MAPS_SCRAPER)
+      //   2) Lead yoksa "MAINTENANCE" (manuel bakım kaydı)
+      // Schema'da Proposal ↔ Lead relation tanımlı değil (yalnız leadId scalar),
+      // bu yüzden ayrı findUnique.
+      const lead = proposal.leadId
+        ? await prisma.lead.findUnique({ where: { id: proposal.leadId } })
+        : null;
+      const acquisitionSource = lead
+        ? leadSourceToAcquisitionSource(lead.source)
+        : "MAINTENANCE";
       client = await prisma.client.create({
         data: {
           name: proposal.contactName || proposal.firmName,
@@ -173,6 +186,9 @@ export async function createMaintenanceFromProposal(proposalId: string) {
           status: "MAINTENANCE",
           totalRevenue: proposal.totalPrice,
           notes: `Bakım kaydı otomatik oluşturuldu (proposal ${proposal.id.slice(0, 8)})`,
+          acquisitionSource,
+          acquisitionDate: lead?.createdAt ?? new Date(),
+          originalLeadId: lead?.id ?? null,
         },
       });
     } else {

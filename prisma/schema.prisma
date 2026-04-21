@@ -30,10 +30,25 @@ model Client {
   createdAt    DateTime     @default(now())
   updatedAt    DateTime     @updatedAt
 
+  // ── Kaynak/Attribution izleme (FAZ C — Madde 3.5) ──
+  // Müşteri hangi kanaldan geldi? ROI analizi + orijinal lead bağlantısı.
+  // acquisitionSource: lib/constants.ts CLIENT_ACQUISITION_SOURCES enum'u.
+  // String? (enum değil) → yeni kaynak ekleme migration'sız yapılabilsin.
+  // originalLeadId FK: ON DELETE SET NULL — lead silinse bile client ve
+  // acquisitionSource audit izi korunur.
+  acquisitionSource String?
+  acquisitionDate   DateTime?
+  originalLeadId    String?
+  originalLead      Lead?    @relation("ClientFromLead", fields: [originalLeadId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+
   projects    Project[]
   quotes      Quote[]
   maintenance Maintenance[]
   activities  Activity[]
+
+  @@index([acquisitionSource])
+  @@index([acquisitionDate])
+  @@index([originalLeadId])
 }
 
 enum ClientStatus {
@@ -91,6 +106,11 @@ model Lead {
   statusHistory   LeadStatusHistory[]
   duplicateLogs   LeadDuplicateLog[]
   optOutLogs      LeadOptOutLog[]
+
+  // ── FAZ C Madde 3.5: Lead → Client conversion history ──
+  // Tek Lead birden fazla Client'a dönüşebilir (nadir ama mümkün —
+  // lead farklı iş kollarında iki ayrı firma açarsa).
+  convertedClients Client[] @relation("ClientFromLead")
 }
 
 // ── Lead Dublike Log (Sprint 3.6a) ──
@@ -557,17 +577,31 @@ model LogoVariant {
   createdAt     DateTime   @default(now())
 }
 
-// ── Fiyat Ayarları ──
+// ── Fiyat Ayarları (FAZ C — Madde 3.3: Temporal Versioning) ──
+// Aynı `key` farklı dönemlerde farklı değer alabilir (KDV %18 → %20 gibi).
+// Sözleşme anındaki oranı korumak için her lookup `asOf=Date` ile yapılır:
+//   WHERE key = ? AND effectiveFrom <= asOf
+//     AND (effectiveTo IS NULL OR effectiveTo > asOf)
+// Eski kayıtlar arşivlenirken `effectiveTo` set edilir, yeni satır eklenir.
+// Benzersizlik tek başına `key` değil, (`key`, `effectiveFrom`) çifti.
 model PricingConfig {
-  id        String   @id @default(cuid())
-  category  String   // labor, base, feature, content, hosting, urgency, token
-  key       String   @unique // ör: base_tanitim, feature_randevu, urgency_acil
-  label     String   // Türkçe etiket
-  value     Float    // fiyat (TL), saat, veya çarpan
-  unit      String?  // saat, tl, carpan, dolar
-  sortOrder Int      @default(0)
-  isActive  Boolean  @default(true)
-  updatedAt DateTime @updatedAt
+  id            String    @id @default(cuid())
+  category      String    // labor, base, feature, content, hosting, urgency, token, tax
+  key           String    // ör: base_tanitim, kdv_rate — unique DEĞİL tek başına
+  label         String    // Türkçe etiket
+  value         Float     // fiyat (TL), saat, oran, veya çarpan
+  unit          String?   // saat, tl, carpan, oran, dolar
+  sortOrder     Int       @default(0)
+  isActive      Boolean   @default(true)
+  effectiveFrom DateTime  @default(dbgenerated("'2018-01-01 00:00:00'::timestamp"))
+  effectiveTo   DateTime?
+  description   String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@unique([key, effectiveFrom])
+  @@index([key, effectiveFrom, effectiveTo])
+  @@index([category, effectiveFrom])
 }
 
 // ── Prospect (Maps Scraper sonuçları) ──

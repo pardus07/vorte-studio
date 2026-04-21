@@ -5,6 +5,8 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { auth } from "@/lib/auth";
 import { logLeadStatusChange } from "@/lib/lead-history";
+// FAZ C — Madde 3.5: Client.acquisitionSource için LeadSource mapper
+import { leadSourceToAcquisitionSource } from "@/lib/constants";
 
 // ── Admin kullanıcıyı string olarak al ──
 // auth() session'da user varsa email kullanır; yoksa "admin" fallback.
@@ -69,7 +71,20 @@ const LeadFormSchema = z.object({
   budget: z.string().trim().max(100).optional(),
   notes: z.string().max(2000).optional(),
   status: LeadStatusSchema.optional(),
-});
+})
+  // Sprint 3.6c — Madde 3.4: Lead oluştururken e-posta VEYA telefon zorunlu.
+  // İkisi de boşsa satış ekibi iletişim kuramaz, lead ölü kayıt olur.
+  // .refine() cross-field validation için Zod'un standart yolu; hata mesajı
+  // phone alanına iliştirildi çünkü form'da daha belirgin.
+  .refine(
+    (data) =>
+      (typeof data.email === "string" && data.email.length > 0) ||
+      (typeof data.phone === "string" && data.phone.length > 0),
+    {
+      message: "E-posta veya telefon numarası zorunludur",
+      path: ["phone"],
+    }
+  );
 
 export type LeadFormData = z.infer<typeof LeadFormSchema>;
 
@@ -249,6 +264,8 @@ export async function convertLeadToClient(leadId: string) {
     const lead = await prisma.lead.findUnique({ where: { id: leadId } });
     if (!lead) return { success: false, error: "Lead bulunamadı." };
 
+    // FAZ C 3.5: Acquisition izlenebilirliği — Lead.source'tan map et,
+    // createdAt'i kaynak tarihi olarak sabitle, Lead.id ile FK bağla.
     const client = await prisma.client.create({
       data: {
         name: lead.name,
@@ -258,6 +275,9 @@ export async function convertLeadToClient(leadId: string) {
         sector: lead.sector ?? undefined,
         status: "ACTIVE",
         notes: lead.budget ? `Bütçe: ${lead.budget}` : undefined,
+        acquisitionSource: leadSourceToAcquisitionSource(lead.source),
+        acquisitionDate: lead.createdAt,
+        originalLeadId: lead.id,
       },
     });
 

@@ -4,6 +4,8 @@ import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { auth } from "@/lib/auth";
 import { activatePortalAccount } from "./portal";
+// FAZ C — Madde 3.5: LeadSource → ClientAcquisitionSource mapper
+import { leadSourceToAcquisitionSource } from "@/lib/constants";
 
 async function requireAdmin() {
   const session = await auth();
@@ -56,6 +58,16 @@ async function ensureProjectFromProposal(proposalId: string): Promise<void> {
     : null;
 
   if (!client) {
+    // FAZ C 3.5: Lead varsa kaynağını kopyala, yoksa ödeme akışını kaynak say.
+    // Proposal ↔ Lead arasında schema'da relation yok (sadece leadId scalar),
+    // o yüzden ayrı findUnique ile çekiyoruz (FK constraint olmadığı için
+    // include: { lead: true } Prisma tipinde yok).
+    const lead = proposal.leadId
+      ? await prisma.lead.findUnique({ where: { id: proposal.leadId } })
+      : null;
+    const acquisitionSource = lead
+      ? leadSourceToAcquisitionSource(lead.source)
+      : "PROPOSAL_PAYMENT";
     client = await prisma.client.create({
       data: {
         name: proposal.contactName || proposal.firmName,
@@ -64,6 +76,9 @@ async function ensureProjectFromProposal(proposalId: string): Promise<void> {
         phone,
         sector: proposal.sector,
         status: "ACTIVE",
+        acquisitionSource,
+        acquisitionDate: lead?.createdAt ?? new Date(),
+        originalLeadId: lead?.id ?? null,
       },
     });
   } else if (client.status !== "ACTIVE") {

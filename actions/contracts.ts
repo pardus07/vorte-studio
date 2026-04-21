@@ -14,6 +14,8 @@ import {
   recordAttempt,
   extractClientContext,
 } from "@/lib/email-verification-rate-limit";
+// FAZ C — Madde 3.3: KDV temporal lookup
+import { getPricingValue } from "@/lib/pricing-config";
 
 // ── Feature labels (sözleşme metni için) ──
 const FEATURE_LABELS: Record<string, string> = {
@@ -69,8 +71,8 @@ export async function createContractDraft(
       return { success: true, contractId: proposal.contract.id, existing: true };
     }
 
-    // KDV hesapla
-    const kdvRate = 0.20;
+    // KDV hesapla — FAZ C 3.3: teklif tarihindeki oranı kullan
+    const kdvRate = await getPricingValue("kdv_rate", proposal.createdAt);
     const kdvAmount = Math.round(proposal.totalPrice * kdvRate);
     const totalWithKdv = proposal.totalPrice + kdvAmount;
 
@@ -104,6 +106,7 @@ export async function createContractDraft(
       features: (proposal.features as string[]) || [],
       pageCount: proposal.pageCount || undefined,
       totalPrice: proposal.totalPrice,
+      kdvRate,
       kdvAmount,
       totalWithKdv,
       paymentPlan: proposal.paymentPlan as Array<{

@@ -12,6 +12,8 @@ import {
   buildAccessCookieName,
   verifyAccessCookie,
 } from "@/lib/proposal-access-rate-limit";
+// FAZ C — Madde 3.3: KDV SSR'da çekilir, client'a prop olarak geçer
+import { getPricingValue } from "@/lib/pricing-config";
 
 export const dynamic = "force-dynamic";
 
@@ -62,6 +64,15 @@ export default async function ProposalPage({
     contactEmail: proposal.contactEmail,
   });
 
+  // FAZ C 3.3: KDV oranını teklifin yaratılma tarihine göre çek.
+  // Sözleşme geçici oranı korumalı (bugün %22 olsa bile dün imzalanan
+  // teklif %20 ile görünmeli). createdAt serializer'da ISO string'e
+  // çevrildi, burada Date'e geri dönüştürüyoruz.
+  const kdvRate = await getPricingValue(
+    "kdv_rate",
+    new Date(proposal.createdAt)
+  );
+
   // ── Dal a) Disabled mode — banner + direkt render ──
   // Ne phone ne email kayıtlı, gate uygulanamaz. Müşteri direkt görür, ama
   // ProposalView üzerinde bir uyarı bantı ile "bu teklife ikinci faktörlü
@@ -75,6 +86,7 @@ export default async function ProposalPage({
       <ProposalView
         proposal={proposal}
         portfolioItems={portfolioItems}
+        kdvRate={kdvRate}
         showAccessWarning={true}
       />
     );
@@ -92,7 +104,11 @@ export default async function ProposalPage({
       getSimilarPortfolioItems(proposal.sector),
     ]);
     return (
-      <ProposalView proposal={proposal} portfolioItems={portfolioItems} />
+      <ProposalView
+        proposal={proposal}
+        portfolioItems={portfolioItems}
+        kdvRate={kdvRate}
+      />
     );
   }
 

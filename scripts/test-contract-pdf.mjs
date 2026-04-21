@@ -33,6 +33,7 @@ const testData = {
   features: ["whatsapp", "harita", "sosyal", "odeme"],
   pageCount: "Belirlenecek",
   totalPrice: 74050,
+  kdvRate: 0.2,
   kdvAmount: 14810,
   totalWithKdv: 88860,
   paymentPlan: [

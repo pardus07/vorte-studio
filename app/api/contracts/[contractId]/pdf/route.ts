@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { generateContractPDF } from "@/lib/contract-pdf";
 import { auth } from "@/lib/auth";
+// FAZ C — Madde 3.3: KDV temporal lookup
+import { getPricingValue } from "@/lib/pricing-config";
 
 export const dynamic = "force-dynamic";
 
@@ -36,9 +38,10 @@ export async function GET(
       return NextResponse.json({ error: "Sozlesme henuz imzalanmamis" }, { status: 400 });
     }
 
-    // KDV hesaplama
+    // KDV hesaplama — FAZ C 3.3: sözleşme tarihindeki oran
+    const kdvRate = await getPricingValue("kdv_rate", contract.createdAt);
     const totalPrice = contract.proposal.totalPrice;
-    const kdvAmount = Math.round(totalPrice * 0.20);
+    const kdvAmount = Math.round(totalPrice * kdvRate);
     const totalWithKdv = totalPrice + kdvAmount;
 
     const signedAtStr = contract.signedAt
