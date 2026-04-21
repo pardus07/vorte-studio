@@ -183,12 +183,16 @@ export async function recordAccessAttempt(params: {
  * getAuthSecret — NextAuth AUTH_SECRET env'ini ödünç alır (Q2-a kararı).
  * Bu sayede hiçbir yeni secret yönetimi gerekmiyor, rotation NextAuth ile
  * senkron. Eksikse throw — deployment'ta fail-fast.
+ *
+ * Not: NextAuth v5 beta geçişinde resmi isim AUTH_SECRET oldu ama eski
+ * deployment'larda hala NEXTAUTH_SECRET set olabilir. Her iki ismi de
+ * kabul ediyoruz — NextAuth kütüphanesi de dahili olarak böyle yapıyor.
  */
 function getAuthSecret(): string {
-  const secret = process.env.AUTH_SECRET;
+  const secret = process.env.AUTH_SECRET || process.env.NEXTAUTH_SECRET;
   if (!secret || secret.length < 16) {
     throw new Error(
-      "AUTH_SECRET environment variable missing or too short (min 16 chars)"
+      "AUTH_SECRET (or NEXTAUTH_SECRET) environment variable missing or too short (min 16 chars)"
     );
   }
   return secret;
