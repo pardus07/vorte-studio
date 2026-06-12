@@ -123,7 +123,7 @@ export default function Footer() {
         {/* Bottom bar */}
         <div className="mt-6 flex flex-col items-center justify-between gap-4 md:flex-row">
           <p className="text-[11px] text-muted2">
-            &copy; {new Date().getFullYear()} İbrahim Yaşar — Vorte Studio. Tüm hakları saklıdır.
+            &copy; {new Date().getFullYear()} Vorte Grup A.Ş. Tüm hakları saklıdır.
           </p>
           <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-[11px] text-muted2">
             <Link href="/kvkk" className="transition-colors hover:text-white">

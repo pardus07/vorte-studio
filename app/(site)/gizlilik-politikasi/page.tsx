@@ -17,7 +17,7 @@ export default function GizlilikPolitikasiPage() {
   return (
     <LegalLayout title="Gizlilik Politikası" lastUpdated="7 Nisan 2026">
       <p>
-        İbrahim Yaşar — Vorte Studio (&quot;Vorte Studio&quot;, &quot;biz&quot;) olarak
+        Vorte Grup A.Ş. (&quot;Vorte Studio&quot;, &quot;biz&quot;) olarak
         kişisel verilerinizin güvenliği bizim için önemlidir. İşbu Gizlilik
         Politikası, vortestudio.com web sitesini ziyaret ettiğinizde veya
         hizmetlerimizden yararlandığınızda toplanan bilgilerin nasıl

@@ -18,6 +18,7 @@ export default function JsonLd() {
         "@type": "Organization",
         "@id": `${SITE_URL}/#organization`,
         name: "Vorte Studio",
+        legalName: "Vorte Grup A.Ş.",
         url: SITE_URL,
         logo: {
           "@type": "ImageObject",
@@ -47,6 +48,7 @@ export default function JsonLd() {
         "@type": "ProfessionalService",
         "@id": `${SITE_URL}/#service`,
         name: "Vorte Studio",
+        legalName: "Vorte Grup A.Ş.",
         description:
           "Next.js ve Prisma ile kurumsal web sitesi, e-ticaret ve mobil uygulama geliştiren yazılım stüdyosu. Yenilikçi tasarım, gerçek kod, ölçülebilir performans.",
         url: SITE_URL,

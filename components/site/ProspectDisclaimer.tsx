@@ -126,7 +126,7 @@ export default function ProspectDisclaimer({
             <span>
               <strong>KVKK:</strong> İşletme bilgileriniz Google
               Haritalar&apos;daki halka açık kayıtlardan alınmıştır. Veri
-              sorumlusu: <strong>Vorte Studio (İbrahim Yaşar)</strong>. Hukuki
+              sorumlusu: <strong>Vorte Grup A.Ş.</strong>. Hukuki
               dayanak: KVKK m.5/2-f (meşru menfaat).
             </span>
             <span className="flex items-center gap-2">

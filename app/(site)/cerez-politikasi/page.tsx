@@ -21,7 +21,7 @@ export default function CerezPolitikasiPage() {
   return (
     <LegalLayout title="Çerez Politikası" lastUpdated="7 Nisan 2026">
       <p>
-        İşbu Çerez Politikası, İbrahim Yaşar — Vorte Studio tarafından işletilen
+        İşbu Çerez Politikası, Vorte Grup A.Ş. tarafından işletilen
         vortestudio.com web sitesinde kullanılan çerezler hakkında bilgi vermek
         amacıyla hazırlanmıştır. Çerez kullanımımız, 6698 sayılı Kişisel Verilerin
         Korunması Kanunu (&quot;KVKK&quot;) ve KVKK Çerez Uygulamaları Hakkında Rehber

@@ -35,18 +35,26 @@ export default function KvkkPage() {
 
       <h2>1. Veri Sorumlusu Kimliği</h2>
       <p>
-        6698 sayılı Kanun uyarınca veri sorumlusu sıfatıyla aşağıdaki gerçek kişi
+        6698 sayılı Kanun uyarınca veri sorumlusu sıfatıyla aşağıdaki tüzel kişi
         hareket etmektedir:
       </p>
       <table>
         <tbody>
           <tr>
             <th>Ticari Ünvan</th>
-            <td>İbrahim Yaşar — Vorte Studio (Şahıs Şirketi)</td>
+            <td>Vorte Grup A.Ş.</td>
           </tr>
           <tr>
-            <th>T.C. Kimlik No</th>
-            <td>46594013798</td>
+            <th>Vergi Kimlik No (VKN)</th>
+            <td>(güncelleniyor)</td>
+          </tr>
+          <tr>
+            <th>MERSIS No</th>
+            <td>(güncelleniyor)</td>
+          </tr>
+          <tr>
+            <th>Ticaret Sicil No</th>
+            <td>(güncelleniyor)</td>
           </tr>
           <tr>
             <th>Adres</th>
