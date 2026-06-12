@@ -176,6 +176,36 @@ export default function Footer() {
           </div>
         </div>
 
+        {/* Güvenli Ödeme bandı — iyzico üye işyeri kriteri (logo görünürlüğü zorunlu) */}
+        <div className="mt-8 flex flex-col items-start gap-3 border-t border-border pt-8 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.15em] text-muted2">
+              Güvenli Ödeme
+            </p>
+            <p className="mt-1 max-w-md text-[11px] leading-relaxed text-muted2">
+              Tüm ödemeler{" "}
+              <a
+                href="https://www.iyzico.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-accent hover:underline"
+              >
+                iyzico
+              </a>{" "}
+              altyapısıyla, BDDK lisansı ve PCI-DSS uyumu kapsamında işlenir.
+              Kart bilgileriniz sunucularımızda saklanmaz.
+            </p>
+          </div>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/payment/iyzico-logo-band-white.svg"
+            alt="iyzico ile öde · Visa · MasterCard · American Express · Troy"
+            className="h-10 w-auto opacity-95"
+            loading="lazy"
+            decoding="async"
+          />
+        </div>
+
         {/* Divider */}
         <div className="mt-8 border-t border-border" />
 
