@@ -84,15 +84,16 @@ export async function createContractDraft(
     });
 
     const contractText = generateContractText({
-      ownerName: process.env.VORTE_OWNER_NAME || "Vorte Studio",
-      ownerTcNo: process.env.VORTE_OWNER_TCKN || "",
+      ownerName:
+        process.env.VORTE_OWNER_NAME || "Vorte Dijital Teknoloji A.Ş.",
+      ownerTcNo: process.env.VORTE_OWNER_TCKN || "9251333007",
       ownerAddress:
         process.env.VORTE_ADDRESS ||
-        "Mansuroğlu Mah. Ankara Caddesi No:81/012 Bayraklı Tower, 35030 Bayraklı / İzmir",
+        "Çınarlı Mah. 1572/1 Sk. No: 3 İç Kapı No: 126, Konak / İzmir",
       ownerPhone: process.env.VORTE_PHONE || "05431883425",
       ownerEmail: process.env.SMTP_USER || "info@vortestudio.com",
       ownerIban: process.env.VORTE_IBAN || "",
-      ownerTaxOffice: process.env.VORTE_TAX_OFFICE || "",
+      ownerTaxOffice: process.env.VORTE_TAX_OFFICE || "Karşıyaka Vergi Dairesi",
       signerName: signerInfo.signerName,
       signerTcNo: signerInfo.signerTcNo,
       signerTaxNo: signerInfo.signerTaxNo,

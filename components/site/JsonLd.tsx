@@ -18,7 +18,7 @@ export default function JsonLd() {
         "@type": "Organization",
         "@id": `${SITE_URL}/#organization`,
         name: "Vorte Studio",
-        legalName: "Vorte Grup A.Ş.",
+        legalName: "Vorte Dijital Teknoloji A.Ş.",
         url: SITE_URL,
         logo: {
           "@type": "ImageObject",
@@ -28,10 +28,10 @@ export default function JsonLd() {
         },
         address: {
           "@type": "PostalAddress",
-          streetAddress: "Mansuroğlu Mah. Ankara Caddesi No:81/012 Bayraklı Tower",
-          addressLocality: "Bayraklı",
+          streetAddress: "Çınarlı Mah. 1572/1 Sk. No: 3 İç Kapı No: 126",
+          addressLocality: "Konak",
           addressRegion: "İzmir",
-          postalCode: "35030",
+          postalCode: "35170",
           addressCountry: "TR",
         },
         contactPoint: [
@@ -48,7 +48,7 @@ export default function JsonLd() {
         "@type": "ProfessionalService",
         "@id": `${SITE_URL}/#service`,
         name: "Vorte Studio",
-        legalName: "Vorte Grup A.Ş.",
+        legalName: "Vorte Dijital Teknoloji A.Ş.",
         description:
           "Next.js ve Prisma ile kurumsal web sitesi, e-ticaret ve mobil uygulama geliştiren yazılım stüdyosu. Yenilikçi tasarım, gerçek kod, ölçülebilir performans.",
         url: SITE_URL,
@@ -57,10 +57,10 @@ export default function JsonLd() {
         priceRange: "₺₺",
         address: {
           "@type": "PostalAddress",
-          streetAddress: "Mansuroğlu Mah. Ankara Caddesi No:81/012 Bayraklı Tower",
-          addressLocality: "Bayraklı",
+          streetAddress: "Çınarlı Mah. 1572/1 Sk. No: 3 İç Kapı No: 126",
+          addressLocality: "Konak",
           addressRegion: "İzmir",
-          postalCode: "35030",
+          postalCode: "35170",
           addressCountry: "TR",
         },
         areaServed: {

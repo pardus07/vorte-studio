@@ -42,25 +42,25 @@ export default function KvkkPage() {
         <tbody>
           <tr>
             <th>Ticari Ünvan</th>
-            <td>Vorte Grup A.Ş.</td>
+            <td>Vorte Dijital Teknoloji A.Ş.</td>
           </tr>
           <tr>
             <th>Vergi Kimlik No (VKN)</th>
-            <td>(güncelleniyor)</td>
+            <td>9251333007 (Karşıyaka V.D.)</td>
           </tr>
           <tr>
             <th>MERSIS No</th>
-            <td>(güncelleniyor)</td>
+            <td>0925133300700001</td>
           </tr>
           <tr>
             <th>Ticaret Sicil No</th>
-            <td>(güncelleniyor)</td>
+            <td>274473</td>
           </tr>
           <tr>
             <th>Adres</th>
             <td>
-              Mansuroğlu Mah., Ankara Caddesi No:81/012, Bayraklı Tower,
-              35030 Bayraklı / İzmir
+              Çınarlı Mah. 1572/1 Sk. No: 3 İç Kapı No: 126,
+              Konak / İzmir
             </td>
           </tr>
           <tr>
@@ -259,8 +259,8 @@ export default function KvkkPage() {
           <a href="mailto:info@vortestudio.com">info@vortestudio.com</a>
         </li>
         <li>
-          Posta: Mansuroğlu Mah., Ankara Caddesi No:81/012, Bayraklı Tower,
-          35030 Bayraklı / İzmir
+          Posta: Çınarlı Mah. 1572/1 Sk. No: 3 İç Kapı No: 126,
+          Konak / İzmir
         </li>
       </ul>
       <p>

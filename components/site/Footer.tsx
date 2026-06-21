@@ -99,7 +99,7 @@ export default function Footer() {
                 info@vortestudio.com
               </a>
               <span className="text-sm leading-relaxed text-muted2">
-                Mansuroğlu Mah. Ankara Caddesi No:81/012 Bayraklı Tower, Bayraklı, İzmir
+                Çınarlı Mah. 1572/1 Sk. No: 3 İç Kapı No: 126, Konak / İzmir
               </span>
             </address>
 
@@ -141,12 +141,12 @@ export default function Footer() {
                 <path d="M10 18h4" />
               </svg>
               <div>
-                <div className="text-sm font-semibold text-white">Vorte Grup A.Ş.</div>
+                <div className="text-sm font-semibold text-white">Vorte Dijital Teknoloji A.Ş.</div>
                 <ul className="mt-2 flex list-none flex-col gap-1 text-[12px] leading-relaxed text-muted2">
-                  <li>İzmir</li>
-                  <li>Vergi Kimlik No (VKN): (güncelleniyor)</li>
-                  <li>MERSIS No: (güncelleniyor)</li>
-                  <li>Ticaret Sicil No: (güncelleniyor)</li>
+                  <li>Çınarlı Mah. 1572/1 Sk. No: 3 İç Kapı No: 126, Konak / İzmir</li>
+                  <li>Vergi Kimlik No (VKN): 9251333007 · Karşıyaka V.D.</li>
+                  <li>MERSIS No: 0925133300700001</li>
+                  <li>Ticaret Sicil No: 274473</li>
                 </ul>
               </div>
             </div>
@@ -212,7 +212,7 @@ export default function Footer() {
         {/* Bottom bar */}
         <div className="mt-6 flex flex-col items-center justify-between gap-4 md:flex-row">
           <p className="text-[11px] text-muted2">
-            &copy; {new Date().getFullYear()} Vorte Grup A.Ş. Tüm hakları saklıdır.
+            &copy; {new Date().getFullYear()} Vorte Dijital Teknoloji A.Ş. Tüm hakları saklıdır.
           </p>
           <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-[11px] text-muted2">
             <Link href="/kvkk" className="transition-colors hover:text-white">

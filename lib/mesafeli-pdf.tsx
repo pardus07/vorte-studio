@@ -171,16 +171,16 @@ function MesafeliPDF({ data }: { data: MesafeliPDFData }) {
         <Text style={styles.h3}>{nl("1.1. Satıcı")}</Text>
         <View style={styles.infoRow}>
           <Text style={styles.infoLabel}>{nl("Ticari Ünvan")}</Text>
-          <Text style={styles.infoValue}>{nl("İbrahim Yaşar — Vorte Studio (Şahıs Şirketi)")}</Text>
+          <Text style={styles.infoValue}>{nl("Vorte Dijital Teknoloji Anonim Şirketi")}</Text>
         </View>
         <View style={styles.infoRow}>
-          <Text style={styles.infoLabel}>T.C. Kimlik No</Text>
-          <Text style={styles.infoValue}>46594013798</Text>
+          <Text style={styles.infoLabel}>{nl("Vergi Dairesi / VKN")}</Text>
+          <Text style={styles.infoValue}>{nl("Karşıyaka V.D. — 9251333007")}</Text>
         </View>
         <View style={styles.infoRow}>
           <Text style={styles.infoLabel}>Adres</Text>
           <Text style={styles.infoValue}>
-            {nl("Mansuroğlu Mah., Ankara Caddesi No:81/012, Bayraklı Tower, 35030 Bayraklı / İzmir")}
+            {nl("Çınarlı Mah. 1572/1 Sk. No: 3 İç Kapı No: 126, Konak / İzmir")}
           </Text>
         </View>
         <View style={styles.infoRow}>

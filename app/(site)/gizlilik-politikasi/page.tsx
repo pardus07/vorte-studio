@@ -17,7 +17,7 @@ export default function GizlilikPolitikasiPage() {
   return (
     <LegalLayout title="Gizlilik Politikası" lastUpdated="7 Nisan 2026">
       <p>
-        Vorte Grup A.Ş. (&quot;Vorte Studio&quot;, &quot;biz&quot;) olarak
+        Vorte Dijital Teknoloji A.Ş. (&quot;Vorte Studio&quot;, &quot;biz&quot;) olarak
         kişisel verilerinizin güvenliği bizim için önemlidir. İşbu Gizlilik
         Politikası, vortestudio.com web sitesini ziyaret ettiğinizde veya
         hizmetlerimizden yararlandığınızda toplanan bilgilerin nasıl
@@ -168,8 +168,8 @@ export default function GizlilikPolitikasiPage() {
         </li>
         <li>Telefon: 0543 188 34 25</li>
         <li>
-          Adres: Mansuroğlu Mah., Ankara Caddesi No:81/012, Bayraklı Tower,
-          35030 Bayraklı / İzmir
+          Adres: Çınarlı Mah. 1572/1 Sk. No: 3 İç Kapı No: 126,
+          Konak / İzmir
         </li>
       </ul>
     </LegalLayout>
